@@ -20,6 +20,7 @@ The browser uses only a single PHP script: meteobrowser.php. Put this
 script wherever you want in your web server hierarchy. The directory
 containing the script must also contain a directory named cache
 writable by the web server, so that it can write images to this directory.
+Also copy the PNG images and the style sheet meteo.css to this directory.
 
 Also put the two  auxiliary files stationlist.inc and dummygettext.inc
 into the same directory as meteobrowser.php, the latter only if your
@@ -42,6 +43,19 @@ Maintenance
 
 The cache directory should be cleaned out regularly. In principle,
 all files older than a few hours can be removed from the directory.
+However, this is not striclty necessary. There is a maximum of
+
+	(366 + 53 + 12 + 1) * g = 432 * g
+
+images per year which take about 900 * g kilobytes on disk, where
+g is the number of graphs actually displayed per page (depending on the
+capabilities of your weather station between 2 and 5). But as the number
+of files increases, performance may degrade slightly. Since the
+meteobrowser never searches through the cache directory, but accesses
+the files directly, the performance impact should be minimal. It 
+certainly is negligible for tree structured file systems like Linux'
+Reiser fs, but even with a standard UFS, performance will usually suffer
+much more from network latency than file system latency.
 
 --
-$Id: README.browser,v 1.3 2002/01/14 23:41:09 afm Exp $
+$Id: README.browser,v 1.5 2002/01/16 00:31:53 afm Exp $

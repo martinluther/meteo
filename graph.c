@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.10 2002/01/14 23:33:13 afm Exp $
+ * $Id: graph.c,v 1.11 2002/01/16 00:31:53 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -277,6 +277,19 @@ static void	graph_channel(graph_t *g, int channel) {
 						" out of range\n", __FILE__,
 						__LINE__, when, value);
 			}
+		}
+	}
+
+	/* if we want the nodata background, we must also fill in 	*/
+	/* everything to the right of the data				*/
+	if (donodata) {
+		int	tt;
+		for (tt = t; tt <= twidth; tt++) {
+			gdImageLine(g->im,
+				g->llx + tt, g->lly, g->llx + tt, g->ury,
+				(-1 == g->nodatacolor)
+					? g->bg
+					: g->nodatacolor);
 		}
 	}
 }

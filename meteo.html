@@ -1,10 +1,11 @@
 <html>
 <head>
+<link href="meteo.css" type="text/css" rel="stylesheet">
 <title>Meteo Software Package</title>
-<!-- $Id: meteo.html,v 1.6 2002/01/11 19:54:56 afm Exp $ -->
+<!-- $Id: meteo.html,v 1.7 2002/01/16 00:31:53 afm Exp $ -->
 </head>
 <body bgcolor="#ffffff">
-<h1>Meteo 0.1.9</h1>
+<h1>Meteo 0.2.1</h1>
 <p>
 Welcome to the home of the meteo package.
 This free software package is used to retrieve meteorological data
@@ -19,12 +20,31 @@ a more productive station at the
 <a href="http://grossalp.othello.ch/meteo/">Rossboda station above
 Bosco/Gurin</a>, and a <a href="meteodata.html">page describing the graphs</a>.
 </p>
+<p>
+There are essentially two interfaces to the database:
+<ol>
+<li>
+The <b>meteograph</b>(1) programm can be used to generate graphs for every
+point in time, and to store them in some directory accessible via 
+a web server. The <b>meteooverview</b>(1) script can generate some pages
+referencing the graphs. This is essentially a statig interface and is
+usually used to display current weather conditions.
+</li>
+<li>
+Starting with version 0.2, there is a PHP-based meteo browser that allows
+to browse through the complete database at every level of detail available.
+A sample installation is available at
+<a href="http://meteo.othello.ch/meteo/meteobrowser.php">http://meteo.othello.ch/meteo/meteobrowser.php</a>.
+See the README.browser for information about installing the script.
+</li>
+</ol>
+</p>
 <h2>Getting and installing the software</h2>
 <p>
 The meteo package is free software distributed under the GNU general
 public license GPL. The full license is included with the package.
-The current version is 0.1.9, it can be downloaded from
-<a href="http://meteo.othello.ch/download/meteo-0.1.9.tar.gz">http://meteo.othello.ch/download/meteo-0.1.9.tar.gz</a>.
+The current version is 0.2.1, it can be downloaded from
+<a href="http://meteo.othello.ch/download/meteo-0.2.1.tar.gz">http://meteo.othello.ch/download/meteo-0.2.1.tar.gz</a>.
 </p>
 <p>
 Configuration and Installation of the package follow the familiar
@@ -74,13 +94,13 @@ the manual pages installed with the distribution.
 Some utilities included in the package are not documented in manual
 pages. Here is a short description of these tools:
 <dl>
-<dt>meteojob</dt>
+<dt><b>meteojob</b></dt>
 <dd>This script can be run from cron to recompute exactly those
 graphs that need updating. The script is not very sophisticated,
 e.g. it does not check whether the graphs have previously been
 generated, but it can be used as a starting point for a more elaborate
 solution.</dd>
-<dt>meteooverview</dt>
+<dt><b>meteooverview</b></dt>
 <dd>Run with exactly one argument, the name of the station, this script
 generates HTML pages in the current directory with embedded tags linking
 to the graphs. The pages show overviews of all parameters for either a day,
@@ -100,8 +120,10 @@ Instruments</a>, has been very helpful in
 adapting the software for the Vantage Pro.
 </p>
 
-<hr />
-&copy; 2001 <a href="mailto:afm@othello.ch">andreas.mueller@othello.ch</a>,
+<hr noshade size="1" />
+<p>
+&copy; 2001 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch">Beratung und Entwicklung</a>
+</p>
 </body>
 </html>

@@ -1,4 +1,15 @@
+This is a bugfix release. It fixes some minor issues with the meteobrowser
+introduced in 0.2.0. Here is what the ChangeLog has to say about changes
+for this release:
 
+Release 0.2.1:
+	* fix meteobrowser.php to rebuild only as few graphs as possible,
+	  but all the necessary ones.
+	* improve the visual appearance of the browser, by adding cute
+	  icons produced by GIMP, and a style sheet.
+	* fix meteograph to shadow noexisting data also at the end of
+	  the graph
+	* add ALT tags to image maps and to navigation bar.
 
 --
-$Id: NEWS,v 1.4 2002/01/14 23:33:12 afm Exp $
+$Id: NEWS,v 1.5 2002/01/16 00:31:53 afm Exp $
