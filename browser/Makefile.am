@@ -3,14 +3,15 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.5 2006/05/07 19:47:22 afm Exp $
+# $Id: Makefile.am,v 1.7 2006/05/16 13:05:29 afm Exp $
 #
-BROWSERFILES = meteobrowser.php current.php				\
+BROWSERFILES = meteobrowser.php	   					\
 	up.png upup.png upupup.png week.png month.png year.png 		\
 	next.png previous.png
 BROWSERDIR = @BROWSERDIR@
 
-EXTRA_DIST = README.browser meteobrowser.inc $(BROWSERFILES)
+EXTRA_DIST = README.browser meteobrowser.inc $(BROWSERFILES)		\
+	current.xsl current.cgi
 
 SUBDIRS = po
 

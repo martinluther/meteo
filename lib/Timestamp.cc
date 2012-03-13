@@ -3,9 +3,10 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Timestamp.cc,v 1.4 2004/02/25 23:48:06 afm Exp $
+ * $Id: Timestamp.cc,v 1.5 2006/05/16 11:19:54 afm Exp $
  */
 #include <Timestamp.h>
+#include <MeteoException.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -93,6 +94,23 @@ static time_t	localtime2time(const char *ts) {
 
 Timestamp::Timestamp(const std::string& ts) {
 	t = localtime2time(ts.c_str());
+}
+
+Timestamp::Timestamp() {
+	time(&t);
+}
+
+std::string	Timestamp::ctime() const {
+	return std::string(::ctime(&t));
+}
+
+std::string	Timestamp::strftime(const char *format) const {
+	struct tm	*tp = localtime(&t);
+	char	buffer[1024];
+	if (::strftime(buffer, sizeof(buffer), format, tp) <= 0) {
+		throw MeteoException("cannot format time", std::string(format));
+	}
+	return std::string(buffer);
 }
 
 } /* namespace meteo */

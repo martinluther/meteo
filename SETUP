@@ -20,6 +20,7 @@ Here are the main steps in setting up meteo:
     sensors, graphs)
 - start the processes, make sure the are automatically restarted on boot
 - configure your web server if you want to use the meteo browser
+- configure current.cgi/current.xsl for current data display
 - find and report bugs
 
 Hardware
@@ -117,4 +118,4 @@ meteoavg, since some averages may have been computed by the new meteoavg
 with incomplete data (old data not yet converted).
 
 --
-$Id: SETUP,v 1.6 2004/04/02 16:05:47 afm Exp $
+$Id: SETUP,v 1.7 2006/05/16 11:19:54 afm Exp $

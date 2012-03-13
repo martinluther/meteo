@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicRecorder.cc,v 1.10 2004/02/25 23:48:04 afm Exp $
+ * $Id: BasicRecorder.cc,v 1.11 2006/05/16 11:19:54 afm Exp $
  */
 #include <BasicRecorder.h>
 #include <mdebug.h>
@@ -124,8 +124,11 @@ std::string	BasicRecorder::plain(void) const {
 	return getValueString() + " " + getUnit();
 }
 
-std::string	BasicRecorder::xml(void) const {
-	return "<value>" + getValueString() + "</value>";
+std::string	BasicRecorder::xml(const std::string& name) const {
+	return "<data name=\"" + name
+		+ "\" value=\"" + this->getValueString()
+		+ "\" unit=\"" + conv.getUnit()
+		+ "/>";
 }
 
 } /* namespace meteo */

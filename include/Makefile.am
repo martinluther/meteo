@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.42 2006/05/07 19:47:22 afm Exp $
+# $Id: Makefile.am,v 1.43 2006/05/16 11:19:54 afm Exp $
 #
 
 noinst_HEADERS =							\
@@ -50,7 +50,7 @@ noinst_HEADERS =							\
 	Graphics.h SunData.h Sun.h					\
 	Datarecord.h Averager.h						\
 	MsgCommon.h MsgQueuer.h MsgDequeuer.h				\
-	Timestamp.h							\
+	Timestamp.h Format.h 						\
 	Mapfile.h							\
 	Daemon.h							\
 	ChunkDumper.h							\

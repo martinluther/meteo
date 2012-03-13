@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: MinmaxRecorder.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
+ * $Id: MinmaxRecorder.cc,v 1.9 2006/05/16 11:19:54 afm Exp $
  */
 #include <MinmaxRecorder.h>
 #include <MeteoException.h>
@@ -120,10 +120,13 @@ std::string	MinmaxRecorder::plain(void) const {
 		value, getUnit().c_str(), min, max);
 	return result;
 }
-std::string	MinmaxRecorder::xml(void) const {
-	return	"<value>" + getValueString() + "</value>"
-		+ "<min>" + getMinString() + "</min>"
-		+ "<max>" + getMaxString() + "</max>";
+std::string	MinmaxRecorder::xml(const std::string& name) const {
+	return "<data name=\"" + name
+		+ "\" value=\"" + this->getValueString()
+		+ "\" unit=\"" + conv.getUnit()
+		+ "\" min=\"" + getMinString()
+		+ "\" max=\"" + getMaxString()
+		+ "/>";
 }
 
 } /* namespace meteo */

@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.32 2004/05/08 20:09:31 afm Exp $
+ $Id: meteo.xml,v 1.33 2006/05/16 13:02:03 afm Exp $
 
   -->
 <meteo>
@@ -120,6 +120,7 @@
         <field>temperature</field>
         <field>humidity</field>
         <field>rain</field>
+        <field>rainrate</field>
         <field>wind</field>
         <field>solar</field>
         <field>uv</field>

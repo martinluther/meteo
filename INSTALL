@@ -377,16 +377,15 @@ Frequently asked questions
 
 4. How about current values from the station
 
-   meteo 0.9.15 includes an experimental interface which allows to read
-   the current data from the station. The term experimental means that
-   some more work may be required to set up the interface:
-    - the script current.php is only a template, you will need to adapt
-      this script to get a reasonable looking page
-    - the paths in current.php are hard wired, so you may need to
-      adapt them to your environment
+   meteo 0.9.15 includes an new interface which allows to read the current
+   data from the station. For this, meteopoll writes a map file in XML.
+   Other processes can read this file and convert it to a more user friendly
+   format.
     - by default, no map file is created. Add the -m option to meteopoll
       to tell it to create a map file
-    - add the correct name of the map file to current.php
+    - install current.cgi and current.xsl from the browser directory
+      according to the directions in current.cgi
+
 
 --
-$Id: INSTALL,v 1.25 2006/05/07 19:47:22 afm Exp $
+$Id: INSTALL,v 1.26 2006/05/16 11:19:53 afm Exp $

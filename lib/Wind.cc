@@ -3,7 +3,7 @@
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Wind.cc,v 1.14 2004/02/26 14:00:19 afm Exp $
+ * $Id: Wind.cc,v 1.15 2006/05/16 11:19:54 afm Exp $
  */
 #include <Wind.h>
 #include <WindConverter.h>
@@ -113,10 +113,13 @@ std::string	Wind::plain(const std::string& name) const {
 }
 
 std::string	Wind::xml(const std::string& name) const {
-	return "<value name=\"" + name + ".speed\" unit=\"" + getUnit() + "\">"
-		+ getSpeedString()
-		+ "</value>\n  <value name=\"" + name + ".dir\">"
-		+ getAziString() + "</value>";
+	return "<data name=\"" + name + ".speed"
+		+ "\" unit=\"" + getUnit()
+		+ "\" value=\"" + getSpeedString()
+		+ "</data>\n"
+		+ "<data name=\"" + name + ".dir"
+		+ "\" value=\"" + getAziString()
+		+ "\" unit=\"deg\"/>";
 }
 
 } /* namespace meteo */

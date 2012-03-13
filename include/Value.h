@@ -5,7 +5,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Value.h,v 1.4 2006/05/07 19:47:22 afm Exp $
+ * $Id: Value.h,v 1.5 2006/05/16 11:19:54 afm Exp $
  */
 #ifndef _Value_h
 #define _Value_h
@@ -45,7 +45,7 @@ public:
 	const std::string	getClass(void) const;
 	const std::string	getUnit(void) const { return bv->getUnit(); }
 
-	// access to the basic value
+	// access to the basic value (this isn't such a terribly good idea)
 	BasicValue	*getBasicValue(void) { return bv; }
 
 	// retrieve the value (forgetting about the unit)

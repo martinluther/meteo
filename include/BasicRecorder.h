@@ -8,7 +8,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicRecorder.h,v 1.8 2006/05/07 19:47:22 afm Exp $
+ * $Id: BasicRecorder.h,v 1.9 2006/05/16 11:19:54 afm Exp $
  */
 #ifndef _BasicRecorder_h
 #define _BasicRecorder_h
@@ -63,7 +63,7 @@ public:
 
 	// output
 	virtual std::string	plain(void) const;
-	virtual std::string	xml(void) const;
+	virtual std::string	xml(const std::string& name) const;
 
 	// allow access to the data fields to the Converter class
 	friend class	Recorder;	// may update the reference count

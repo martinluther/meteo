@@ -5,7 +5,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Recorder.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
+ * $Id: Recorder.cc,v 1.9 2006/05/16 11:19:54 afm Exp $
  */
 #include <Recorder.h>
 #include <MeteoException.h>
@@ -108,7 +108,7 @@ std::string	Recorder::plain(void) const {
 	return title + bv->plain();
 }
 std::string	Recorder::xml(void) const {
-	return "<" + name + ">" + bv->xml() + "</" + name + ">";
+	return bv->xml(name);
 }
 
 } /* namespace meteo */

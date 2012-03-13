@@ -3,7 +3,7 @@
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: WindRecorder.cc,v 1.8 2004/02/25 23:48:06 afm Exp $
+ * $Id: WindRecorder.cc,v 1.9 2006/05/16 11:19:54 afm Exp $
  */
 #include <WindRecorder.h>
 #include <WindConverter.h>
@@ -251,10 +251,16 @@ std::string	WindRecorder::plain(void) const {
 	return result;
 }
 
-std::string	WindRecorder::xml(void) const {
-	return	"<speed>" + getSpeedString() + "</speed>"
-		+ "<azi>" + getAziString() + "</azi>"
-		+ "<windgust>" + getMaxString() + "</windgust>";
+std::string	WindRecorder::xml(const std::string& name) const {
+	return "<data name=\"" + name
+		+ "\" value=\"" + getSpeedString()
+		+ "\" unit=\"" + conv.getUnit()
+		+ "\" windgust=\"" + getMaxString()
+		+ "/>\n"
+		+ "<data name=\"" + name + "dir"
+		+ "\" value=\"" + getAziString()
+		+ "\" unit=\"deg\"/>";
 }
 
 } /* namespace meteo */
+

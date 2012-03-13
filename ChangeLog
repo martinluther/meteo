@@ -1,3 +1,10 @@
+Release 0.9.16:
+	* add timestamp to meteomap
+	* add Format file and stringprintf functions
+	* add current.cgi and current.xsl, along with some instructions
+	  how to use them
+	* fix some links on the gallery page (to altendorf station)
+
 Release 0.9.15:
 	* extended the default channel timeout from 5 to 6 seconds, as
 	  Clay Jackson discovered
@@ -688,4 +695,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.133 2006/05/07 19:47:22 afm Exp $
+$Id: ChangeLog,v 1.134 2006/05/16 11:19:53 afm Exp $

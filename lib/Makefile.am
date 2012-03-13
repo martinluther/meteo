@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.42 2006/05/07 19:47:22 afm Exp $
+# $Id: Makefile.am,v 1.43 2006/05/16 11:19:54 afm Exp $
 #
 
 lib_LTLIBRARIES = libmeteo.la
@@ -64,7 +64,7 @@ libmeteo_la_SOURCES =							\
 	Datarecord.cc							\
 	Averager.cc							\
 	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\
-	Timestamp.cc							\
+	Timestamp.cc Format.cc						\
 	Mapfile.cc							\
 	crc.c 								\
 	Daemon.cc							\

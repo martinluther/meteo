@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: RainRecorder.h,v 1.5 2004/02/25 23:52:34 afm Exp $
+ * $Id: RainRecorder.h,v 1.6 2006/05/16 11:19:54 afm Exp $
  */
 #ifndef _RainRecorder_h
 #define _RainRecorder_h
@@ -55,7 +55,7 @@ public:
 	std::string	getTotalString(void) const;
 
 	// return data
-	virtual std::string	xml(void) const;
+	virtual std::string	xml(const std::string& name) const;
 	virtual std::string	plain(void) const;
 
 	friend class RainRecorderConverter;

@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: RainRecorder.cc,v 1.6 2004/02/25 23:48:05 afm Exp $
+ * $Id: RainRecorder.cc,v 1.7 2006/05/16 11:19:54 afm Exp $
  */
 #include <RainRecorder.h>
 #include <MeteoException.h>
@@ -153,9 +153,12 @@ std::string	RainRecorder::plain(void) const {
 		getTotal());
 	return result;
 }
-std::string	RainRecorder::xml(void) const {
-	return	"<value>" + getValueString() + "</value>"
-		+ "<total>" + getTotalString() + "</total>";
+std::string	RainRecorder::xml(const std::string& name) const {
+	return "<data name=\"" + name
+		+ "\" value=\"" + this->getValueString()
+		+ "\" unit=\"" + conv.getUnit()
+		+ "\" total=\"" + getTotalString()
+		+ "/>";
 }
 
 } /* namespace meteo */

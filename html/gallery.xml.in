@@ -3,7 +3,7 @@
 	gallery.xml	gallery of weather stations
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: gallery.xml.in,v 1.1 2004/04/30 13:25:13 afm Exp $
+	$Id: gallery.xml.in,v 1.4 2006/05/16 14:39:59 afm Exp $
 -->
 <page name="gallery">
 <h1>Gallery of meteo installations</h1>
@@ -20,12 +20,12 @@ The two stations in Altendorf and Bosco/Gurin started the meteo project.
 </tr>
 <tr>
   <td valign="top">Altendorf, Schwyz, Switzerland</td>
-  <td><a href="http://meteo.othello.ch/meteo/"><img border="0"
+  <td><a href="http://meteo.othello.ch/altendorf/"><img border="0"
     width="250" height="72"
-    src="http://meteo.othello.ch/meteo/Altendorf-temperature-week.png" /></a>
+    src="http://meteo.othello.ch/altendorf/Altendorf.temperature-week.png" /></a>
   </td>
   <td><a href="http://meteo.othello.ch/meteo/meteobrowser.php"><img border="0"
-    src="http://meteo.othello.ch/meteo/Altendorf-temperature-year.png"
+    src="http://meteo.othello.ch/altendorf/Altendorf.temperature-year.png"
     width="250" height="72" /></a>
   </td>
 </tr>

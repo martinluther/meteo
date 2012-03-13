@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: DataRecorder.h,v 1.5 2006/05/07 19:47:22 afm Exp $
+ * $Id: DataRecorder.h,v 1.6 2006/05/16 11:19:54 afm Exp $
  */
 #ifndef _DataRecorder_h
 #define _DataRecorder_h
@@ -12,7 +12,6 @@
 #include <MeteoTypes.h>
 #include <map>
 #include <Recorder.h>
-#include <Mapfile.h>
 
 namespace meteo {
 
@@ -29,8 +28,7 @@ public:
 	void	addRecorder(const std::string& sensorname);
 
 	// update recorders by name
-	void	update(const std::string& sensorname, const Value& newvalue,
-		Mapfile& m);
+	void	update(const std::string& sensorname, const Value& newvalue);
 
 	// access to recorders
 	recordermap_t::iterator	begin(void) { return recorders.begin(); }

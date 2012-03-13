@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: SensorStation.cc,v 1.7 2006/05/07 21:48:14 afm Exp $
+ * $Id: SensorStation.cc,v 1.8 2006/05/16 11:19:54 afm Exp $
  */
 #include <SensorStation.h>
 #include <SensorStationInfo.h>
@@ -67,10 +67,12 @@ void	SensorStation::update(const std::string& packet, Mapfile *m) {
 		
 		// use the reader to get a value
 		try {
+			// find the corresponding value object
 			Value	value = parentstation->readValue(readername,
 				packet);
 			i->second.update(value);
 
+			// mapfile updates
 			if (NULL != m) {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"mapfile update for %s",

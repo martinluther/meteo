@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: WMII.cc,v 1.14 2004/02/25 23:48:06 afm Exp $
+ * $Id: WMII.cc,v 1.15 2006/05/16 13:02:03 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -27,8 +27,8 @@ WMII::WMII(const std::string& stationname) : OldDavisStation(stationname, 18) {
 		stationname.c_str());
 
 	// now create readers for all the data available in the station
-	addAllReaders(ReaderInfo::getReaders("WMII"));
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start adding readers");
+	addAllReaders(ReaderInfo::getReaders("WMII"));
 
 	// retrieve the rain calibration number from the station
 	ShortPacketReader	raincalreader(1, false, true);

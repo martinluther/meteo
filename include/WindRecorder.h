@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: WindRecorder.h,v 1.5 2004/02/25 23:52:35 afm Exp $
+ * $Id: WindRecorder.h,v 1.6 2006/05/16 11:19:54 afm Exp $
  */
 #ifndef _WindRecorder_h
 #define _WindRecorder_h
@@ -60,7 +60,7 @@ public:
 
 	// output
 	virtual std::string	plain(void) const;
-	virtual std::string	xml(void) const;
+	virtual std::string	xml(const std::string& name) const;
 
 	// update query
 	virtual stringlist	updatequery(const time_t timekey,

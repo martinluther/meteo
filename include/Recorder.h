@@ -5,14 +5,13 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Recorder.h,v 1.6 2006/05/07 21:48:14 afm Exp $
+ * $Id: Recorder.h,v 1.7 2006/05/16 11:19:54 afm Exp $
  */
 #ifndef _Recorder_h
 #define _Recorder_h
 
 #include <BasicRecorder.h>
 #include <string>
-#include <Mapfile.h>
 
 namespace meteo {
 
