@@ -3,8 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: meteo.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: meteo.c,v 1.3 2002/11/24 19:48:02 afm Exp $
  */
 #include <meteo.h>
 
-mc_node_t	*meteoconfig = NULL;

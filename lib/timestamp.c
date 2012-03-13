@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: timestamp.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: timestamp.c,v 1.3 2002/11/18 02:36:42 afm Exp $
  */
 #include <time.h>
 #include <stdio.h>

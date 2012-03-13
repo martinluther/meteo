@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: meteoavg.c,v 1.4 2002/11/24 19:48:02 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -73,15 +73,16 @@ static void	avg_daemon(MYSQL *mysql, const char *station) {
 
 int	main(int argc, char *argv[]) {
 	char		*conffilename = METEOCONFFILE;
-	const char	*station;
+	char		*station = NULL;
 	int		c, naverages = -1, interval = 0, remainder,
 			daemonmode = 0, all = 0, haveavg, foreground = 0;
 	time_t		fromt, tot, t;
 	MYSQL		*mysql;
 	char		*pidfilename = "/var/run/meteoavg-%s.pid";
+	meteoconf_t	*mc;
 
 	/* parse the command line					*/
-	while (EOF != (c = getopt(argc, argv, "adf:Fi:l:r:np:V")))
+	while (EOF != (c = getopt(argc, argv, "adf:Fi:l:r:np:Vs:")))
 		switch (c) {
 		case 'l':
 			if (mdebug_setup("meteoavg", optarg) < 0) {
@@ -89,6 +90,9 @@ int	main(int argc, char *argv[]) {
 					argv[0]);
 				exit(EXIT_FAILURE);
 			}
+			break;
+		case 's':
+			station = optarg;
 			break;
 		case 'd':
 			debug++;
@@ -134,6 +138,12 @@ int	main(int argc, char *argv[]) {
 			break;
 		}
 
+	/* station name is required					*/
+	if (NULL == station) {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "no station specified, use -s");
+		exit(EXIT_FAILURE);
+	}
+
 	/* there should be zero to two more arguments: timestamps for	*/
 	/* the range for which we should compute averages		*/
 	switch (argc - optind) {
@@ -177,28 +187,19 @@ int	main(int argc, char *argv[]) {
 	}
 
 	/* read the configuration file					*/
-	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
+	if (NULL == (mc = xmlconf_new(conffilename, station))) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration invalid");
 		exit(EXIT_FAILURE);
 	}
 
 	/* consistency checks						*/
-	/* 1. Station must be defined					*/
-	if (NULL == (station = mc_get_string(meteoconfig, "database.prefix",
-		NULL))) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "station name not defined");
-		exit(EXIT_FAILURE);
-	}
-	station = strdup(station);
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station = %s", station);
 	/* interval must be set						*/
 	if ((interval <= 0) && (!daemonmode)) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "interval (-i) not specified");
 		exit(EXIT_FAILURE);
 	}
 
-	mysql = mc_opendb(meteoconfig, O_RDWR);
+	mysql = mc_opendb(mc, O_RDWR);
 	if (mysql == NULL) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot connect to database");
 		exit(EXIT_FAILURE);

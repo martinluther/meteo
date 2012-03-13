@@ -1,12 +1,8 @@
-0.3.4 adds support for the new release of the Vantage Pro firmware.
-It is now possible to generate graphs with humidity alone (previously,
-humidity was only available in the for of the dew point). 
+0.5.0 converts the configuration file to XML. It also fixes some minor
+bugs.
 
-The meteobrowser now works with PHP 4.2 or if you have register globals
-turned of, which is the default starting with 4.2.
-
-Some minor bugs have also been fixed.
-
+0.4.0 modfies the format of the database, please read support/How_to_migrate
+for instructions about how to convert to the new format.
 
 --
-$Id: NEWS,v 1.11 2002/08/24 14:56:21 afm Exp $
+$Id: NEWS,v 1.12 2002/11/24 22:31:05 afm Exp $

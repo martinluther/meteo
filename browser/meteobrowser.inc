@@ -4,7 +4,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.inc,v 1.3 2002/01/30 12:41:16 afm Exp $
+//   $Id: meteobrowser.inc,v 1.4 2002/11/24 22:31:05 afm Exp $
 //
 
 // include the following only if your PHP installation lacks gettext support
@@ -28,7 +28,7 @@ $graphlist[Gurin] = "temperature:pressure:wind:radiation:rain";
 $meteograph = "/usr/local/bin/meteograph";
 
 // the directory containing the configuration files, which must have names
-// of the form $confpath/meteo-$stationname.conf
+// of the form $confpath/meteo.xml
 $confpath = "/home/afm/Projects/meteo";
 
 // a directory writable by the webserver just below the installation location

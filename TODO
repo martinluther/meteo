@@ -1,8 +1,6 @@
 TODO
 ----
 
-* convert from localtime to gmtime
-
 * find cause of frequent crashes of meteoloop and make it more robust,
   complete work on the watchdog
 
@@ -17,7 +15,5 @@ TODO
 
 * include conversion functions to scientific units: K, mb, m/s etc
 
-* use web colors in the graphs to avoid dither and false colors
-
 --
-$Id: TODO,v 1.13 2002/01/29 20:55:28 afm Exp $
+$Id: TODO,v 1.15 2002/11/24 22:31:05 afm Exp $

@@ -92,6 +92,10 @@ Details
 	-v		verbose mode
 	-?		display usage message and exit
 
+   While the program runs, the log of the MySQL server can become very
+   large, so make sure it is rotated quickly enough. Otherwise, your
+   server will run out of space and stop committing any of your updates.
+
 6. recompute some of the averages
 
    meteoavg -i 300 starttimestamp endtimestamp
@@ -109,4 +113,4 @@ Details
    This is left as an exercise to the reader.
 
 --
-$Id$
+$Id: How_to_migrate,v 1.2 2002/11/24 19:48:02 afm Exp $

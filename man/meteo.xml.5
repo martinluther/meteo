@@ -1,0 +1,332 @@
+.TH METEO.XML "5" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteo.xml \- description of configuration file format
+.SH DESCRIPTION
+The meteo station tools are described in 
+.BR meteo (1),
+this manual page defines the configuration file format used by all
+the utilities.
+The configuration file users XML syntax. A single file can be shared
+among all the stations that use the same database. Under a mandatory
+top level 
+.B <meteo>
+element at least one
+.B <database>
+element and one or more 
+.B <station>
+elements are expected. Their contents are described in the sections
+below.
+
+.SH "DATABASE CONFIGURATION"
+The
+.B <database>
+tag defines the connection to the database, i.e. hostname,
+database name and user names and passwords.
+It also includes the prefix by which data from this station is identified
+in the database. This prefix is also used for the graph names.
+The section contains the following elements
+
+.TP
+.BI <hostname> dbserver </hostname>
+The host name on which the MySQL server runs.
+.TP
+.BI <dbname> databasename </dbname>
+The name of the database, usualy
+.IR meteo .
+.TP
+.BI <prefix> stationname </prefix>
+The name of the weather station.
+.TP
+.BI <user> readonly-user </user>
+A user name for a user that is granted select access to the
+.I stationdata 
+and the
+.I averages
+tables. The
+.BR meteograph (1)
+program uses this identity to access the database.
+.TP
+.BI <password> readonly-password </password>
+The password for the read only user.
+.TP
+.BI <writer> readwrite-user </writer>
+The name of a user granted select, update and insert on the
+.I stationdata
+and
+.I averages
+tables.  The 
+.BR meteoloop (1)
+and 
+.BR meteoavg (1)
+programs use this identity to update the database.
+.TP
+.BI <writerpassword> readwrite-password </writerpassword>
+The password of the read/write identity defined with the
+.B writer
+directive.
+.TP
+.BI <msgqueue> queuefile </msgqueue>
+System V message queues are identified by a 32bit message ID, but this
+is very system dependent. The
+.B msgqueue
+directive specifies the name of a file, from which a message queue
+id will be derived. There are no other requirements on the file name
+than that it exists.
+
+Here is the configuration of the station in Bosco/Gurin as a sample
+
+.nf
+.in +4
+<database>
+.in +4
+<hostname>localhost</hostname>
+<dbname>meteo</dbname>
+<prefix>Gurin</prefix>
+<user>meteo</user>
+<password>public</password>
+<writer>meteoupdate</writer>
+<writerpassword>secret</writerpassword>
+<msgqueue>/tmp/meteodb-queue</msgqueue>
+.in -4
+</database>
+.in -4
+.fi
+
+
+
+Further sections describe the graphs to be produced, and are only
+used by the
+.BR meteograph (1)
+program. The names of these sections are the graph names defined
+in the manual page of
+.BR meteograph (1).
+The contens of these sections are explained below.
+Strings have to be enclosed in quotation marks.
+
+.SH "STATION CONFIGURATION"
+The station elemnt defines the interface through which weather data
+is to be read from the station. It contains the following tags:
+.TP
+.BI <url> stationurl </url>
+can be a file URL
+.IR file:///dev/ttyS0 ,
+indicating that a serial device should be used to communicate with
+the station.
+A TCP url of the form
+.I tcp://192.168.7.3:10001
+can be used to communicate with the station over the network through
+a terminal server or device server, the example works for a 
+Lantronix UDS-10 devices server.
+.TP
+.BI <speed> baudrate </speed>
+This item is only needed for serial communication, and specifies the
+baud rate to use. Older Davis stations (Weather Monitor II) use
+2400 baud, the Vantage Pro runs at 19200 baud.
+.TP
+.BI <type> stationtype </type>
+As weather station protocols vary substantially for the various types
+of stations, and there don't seem to be reliably methods to find out
+the type of station, the station type must be specified. Possible
+values are (for historical reasons)
+.I Davis
+and
+.IR Vantage .
+
+The following
+.I station
+tag sample is used with the Vantage Pro station in Bosco/Gurin:
+
+.nf
+.in +4
+<station>
+.in +4
+<url>tcp://192.168.7.3:10001</url>
+<speed>19200</speed>
+<type>Vantage</type>
+.I [ channel definitions omitted ]
+.in -4
+</station>
+.in -4
+.fi
+
+.SH "CHANNEL CONFIGURATION"
+The channel tags define the colors for the various curves and histograms,
+and the vertical scales and ranges.
+Some graphs combine more than one data channel with different units in the
+same graphs.
+These graphs have two different scales, and are labeled differently on the
+left and on the right.
+To specify different data for the left and the right subgraph, the tags
+named
+.I left
+and 
+.I right
+are used. The <left> and <right> tags are not allowed in channel
+definitions that do not use two different scales (temperature, humidity,
+pressure, rain), but are required in all others (wind, radiation).
+
+Some data, most notably rain, which is cumulative, need to use different
+scales for the different time resolutions.
+It is therefore possible to enclose the data in a tag named 
+
+.nf
+.in +4
+<interval width="{ 300 | 1800 | 7200 | 86400 }">
+.in +4
+[ interval specific data ]
+.in -4
+</interval>
+.in -4
+.fi
+
+to define differing parameters for these sampling intervals.
+These 
+.I interval
+sections must be contained within a 
+.I left
+or
+.I right
+tag, if present.
+
+.SH INHERITANCE
+a lot of the data defining a graph is common to most graphs (background
+color is common to all graphs, curve colors are common all graphs of the
+same data etc.). It would be tedious if everything had to be replicated inside
+all the relevant tags, so the configuration file reader implements
+the following kind of inheritance: if the tag requested is not an
+immediate child of the node in which it should appear, the parent
+node is searched as well. This is repeated until we end up at the top
+level element. So data common to all graphs and stations can be defined
+inside the  top level <meteo> tag.
+
+.SH "COLOR SPECIFICATION"
+Colors are specified by
+.B <color>
+tags, which must contain three elements named <red>, <green> and <blue>,
+each containing an integer between 0 and 255. To distinguish the various
+colors, the <color> tag must contain a name attribute. So a valid
+color specification for red would be:
+
+.nf
+.in +4
+<color name="temperature">
+.in +4
+<red>255</red>
+<green>0</green>
+<blue>0</blue>
+.in -4
+</color>
+.in -4
+.fi
+
+The following colors are recognized:
+
+.TS
+tab(&);
+l l.
+fgcolor&graph foreground
+bgcolor&graph background
+nodata&background if no data is available
+temperature&outside temperature
+temperature_range&outside temperature range
+temperature_dew&dew point temperature outside
+temperature_inside&dito inside
+temperature_inside_range&dito inside
+temperature_insdie_dew&dito inside
+humidity&outside humidity
+humidity_range&outside humidity range
+humidity_inside&dito inside
+humidity_inside_range&dito inside
+pressure&atmospheric pressure
+pressure_range&atmospheric pressure range
+wind&wind azimut
+speed&average wind speed
+gust&gust speed
+solar&solar radiation
+uv&UV index
+north&background color for wind azi to north
+south&background color for wind azi to south
+east&background color for wind azi to east
+west&background color for wind azi to west
+.TE
+
+.SH "COMMON GRAPH PARAMETERS"
+The following parameters are common to all graphs. Note that <min>, <max>
+and <scale> tags are used to draw the graph, while the <start>, <end>
+and <step> tags specify the grid and the tick marks along the vertical
+axes.
+
+.TP
+.BI <label> labelstring </label>
+A string to be displayed on the side of the graph, usually to describe
+the kind of data displayed and the unit.
+.TP
+.BI <format> formatstring </format>
+C printf format string for the labeling of the tick marks on the
+vertical axis of the graph. Usualy something like "%.1f".
+.TP
+.BI <min> value </min>
+Minimum value on the vertical axis.
+.TP
+.BI <max> value </max>
+Maximum value on the vertical axis.
+.TP
+.BI <scale> value </scale>
+Defines how much a pixel is in the values of the vertical axis.
+If the <max> tag has been specified, the scale value is computed from
+it, so the <scale> tag is not used at all. Note that due to the way
+inheritance works, a <scale> tag will be masked by a <max> tag the appears
+anywhere above the position of the <scale> tag.
+.TP
+.BI <step> value </step>
+Distance between the tick marks.
+.TP
+.BI <start> value </start>
+First tick mark value.
+.TP
+.BI <end> value </end>
+Last tick mark value.
+
+.SH "EXAMPLE"
+
+Here is a sample <channel> tag for the wind graph:
+
+.nf
+.in +4
+<channel name="wind">
+.in +4
+[left tag ommited]
+<right>
+.in +4
+<label>            Azimut (deg)</label>
+format>%.0f</format>
+<min-604</min>
+<max>360</max>
+<start>0</start>
+<end>360</end>
+<step>180</step>
+.in -4
+</right>
+.in -4
+</channel>
+.in -4
+.fi
+
+.SH BUGS
+There is no tool to verify the correctness of the configuration file.
+The easiest way to do this would be to provide a DTD, so that one
+could simply check whether the configuration file matches the DTD.
+In the meantime, the best one can do is to at least check well formedness
+using
+.BR xmllint (1).
+
+.SH "SEE ALSO"
+.BR meteo (1),
+.BR meteoloop (1),
+.BR meteoavg (1),
+.BR meteograph (1),
+.BR meteodequeue (1),
+.BR meteojob (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

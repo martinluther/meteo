@@ -23,12 +23,14 @@ meteoloop [
 ] [
 .BI \-w watchdoginterval
 ]
+.BI \-s stationname
 .BI \-f conffile
 .SH DESCRIPTION
 The 
 .BR meteoloop (1)
-programm connects to the weather station specified in the  configuration
-file
+programm connects to the weather station specified with the 
+.B -s
+option and the configuration file
 .I conffile
 and starts reading data from it. It computes averages and extreme values
 for all the parameters it finds over a period of one minute, and constructs
@@ -69,7 +71,7 @@ table.
 Use 
 .I conffile
 to read the configuration, see 
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 for the configuration syntax. This argument is mandatory.
 .TP
 .B \-F
@@ -85,12 +87,15 @@ When running in daemon mode, write the process id of the
 process to this file. Defaults to
 .IR /var/run/meteoloop-<station>.pid .
 .TP
-.BR \-n repeats
+.BI \-s stationname
+Name of the station  from which to read data.
+.TP
+.BI \-n repeats
 Compute only
 .I repeats
 data points, the default is to run indefinitely.
 .TP
-.BR \-w watchdoginterval
+.BI \-w watchdoginterval
 enable the watchdog timer with an interval of 
 .I watchdoginterval
 seconds. If no reply is received from the station for an interval of
@@ -118,11 +123,10 @@ writes its process id by default to a file
 
 .SH "SEE ALSO"
 .BR meteo (1)
-.BR meteo.conf (5),
+.BR meteo.xml (5),
 .BR meteoloop (1),
 .BR meteograph (1),
 .BR meteodequeue (1),
-.BR meteocheck (1),
 .BR meteojob (1),
 .BR meteoavg (1),
 .BR meteowatch (1)

@@ -21,6 +21,7 @@ meteograph [
 |
 .BI \-G graphname
 ]
+.BI \-s stationname
 .IR interval ...
 .SH DESCRIPTION
 The 
@@ -82,7 +83,7 @@ radiation&solar and uv radiation
 .TE
 
 The parameters defining these graphs are set in the
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 file.
 
 .SH OPTIONS
@@ -110,15 +111,15 @@ before opening the configuration file (as specified with the
 option below), so if a relative path for the configuration file
 is used, it should be relativ to the image directory.
 One possible application of this feature is to have a graph directory
-for each weather station, and to put the meteo.conf
+for each weather station, and to put the meteo.xml
 file in the same directory as the graphs. 
 .BR meteograph (1) can then be called with
 
 .nf
 .ti +3
-meteograph -c graphdir-a -f meteo.conf 7200
+meteograph -c graphdir-a -s station1 -f meteo.xml 7200
 .ti +3
-meteograph -c graphdir-b -f meteo.conf 7200
+meteograph -c graphdir-b -s station1 -f meteo.xml 7200
 .fi
 
 to reproduce all two hour graphs for stations
@@ -138,7 +139,7 @@ compute graphs ending at
 Use 
 .I conffile
 to read the configuration, see 
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 for the configuration syntax. This argument is mandatory.
 .TP
 .BI \-g graphname
@@ -158,16 +159,18 @@ suppressed.
 send log messages to destination described by the 
 .IR logurl .
 .TP
+.BI \-s stationname
+Name of the station for which to compute the graphs.
+.TP
 .B \-t
 include the timestamp in the file name of the generated image files.
 
 .SH "SEE ALSO"
 .BR meteo (1)
-.BR meteo.conf (5),
+.BR meteo.xml (5),
 .BR meteoloop (1),
 .BR meteoavg (1),
 .BR meteodequeue (1),
-.BR meteocheck (1),
 .BR meteojob (1)
 
 .SH AUTHOR

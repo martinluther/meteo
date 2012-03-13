@@ -17,7 +17,7 @@ The
 .BR meteodequeue (1)
 programm pulls update queries from a message queue as specified in
 the configuration file (see 
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 for details) and sends them to the MySQL database.
 This helps to improve reliabilty by reducing contention on the 
 .I stationdata
@@ -36,7 +36,7 @@ send log messages to the destination described by the
 Use 
 .I conffile
 to read the configuration, see 
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 for the configuration syntax. This argument is mandatory.
 .TP
 .B \-F
@@ -51,11 +51,10 @@ process to this file. Defaults to
 
 .SH "SEE ALSO"
 .BR meteo (1)
-.BR meteo.conf (5),
+.BR meteo.xml (5),
 .BR meteoloop (1),
 .BR meteograph (1),
 .BR meteoavg (1),
-.BR meteocheck (1),
 .BR meteojob (1)
 
 .SH FILES

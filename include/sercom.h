@@ -8,7 +8,7 @@
 
 #include <com.h>
 
-extern meteocom_t	*sercom_new(char *dev, int speed);
+extern meteocom_t	*sercom_new(meteoconf_t *mc, char *dev, int speed);
 extern void		sercom_free(meteocom_t *m);
 
 #endif /* _SERCOM_H */

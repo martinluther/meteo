@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.2 2002/01/19 00:36:58 afm Exp $
+# $Id: Makefile.am,v 1.3 2002/11/24 19:48:01 afm Exp $
 #
 HTMLFILES = meteo.html meteodata.html meteo.css
 TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../COPYING
@@ -18,3 +18,4 @@ install-data-local:
 	else								\
 		echo "info: HTML docs not installed, used --with-html-dir"; \
 	fi
+

@@ -70,6 +70,7 @@ AS = @AS@
 AWK = @AWK@
 BROWSERDIR = @BROWSERDIR@
 CC = @CC@
+CONFIGDATE = @CONFIGDATE@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 DEPDIR = @DEPDIR@
@@ -79,11 +80,10 @@ GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 HTMLDIR = @HTMLDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LEX = @LEX@
-LEXLIB = @LEXLIB@
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIBXML_CFLAGS = @LIBXML_CFLAGS@
+LIBXML_LIBS = @LIBXML_LIBS@
 LN_S = @LN_S@
 
 #
@@ -91,7 +91,7 @@ LN_S = @LN_S@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.2 2002/01/27 22:55:20 afm Exp $
+# $Id: Makefile.am,v 1.5 2002/11/24 23:16:48 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 OBJDUMP = @OBJDUMP@
@@ -100,76 +100,66 @@ RANLIB = @RANLIB@
 RC = @RC@
 STRIP = @STRIP@
 VERSION = @VERSION@
-YACC = @YACC@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
 
-LDADD = libmeteo.la
+LDADD = ../lib/libmeteo.la
 
 bin_PROGRAMS = meteoupdate meteoloop meteograph meteoavg		\
-	meteodequeue meteowatch
+	meteodequeue meteowatch meteolast
 
-noinst_PROGRAMS = meteocheck meteotest
 
-meteotest_SOURCES = meteotest.c
 meteoupdate_SOURCES = meteoupdate.c
 meteoloop_SOURCES = meteoloop.c
 meteograph_SOURCES = meteograph.c
-meteocheck_SOURCES = meteocheck.c
 meteoavg_SOURCES = meteoavg.c
 meteodequeue_SOURCES = meteodequeue.c
 meteowatch_SOURCES = meteowatch.c
-
-meteotest_LDADD = ../lib/libmeteo.la
-meteoupdate_LDADD = ../lib/libmeteo.la
-meteoloop_LDADD = ../lib/libmeteo.la
-meteograph_LDADD = ../lib/libmeteo.la
-meteocheck_LDADD = ../lib/libmeteo.la
-meteoavg_LDADD = ../lib/libmeteo.la
-meteodequeue_LDADD = ../lib/libmeteo.la
-meteowatch_LDADD = ../lib/libmeteo.la
+meteolast_SOURCES = meteolast.c
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 bin_PROGRAMS = meteoupdate$(EXEEXT) meteoloop$(EXEEXT) \
 	meteograph$(EXEEXT) meteoavg$(EXEEXT) meteodequeue$(EXEEXT) \
-	meteowatch$(EXEEXT)
-noinst_PROGRAMS = meteocheck$(EXEEXT) meteotest$(EXEEXT)
-PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
+	meteowatch$(EXEEXT) meteolast$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
 
 am_meteoavg_OBJECTS = meteoavg.$(OBJEXT)
 meteoavg_OBJECTS = $(am_meteoavg_OBJECTS)
+meteoavg_LDADD = $(LDADD)
 meteoavg_DEPENDENCIES = ../lib/libmeteo.la
 meteoavg_LDFLAGS =
-am_meteocheck_OBJECTS = meteocheck.$(OBJEXT)
-meteocheck_OBJECTS = $(am_meteocheck_OBJECTS)
-meteocheck_DEPENDENCIES = ../lib/libmeteo.la
-meteocheck_LDFLAGS =
 am_meteodequeue_OBJECTS = meteodequeue.$(OBJEXT)
 meteodequeue_OBJECTS = $(am_meteodequeue_OBJECTS)
+meteodequeue_LDADD = $(LDADD)
 meteodequeue_DEPENDENCIES = ../lib/libmeteo.la
 meteodequeue_LDFLAGS =
 am_meteograph_OBJECTS = meteograph.$(OBJEXT)
 meteograph_OBJECTS = $(am_meteograph_OBJECTS)
+meteograph_LDADD = $(LDADD)
 meteograph_DEPENDENCIES = ../lib/libmeteo.la
 meteograph_LDFLAGS =
+am_meteolast_OBJECTS = meteolast.$(OBJEXT)
+meteolast_OBJECTS = $(am_meteolast_OBJECTS)
+meteolast_LDADD = $(LDADD)
+meteolast_DEPENDENCIES = ../lib/libmeteo.la
+meteolast_LDFLAGS =
 am_meteoloop_OBJECTS = meteoloop.$(OBJEXT)
 meteoloop_OBJECTS = $(am_meteoloop_OBJECTS)
+meteoloop_LDADD = $(LDADD)
 meteoloop_DEPENDENCIES = ../lib/libmeteo.la
 meteoloop_LDFLAGS =
-am_meteotest_OBJECTS = meteotest.$(OBJEXT)
-meteotest_OBJECTS = $(am_meteotest_OBJECTS)
-meteotest_DEPENDENCIES = ../lib/libmeteo.la
-meteotest_LDFLAGS =
 am_meteoupdate_OBJECTS = meteoupdate.$(OBJEXT)
 meteoupdate_OBJECTS = $(am_meteoupdate_OBJECTS)
+meteoupdate_LDADD = $(LDADD)
 meteoupdate_DEPENDENCIES = ../lib/libmeteo.la
 meteoupdate_LDFLAGS =
 am_meteowatch_OBJECTS = meteowatch.$(OBJEXT)
 meteowatch_OBJECTS = $(am_meteowatch_OBJECTS)
+meteowatch_LDADD = $(LDADD)
 meteowatch_DEPENDENCIES = ../lib/libmeteo.la
 meteowatch_LDFLAGS =
 
@@ -180,10 +170,9 @@ LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/meteoavg.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/meteocheck.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteodequeue.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/meteograph.Po ./$(DEPDIR)/meteoloop.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/meteotest.Po ./$(DEPDIR)/meteoupdate.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteograph.Po ./$(DEPDIR)/meteolast.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteoloop.Po ./$(DEPDIR)/meteoupdate.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteowatch.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -193,12 +182,11 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(meteoavg_SOURCES) $(meteocheck_SOURCES) \
-	$(meteodequeue_SOURCES) $(meteograph_SOURCES) \
-	$(meteoloop_SOURCES) $(meteotest_SOURCES) \
+DIST_SOURCES = $(meteoavg_SOURCES) $(meteodequeue_SOURCES) \
+	$(meteograph_SOURCES) $(meteolast_SOURCES) $(meteoloop_SOURCES) \
 	$(meteoupdate_SOURCES) $(meteowatch_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(meteoavg_SOURCES) $(meteocheck_SOURCES) $(meteodequeue_SOURCES) $(meteograph_SOURCES) $(meteoloop_SOURCES) $(meteotest_SOURCES) $(meteoupdate_SOURCES) $(meteowatch_SOURCES)
+SOURCES = $(meteoavg_SOURCES) $(meteodequeue_SOURCES) $(meteograph_SOURCES) $(meteolast_SOURCES) $(meteoloop_SOURCES) $(meteoupdate_SOURCES) $(meteowatch_SOURCES)
 
 all: all-am
 
@@ -238,31 +226,21 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
-	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  echo " rm -f $$p $$f"; \
-	  rm -f $$p $$f ; \
-	done
 meteoavg$(EXEEXT): $(meteoavg_OBJECTS) $(meteoavg_DEPENDENCIES) 
 	@rm -f meteoavg$(EXEEXT)
 	$(LINK) $(meteoavg_LDFLAGS) $(meteoavg_OBJECTS) $(meteoavg_LDADD) $(LIBS)
-meteocheck$(EXEEXT): $(meteocheck_OBJECTS) $(meteocheck_DEPENDENCIES) 
-	@rm -f meteocheck$(EXEEXT)
-	$(LINK) $(meteocheck_LDFLAGS) $(meteocheck_OBJECTS) $(meteocheck_LDADD) $(LIBS)
 meteodequeue$(EXEEXT): $(meteodequeue_OBJECTS) $(meteodequeue_DEPENDENCIES) 
 	@rm -f meteodequeue$(EXEEXT)
 	$(LINK) $(meteodequeue_LDFLAGS) $(meteodequeue_OBJECTS) $(meteodequeue_LDADD) $(LIBS)
 meteograph$(EXEEXT): $(meteograph_OBJECTS) $(meteograph_DEPENDENCIES) 
 	@rm -f meteograph$(EXEEXT)
 	$(LINK) $(meteograph_LDFLAGS) $(meteograph_OBJECTS) $(meteograph_LDADD) $(LIBS)
+meteolast$(EXEEXT): $(meteolast_OBJECTS) $(meteolast_DEPENDENCIES) 
+	@rm -f meteolast$(EXEEXT)
+	$(LINK) $(meteolast_LDFLAGS) $(meteolast_OBJECTS) $(meteolast_LDADD) $(LIBS)
 meteoloop$(EXEEXT): $(meteoloop_OBJECTS) $(meteoloop_DEPENDENCIES) 
 	@rm -f meteoloop$(EXEEXT)
 	$(LINK) $(meteoloop_LDFLAGS) $(meteoloop_OBJECTS) $(meteoloop_LDADD) $(LIBS)
-meteotest$(EXEEXT): $(meteotest_OBJECTS) $(meteotest_DEPENDENCIES) 
-	@rm -f meteotest$(EXEEXT)
-	$(LINK) $(meteotest_LDFLAGS) $(meteotest_OBJECTS) $(meteotest_LDADD) $(LIBS)
 meteoupdate$(EXEEXT): $(meteoupdate_OBJECTS) $(meteoupdate_DEPENDENCIES) 
 	@rm -f meteoupdate$(EXEEXT)
 	$(LINK) $(meteoupdate_LDFLAGS) $(meteoupdate_OBJECTS) $(meteoupdate_LDADD) $(LIBS)
@@ -277,11 +255,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteoavg.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteocheck.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodequeue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteograph.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteolast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteoloop.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteotest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteoupdate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteowatch.Po@am__quote@
 
@@ -411,8 +388,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool \
-	clean-noinstPROGRAMS mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 
@@ -449,16 +425,16 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 .PHONY: GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool clean-noinstPROGRAMS distclean \
-	distclean-compile distclean-depend distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-binPROGRAMS install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-info-am
+	clean-generic clean-libtool distclean distclean-compile \
+	distclean-depend distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am info info-am install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-exec install-exec-am install-info install-info-am \
+	install-man install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool tags uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am
 
 
 test:	meteoloop

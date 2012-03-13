@@ -3,20 +3,12 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.3 2002/01/27 22:55:19 afm Exp $
+# $Id: Makefile.am,v 1.4 2002/11/24 19:48:01 afm Exp $
 #
-
-BUILT_SOURCES = parser.h
-
-../lib/parser.c:	../lib/parser.y
-	$(YACC) -t -b parser -d -p mp ../lib/parser.y
-	mv parser.tab.c ../lib/parser.c
-parser.h:	../lib/parser.c
-	mv parser.tab.h parser.h
 
 noinst_HEADERS = com.h crc.h davis.h meteo.h meteodata.h sercom.h 	\
 	tcpcom.h conversions.h dloop.h graph.h dewpoint.h msgque.h	\
-	dbupdate.h meteosocket.h meteograph.h mconf.h parser.h		\
+	dbupdate.h meteosocket.h meteograph.h xmlconf.h			\
 	average.h database.h timestamp.h dograph.h daemon.h watchdog.h	\
-	printver.h mdebug.h pdebug.h
+	printver.h mdebug.h pdebug.h colors.h
 

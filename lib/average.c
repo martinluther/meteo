@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: average.c,v 1.3 2002/06/22 15:57:40 afm Exp $
+ * $Id: average.c,v 1.4 2002/11/18 02:36:42 afm Exp $
  */
 #include <average.h>
 #include <stdlib.h>

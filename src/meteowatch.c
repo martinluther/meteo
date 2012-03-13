@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteowatch.c,v 1.3 2002/06/22 15:57:40 afm Exp $
+ * $Id: meteowatch.c,v 1.5 2002/11/24 19:48:02 afm Exp $
  */
 #include <meteo.h>
 #include <stdio.h>
@@ -17,6 +17,8 @@
 #include <timestamp.h>
 #include <printver.h>
 #include <mdebug.h>
+#include <xmlconf.h>
+#include <database.h>
 
 #define	UPDATECHECKINTERVAL	800
 #define	CHECKINTERVAL		400
@@ -177,6 +179,7 @@ int	main(int argc, char *argv[]) {
 	char	*station;
 	MYSQL	*mysql;
 	watch_t	*watchlist;
+	meteoconf_t	*mc;
 
 	/* parse command line						*/
 	while (EOF != (c = getopt(argc, argv, "dp:l:P:f:V")))
@@ -246,7 +249,7 @@ int	main(int argc, char *argv[]) {
 	}
 
 	/* read the configuration file					*/
-	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
+	if (NULL == (mc = xmlconf_new(conffilename, ""))) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration %s is invalid",
 			conffilename);
 		exit(EXIT_FAILURE);
@@ -269,7 +272,12 @@ int	main(int argc, char *argv[]) {
 		}
 	}
 
-	/* start build connection to database				*/
+	/* build connection to database					*/
+	mysql = mc_opendb(mc, O_RDONLY);
+	if (NULL == mysql) {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot connect to database");
+		exit(EXIT_FAILURE);
+	}
 	
 	/* start infinite loop of watching all stations			*/
 	while (1) {
@@ -280,5 +288,7 @@ int	main(int argc, char *argv[]) {
 		/* sleep for 5 minutes					*/
 		sleep(300);
 	}
+	mc_closedb(mysql);
+
 	exit(EXIT_FAILURE);
 }

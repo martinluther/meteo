@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.3 2002/01/27 22:55:19 afm Exp $
+# $Id: Makefile.am,v 1.4 2002/11/24 19:48:01 afm Exp $
 #
 SHELL = @SHELL@
 
@@ -78,6 +78,7 @@ AS = @AS@
 AWK = @AWK@
 BROWSERDIR = @BROWSERDIR@
 CC = @CC@
+CONFIGDATE = @CONFIGDATE@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 DEPDIR = @DEPDIR@
@@ -87,11 +88,10 @@ GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 HTMLDIR = @HTMLDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LEX = @LEX@
-LEXLIB = @LEXLIB@
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIBXML_CFLAGS = @LIBXML_CFLAGS@
+LIBXML_LIBS = @LIBXML_LIBS@
 LN_S = @LN_S@
 
 METEOCONFFILE = \"@METEOCONFFILE@\"
@@ -101,27 +101,24 @@ RANLIB = @RANLIB@
 RC = @RC@
 STRIP = @STRIP@
 VERSION = @VERSION@
-YACC = @YACC@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 
 lib_LTLIBRARIES = libmeteo.la
 EXTRA_DIST = scanner.l parser.y
-CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
+CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
 
 VERSION_FILE = meteo_vers.c
-
-BUILT_SOURCES = scanner.c parser.c
 
 libmeteo_la_LDFLAGS = -version-info `../shtool version -d libtool $(VERSION_FILE)`
 
 libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 		\
 	meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c	\
-	msgque.c dbupdate.c meteosocket.c mconf.c			\
-	scanner.c parser.c average.c database.c timestamp.c dograph.c	\
+	msgque.c dbupdate.c meteosocket.c xmlconf.c 			\
+	average.c database.c timestamp.c dograph.c			\
 	daemon.c watchdog.c printver.c					\
-	pdebug.c mdebug.c						\
+	pdebug.c mdebug.c colors.c					\
 	$(VERSION_FILE)
 
 subdir = lib
@@ -134,10 +131,10 @@ libmeteo_la_LIBADD =
 am__objects_1 = meteo_vers.lo
 am_libmeteo_la_OBJECTS = crc.lo com.lo sercom.lo tcpcom.lo davis.lo \
 	meteodata.lo meteo.lo conversions.lo dloop.lo graph.lo \
-	dewpoint.lo msgque.lo dbupdate.lo meteosocket.lo mconf.lo \
-	scanner.lo parser.lo average.lo database.lo timestamp.lo \
-	dograph.lo daemon.lo watchdog.lo printver.lo pdebug.lo \
-	mdebug.lo $(am__objects_1)
+	dewpoint.lo msgque.lo dbupdate.lo meteosocket.lo xmlconf.lo \
+	average.lo database.lo timestamp.lo dograph.lo daemon.lo \
+	watchdog.lo printver.lo pdebug.lo mdebug.lo colors.lo \
+	$(am__objects_1)
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
 
 DEFS = @DEFS@
@@ -146,20 +143,20 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/average.Plo ./$(DEPDIR)/com.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/conversions.Plo ./$(DEPDIR)/crc.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/daemon.Plo ./$(DEPDIR)/database.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/davis.Plo ./$(DEPDIR)/dbupdate.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/dewpoint.Plo ./$(DEPDIR)/dloop.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/dograph.Plo ./$(DEPDIR)/graph.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mconf.Plo ./$(DEPDIR)/mdebug.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/average.Plo ./$(DEPDIR)/colors.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/com.Plo ./$(DEPDIR)/conversions.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/crc.Plo ./$(DEPDIR)/daemon.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/database.Plo ./$(DEPDIR)/davis.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/dbupdate.Plo ./$(DEPDIR)/dewpoint.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/dloop.Plo ./$(DEPDIR)/dograph.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/graph.Plo ./$(DEPDIR)/mdebug.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/meteo.Plo ./$(DEPDIR)/meteo_vers.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/meteodata.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/meteosocket.Plo ./$(DEPDIR)/msgque.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/parser.Plo ./$(DEPDIR)/pdebug.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/printver.Plo ./$(DEPDIR)/scanner.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/pdebug.Plo ./$(DEPDIR)/printver.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/sercom.Plo ./$(DEPDIR)/tcpcom.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/timestamp.Plo ./$(DEPDIR)/watchdog.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/timestamp.Plo ./$(DEPDIR)/watchdog.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/xmlconf.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -172,8 +169,7 @@ DIST_SOURCES = $(libmeteo_la_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
 SOURCES = $(libmeteo_la_SOURCES)
 
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -220,6 +216,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/average.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/colors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/com.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conversions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc.Plo@am__quote@
@@ -231,21 +228,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dloop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dograph.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/graph.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mconf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mdebug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteo_vers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodata.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteosocket.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msgque.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pdebug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printver.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scanner.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sercom.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tcpcom.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timestamp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/watchdog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmlconf.Plo@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
@@ -371,7 +366,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
@@ -423,15 +417,6 @@ uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES
 	mostlyclean-generic mostlyclean-libtool tags uninstall \
 	uninstall-am uninstall-info-am uninstall-libLTLIBRARIES
 
-
-scanner.c:	scanner.l
-	$(LEX) -Pmp -oscanner.c scanner.l
-
-parser.c:	parser.y
-	$(YACC) -t -b parser -d -p mp parser.y
-	mv parser.tab.c parser.c
-../include/parser.h:	parser.c
-	mv parser.tab.h ../include/parser.h
 
 meteo_vers.c:	../configure.in
 	../shtool version -l c -s @VERSION@ -n Meteo -p meteo_ meteo_vers.c

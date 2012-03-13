@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: dbupdate.h,v 1.1 2002/01/18 23:34:25 afm Exp $
+ * $Id: dbupdate.h,v 1.2 2002/11/18 02:36:42 afm Exp $
  */
 #ifndef _DBUPDATE_H
 #define _DBUPDATE_H

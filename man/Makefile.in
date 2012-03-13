@@ -70,6 +70,7 @@ AS = @AS@
 AWK = @AWK@
 BROWSERDIR = @BROWSERDIR@
 CC = @CC@
+CONFIGDATE = @CONFIGDATE@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 DEPDIR = @DEPDIR@
@@ -79,11 +80,10 @@ GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 HTMLDIR = @HTMLDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LEX = @LEX@
-LEXLIB = @LEXLIB@
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIBXML_CFLAGS = @LIBXML_CFLAGS@
+LIBXML_LIBS = @LIBXML_LIBS@
 LN_S = @LN_S@
 METEOCONFFILE = @METEOCONFFILE@
 OBJDUMP = @OBJDUMP@
@@ -92,7 +92,6 @@ RANLIB = @RANLIB@
 RC = @RC@
 STRIP = @STRIP@
 VERSION = @VERSION@
-YACC = @YACC@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
@@ -105,12 +104,12 @@ install_sh = @install_sh@
 # $Id: Makefile.am,v 1.1 2002/01/18 23:34:30 afm Exp $
 #
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
-	meteo.conf.5
+	meteo.xml.5
 
 
 EXTRA_DIST = \
 	meteo.1.in meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
-	meteo.conf.5 
+	meteo.xml.5 
 
 subdir = man
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

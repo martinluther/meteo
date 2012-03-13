@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id$
+ * $Id: meteofixtimestamps.c,v 1.1 2002/11/18 02:39:25 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>

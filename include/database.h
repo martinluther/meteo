@@ -3,16 +3,16 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: database.h,v 1.1 2002/01/18 23:34:25 afm Exp $
+ * $Id: database.h,v 1.2 2002/11/24 19:48:01 afm Exp $
  */
 #ifndef _DATABASE_H
 #define _DATABASE_H
 
-#include <mconf.h>
+#include <xmlconf.h>
 #include <mysql/mysql.h>
 #include <fcntl.h>	/* for mode constants */
 
-extern MYSQL	*mc_opendb(const mc_node_t *, const int mode);
+extern MYSQL	*mc_opendb(const meteoconf_t *mc, const int mode);
 extern void	mc_closedb(MYSQL *);
 
 #endif /* _DATABASE_H */

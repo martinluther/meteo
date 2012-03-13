@@ -19,6 +19,7 @@ meteoavg [
 ] [
 .B \-n
 ]
+.BI \-s station
 .BI \-f conffile
 [ 
 .I from
@@ -68,7 +69,7 @@ table to be incorrect.
 Use 
 .I conffile
 to read the configuration, see 
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 for the configuration syntax. This argument is mandatory.
 .TP
 .B \-F
@@ -94,6 +95,9 @@ process to this file. Defaults to
 Only useful if exactly one timestamp has been specified. Indicates the
 number of intervals for which averages should be computed.
 .TP
+.BI \-s stationname
+Name of the station for which averages should be computed.
+.TP
 .B \-n 
 Do everything you are supposed to, but don't write anything into
 the 
@@ -107,11 +111,10 @@ writes its process id by default to the file
 
 .SH "SEE ALSO"
 .BR meteo (1)
-.BR meteo.conf (5),
+.BR meteo.xml (5),
 .BR meteoloop (1),
 .BR meteograph (1),
 .BR meteodequeue (1),
-.BR meteocheck (1),
 .BR meteojob (1)
 
 .SH AUTHOR

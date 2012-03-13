@@ -2,7 +2,7 @@
 <head>
 <link href="meteo.css" type="text/css" rel="stylesheet">
 <title>Meteo Software Package</title>
-<!-- $Id: meteo.html.in,v 1.3 2002/01/30 10:54:29 afm Exp $ -->
+<!-- $Id: meteo.html.in,v 1.5 2002/11/24 22:31:06 afm Exp $ -->
 </head>
 <body bgcolor="#ffffff">
 <h1>Meteo</h1>
@@ -67,7 +67,7 @@ There are essentially two interfaces to the database:
 The <b>meteograph</b>(1) programm can be used to generate graphs for every
 point in time, and to store them in some directory accessible via 
 a web server. The <b>meteooverview</b>(1) script can generate some pages
-referencing the graphs. This is essentially a statig interface and is
+referencing the graphs. This is essentially a static interface and is
 usually used to display current weather conditions.
 </li>
 <li>
@@ -88,10 +88,14 @@ information.
 </p>
 <h2>News</h2>
 <p>
-The current release was published on january 19, 2002.
+The current release (version @VERSION@) was published on @CONFIGDATE@.
 See the <a href="NEWS">NEWS</a> file for the most important changes
 in this release.
 For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.
+Note that 0.4.0 brought incompatible modifications in database format
+(but included a programm to semi-automatically migrating old version
+databases to the new format) and 0.5.0 brings incompatible changes in
+configuration file format (now XML based).
 </p>
 <h2>Getting and installing the software</h2>
 <p>
@@ -196,7 +200,7 @@ the development work takes place.
 &copy; 2001 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch">Beratung und Entwicklung</a>
 <br />
-<i>Last modified: $Date: 2002/01/30 10:54:29 $</i>
+<i>Last modified: $Date: 2002/11/24 22:31:06 $</i>
 </p>
 </body>
 </html>

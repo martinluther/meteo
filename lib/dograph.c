@@ -3,11 +3,10 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.6 2002/08/24 14:56:21 afm Exp $
+ * $Id: dograph.c,v 1.8 2002/11/24 19:48:01 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
-#include <mconf.h>
 #include <graph.h>
 #include <mysql/mysql.h>
 #include <stdio.h>
@@ -20,6 +19,33 @@
 #include <timestamp.h>
 #include <dograph.h>
 #include <mdebug.h>
+
+static gridscale_t	get_gridscale(meteoconf_t *mc, char *path, int interval,
+				gridscale_t gridscaledefault) {
+	gridscale_t	result;
+	result.step = xmlconf_get_double(mc, path, "step", NULL,
+		interval, gridscaledefault.step);
+	result.start = xmlconf_get_double(mc, path, "start", NULL,
+		interval, gridscaledefault.start);
+	result.end = xmlconf_get_double(mc, path, "end", NULL,
+		interval, gridscaledefault.end);
+	return result;
+}
+#define	MINFTY	1.e68
+static channelscale_t	get_channelscale(meteoconf_t *mc, char *path,
+			int interval, channelscale_t channelscaledefault) {
+	channelscale_t	result;
+	double	max;
+	max = xmlconf_get_double(mc, path, "max", NULL, interval, MINFTY);
+	result.min = xmlconf_get_double(mc, path, "min", NULL,
+		interval, channelscaledefault.min);
+	result.scale = xmlconf_get_double(mc, path, "scale", NULL,
+		interval, channelscaledefault.scale);
+	if (max != MINFTY) {
+		result.scale = (max - result.min)/(METEO_LLY - METEO_URY);
+	}
+	return result;
+}
 
 static void	create_filename(char *filename, int length,
 		const dograph_t *dgp, char *parameter) {
@@ -77,11 +103,8 @@ graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
 	return g;
 }
 
-static color_t	default_fgcolor = { 0, 0, 0 };
-static color_t	default_bgcolor = { 255, 255, 255 };
-
-int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
-	const int	*col;
+int	set_colors(graph_t *graph, int channel, meteoconf_t *conf) {
+	ncolor_t	col;
 	char	colorname[256];
 	char	*thisname;
 
@@ -118,18 +141,19 @@ int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
 
 	/* convert the name into a color name string and write set	*/
 	/* the corresponding color					*/
-	snprintf(colorname, sizeof(colorname), "%s.bgcolor", thisname);
-	col = mc_get_color(conf, colorname, default_bgcolor);
+	snprintf(colorname, sizeof(colorname), "channel[@name='%s']",
+		thisname);
+	col = xmlconf_get_color(conf, colorname, "color", "bgcolor", 0,
+		defaultcolors.bgcolor);
 	graph_set_color(graph, GRAPH_COLOR_BACKGROUND, col);
 
-	snprintf(colorname, sizeof(colorname), "%s.fgcolor", thisname);
-	col = mc_get_color(conf, colorname, default_fgcolor);
+	col = xmlconf_get_color(conf, colorname, "color", "fgcolor", 0,
+		defaultcolors.fgcolor);
 	graph_set_color(graph, GRAPH_COLOR_FOREGROUND, col);
 
-	snprintf(colorname, sizeof(colorname), "%s.nodatacolor", thisname);
-	col = mc_get_color(conf, colorname, NULL);
-	if (NULL != col)
-		graph_set_color(graph, GRAPH_COLOR_NODATA, col);
+	col = xmlconf_get_color(conf, colorname, "color", "nodata", 0,
+		defaultcolors.nodata);
+	graph_set_color(graph, GRAPH_COLOR_NODATA, col);
 
 	return 0;
 }
@@ -137,12 +161,8 @@ int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
 /*
  * barometer graphs
  */
-static color_t	pressure_default_color = { 127, 127, 255 };
-static color_t	pressure_default_rangecolor = { 210, 210, 255 };
-#define	PRESSURESCALEDEFAULT	0.5
-#define	PRESSUREMINDEFAULT	930.
-#define	PRESSUREMAXDEFAULT	980.
-#define	PRESSURESTEPDEFAULT	10.
+channelscale_t	pressure_default_channelscale = { 930., 0.5 };
+gridscale_t	pressure_default_gridscale = { 10., 930., 980. };
 
 void	baro_graphs(dograph_t *dgp, int interval) {
 	graph_t		*g;
@@ -153,35 +173,32 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
 	time_t		start;
+	channelscale_t	cs;
+	gridscale_t	gs;
+	ticklabel_t	tl;
 
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"max(barometer), min(barometer), avg(barometer)",
 		"barometer_max, barometer_min, barometer");
-	set_colors(g, DOGRAPH_BAROMETER, meteoconfig);
-	graph_label(g, mc_get_string_f(meteoconfig, "pressure", "left",
-		interval, "label", "Pressure (hPa)"), 0);
+	set_colors(g, DOGRAPH_BAROMETER, dgp->mc);
+	graph_label(g, xmlconf_get_string(dgp->mc,
+		"channel[@name='pressure']", "label", NULL,
+		interval, "Pressure (hPa)"), 0);
 	rangecolor = graph_color_allocate(g,
-		mc_get_color(meteoconfig, "pressure.rangecolor",
-			pressure_default_rangecolor));
+		xmlconf_get_color(dgp->mc,
+			"channel[@name='pressure']", "color",
+			"presure_range", interval,
+			defaultcolors.pressure_range));
 	blue = graph_color_allocate(g,
-		mc_get_color(meteoconfig, "pressure.color",
-			pressure_default_color));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"min", PRESSUREMINDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"scale", PRESSURESCALEDEFAULT));
-	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"min", PRESSUREMINDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"scale", PRESSURESCALEDEFAULT));
-	graph_add_channel(g, GRAPH_LINE, blue,
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"min", PRESSUREMINDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"scale", PRESSURESCALEDEFAULT));
+		xmlconf_get_color(dgp->mc,
+			"channel[@name='pressure']", "color",
+			"pressure", interval, defaultcolors.pressure));
+	cs = get_channelscale(dgp->mc, "channel[@name='pressure']",
+		interval, pressure_default_channelscale);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor, cs);
+	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg, cs);
+	graph_add_channel(g, GRAPH_LINE, blue, cs);
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -223,23 +240,14 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 
 	/* display the grid						*/
 	graph_add_time(g);
-	graph_add_grid(g, 0,
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"step", PRESSURESTEPDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"start", PRESSUREMINDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"end", PRESSUREMAXDEFAULT));
-	graph_add_ticks(g, 0,
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"step", PRESSURESTEPDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"start", PRESSUREMINDEFAULT),
-		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"end", PRESSUREMAXDEFAULT),
-		mc_get_string_f(meteoconfig, "pressure", "left", interval,
-			"format", "%.0f"),
-		0);
+	gs = get_gridscale(dgp->mc, "channel[@name='pressure']",
+		interval, pressure_default_gridscale);
+	graph_add_grid(g, 0, gs);
+	tl.gs = gs;
+	tl.format = xmlconf_get_string(dgp->mc,
+		"channel[@name='pressure']", "format", NULL,
+		interval, "%.0f");
+	graph_add_ticks(g, 0, tl, 0);
 
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "pressure");
@@ -260,16 +268,13 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 /*
  * humidity graphs
  */
-static color_t	humidity_default_color = { 100, 100, 255 };
-static color_t	humidity_default_rangecolor = { 210, 210, 255 };
 
 #define	HUMIDITYSTRING	(inside) ? "humidity_inside" : "humidity"
-#define	HUMIDITYSTRING1(a)	(inside) ? ("humidity_inside." ## a)	\
-					 : ("humidity." ## a)
-#define	HUMIDITYSCALEDEFAULT	0.8333333
-#define	HUMIDITYMINDEFAULT	0.
-#define	HUMIDITYMAXDEFAULT	100.
-#define	HUMIDITYSTEPDEFAULT	20.
+#define	HUMIDITYSTRING1(a)	(inside) ? ("humidity_inside" ## a)	\
+					 : ("humidity" ## a)
+
+static channelscale_t	humidity_default_channelscale = { 0., 100. };
+static gridscale_t	humidity_default_gridscale = { 20., 0., 100. };
 
 static void	humidity_graphs_both(dograph_t *dgp, int interval, int inside) {
 	graph_t		*g;
@@ -280,7 +285,10 @@ static void	humidity_graphs_both(dograph_t *dgp, int interval, int inside) {
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
 	time_t		start;
-
+	char		xpath[1024];
+	channelscale_t	cs;
+	gridscale_t	gs;
+	ticklabel_t	tl;
 
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
@@ -291,31 +299,26 @@ static void	humidity_graphs_both(dograph_t *dgp, int interval, int inside) {
 			   "humidity_inside"
 			 : "humidity_max, humidity_min, humidity");
 	set_colors(g, (inside) ? DOGRAPH_HUMIDITY_INSIDE : DOGRAPH_HUMIDITY,
-		meteoconfig);
-	graph_label(g, mc_get_string_f(meteoconfig, 
-		HUMIDITYSTRING, "left",
-		interval, "label", "rel. Humidity (%)"), 0);
+		dgp->mc);
+	snprintf(xpath, sizeof(xpath), "channel[@name='%s']",
+		HUMIDITYSTRING);
+	graph_label(g,
+		xmlconf_get_string(dgp->mc, xpath, "label", NULL, interval,
+			"rel. Humidity (%)"), 0);
 	rangecolor = graph_color_allocate(g,
-		mc_get_color(meteoconfig, HUMIDITYSTRING1("rangecolor"),
-			humidity_default_rangecolor));
+		xmlconf_get_color(dgp->mc, xpath, "color",
+			HUMIDITYSTRING1("_range"), interval,
+			defaultcolors.humidity_range));
 	blue = graph_color_allocate(g,
-		mc_get_color(meteoconfig, HUMIDITYSTRING1("color"),
-			humidity_default_color));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"min", HUMIDITYMINDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"scale", HUMIDITYSCALEDEFAULT));
-	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"min", HUMIDITYMINDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"scale", HUMIDITYSCALEDEFAULT));
-	graph_add_channel(g, GRAPH_LINE, blue,
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"min", HUMIDITYMINDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"scale", HUMIDITYSCALEDEFAULT));
+		xmlconf_get_color(dgp->mc, xpath, "color",
+			HUMIDITYSTRING, interval,
+			defaultcolors.humidity));
+
+	cs = get_channelscale(dgp->mc, xpath,
+		interval, humidity_default_channelscale);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor, cs);
+	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg, cs);
+	graph_add_channel(g, GRAPH_LINE, blue, cs);
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -357,23 +360,12 @@ static void	humidity_graphs_both(dograph_t *dgp, int interval, int inside) {
 
 	/* display the grid						*/
 	graph_add_time(g);
-	graph_add_grid(g, 0,
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"step", HUMIDITYSTEPDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"start", HUMIDITYMINDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"end", HUMIDITYMAXDEFAULT));
-	graph_add_ticks(g, 0,
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"step", HUMIDITYSTEPDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"start", HUMIDITYMINDEFAULT),
-		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"end", HUMIDITYMAXDEFAULT),
-		mc_get_string_f(meteoconfig, HUMIDITYSTRING, "left", interval,
-			"format", "%.0f"),
-		0);
+	gs = get_gridscale(dgp->mc, xpath, interval,
+		humidity_default_gridscale);
+	graph_add_grid(g, 0, gs);
+	tl.gs = gs;
+	tl.format = "%.0f";
+	graph_add_ticks(g, 0, tl, 0);
 
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, HUMIDITYSTRING);
@@ -400,18 +392,13 @@ void	humidity_graphs_inside(dograph_t *dgp, int interval) {
 /*
  * temperature graphs
  */
-static color_t	temp_default_color = { 180, 0, 0 };
-static color_t	temp_default_rangecolor = { 255, 180, 180 };
-static color_t	temp_default_dewcolor = { 100, 100, 255 };
-
-#define	TEMPERATURESCALEDEFAULT	.5
-#define	TEMPERATUREMINDEFAULT	-10.
-#define	TEMPERATUREMAXDEFAULT	30.
-#define	TEMPERATURESTEPDEFAULT	10.
-
 #define	TEMPERATURESTRING	(inside) ? "temperature_inside" : "temperature"
 #define	TEMPERATURESTRING1(a)	(inside) ? ("temperature_inside" ## a) \
 					 : ("temperature" ## a)
+
+static channelscale_t	temperature_default_channelscale = { -10., .5 };
+static gridscale_t	temperature_default_gridscale = { 10., -10., 30. };
+
 static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	time_t		start;
 	graph_t		*g;
@@ -421,6 +408,10 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	double		*tempdata;
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
+	char		xpath[1024];
+	channelscale_t	cs;
+	gridscale_t	gs;
+	ticklabel_t	tl;
 
 	start = dgp->end;
 	/* setup the temperature graph, depending on inside flag	*/
@@ -435,7 +426,7 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 			"temperature_inside_max, "
 			"temperature_inside, "
 			"humidity_inside");
-		set_colors(g, DOGRAPH_TEMPERATURE_INSIDE, meteoconfig);
+		set_colors(g, DOGRAPH_TEMPERATURE_INSIDE, dgp->mc);
 	} else {
 		g = setup_graph(dgp, query, sizeof(query), interval,
 			&start,
@@ -447,42 +438,33 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 			"temperature_max, "
 			"temperature, "
 			"humidity");
-		set_colors(g, DOGRAPH_TEMPERATURE, meteoconfig);
+		set_colors(g, DOGRAPH_TEMPERATURE, dgp->mc);
 	}
 	
 	/* adornments of the temperature graph				*/
-	graph_label(g, mc_get_string_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "label",
-			"Temperature (deg C)"), 0);
+	snprintf(xpath, sizeof(xpath), "channel[@name='%s']",
+		TEMPERATURESTRING);
+	graph_label(g, xmlconf_get_string(dgp->mc, xpath, "label", NULL,
+			interval, "Temperature (deg C)"), 0);
 	rangecolor = graph_color_allocate(g,
-		mc_get_color(meteoconfig, TEMPERATURESTRING1(".rangecolor"),
-			temp_default_rangecolor));
+		xmlconf_get_color(dgp->mc, xpath, "color",
+			TEMPERATURESTRING1("_range"),
+			interval, defaultcolors.temperature_range));
 	color = graph_color_allocate(g,
-		mc_get_color(meteoconfig, TEMPERATURESTRING1(".color"),
-			temp_default_color));
+		xmlconf_get_color(dgp->mc, xpath, "color", 
+			TEMPERATURESTRING,
+			interval, defaultcolors.temperature));
 	dewcolor = graph_color_allocate(g,
-		mc_get_color(meteoconfig, TEMPERATURESTRING1(".dewcolor"),
-			temp_default_dewcolor));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "min", -15.),
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "scale", .5));
-	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "min",-15.),
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "scale", .5));
-	graph_add_channel(g, GRAPH_LINE, dewcolor,
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "min", -15.),
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "scale", .5));
-	graph_add_channel(g, GRAPH_LINE, color,
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "min", -15.),
-		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
-			"left", interval, "scale", .5));
+		xmlconf_get_color(dgp->mc, xpath, "color",
+			TEMPERATURESTRING1("_dew"),
+			interval, defaultcolors.temperature_dew));
+
+	cs = get_channelscale(dgp->mc, xpath,
+		interval, temperature_default_channelscale);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor, cs);
+	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg, cs);
+	graph_add_channel(g, GRAPH_LINE, dewcolor, cs);
+	graph_add_channel(g, GRAPH_LINE, color, cs);
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -528,30 +510,12 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 
 	/* display the grid						*/
 	graph_add_time(g);
-	graph_add_grid(g, 0,
-		mc_get_double_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "step", TEMPERATURESTEPDEFAULT),
-		mc_get_double_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "sart", TEMPERATUREMINDEFAULT),
-		mc_get_double_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "end", TEMPERATUREMAXDEFAULT));
-	graph_add_ticks(g, 0,
-		mc_get_double_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "step", TEMPERATURESTEPDEFAULT),
-		mc_get_double_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "start", TEMPERATUREMINDEFAULT),
-		mc_get_double_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "end", TEMPERATUREMAXDEFAULT),
-		mc_get_string_f(meteoconfig,
-			TEMPERATURESTRING,
-			"left", interval, "format", "%.0f"),
-		0);
+	gs = get_gridscale(dgp->mc, xpath, interval,
+		temperature_default_gridscale);
+	graph_add_grid(g, 0, gs);
+	tl.gs = gs;
+	tl.format = "%.0f";
+	graph_add_ticks(g, 0, tl, 0);
 
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, TEMPERATURESTRING);
@@ -578,12 +542,8 @@ void	temp_graphs_inside(dograph_t *dgp, int interval) {
 /*
  * rain graphs
  */
-static color_t	rain_default_color = { 0, 0, 255 };
-
-#define	RAINDEFAULTMIN	0.
-#define	RAINDEFAULTMAX	30.
-#define	RAINDEFAULTSCALE	0.01
-#define	RAINDEFAULTSTEP	1.
+static channelscale_t	rain_default_channelscale = { 0., 1. };
+static gridscale_t	rain_default_gridscale = { 1., 0., 30. };
 
 void	rain_graphs(dograph_t *dgp, int interval) {
 	time_t		start;
@@ -594,23 +554,26 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	double		*tempdata;
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
+	channelscale_t	cs;
+	gridscale_t	gs;
+	ticklabel_t	tl;
 
 	/* set up the rain query					*/
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"sum(rain)", "rain");
-	set_colors(g, DOGRAPH_RAIN, meteoconfig);
+	set_colors(g, DOGRAPH_RAIN, dgp->mc);
 	graph_label(g,
-		mc_get_string_f(meteoconfig, "rain", "left", interval, "label",
-			"Precipitation (mm)"), 0);
+		xmlconf_get_string(dgp->mc, "channel[@name='rain']",
+			"label", NULL, interval, "Precipitation (mm)"), 0);
 
 	color = graph_color_allocate(g,
-		mc_get_color(meteoconfig, "rain.color", rain_default_color));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, color, 
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"min", RAINDEFAULTMIN),
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"scale", RAINDEFAULTSCALE));
+		xmlconf_get_color(dgp->mc, "channel[@name='rain']",
+			"color", "rain", interval, defaultcolors.rain));
+	
+	cs = get_channelscale(dgp->mc, "channel[@name='rain']",
+		interval, rain_default_channelscale);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, color,  cs);
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -648,23 +611,12 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 
 	/* display the grid						*/
 	graph_add_time(g);
-	graph_add_grid(g, 0,
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"step", RAINDEFAULTSTEP),
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"start", RAINDEFAULTMIN),
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"end", RAINDEFAULTMAX));
-	graph_add_ticks(g, 0,
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"step", RAINDEFAULTSTEP),
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"start", RAINDEFAULTMIN),
-		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"end", RAINDEFAULTMAX),
-		mc_get_string_f(meteoconfig, "rain", "left", interval,
-			"format", "%.1f"),
-		0);
+	gs = get_gridscale(dgp->mc, "channel[@name='rain']", interval,
+		rain_default_gridscale);
+	graph_add_grid(g, 0, gs);
+	tl.gs = gs;
+	tl.format = "%.1f";
+	graph_add_ticks(g, 0, tl, 0);
 
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "rain");
@@ -698,56 +650,41 @@ static void	wind_rectangle(graph_t *g, double miny, double maxy, int col) {
 	graph_rectangle(g, mini, maxi, col);
 }
 
-static void wind_background(graph_t *g, int interval) {
-	const int	*coln, *cols, *colw, *cole;
+static void wind_background(meteoconf_t *meteoconf, graph_t *g, int interval) {
+	ncolor_t	coln, cols, colw, cole;
 	int	dc;
 	/* check for north color					*/
-	coln = mc_get_color_f(meteoconfig, "wind", "right", interval,
-			"northcolor", NULL);
-	if (coln != NULL) {
-		dc = gdImageColorAllocate(g->im, coln[0], coln[1], coln[2]);
-		wind_rectangle(g, 0., 45., dc);
-		wind_rectangle(g, 315., 360., dc);
-	}
+	coln = xmlconf_get_color(meteoconf,
+		"channel[@name='wind']/right", "color", "north",
+		interval, defaultcolors.bgcolor);
+	dc = gdImageColorAllocate(g->im, coln.c[0], coln.c[1], coln.c[2]);
+	wind_rectangle(g, 0., 45., dc);
+	wind_rectangle(g, 315., 360., dc);
 	/* check for the west color					*/
-	colw = mc_get_color_f(meteoconfig, "wind", "right", interval,
-			"westcolor", NULL);
-	if (colw != NULL) {
-		dc = gdImageColorAllocate(g->im, colw[0], colw[1], colw[2]);
-		wind_rectangle(g, 225., 315., dc);
-	}
+	colw = xmlconf_get_color(meteoconf,
+		"channel[@name='wind']/right", "color", "west",
+		interval, defaultcolors.bgcolor);
+	dc = gdImageColorAllocate(g->im, colw.c[0], colw.c[1], colw.c[2]);
+	wind_rectangle(g, 225., 315., dc);
 	/* check for the east color					*/
-	cole = mc_get_color_f(meteoconfig, "wind", "right", interval,
-			"eastcolor", NULL);
-	if (cole != NULL) {
-		dc = gdImageColorAllocate(g->im, cole[0], cole[1], cole[2]);
-		wind_rectangle(g, 45., 135., dc);
-	}
+	cole = xmlconf_get_color(meteoconf,
+		"channel[@name='wind']/right", "color", "east",
+		interval, defaultcolors.bgcolor);
+	dc = gdImageColorAllocate(g->im, cole.c[0], cole.c[1], cole.c[2]);
+	wind_rectangle(g, 45., 135., dc);
 	/* check for the south color					*/
-	cols = mc_get_color_f(meteoconfig, "wind", "right", interval,
-			"southcolor", NULL);
-	if (cols != NULL) {
-		dc = gdImageColorAllocate(g->im, cols[0], cols[1], cols[2]);
-		wind_rectangle(g, 135., 225., dc);
-	}
+	cols = xmlconf_get_color(meteoconf,
+		"channel[@name='wind']/right", "color", "south",
+		interval, defaultcolors.bgcolor);
+	dc = gdImageColorAllocate(g->im, cols.c[0], cols.c[1], cols.c[2]);
+	wind_rectangle(g, 135., 225., dc);
 }
 
-static color_t	wind_default_color = { 100, 100, 255 };
-static color_t	wind_default_gustcolor = { 0, 100, 0 };
-static color_t	wind_default_speedcolor = { 0, 255, 0 };
+static channelscale_t	windspeed_default_channelscale = { 0., 0.2 };
+static gridscale_t	windspeed_default_gridscale = { 5., 0., 15. };
 
-#define	WINDSPEEDDEFAULTSCALE	0.25
-#define	WINDSPEEDDEFAULTMIN	0.
-#define	WINDSPEEDDEFAULTMAX	10.
-#define	WINDSPEEDDEFAULTSTART	0.
-#define	WINDSPEEDDEFAULTEND	10.
-#define	WINDSPEEDDEFAULTSTEP	5.
-
-#define	WINDDIRDEFAULTSCALE	8.
-#define	WINDDIRDEFAULTSTART	0.
-#define	WINDDIRDEFAULTEND	100.
-#define	WINDDIRDEFAULTMIN	-400.
-#define	WINDDIRDEFAULTSTEP	180.
+static channelscale_t	winddir_default_channelscale = { -604., 8. };
+static gridscale_t	winddir_default_gridscale = { 180., 0., 360. };
 
 void	wind_graphs(dograph_t *dgp, int interval) {
 	time_t		start;
@@ -758,39 +695,41 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	double		*winddata, x, y;
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
+	channelscale_t	css, csd;
+	gridscale_t	gss, gsd;
+	ticklabel_t	tl;
 
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"sum(windx), sum(windy), sum(duration), "
 		"max(windgust)",
 		"windgust, windspeed, winddir");
-	set_colors(g, DOGRAPH_WIND, meteoconfig);
-	graph_label(g, mc_get_string_f(meteoconfig, "wind", "left", interval,
-		"label", "Speed (m/s)"), 0);
-	graph_label(g, mc_get_string_f(meteoconfig, "wind", "right", interval,
-		"label", "Azimut (deg)"), 1);
+	set_colors(g, DOGRAPH_WIND, dgp->mc);
+	graph_label(g, xmlconf_get_string(dgp->mc,
+		"channel[@name='wind']/left", "label", NULL,
+		interval, "Speed (m/s)        "), 0);
+	graph_label(g, xmlconf_get_string(dgp->mc,
+		"channel[@name='wind']/right", "label", NULL,
+		interval, "            Azimut (deg)"), 1);
 
-	dircolor = graph_color_allocate(g, mc_get_color(meteoconfig,
-		"wind.color", wind_default_color));
-	gustcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
-		"wind.gustcolor", wind_default_gustcolor));
-	speedcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
-		"wind.speedcolor", wind_default_speedcolor));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, gustcolor,
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"min", WINDSPEEDDEFAULTMIN),
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"scale", WINDSPEEDDEFAULTSCALE));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, speedcolor,
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"min", WINDSPEEDDEFAULTMIN),
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"scale", WINDSPEEDDEFAULTSCALE));
-	graph_add_channel(g, GRAPH_LINE, dircolor,
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"min", WINDDIRDEFAULTMIN),
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"scale", WINDDIRDEFAULTSCALE));
+	dircolor = graph_color_allocate(g, xmlconf_get_color(dgp->mc,
+		"channel[@name='wind']", "color", "wind", interval,
+		defaultcolors.wind));
+	gustcolor = graph_color_allocate(g, xmlconf_get_color(dgp->mc,
+		"channel[@name='wind']", "color", "gust", interval,
+		defaultcolors.gust));
+	speedcolor = graph_color_allocate(g, xmlconf_get_color(dgp->mc,
+		"channel[@name='wind']", "color", "speed", interval,
+		defaultcolors.speed));
+
+	css = get_channelscale(dgp->mc, "channel[@name='wind']/left",
+		interval, windspeed_default_channelscale);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, gustcolor, css);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, speedcolor, css);
+
+	csd = get_channelscale(dgp->mc, "channel[@name='wind']/right",
+		interval, winddir_default_channelscale);
+	graph_add_channel(g, GRAPH_LINE, dircolor, csd);
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -834,49 +773,24 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	}
 
 	/* display the wind direction background colors			*/
-	wind_background(g, interval);
+	wind_background(dgp->mc, g, interval);
 
 	/* display the data retrieved from the database			*/
 	graph_add_data(g, start, interval, nentries, data);
 
 	/* display the grid						*/
 	graph_add_time(g);
-	graph_add_grid(g, 0,
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"step", WINDSPEEDDEFAULTSTEP),
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"start", WINDSPEEDDEFAULTSTART),
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"end", WINDSPEEDDEFAULTEND));
-	graph_add_grid(g, 2,
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"step", WINDDIRDEFAULTSTEP),
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"start", WINDDIRDEFAULTSTART),
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"end", WINDDIRDEFAULTEND));
-	graph_add_ticks(g,
-		0,
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"step", WINDSPEEDDEFAULTSTEP),
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"start", WINDSPEEDDEFAULTSTART),
-		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"end", WINDSPEEDDEFAULTEND),
-		mc_get_string_f(meteoconfig, "wind", "left", interval,
-			"format", "%.0f"),
-		0);
-	graph_add_ticks(g,
-		2,
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"step", WINDDIRDEFAULTSTEP),
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"start", WINDDIRDEFAULTSTART),
-		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"end", WINDDIRDEFAULTEND),
-		mc_get_string_f(meteoconfig, "wind", "right", interval,
-			"format", "%.0f"),
-		1);
+	gss = get_gridscale(dgp->mc, "channel[@name='wind']/left",
+		interval, windspeed_default_gridscale);
+	graph_add_grid(g, 0, gss);
+	gsd = get_gridscale(dgp->mc, "channel[@name='wind']/right",
+		interval, windspeed_default_gridscale);
+	graph_add_grid(g, 2, gsd);
+	tl.gs = gss;
+	tl.format = "%.0f";
+	graph_add_ticks(g, 0, tl, 0);
+	tl.gs = gsd;
+	graph_add_ticks(g, 2, tl, 1);
 
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "wind");
@@ -892,8 +806,10 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 /*
  * radiation graphs
  */
-static color_t	radiation_default_solar_color = { 200, 180, 0 };
-static color_t	radiation_default_uv_color = { 100, 0, 200 };
+channelscale_t	solar_default_channelscale = { 5, 0. };
+gridscale_t	solar_default_gridscale = { 100., 0., 600.  };
+channelscale_t	uv_default_channelscale = { 0.05, 0. };
+gridscale_t	uv_default_gridscale = { 5, 0. };
 
 void	radiation_graphs(dograph_t *dgp, int interval) {
 	time_t		start;
@@ -904,31 +820,38 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	double		*radiationdata;
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
+	channelscale_t	css, csu;
+	gridscale_t	gss, gsu;
+	ticklabel_t	tl;
 
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"avg(solar), avg(uv)",
 		"solar, uv");
-	set_colors(g, DOGRAPH_RADIATION, meteoconfig);
-	graph_label(g, mc_get_string_f(meteoconfig, "radiation", "left",
-		interval, "label", "Solar Radiation (W/m2)"), 0);
-	graph_label(g, mc_get_string_f(meteoconfig, "radiation", "right",
-		interval, "label", "UV index"), 1);
+	set_colors(g, DOGRAPH_RADIATION, dgp->mc);
+	graph_label(g, xmlconf_get_string(dgp->mc,
+		"channel[@name='radiation']/left", "label", NULL,
+		interval, "Solar Radiation (W/m2)"), 0);
+	graph_label(g, xmlconf_get_string(dgp->mc,
+		"channel[@name='radiation']/right", "label", NULL,
+		interval, "UV index"), 1);
 
-	solarcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
-		"radiation.solarcolor", radiation_default_solar_color));
-	uvcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
-		"radiation.uvcolor", radiation_default_uv_color));
-	graph_add_channel(g, GRAPH_HISTOGRAMM, solarcolor,
-		mc_get_double_f(meteoconfig, "radiation", "left",
-			interval, "min", 0.),
-		mc_get_double_f(meteoconfig, "radiation", "left",
-			interval, "scale", 5));
-	graph_add_channel(g, GRAPH_LINE, uvcolor,
-		mc_get_double_f(meteoconfig, "radiation", "right",
-			interval, "min", 0.),
-		mc_get_double_f(meteoconfig, "radiation", "right",
-			interval, "scale", 0.05));
+	solarcolor = graph_color_allocate(g, xmlconf_get_color(dgp->mc,
+		"channel[@name='radiation']/left", "color", "solar",
+		interval, defaultcolors.solar));
+	uvcolor = graph_color_allocate(g, xmlconf_get_color(dgp->mc,
+		"channel[@name='radiation']/right", "color", "uv",
+		interval, defaultcolors.uv));
+
+	css = get_channelscale(dgp->mc,
+		"channel[@name='radiation']/left", interval,
+		solar_default_channelscale);
+	graph_add_channel(g, GRAPH_HISTOGRAMM, solarcolor, css);
+
+	csu = get_channelscale(dgp->mc,
+		"channel[@name='radiation']/right", interval,
+		uv_default_channelscale);
+	graph_add_channel(g, GRAPH_LINE, uvcolor, csu);
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -968,44 +891,23 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 
 	/* display the grid						*/
 	graph_add_time(g);
-	graph_add_grid(g, 0,
-		mc_get_double_f(meteoconfig, "radiation", "left", interval,
-			"step", 100.),
-		mc_get_double_f(meteoconfig, "radiation", "left", interval,
-			"start", 0.),
-		mc_get_double_f(meteoconfig, "radiation", "left", interval,
-			"end", 600.));
+	gss = get_gridscale(dgp->mc, 
+		"channel[@name='radiation']/left", interval,
+		solar_default_gridscale);
+	graph_add_grid(g, 0, gss);
+
+	gsu = get_gridscale(dgp->mc, 
+		"channel[@name='radiation']/right", interval,
+		uv_default_gridscale);
 	/* it's not necessary to write the grid lines twice...
-	graph_add_grid(g, 1,
-		mc_get_double_f(meteoconfig, "radiation", "right", interval,
-			"step", 1.),
-		mc_get_double_f(meteoconfig, "radiation", "right", interval,
-			"start", 0.),
-		mc_get_double_f(meteoconfig, "radiation", "right", interval,
-			"end", 6.));
+	graph_add_grid(g, 1, gsu);
 	*/
-	graph_add_ticks(g,
-		0,
-		mc_get_double_f(meteoconfig, "radiation", "left", interval,
-			"step", 100.),
-		mc_get_double_f(meteoconfig, "radiation", "left", interval,
-			"start", 0.),
-		mc_get_double_f(meteoconfig, "radiation", "left", interval,
-			"end", 600.),
-		mc_get_string_f(meteoconfig, "radiation", "left", interval,
-			"format", "%.0f"),
-		0);
-	graph_add_ticks(g,
-		1,
-		mc_get_double_f(meteoconfig, "radiation", "right", interval,
-			"step", 1.),
-		mc_get_double_f(meteoconfig, "radiation", "right", interval,
-			"start", 0.),
-		mc_get_double_f(meteoconfig, "radiation", "right", interval,
-			"end", 6.),
-		mc_get_string_f(meteoconfig, "radiation", "right", interval,
-			"format", "%.1f"),
-		1);
+	
+	tl.gs = gss;
+	tl.format = "%.0f";
+	graph_add_ticks(g, 0, tl, 0);
+	tl.gs = gsu;
+	graph_add_ticks(g, 1, tl, 1);
 
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "radiation");

@@ -3,8 +3,14 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.36 2002/01/18 23:36:46 afm Exp $
+# $Id: Makefile.am,v 1.37 2002/11/24 19:48:01 afm Exp $
 #
-SUBDIRS = include lib src conf html browser db doc man support
+VERSION = @VERSION@
 
-EXTRA_DIST = shtool
+SUBDIRS = include lib src conf html browser db doc man support
+BUILTSOURCES = README
+EXTRA_DIST = shtool README.tmpl
+
+README: 	README.tmpl
+	(figlet meteo-$(VERSION); cat README.tmpl) > README
+

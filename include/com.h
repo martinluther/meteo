@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: com.h,v 1.2 2002/01/27 21:01:42 afm Exp $
+ * $Id: com.h,v 1.3 2002/11/24 19:48:01 afm Exp $
  */
 #ifndef _COM_H
 #define _COM_H
@@ -11,6 +11,7 @@
 #include <crc.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <xmlconf.h>
 
 #define	ACK	6
 
@@ -35,7 +36,7 @@ extern int	get_acknowledge_timed(meteocom_t *m, struct timeval *timeout);
 extern int	get_buffer(meteocom_t *m, unsigned char *b, int n);
 extern int	com_drain(meteocom_t *m, const struct timeval *timeout);
 
-extern meteocom_t	*com_new(void);
+extern meteocom_t	*com_new(meteoconf_t *);
 extern void		com_free(meteocom_t *);
 
 #endif /* _COM_H */

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: dbupdate.c,v 1.3 2002/06/22 15:57:40 afm Exp $
+ * $Id: dbupdate.c,v 1.5 2002/11/24 19:48:01 afm Exp $
  */
 #include <dbupdate.h>
 #include <database.h>
@@ -115,7 +115,7 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 		"	%.1f, %.1f, "
 		"	%.6f, %d, "
 		"	%ld, %ld, %ld, %ld)",
-		now, station,
+		(int)now, station,
 
 		1900 + nt->tm_year, 1 + nt->tm_mon, nt->tm_mday,
 

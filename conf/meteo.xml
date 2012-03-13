@@ -1,0 +1,336 @@
+<!--
+
+ meteo.xml  ** graph configuration file (fixes colors and scales for the
+               meteo graphs)
+
+ (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
+
+ $Id$
+
+  -->
+<meteo>
+  <database>
+    <hostname>localhost</hostname>
+    <dbname>meteo</dbname>
+    <user>meteo</user>
+    <password>public</password>
+    <writer>meteoupdate</writer>
+    <writerpassword>m57cwrt</writerpassword>
+    <msgqueue>/tmp/meteodb-queue</msgqueue>
+    <prefix>meteo</prefix>
+  </database>
+
+  <!-- color definitions are identical in both stations -->
+  <color name="nodata">
+    <red>204</red><green>204</green><blue>204</blue>
+  </color>
+  <color name="pressure">
+    <red>102</red><green>102</green><blue>255</blue>
+  </color>
+  <color name="pressure-range">
+    <red>204</red><green>204</green><blue>255</blue>
+  </color>
+  <color name="temperature">
+    <red>153</red><green>0</green><blue>0</blue>
+  </color>
+  <color name="temperature-range">
+    <red>255</red><green>204</green><blue>204</blue>
+  </color>
+  <color name="temperature-dew">
+    <red>102</red><green>102</green><blue>255</blue>
+  </color>
+  <color name="temperature_inside">
+    <red>153</red><green>0</green><blue>0</blue>
+  </color>
+  <color name="temperature_inside-range">
+    <red>255</red><green>204</green><blue>204</blue>
+  </color>
+  <color name="temperature_inside-dew">
+    <red>102</red><green>102</green><blue>255</blue>
+  </color>
+  <color name="rain">
+    <red>0</red><green>0</green><blue>255</blue>
+  </color>
+  <color name="wind">
+    <red>100</red><green>100</green><blue>255</blue>
+  </color>
+  <color name="gust">
+    <red>0</red><green>102</green><blue>0</blue>
+  </color>
+  <color name="speed">
+    <red>0</red><green>255</green><blue>0</blue>
+  </color>
+  <color name="north">
+    <red>204</red><green>204</green><blue>255</blue>
+  </color>
+  <color name="south">
+    <red>255</red><green>204</green><blue>204</blue>
+  </color>
+  <color name="east">
+    <red>255</red><green>255</green><blue>204</blue>
+  </color>
+  <color name="west">
+    <red>204</red><green>255</green><blue>204</blue>
+  </color>
+  <color name="solar">
+    <red>204</red><green>153</green><blue>0</blue>
+  </color>
+  <color name="uv">
+    <red>102</red><green>0</green><blue>204</blue>
+  </color>
+
+  <station name="Altendorf">
+    <!-- <url>file:///dev/ttyS0</url> -->
+    <speed>2400</speed>
+    <url>tcp://weathermonitor.othello.ch:10001</url>
+    <type>Davis</type>
+    <channel name="pressure">
+      <label>Pressure (hPa)</label>
+      <format>%.0f</format>
+      <min>930</min>
+      <max>990</max>
+      <start>930</start>
+      <end>990</end>
+      <step>10</step>
+    </channel>
+
+    <channel name="humidity">
+      <label>rel Humidity (%)</label>
+      <format>%.0f</format>
+      <min>0</min>
+      <max>100</max>
+      <step>20</step>
+      <start>0</start>
+      <end>100</end>
+    </channel>
+
+    <channel name="humidity_inside">
+      <label>rel Humidity (%)</label>
+      <format>%.0f</format>
+      <min>0</min>
+      <max>100</max>
+      <step>20</step>
+      <start>0</start>
+      <end>100</end>
+    </channel>
+
+    <channel name="temperature">
+      <label>Temperature (deg C)</label>
+      <format>%.0f</format>
+      <min>-15</min>
+      <max>35</max>
+      <start>-10</start>
+      <end>30</end>
+      <step>10</step>
+    </channel>
+
+    <channel name="temperature_inside">
+      <label>Temp inside (deg C)</label>
+      <format>%.0f</format>
+      <min>0</min>
+      <max>30</max>
+      <start>0</start>
+      <end>30</end>
+      <step>5</step>
+    </channel>
+
+    <channel name="rain">
+      <min>0</min>
+      <start>0</start>
+      <label>Precipitation (mm)</label>
+      <format>%.0f</format>
+      <interval width="300">
+	<format>%.1f</format>
+	<scale>0.008333333</scale>
+	<step>.5</step>
+      </interval>
+      <interval width="1800">
+	<scale>0.05</scale>
+	<step>1</step>
+      </interval>
+      <interval width="7200">
+	<scale>0.08333333</scale>
+	<step>5</step>
+      </interval>
+      <interval width="86400">
+	<scale>0.25</scale>
+	<step>10</step>
+      </interval>
+    </channel>
+
+    <channel name="wind">
+      <left>
+	<label>Speed (m/s)        </label>
+	<format>%.0f</format>
+	<min>0</min>
+	<scale>0.2</scale>
+	<start>0</start>
+	<end>15</end>
+	<step>5</step>
+      </left>
+      <right>
+	<label>            Azimut (deg)</label>
+	<format>%.0f</format>
+	<min>-604</min>
+	<max>360</max>
+	<scale>8</scale>
+	<start>0</start>
+	<end>360</end>
+	<step>180</step>
+      </right>
+    </channel>
+
+    <channel name="radiation">
+      <left>
+	<label>Solar Radiation (W/m2)</label>
+	<format>%.0f</format>
+	<min>0</min>
+	<max>600</max>
+	<start>0</start>
+	<step>100</step>
+	<end>600</end>
+      </left>
+      <right>
+	<label>UV index</label>
+	<format>%.0f</format>
+	<min>0</min>
+	<max>6</max>
+	<start>0</start>
+	<step>1</step>
+      </right>
+    </channel>
+  </station>
+
+  <station name="Gurin">
+    <url>file:///dev/ttyS0</url>
+    <speed>2400</speed>
+    <type>Davis</type>
+    <channel name="pressure">
+      <label>Pressure (hPa)</label>
+      <format>%.0f</format>
+      <min>970</min>
+      <max>1030</max>
+      <start>970</start>
+      <end>1030</end>
+      <step>10</step>
+    </channel>
+
+    <channel name="humidity">
+      <label>rel Humidity (%)</label>
+      <format>%.0f</format>
+      <min>0</min>
+      <max>100</max>
+      <step>20</step>
+      <start>0</start>
+      <end>100</end>
+    </channel>
+
+    <channel name="humidity_inside">
+      <label>rel Humidity (%)</label>
+      <format>%.0f</format>
+      <min>0</min>
+      <max>100</max>
+      <step>20</step>
+      <start>0</start>
+      <end>100</end>
+    </channel>
+
+    <channel name="temperature">
+      <label>Temperature (deg C)</label>
+      <format>%.0f</format>
+      <min>-15</min>
+      <max>35</max>
+      <start>-10</start>
+      <end>30</end>
+      <step>10</step>
+    </channel>
+
+    <channel name="temperature_inside">
+      <label>Temp inside (deg C)</label>
+      <format>%.0f</format>
+      <min>0</min>
+      <max>30</max>
+      <start>0</start>
+      <end>30</end>
+      <step>5</step>
+    </channel>
+
+    <channel name="rain">
+      <min>0</min>
+      <start>0</start>
+      <label>Precipitation (mm)</label>
+      <format>%.0f</format>
+      <interval width="300">
+	<format>%.1f</format>
+	<scale>0.008333333</scale>
+	<step>.5</step>
+      </interval>
+      <interval width="1800">
+	<scale>0.05</scale>
+	<step>1</step>
+      </interval>
+      <interval width="7200">
+	<scale>0.08333333</scale>
+	<step>5</step>
+      </interval>
+      <interval width="86400">
+	<scale>0.25</scale>
+	<step>10</step>
+      </interval>
+    </channel>
+
+    <channel name="wind">
+      <left>
+	<label>Speed (m/s)        </label>
+	<format>%.0f</format>
+	<min>0</min>
+	<scale>0.2</scale>
+	<start>0</start>
+	<end>15</end>
+	<step>5</step>
+      </left>
+      <right>
+	<label>            Azimut (deg)</label>
+	<format>%.0f</format>
+	<min>-604</min>
+	<max>360</max>
+	<start>0</start>
+	<end>360</end>
+	<step>180</step>
+      </right>
+    </channel>
+
+    <channel name="radiation">
+      <left>
+	<label>Solar Radiation (W/m2)</label>
+	<format>%.0f</format>
+	<min>0</min>
+	<max>1000</max>
+	<start>0</start>
+	<step>200</step>
+	<end>1000</end>
+	<interval width="86400">
+	  <max>600</max>
+	  <step>100</step>
+	  <end>600</end>
+	</interval>
+      </left>
+      <right>
+	<label>UV index</label>
+	<format>%.0f</format>
+	<min>0</min>
+	<max>10</max>
+	<start>0</start>
+	<step>2</step>
+	<end>10</end>
+	<interval width="86400">
+	  <max>6</max>
+	  <step>1</step>
+	  <end>6</end>
+	</interval>
+      </right>
+    </channel>
+
+  </station>
+
+</meteo>

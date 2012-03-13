@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: com.c,v 1.3 2002/01/27 22:55:19 afm Exp $
+ * $Id: com.c,v 1.4 2002/11/24 19:48:01 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +15,7 @@
 #include <mdebug.h>
 #include <fcntl.h>
 #include <string.h>
+#include <xmlconf.h>
 
 static int	com_get_char(meteocom_t *m);
 static int	com_get_char_timed(meteocom_t *m, struct timeval *tv);
@@ -124,7 +125,7 @@ int	get_buffer(meteocom_t *m, unsigned char *b, int n) {
 /*
  * default constructor and destructor
  */
-meteocom_t	*com_new(void)  {
+meteocom_t	*com_new(meteoconf_t *mc)  {
 	meteocom_t	*result;
 	result = (meteocom_t *)malloc(sizeof(meteocom_t));
 	if (debug)
@@ -136,9 +137,9 @@ meteocom_t	*com_new(void)  {
 	result->put_char = com_put_char;
 	result->get_char = com_get_char;
 	result->get_char_timed = com_get_char_timed;
-	if (NULL != meteoconfig) {
-		if (0 == strcmp("Vantage", mc_get_string(meteoconfig,
-			"station.type", ""))) {
+	if (NULL != mc) {
+		if (0 == strcmp("Vantage", xmlconf_get_string(mc,
+			"", "type", NULL, 0, ""))) {
 			result->flags |= COM_VANTAGE;
 		}
 	}

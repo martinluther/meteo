@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.3 2002/03/03 22:09:38 afm Exp $
+ * $Id: graph.c,v 1.5 2002/11/24 19:48:01 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -98,7 +98,7 @@ static double	maxvalue(graph_t *g, channelformat_t *cf) {
  * graph_set_color	create a certain color and set it in the graph 
  *			structure
  */
-int	graph_set_color(graph_t *g, int whichcolor, const int *rgb) {
+int	graph_set_color(graph_t *g, int whichcolor, const ncolor_t rgb) {
 	int	c;
 	c = graph_color_allocate(g, rgb);
 	switch (whichcolor) {
@@ -131,18 +131,17 @@ int	graph_set_color(graph_t *g, int whichcolor, const int *rgb) {
 /*
  * graph_color_allocate	allocate a new color in the gdb image
  */
-int	graph_color_allocate(graph_t *g, const int *rgb) {
+int	graph_color_allocate(graph_t *g, const ncolor_t rgb) {
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "allocate color #%02x%02x%02x",
-			  rgb[0], rgb[1], rgb[2]);
-	return gdImageColorAllocate(g->im, rgb[0], rgb[1], rgb[2]);
+			  rgb.c[0], rgb.c[1], rgb.c[2]);
+	return gdImageColorAllocate(g->im, rgb.c[0], rgb.c[1], rgb.c[2]);
 }
 
 /*
  * graph_add_channel	add a channel specification to the graph
  */
-void	graph_add_channel(graph_t *g, int flags, int color,
-	double offset, double scale) {
+void	graph_add_channel(graph_t *g, int flags, int color, channelscale_t cs) {
 	channelformat_t	*gf;
 	g->nchannels++;
 	if (debug)
@@ -153,8 +152,8 @@ void	graph_add_channel(graph_t *g, int flags, int color,
 	gf = &g->channelfmt[g->nchannels - 1];
 	gf->flags = flags;
 	gf->color = color;
-	gf->offset = offset;
-	gf->scale = scale;
+	gf->offset = cs.min;
+	gf->scale = cs.scale;
 	gf->max = maxvalue(g, gf);
 }
 
@@ -414,8 +413,7 @@ void	graph_add_time(graph_t *g) {
  *   from	the value of the lowest tick
  *   to		the value of the largest tick
  */
-void	graph_add_grid(graph_t *g, int channel, double valint, double from,
-	double to) {
+void	graph_add_grid(graph_t *g, int channel, gridscale_t gs) {
 	int		width, i, y, max;
 	int		styleDotted[3];
 	channelformat_t	*cf;
@@ -429,7 +427,7 @@ void	graph_add_grid(graph_t *g, int channel, double valint, double from,
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding grid starting at %ld, "
 			"interval %d, based on channel %d, "
 			"valint = %f",  
-			g->start, g->interval, channel, valint);
+			g->start, g->interval, channel, gs.step);
 
 	/* define the dotted style for ``internal'' grid lines		*/
 	styleDotted[0] = gdTransparent;
@@ -442,14 +440,14 @@ void	graph_add_grid(graph_t *g, int channel, double valint, double from,
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
 			"offset = %f, interval = %f",  
-			cf->offset, valint);
-	for (i = (from/valint);
-		vy = i * valint, y = ycoord(g, cf, vy), y >= g->ury; i++) {
+			cf->offset, gs.step);
+	for (i = (gs.start/gs.step);
+		vy = i * gs.step, y = ycoord(g, cf, vy), y >= g->ury; i++) {
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 				"try line for i = %d, y = %f, y coord = %d",  
 				i, vy, y);
-		if ((vy < from) || (vy > to))
+		if ((vy < gs.start) || (vy > gs.end))
 			goto noline2;
 		gdImageLine(g->im, g->llx, y, g->urx, y, gdStyled);
 	noline2:
@@ -474,8 +472,8 @@ void	graph_add_grid(graph_t *g, int channel, double valint, double from,
  *   onright	whether or not to put the ticks on the right (0 = left,
  *		1 = right)
  */
-void	graph_add_ticks(graph_t *g, int channel, double valint, double from,
-	double to, const char *fmt, int onright) {
+void	graph_add_ticks(graph_t *g, int channel, ticklabel_t tl,
+	int onright) {
 
 	int		width, i, y, max, xl, yl;
 	channelformat_t	*cf;
@@ -489,24 +487,24 @@ void	graph_add_ticks(graph_t *g, int channel, double valint, double from,
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 			"adding ticks starting at %ld, interval %d, based "
-			"on channel %d, valint = %f",  
-			g->start, g->interval, channel, valint);
+			"on channel %d, tl.gs.step = %f",  
+			g->start, g->interval, channel, tl.gs.step);
 
 	/* draw horizontal grid lines and tick marks on both data axes,	*/
 	/* as well as labels for the 					*/
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
 			"offset = %f, interval = %f",  
-			cf->offset, valint);
-	for (i = from/valint;
-		vy = i * valint, y = ycoord(g, cf, vy), y >= g->ury; i++) {
+			cf->offset, tl.gs.step);
+	for (i = tl.gs.start/tl.gs.step;
+		vy = i * tl.gs.step, y = ycoord(g, cf, vy), y >= g->ury; i++) {
 		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "try tick for i = %d, y = %f, "
-				" y coord = %d",  
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"try tick for i = %d, y = %f, y coord = %d",  
 				i, vy, y);
-		if ((vy < from) || (vy > to))
+		if ((vy < tl.gs.start) || (vy > tl.gs.end))
 			goto noline2;
-		snprintf(label, 128, fmt, vy);
+		snprintf(label, 128, tl.format, vy);
 		if (onright) {
 			gdImageLine(g->im, g->urx - 2, y, g->urx + 2, y, g->fg);
 			xl = g->urx + 2 + 0.5 * gdFontSmall->w;

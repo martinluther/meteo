@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.c,v 1.3 2002/06/22 15:57:40 afm Exp $
+ * $Id: meteodequeue.c,v 1.4 2002/11/24 19:48:02 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -42,6 +42,7 @@ int	main(int argc, char *argv[]) {
 	char		*conffilename = METEOCONFFILE;
 	const char	*queuename = NULL;
 	char		*pidfilename = "/var/run/meteodequeue.pid";
+	meteoconf_t	*mc;
 
 	/* parse command line						*/
 	while (EOF != (c = getopt(argc, argv, "l:df:Fp:V")))
@@ -76,8 +77,8 @@ int	main(int argc, char *argv[]) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
 		exit(EXIT_FAILURE);
 	}
-	meteoconfig = mc_readconf(conffilename);
-	if (NULL == meteoconfig) {
+	mc = xmlconf_new(conffilename, "");
+	if (NULL == mc) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration %s invalid",
 			conffilename);
 		exit(EXIT_FAILURE);
@@ -99,7 +100,8 @@ int	main(int argc, char *argv[]) {
 	}
 
 	/* make sure we have a suitable message queue			*/
-	queuename = mc_get_string(meteoconfig, "database.msgqueue", queuename);
+	queuename = xmlconf_get_abs_string(mc, "/meteo/database/msgqueue",
+		queuename);
 	if (NULL == queuename) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "msg queue name not specified");
 		exit(EXIT_FAILURE);
@@ -113,7 +115,7 @@ int	main(int argc, char *argv[]) {
 	}
 
 	/* open the database						*/
-	mysql = mc_opendb(meteoconfig, O_WRONLY);
+	mysql = mc_opendb(mc, O_WRONLY);
 	if (NULL == mysql) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
 			"cannot open database, exiting");

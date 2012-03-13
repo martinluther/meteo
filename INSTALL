@@ -199,6 +199,11 @@ the meteo package:
 		this is primarily useful on the site http://meteo.othello.ch,
 		where it is used to keep the web site up to date.
 
+   The XML library libxml2 is required, but there does not exist a
+configure option to specify the library. You should make sure that the
+xml2-config script is found on the PATH. The configure script will
+use that program's output to correctly set compiler and linker flags
+to include and link libxml2.
 
 Special issues
 ==============
@@ -282,4 +287,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.9 2002/03/08 23:50:43 afm Exp $
+$Id: INSTALL,v 1.11 2002/11/24 22:31:05 afm Exp $

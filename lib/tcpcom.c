@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: tcpcom.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: tcpcom.c,v 1.3 2002/11/24 23:16:48 afm Exp $
  */
 #include <config.h>
 #include <tcpcom.h>
@@ -18,7 +18,7 @@
 #include <meteo.h>
 #include <mdebug.h>
 
-meteocom_t	*tcpcom_new(char *url) {
+meteocom_t	*tcpcom_new(meteoconf_t *mc, char *url) {
 	meteocom_t		*r = 0;
 	struct hostent		*hp;
 	struct sockaddr_in	sa;
@@ -26,7 +26,7 @@ meteocom_t	*tcpcom_new(char *url) {
 	unsigned short		port;
 
 	/* allocate memory for the serial device file descriptor	*/
-	r = com_new();
+	r = com_new(mc);
 	r->private = malloc(sizeof(int));
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(int *)malloc(%d) = %p",

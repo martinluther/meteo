@@ -70,6 +70,7 @@ AS = @AS@
 AWK = @AWK@
 BROWSERDIR = @BROWSERDIR@
 CC = @CC@
+CONFIGDATE = @CONFIGDATE@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 DEPDIR = @DEPDIR@
@@ -79,11 +80,10 @@ GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 HTMLDIR = @HTMLDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LEX = @LEX@
-LEXLIB = @LEXLIB@
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LIBXML_CFLAGS = @LIBXML_CFLAGS@
+LIBXML_LIBS = @LIBXML_LIBS@
 LN_S = @LN_S@
 METEOCONFFILE = @METEOCONFFILE@
 OBJDUMP = @OBJDUMP@
@@ -91,22 +91,22 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 RC = @RC@
 STRIP = @STRIP@
-VERSION = @VERSION@
-YACC = @YACC@
-am__include = @am__include@
-am__quote = @am__quote@
-install_sh = @install_sh@
 
 #
 # Makefile.am -- generate a portable Makefile for the meteo interface package
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.36 2002/01/18 23:36:46 afm Exp $
+# $Id: Makefile.am,v 1.37 2002/11/24 19:48:01 afm Exp $
 #
-SUBDIRS = include lib src conf html browser db doc man support
+VERSION = @VERSION@
+am__include = @am__include@
+am__quote = @am__quote@
+install_sh = @install_sh@
 
-EXTRA_DIST = shtool
+SUBDIRS = include lib src conf html browser db doc man support
+BUILTSOURCES = README
+EXTRA_DIST = shtool README.tmpl
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -436,6 +436,9 @@ uninstall-info: uninstall-info-recursive
 	tags tags-recursive uninstall uninstall-am uninstall-info-am \
 	uninstall-info-recursive uninstall-recursive
 
+
+README: 	README.tmpl
+	(figlet meteo-$(VERSION); cat README.tmpl) > README
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

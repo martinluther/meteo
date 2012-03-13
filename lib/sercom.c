@@ -13,7 +13,7 @@
 #include <meteo.h>
 #include <mdebug.h>
 
-meteocom_t	*sercom_new(char *url, int speed) {
+meteocom_t	*sercom_new(meteoconf_t *mc, char *url, int speed) {
 	meteocom_t	*r = NULL;
 	struct termios	term;
 	char		*dev;
@@ -31,7 +31,7 @@ meteocom_t	*sercom_new(char *url, int speed) {
 			 dev);
 	
 	/* allocate memory for the serial device file descriptor	*/
-	r = com_new();
+	r = com_new(mc);
 	r->private = malloc(sizeof(int));
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(int *)malloc(%d) = %p",

@@ -6,8 +6,4 @@
 #ifndef _METEO_H
 #define _METEO_H
 
-#include <mconf.h>
-
-extern mc_node_t	*meteoconfig;
-
 #endif /* _METEO_H */

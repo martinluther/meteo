@@ -3,14 +3,13 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.h,v 1.2 2002/08/24 14:56:21 afm Exp $
+ * $Id: dograph.h,v 1.3 2002/11/24 19:48:01 afm Exp $
  */
 #ifndef _DOGRAPH_H
 #define _DOGRAPH_H
 
 #include <meteo.h>
 #include <meteograph.h>
-#include <mconf.h>
 #include <graph.h>
 #include <mysql/mysql.h>
 #include <stdio.h>
@@ -42,11 +41,12 @@ typedef struct dograph_s {
 	int		useaverages;
 	int		requestedgraphs;
 	int		withtimestamps;
+	meteoconf_t	*mc;
 } dograph_t;
 
 extern graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
 			int interval, time_t *start, char *data, char *avgdata);
-extern int	set_colors(graph_t *graph, int channel, mc_node_t *conf);
+extern int	set_colors(graph_t *graph, int channel, meteoconf_t *conf);
 extern void	baro_graphs(dograph_t *dgp, int interval);
 extern void	temp_graphs(dograph_t *dgp, int interval);
 extern void	temp_graphs_inside(dograph_t *dgp, int interval);

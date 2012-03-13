@@ -3,11 +3,11 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteograph.c,v 1.4 2002/08/24 14:56:21 afm Exp $
+ * $Id: meteograph.c,v 1.6 2002/11/24 19:48:02 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
-#include <mconf.h>
+#include <xmlconf.h>
 #include <graph.h>
 #include <mysql/mysql.h>
 #include <stdio.h>
@@ -59,6 +59,7 @@ void	usage(void) {
 "	-a		use averages table\n"
 "	-d		increase debug level\n"
 "	-t		include timestamp in generated file name\n"
+"	-s stationname	name of the station for which to compute graphs\n"
 "	-V		display version and exit\n"
 "	-l logfile	write debug log to logfile\n"
 "	-c dir		change directory to dir before writing any image files\n"
@@ -71,11 +72,13 @@ void	usage(void) {
 
 int	main(int argc, char *argv[]) {
 	char		*conffilename = METEOCONFFILE;
+	char		*station = NULL;
 	int		c, interval, i, G = 0;
 	dograph_t	dg;
 	time_t		t;
 	struct tm	*tp;
 	char		timestamp[64];
+	meteoconf_t	*mc;
 
 	/* initialize defaults						*/
 	time(&dg.end);
@@ -85,7 +88,7 @@ int	main(int argc, char *argv[]) {
 	dg.timestamp = NULL;
 	
 	/* parse command line						*/
-	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:l:G:tV?")))
+	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:l:G:ts:V?")))
 		switch (c) {
 		case '?':
 			usage();
@@ -143,6 +146,9 @@ int	main(int argc, char *argv[]) {
 				if (0 == strcasecmp(optarg, ngs[i].name))
 					dg.requestedgraphs ^= ngs[i].graph;
 			break;
+		case 's':
+			station = optarg;
+			break;
 		case 'V':
 			fprintver(stdout);
 			exit(EXIT_SUCCESS);
@@ -165,6 +171,12 @@ int	main(int argc, char *argv[]) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "graph mask: %02x",
 			dg.requestedgraphs);
 
+	/* station name is mandatory					*/
+	if (NULL == station) {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -s <station>");
+		exit(EXIT_FAILURE);
+	}
+
 	/* it is an error not to specify a configuration file		*/
 	if (NULL == conffilename) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
@@ -172,13 +184,13 @@ int	main(int argc, char *argv[]) {
 	}
 
 	/* read the configuration file					*/
-	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
+	if (NULL == (mc = xmlconf_new(conffilename, station))) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration invalid");
 		exit(EXIT_FAILURE);
 	}
 
 	/* open the database connection					*/
-	dg.mysql = mc_opendb(meteoconfig, O_RDONLY);
+	dg.mysql = mc_opendb(mc, O_RDONLY);
 	if (dg.mysql == NULL) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
 			"could not connect to database");
@@ -186,12 +198,7 @@ int	main(int argc, char *argv[]) {
 	}
 
 	/* get some other data from the configuration file		*/
-	if (NULL == (dg.prefix = mc_get_string(meteoconfig, "database.prefix",
-		NULL))) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-			"prefix not set in configuration file");
-		exit(EXIT_FAILURE);
-	}
+	dg.prefix = mc->station;
 
 	/* if the timestamp is not set, we take the current time for 	*/
 	/* timestamp							*/
@@ -201,6 +208,7 @@ int	main(int argc, char *argv[]) {
 		strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", tp);
 		dg.timestamp = timestamp;
 	}
+	dg.mc = mc;
 
 	for (; optind < argc; optind++) {
 		switch(interval = atoi(argv[optind])) {

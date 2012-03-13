@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoloop.c,v 1.6 2002/01/30 10:38:24 afm Exp $
+ * $Id: meteoloop.c,v 1.9 2002/11/24 23:16:48 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -41,6 +41,7 @@ typedef struct loopdata_s {
 	const char	*queuename;
 	int		usequeue;
 	int		n;
+	meteoconf_t	*mc;
 } loopdata_t;
 
 int	minutes;
@@ -189,13 +190,13 @@ static void	slaveloop(loopdata_t *ld) {
 
 	/* establish the connection to the weather station		*/
 	if (0 == strncmp(ld->url, "file://", 7)) {
-		speed = mc_get_int(meteoconfig, "station.speed", speed);
-		m = sercom_new((char *)ld->url, speed);
+		speed = xmlconf_get_int(ld->mc, "", "speed", NULL, 0, speed);
+		m = sercom_new(ld->mc, (char *)ld->url, speed);
 	} else {
 		/* setting up a TCP connection can be time consuming...	*/
 		if (watchinterval > 0)
 			wd_arm(watchinterval);
-		m = tcpcom_new((char *)ld->url);
+		m = tcpcom_new(ld->mc, (char *)ld->url);
 		wd_disarm();
 	}
 	if (m == NULL) {
@@ -234,9 +235,9 @@ static void	slaveloop(loopdata_t *ld) {
 		}
 	} else {
 		ddp->type = DEST_MYSQL;
-		ddp->name = mc_get_string(meteoconfig, "database.dbname",
-			"meteo");
-		ddp->destdata.mysql = mc_opendb(meteoconfig, O_WRONLY);
+		ddp->name = strdup(xmlconf_get_abs_string(ld->mc,
+			"/meteo/database/dbname", "meteo"));
+		ddp->destdata.mysql = mc_opendb(ld->mc, O_WRONLY);
 		if (NULL == ddp->destdata.mysql) {
 			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "failed to connect to "
 				"database");
@@ -358,7 +359,7 @@ static void	masterloop(loopdata_t *l) {
  */
 int	main(int argc, char *argv[]) {
 	const char	*url = NULL,
-			*station = "Altendorf",
+			*station = NULL,
 			*queuename = NULL;
 	char		*conffilename = METEOCONFFILE;
 	loopdata_t	ld;
@@ -371,7 +372,7 @@ int	main(int argc, char *argv[]) {
 	ld.n = 1;
 
 	/* parse command line arguments					*/
-	while (EOF != (c = getopt(argc, argv, "dn:Ff:l:p:qw:Vm")))
+	while (EOF != (c = getopt(argc, argv, "dn:Ff:l:p:qw:Vms:")))
 		switch (c) {
 		case 'l':
 			if (mdebug_setup("meteoloop", optarg) < 0) {
@@ -406,6 +407,9 @@ int	main(int argc, char *argv[]) {
 		case 'p':
 			pidfilename = optarg;
 			break;
+		case 's':
+			station = optarg;
+			break;
 		case 'w':
 			watchinterval = atoi(optarg);
 			break;
@@ -426,23 +430,30 @@ int	main(int argc, char *argv[]) {
 		wd_setup(0, NULL);
 	}
 
+	/* make sure the station is set					*/
+	if (station == NULL) {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "specify station with -s");
+		exit(EXIT_FAILURE);
+	}
+
 	/* it is an error not to specify a configuration file		*/
 	if (NULL == conffilename) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
 		exit(EXIT_FAILURE);
 	}
+	ld.station = station;
 
 	/* open the configuration file 					*/
-	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
+	ld.mc = xmlconf_new(conffilename, station);
+	if (NULL == ld.mc) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration %s invalid", 
 			 conffilename);
 		exit(EXIT_FAILURE);
 	}
 
 	/* extract the information from the configuration data		*/
-	ld.url = mc_get_string(meteoconfig, "station.url", url);
-	ld.station = mc_get_string(meteoconfig, "database.prefix", station);
-	ld.queuename = mc_get_string(meteoconfig, "database.msgqueue",
+	ld.url = xmlconf_get_string(ld.mc, "", "url", NULL, 0, url);
+	ld.queuename = xmlconf_get_abs_string(ld.mc, "/meteo/database/msgqueue",
 		queuename);
 
 	/* become a daemon						*/
