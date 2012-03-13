@@ -1,5 +1,12 @@
-This release reorganizes the source tree from one flat directory into
-multiple directories.
+This release adds some polish to the meteobrowser by allowing it to
+completely localized (however, while it works on Linux, it gettext
+seems not to work on Solaris 8.
+
+Furthermore, the meteoloop program has been enhanced to handle some
+communication failures more gracefully. The large gaps visible during
+january in the example station browsers on http://meteo.othello.ch
+should now be a thing of the past
+
 
 --
-$Id: NEWS,v 1.8 2002/01/19 00:40:20 afm Exp $
+$Id: NEWS,v 1.9 2002/01/30 10:54:29 afm Exp $

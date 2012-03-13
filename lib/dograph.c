@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.1 2002/01/18 23:34:29 afm Exp $
+ * $Id: dograph.c,v 1.3 2002/01/29 20:55:29 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -16,10 +16,10 @@
 #include <math.h>
 #include <dewpoint.h>
 #include <string.h>
-#include <errno.h>
 #include <time.h>
 #include <timestamp.h>
 #include <dograph.h>
+#include <mdebug.h>
 
 static void	create_filename(char *filename, int length,
 		const dograph_t *dgp, char *parameter) {
@@ -34,8 +34,7 @@ static void	create_filename(char *filename, int length,
 			dgp->prefix, parameter, dgp->suffix);
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: filename: %s\n", __FILE__, __LINE__,
-			filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "filename: %s", filename);
 }
 
 #define	stampformat	"%Y%m%d%H%M%S"
@@ -110,8 +109,8 @@ int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
 		break;
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: setting colors for '%s'\n",
-			__FILE__, __LINE__, thisname);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting colors for '%s'",
+			thisname);
 
 	/* convert the name into a color name string and write set	*/
 	/* the corresponding color					*/
@@ -172,11 +171,9 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 
 	/* retrieve the data from the database				*/
 	if (debug)
-		fprintf(stderr, "%s:%d: query is '%s'\n", __FILE__, __LINE__,
-			query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		fprintf(stderr, "%s:%d: cannot retrieve data\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -184,8 +181,8 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 	/* find out how many rows there are				*/
 	nentries = mysql_num_rows(res);
 	if (debug)
-		fprintf(stderr, "%s:%d: baro query returns %d rows\n",
-			__FILE__, __LINE__, nentries);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "baro query returns %d rows",
+			nentries);
 
 	/* allocate memory to store all the data			*/
 	data = (entry_t *)malloc(sizeof(entry_t) * nentries);
@@ -200,8 +197,8 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 		data[i].data[1] = atof(row[2]);
 		data[i].data[2] = atof(row[3]);
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: %9d %6.1f %6.1f %6.1f\n",
-				__FILE__, __LINE__, (int)data[i].when,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"%9d %6.1f %6.1f %6.1f", (int)data[i].when,
 				data[i].data[0], data[i].data[1],
 				data[i].data[2]);
 	}
@@ -223,14 +220,14 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 		0);
 
 	/* compute the filename for the graph				*/
-	create_filename(filename, sizeof(filename), dgp, "barometer");
+	create_filename(filename, sizeof(filename), dgp, "pressure");
 	if (debug)
-		fprintf(stderr, "%s:%d: pressure filename = %s\n",
-			__FILE__, __LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "pressure filename = %s",
+			filename);
 	graph_write_png(g, filename);
 	if (debug)
-		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
-			__LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image written to %s",
+			filename);
 	
 	/* free the SQL data						*/
 	mysql_free_result(res);
@@ -326,11 +323,9 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 
 	/* retrieve the data from the database				*/
 	if (debug)
-		fprintf(stderr, "%s:%d: query is '%s'\n", __FILE__, __LINE__,
-			query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		fprintf(stderr, "%s:%d: cannot retrieve data\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -338,8 +333,8 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	/* find out how many rows there are				*/
 	nentries = mysql_num_rows(res);
 	if (debug)
-		fprintf(stderr, "%s:%d: temp query returns %d rows\n",
-			__FILE__, __LINE__, nentries);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "temp query returns %d rows",
+			nentries);
 
 	/* allocate memory to store all the data			*/
 	data = (entry_t *)malloc(sizeof(entry_t) * nentries);
@@ -358,8 +353,8 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 		if (data[i].data[2] > 100.) data[i].data[2] = 100.;
 		data[i].data[2] = dewpoint(data[i].data[2], data[i].data[3]);
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: %9d %6.1f %6.1f %6.1f\n",
-				__FILE__, __LINE__, (int)data[i].when,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				 "%9d %6.1f %6.1f %6.1f", (int)data[i].when,
 				data[i].data[0], data[i].data[1],
 				data[i].data[2]);
 	}
@@ -399,12 +394,12 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 		(inside)	? "temperature_inside"
 				: "temperature");
 	if (debug)
-		fprintf(stderr, "%s:%d: temperature filename = %s\n",
-			__FILE__, __LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "temperature filename = %s",
+			filename);
 	graph_write_png(g, filename);
 	if (debug)
-		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
-			__LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image written to %s",
+			filename);
 	
 	/* free the SQL data						*/
 	mysql_free_result(res);
@@ -459,11 +454,9 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 
 	/* retrieve the data from the database				*/
 	if (debug)
-		fprintf(stderr, "%s:%d: query is '%s'\n", __FILE__, __LINE__,
-			query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		fprintf(stderr, "%s:%d: cannot retrieve data\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -471,8 +464,8 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	/* find out how many rows there are				*/
 	nentries = mysql_num_rows(res);
 	if (debug)
-		fprintf(stderr, "%s:%d: temp query returns %d rows\n",
-			__FILE__, __LINE__, nentries);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "temp query returns %d rows",
+			nentries);
 
 	/* allocate memory to store all the data			*/
 	data = (entry_t *)malloc(sizeof(entry_t) * nentries);
@@ -485,9 +478,8 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 		data[i].data = &tempdata[i];
 		data[i].data[0] = atof(row[1]);
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: %9d %6.1f\n",
-				__FILE__, __LINE__, (int)data[i].when,
-				data[i].data[0]);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%9d %6.1f",
+				(int)data[i].when, data[i].data[0]);
 	}
 
 	/* display the data retrieved from the database			*/
@@ -509,12 +501,12 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "rain");
 	if (debug)
-		fprintf(stderr, "%s:%d: rain filename = %s\n",
-			__FILE__, __LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "rain filename = %s",
+			filename);
 	graph_write_png(g, filename);
 	if (debug)
-		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
-			__LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image written to %s",
+			filename);
 	
 	/* free the SQL data						*/
 	mysql_free_result(res);
@@ -565,11 +557,9 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 
 	/* retrieve the data from the database				*/
 	if (debug)
-		fprintf(stderr, "%s:%d: query is '%s'\n", __FILE__, __LINE__,
-			query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		fprintf(stderr, "%s:%d: cannot retrieve data\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -577,8 +567,7 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	/* find out how many rows there are				*/
 	nentries = mysql_num_rows(res);
 	if (debug)
-		fprintf(stderr, "%s:%d: temp query returns %d rows\n",
-			__FILE__, __LINE__, nentries);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "temp query returns %d rows");
 
 	/* allocate memory to store all the data			*/
 	data = (entry_t *)malloc(sizeof(entry_t) * nentries);
@@ -600,8 +589,8 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 			data[i].data[2] = 180. + 180. * atan2(x, y)/3.1415926535;
 		}
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: %9d %6.1f %6.1f %6.0f\n",
-				__FILE__, __LINE__, (int)data[i].when,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"%9d %6.1f %6.1f %6.0f", (int)data[i].when,
 				data[i].data[0], data[i].data[1],
 				data[i].data[2]);
 	}
@@ -637,12 +626,12 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "wind");
 	if (debug)
-		fprintf(stderr, "%s:%d: wind filename = %s\n",
-			__FILE__, __LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wind filename = %s",
+			filename);
 	graph_write_png(g, filename);
 	if (debug)
-		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
-			__LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image written to %s",
+			filename);
 }
 
 /*
@@ -684,11 +673,9 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 
 	/* retrieve the data from the database				*/
 	if (debug)
-		fprintf(stderr, "%s:%d: query is '%s'\n", __FILE__, __LINE__,
-			query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		fprintf(stderr, "%s:%d: cannot retrieve data\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -696,8 +683,8 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	/* find out how many rows there are				*/
 	nentries = mysql_num_rows(res);
 	if (debug)
-		fprintf(stderr, "%s:%d: temp query returns %d rows\n",
-			__FILE__, __LINE__, nentries);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "temp query returns %d rows",
+			nentries);
 
 	/* allocate memory to store all the data			*/
 	data = (entry_t *)malloc(sizeof(entry_t) * nentries);
@@ -711,8 +698,8 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 		data[i].data[0] = (row[1]) ? atof(row[1]) : 0.;
 		data[i].data[1] = (row[2]) ? atof(row[2]) : 0.;
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: %9d %6.1f %6.1f\n",
-				__FILE__, __LINE__, (int)data[i].when,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%9d %6.1f %6.1f",
+				(int)data[i].when,
 				data[i].data[0], data[i].data[1]);
 	}
 
@@ -749,12 +736,12 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	/* compute the filename for the graph				*/
 	create_filename(filename, sizeof(filename), dgp, "radiation");
 	if (debug)
-		fprintf(stderr, "%s:%d: radiation filename = %s\n",
-			__FILE__, __LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "radiation filename = %s",
+			filename);
 	graph_write_png(g, filename);
 	if (debug)
-		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
-			__LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image written to %s",
+			filename);
 }
 
 /*
@@ -762,8 +749,8 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
  */
 void	all_graphs(dograph_t *dgp, int interval) {
 	if (debug)
-		fprintf(stderr, "%s:%d: creating all graphs for interval %d, "
-			"ending at %d, suffix = '%s'\n", __FILE__, __LINE__,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating all graphs for "
+			"interval %d, ending at %d, suffix = '%s'",
 			interval, (int)dgp->end, dgp->suffix);
 	if (dgp->requestedgraphs & DOGRAPH_BAROMETER)
 		baro_graphs(dgp, interval);

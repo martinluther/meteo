@@ -3,13 +3,14 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodata.c,v 1.1 2002/01/18 23:34:29 afm Exp $
+ * $Id: meteodata.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <meteodata.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <meteo.h>
+#include <mdebug.h>
 
 static double		lastinterval, nowinterval;
 
@@ -34,9 +35,8 @@ void	meteovalue_set(meteovalue_t *m, double value) {
 void	meteowind_set(wind_t *m, double speed /* MPS */, double direction) {
 	int	dirindex;
 	if (debug)
-		fprintf(stderr, "%s:%d: meteowind_set(speed = %.1f, "
-			"direction = %.1f\n", __FILE__,
-			__LINE__, speed, direction);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "meteowind_set(speed = %.1f, "
+			"direction = %.1f", speed, direction);
 	if (speed > m->speedmax) {
 		m->speedmax = speed;
 		time(&m->maxtime);
@@ -44,8 +44,8 @@ void	meteowind_set(wind_t *m, double speed /* MPS */, double direction) {
 	m->x += speed * nowinterval * sin(PI * direction/180.);
 	m->y += speed * nowinterval * cos(PI * direction/180.);
 	if (debug)
-		fprintf(stderr, "%s:%d: Dx = %.1f, Dy = %.1f, Dt = %.1f\n",
-			__FILE__, __LINE__, m->x, m->y,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"Dx = %.1f, Dy = %.1f, Dt = %.1f", m->x, m->y,
 			nowinterval + lastinterval);
 	m->speed = sqrt((m->x * m->x) + (m->y * m->y)) /
 		(nowinterval + lastinterval);
@@ -67,16 +67,35 @@ meteodata_t	*meteodata_new(void) {
 	meteodata_t	*result;
 	result = (meteodata_t *)malloc(sizeof(meteodata_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteodata_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteodata_t), result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteodata_t *)malloc(%d) = %p",
+			sizeof(meteodata_t), result);
 	memset(result, 0, sizeof(meteodata_t));
 	return result;
 }
 
 void	meteodata_free(meteodata_t *a) {
 	if (debug)
-		fprintf(stderr, "%s:%d: free((meteodata_t *)%p)\n",
-			__FILE__, __LINE__, a);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((meteodata_t *)%p)", a);
+	if (a->temperature)
+		free(a->temperature);
+	if (a->temperature_inside)
+		free(a->temperature_inside);
+	if (a->humidity)
+		free(a->humidity);
+	if (a->humidity_inside)
+		free(a->humidity_inside);
+	if (a->barometer)
+		free(a->barometer);
+	if (a->wind)
+		free(a->wind);
+	if (a->rain)
+		free(a->rain);
+	if (a->uv)
+		free(a->uv);
+	if (a->solar)
+		free(a->solar);
+	free(a);
 }
 
 void	meteodata_update(meteodata_t *a,
@@ -123,8 +142,8 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->temperature == NULL) {
 		a->temperature = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->temperature);
 	}
 	a->temperature->value = 0.;
@@ -136,8 +155,8 @@ void	meteodata_start(meteodata_t *a) {
 		a->temperature_inside = (meteovalue_t *)malloc(
 			sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->temperature_inside);
 	}
 	a->temperature_inside->value = 0.;
@@ -148,8 +167,8 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->humidity == NULL) {
 		a->humidity = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->humidity);
 	}
 	a->humidity->value = 0.;
@@ -161,8 +180,8 @@ void	meteodata_start(meteodata_t *a) {
 		a->humidity_inside = (meteovalue_t *)malloc(
 			sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->humidity_inside);
 	}
 	a->humidity_inside->value = 0.;
@@ -173,8 +192,8 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->barometer == NULL) {
 		a->barometer = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->barometer);
 	}
 	a->barometer->value = 0.;
@@ -185,8 +204,9 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->wind == NULL) {
 		a->wind = (wind_t *)malloc(sizeof(wind_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (wind_t *)malloc(%d) = %p\n",
-				__FILE__, __LINE__, sizeof(wind_t), a->wind);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(wind_t *)malloc(%d) = %p",
+				sizeof(wind_t), a->wind);
 	}
 	a->wind->speed = 0.;
 	a->wind->speedmax = 0.;
@@ -198,7 +218,8 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->rain == NULL) {
 		a->rain = (rain_t *)malloc(sizeof(rain_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (rain_t *)malloc(%d) = %p\n",
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(rain_t *)malloc(%d) = %p",
 				__FILE__, __LINE__, sizeof(rain_t), a->rain);
 	}
 	a->rain->rain = 0.;
@@ -208,8 +229,8 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->solar == NULL) {
 		a->solar = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"%s:%d: (meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->solar);
 	}
 	a->solar->value = 0.;
@@ -220,8 +241,8 @@ void	meteodata_start(meteodata_t *a) {
 	if (a->uv == NULL) {
 		a->uv = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 		if (debug)
-			fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d)"
-				" = %p\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->uv);
 	}
 	a->uv->value = 0.;

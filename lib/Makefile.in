@@ -15,7 +15,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.1 2002/01/18 23:34:27 afm Exp $
+# $Id: Makefile.am,v 1.3 2002/01/27 22:55:19 afm Exp $
 #
 
 
@@ -103,7 +103,7 @@ BUILT_SOURCES = scanner.c parser.c
 
 libmeteo_la_LDFLAGS = -version-info `../shtool version -d libtool $(VERSION_FILE)`
 
-libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 			meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c		msgque.c dbupdate.c meteosocket.c mconf.c				scanner.c parser.c average.c database.c timestamp.c dograph.c		daemon.c watchdog.c printver.c						$(VERSION_FILE)
+libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 			meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c		msgque.c dbupdate.c meteosocket.c mconf.c				scanner.c parser.c average.c database.c timestamp.c dograph.c		daemon.c watchdog.c printver.c						pdebug.c mdebug.c							$(VERSION_FILE)
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/config.h
@@ -119,7 +119,7 @@ libmeteo_la_OBJECTS =  crc.lo com.lo sercom.lo tcpcom.lo davis.lo \
 meteodata.lo meteo.lo conversions.lo dloop.lo graph.lo dewpoint.lo \
 msgque.lo dbupdate.lo meteosocket.lo mconf.lo scanner.lo parser.lo \
 average.lo database.lo timestamp.lo dograph.lo daemon.lo watchdog.lo \
-printver.lo meteo_vers.lo
+printver.lo pdebug.lo mdebug.lo meteo_vers.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -263,61 +263,72 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 average.lo average.o : average.c ../include/average.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
 com.lo com.o : com.c ../include/crc.h ../include/com.h \
-	../include/meteo.h ../include/mconf.h ../include/meteograph.h
-conversions.lo conversions.o : conversions.c ../include/conversions.h
+	../include/meteo.h ../include/mconf.h ../include/meteograph.h \
+	../include/mdebug.h
+conversions.lo conversions.o : conversions.c ../include/conversions.h \
+	../include/mdebug.h
 crc.lo crc.o : crc.c ../include/crc.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
 daemon.lo daemon.o : daemon.c ../include/daemon.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
 database.lo database.o : database.c ../include/database.h \
-	../include/mconf.h ../include/meteograph.h ../include/meteo.h
+	../include/mconf.h ../include/meteograph.h ../include/meteo.h \
+	../include/mdebug.h
 davis.lo davis.o : davis.c ../include/meteodata.h ../include/com.h \
 	../include/crc.h ../include/conversions.h ../include/davis.h \
-	../include/meteo.h ../include/mconf.h ../include/meteograph.h
+	../include/meteo.h ../include/mconf.h ../include/meteograph.h \
+	../include/mdebug.h
 dbupdate.lo dbupdate.o : dbupdate.c ../include/dbupdate.h \
 	../include/meteo.h ../include/mconf.h ../include/meteograph.h \
 	../include/meteodata.h ../include/com.h ../include/crc.h \
 	../include/conversions.h ../include/database.h \
-	../include/msgque.h
+	../include/msgque.h ../include/mdebug.h
 dewpoint.lo dewpoint.o : dewpoint.c ../include/dewpoint.h
 dloop.lo dloop.o : dloop.c ../include/config.h ../include/dloop.h \
 	../include/meteodata.h ../include/com.h ../include/crc.h \
 	../include/conversions.h ../include/meteo.h ../include/mconf.h \
-	../include/meteograph.h
+	../include/meteograph.h ../include/mdebug.h
 dograph.lo dograph.o : dograph.c ../include/meteo.h ../include/mconf.h \
 	../include/meteograph.h ../include/graph.h \
 	../include/dewpoint.h ../include/timestamp.h \
-	../include/dograph.h ../include/database.h
+	../include/dograph.h ../include/database.h ../include/mdebug.h
 graph.lo graph.o : graph.c ../include/graph.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
+master.lo master.o : master.c ../include/master.h ../include/mdebug.h
 mconf.lo mconf.o : mconf.c ../include/config.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
+mdebug.lo mdebug.o : mdebug.c ../include/mdebug.h
 meteo.lo meteo.o : meteo.c ../include/meteo.h ../include/mconf.h \
 	../include/meteograph.h
 meteo_vers.lo meteo_vers.o : meteo_vers.c meteo_vers.c
 meteodata.lo meteodata.o : meteodata.c ../include/meteodata.h \
 	../include/com.h ../include/crc.h ../include/conversions.h \
-	../include/meteo.h ../include/mconf.h ../include/meteograph.h
+	../include/meteo.h ../include/mconf.h ../include/meteograph.h \
+	../include/mdebug.h
 meteosocket.lo meteosocket.o : meteosocket.c ../include/meteosocket.h \
 	../include/meteodata.h ../include/com.h ../include/crc.h \
-	../include/conversions.h
+	../include/conversions.h ../include/mdebug.h
 msgque.lo msgque.o : msgque.c ../include/msgque.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
-parser.lo parser.o : parser.c ../include/mconf.h ../include/meteograph.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
+parser.lo parser.o : parser.c ../include/mconf.h ../include/meteograph.h \
+	../include/pdebug.h ../include/mdebug.h
+pdebug.lo pdebug.o : pdebug.c ../include/pdebug.h ../include/mdebug.h
 printver.lo printver.o : printver.c ../include/printver.h meteo_vers.c
 scanner.lo scanner.o : scanner.c ../include/mconf.h \
 	../include/meteograph.h ../include/parser.h
 sercom.lo sercom.o : sercom.c ../include/sercom.h ../include/com.h \
 	../include/crc.h ../include/meteo.h ../include/mconf.h \
-	../include/meteograph.h
+	../include/meteograph.h ../include/mdebug.h
 tcpcom.lo tcpcom.o : tcpcom.c ../include/config.h ../include/tcpcom.h \
 	../include/com.h ../include/crc.h ../include/meteo.h \
-	../include/mconf.h ../include/meteograph.h
-timestamp.lo timestamp.o : timestamp.c ../include/timestamp.h
+	../include/mconf.h ../include/meteograph.h ../include/mdebug.h
+timestamp.lo timestamp.o : timestamp.c ../include/timestamp.h \
+	../include/mdebug.h
 watchdog.lo watchdog.o : watchdog.c ../include/watchdog.h \
-	../include/meteo.h ../include/mconf.h ../include/meteograph.h
+	../include/meteo.h ../include/mconf.h ../include/meteograph.h \
+	../include/mdebug.h
 
 info-am:
 info: info-am

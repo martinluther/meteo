@@ -3,11 +3,12 @@
  *
  * (c) 2001 unit conversions for meteorolical data
  *
- * $Id: conversions.c,v 1.1 2002/01/18 23:34:28 afm Exp $
+ * $Id: conversions.c,v 1.2 2002/01/27 21:01:42 afm Exp $
  */
 #include <conversions.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <mdebug.h>
 
 #define	NUNITS	12
 static char	*unitnames[NUNITS] = {
@@ -27,8 +28,8 @@ static char	*unitnames[NUNITS] = {
 
 char	*unitname(int unit) {
 	if ((unit < 0) || (unit > NUNITS)) {
-		fprintf(stderr, "%s:%d: illegal unit constant: %d\n",
-			__FILE__, __LINE__, unit);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "illegal unit constant: %d",
+			unit);
 		return NULL;
 	}
 	return unitnames[unit];
@@ -160,7 +161,7 @@ double	unitconvert(int from, int to, double value) {
 		}
 	}
 	
-	fprintf(stderr, "%s:%d: incompatible units: %s -> %s\n",
-		__FILE__, __LINE__, unitname(from), unitname(to));
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "incompatible units: %s -> %s",
+		unitname(from), unitname(to));
 	return 0.;
 }

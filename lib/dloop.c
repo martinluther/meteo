@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dloop.c,v 1.1 2002/01/18 23:34:29 afm Exp $
+ * $Id: dloop.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <config.h>
 #include <dloop.h>
@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <meteo.h>
 #include <string.h>
+#include <mdebug.h>
 
 static void	imagedump(unsigned char *image, int length) {
 	char	hex[50], text[20];
@@ -46,20 +47,17 @@ static int	get_monitor_image(loop_t *l, meteodata_t *m) {
 			rain;
 
 	if (debug)
-		fprintf(stderr, "%s:%d: start reading sensor image\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start reading sensor image");
 	/* wait for a 01 character					*/
 	a = get_char(l->m->m);
 	if (a != 0x01) {
-		fprintf(stderr, "%s:%d: start byte not received\n",	
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "start byte not received");
 		return -1;
 	}
 
 	/* read 17 bytes						*/
 	if (get_buffer(l->m->m, image, MONITOR_LOOP_SIZE)) {
-		fprintf(stderr, "%s:%d: problem reading block\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "problem reading block");
 		return -1;
 	}
 	if (debug > 1)
@@ -93,25 +91,25 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 	int		i;
 
 	if (debug)
-		fprintf(stderr, "%s:%d: about to read a LOOP packet of "
-			"size %d\n", __FILE__, __LINE__, VANTAGE_LOOP_SIZE);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "about to read a LOOP packet "
+			"of size %d", VANTAGE_LOOP_SIZE);
 
 	/* read a complete packet from the link				*/
 	for (i = 0; i < VANTAGE_LOOP_SIZE; i++) {
 		if ((debug > 0) && ((i % 10) == 0))
-			fprintf(stderr, "%s:%d: received %d characters so "
-				"far\n", __FILE__, __LINE__, i);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"received %d characters so far", i);
 		image[i] = get_char(l->m->m);
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: got a packet\n", __FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got a packet");
 	if (debug > 1)
 		imagedump(image, VANTAGE_LOOP_SIZE);
 
 	/* check for loop packet type					*/
 	if (0 != strcmp("LOOP", (char *)image)) {
-		fprintf(stderr, "%s:%d: this is not a Vantage LOOP packet\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "this is not a Vantage LOOP "
+			"packet");
 		return -1;
 	}
 
@@ -122,8 +120,8 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 	temperature = (image[13] * 256. + image[12])/10.;
 	speed = unitconvert(UNIT_MPH, UNIT_MPS, (double)image[14]);
 	if (debug)
-		fprintf(stderr, "%s:%d: speed value: %.1f m/s\n",
-			__FILE__, __LINE__, speed);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "speed value: %.1f m/s",
+			speed);
 	direction = image[17] * 256. + image[16];
 	humidity = (double)image[33];
 	rain = unitconvert(UNIT_IN, UNIT_MM,
@@ -144,15 +142,15 @@ loop_t	*dloop_new(meteoaccess_t *m) {
 	loop_t	*l;
 	l = (loop_t *)malloc(sizeof(loop_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (loop_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(loop_t), l);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(loop_t *)malloc(%d) = %p",
+			sizeof(loop_t), l);
 	l->m = m;
 	if (m->m->flags & COM_VANTAGE)
 		l->read = get_vantage_image;
 	else
 		l->read = get_monitor_image;
 	if (debug)
-		fprintf(stderr, "%s:%d: read function at %p\n", __FILE__,
-			__LINE__, l->read);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "read function at %p",
+			l->read);
 	return l;
 }

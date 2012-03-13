@@ -3,13 +3,15 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: daemon.c,v 1.1 2002/01/18 23:34:28 afm Exp $
+ * $Id: daemon.c,v 1.2 2002/01/27 21:01:42 afm Exp $
  */
 #include <daemon.h>
 #include <meteo.h>
 #include <string.h>
-#include <errno.h>
 #include <unistd.h>
+#include <mdebug.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 int	daemonize(const char *pidfilenamepattern, const char *station) {
 	char	*pidfilename;
@@ -20,8 +22,7 @@ int	daemonize(const char *pidfilenamepattern, const char *station) {
 	/* fork								*/
 	pid = fork();
 	if (pid < 0) {
-		fprintf(stderr, "%s:%d: cannot fork: %s (%d)\n", __FILE__,
-			__LINE__, strerror(errno), errno);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, MDEBUG_ERRNO, "cannot fork");
 		return -1;
 	}
 	if (pid > 0) {
@@ -47,8 +48,8 @@ int	daemonize(const char *pidfilenamepattern, const char *station) {
 
 	/* write our pid to the file					*/
 	if (NULL == (pidfile = fopen(pidfilename, "w"))) {
-		fprintf(stderr, "%s:%d: cannot open pid file. %s (%d)\n",
-			__FILE__, __LINE__, strerror(errno), errno);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, MDEBUG_ERRNO,
+			"cannot open pid file");
 		return -1;
 	}
 	fprintf(pidfile, "%d\n", pid = getpid());

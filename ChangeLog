@@ -1,3 +1,23 @@
+Release 0.3.1:
+	* fixed signal handling to protect the master from being kill by signals
+	  sent to the child's process group (i.e. for terminal signals which
+	  we don't want to be blocked from the child)
+	* added signal handling to master/slave frame work in meteoloop so
+	  that SIGTERM and SIGINT on the master also terminate the child,
+	  as required for well working start/stop scripts
+	* completed work on localization of the meteobrowser, including date
+	  localization
+	* added a master/slave configuration to meteoloop, so that the
+	  master can always fork a new child if the the previous child dies
+	* switched logging to the new mdebug functions so that the log
+	  can be written to syslog
+	* added po directory for localizations of the meteo browser
+	* added the explanations to the browser window
+	* added functions to send parser debug log to common log system
+	* added a drain function to com.c, so that it is now possible to
+	  for some time read spurious characters from the station and
+	  throw them away
+
 Release 0.3.0:
 	* fix minor off-by-one bug in meteograph that hid the last data point
 	  behind the nodatat color although the data did exist
@@ -133,4 +153,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.26 2002/01/18 23:34:21 afm Exp $
+$Id: ChangeLog,v 1.30 2002/01/30 09:49:01 afm Exp $

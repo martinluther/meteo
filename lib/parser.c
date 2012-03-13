@@ -37,14 +37,16 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: parser.y,v 1.1 2002/01/18 23:34:30 afm Exp $
+ * $Id: parser.y,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <mconf.h>
+#include <pdebug.h>
+#include <mdebug.h>
 
 extern int	mplineno;
 mc_node_t	*mpconffile;
 
-#line 15 "../lib/parser.y"
+#line 17 "../lib/parser.y"
 typedef union {
 	double		dval;
 	int		ival;
@@ -132,10 +134,10 @@ static const short yyrhs[] = {    25,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-    44,    50,    55,    61,    62,    63,    66,    73,    80,    85,
-    88,    94,    97,   102,   108,   109,   112,   117,   124,   125,
-   128,   133,   139,   149,   154,   160,   172,   177,   184,   187,
-   195,   198,   203,   209,   214,   221,   227,   232,   241,   246
+    46,    52,    57,    63,    64,    65,    68,    75,    82,    87,
+    90,    96,    99,   104,   110,   111,   114,   119,   126,   127,
+   130,   135,   141,   151,   156,   162,   174,   179,   186,   189,
+   197,   200,   205,   211,   216,   223,   229,   234,   243,   248
 };
 #endif
 
@@ -790,14 +792,14 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 44 "../lib/parser.y"
+#line 46 "../lib/parser.y"
 {
 			yyval.mc = yyvsp[0].mc;
 			mpconffile = yyval.mc;
 		;
     break;}
 case 2:
-#line 50 "../lib/parser.y"
+#line 52 "../lib/parser.y"
 {
 			mc_node_t	*n = mc_node_new();
 			mc_node_put(n, yyvsp[0].md);
@@ -805,26 +807,26 @@ case 2:
 		;
     break;}
 case 3:
-#line 55 "../lib/parser.y"
+#line 57 "../lib/parser.y"
 {
 			mc_node_put(yyvsp[-1].mc, yyvsp[0].md);
 			yyval.mc = yyvsp[-1].mc;
 		;
     break;}
 case 4:
-#line 61 "../lib/parser.y"
-{ yyval.md = yyvsp[0].md; ;
-    break;}
-case 5:
-#line 62 "../lib/parser.y"
-{ yyval.md = yyvsp[0].md; ;
-    break;}
-case 6:
 #line 63 "../lib/parser.y"
 { yyval.md = yyvsp[0].md; ;
     break;}
+case 5:
+#line 64 "../lib/parser.y"
+{ yyval.md = yyvsp[0].md; ;
+    break;}
+case 6:
+#line 65 "../lib/parser.y"
+{ yyval.md = yyvsp[0].md; ;
+    break;}
 case 7:
-#line 66 "../lib/parser.y"
+#line 68 "../lib/parser.y"
 {
 			md_t *m = md_new("database");
 			md_set(m, MC_DATA, yyvsp[-2].mc);
@@ -832,7 +834,7 @@ case 7:
 		;
     break;}
 case 8:
-#line 73 "../lib/parser.y"
+#line 75 "../lib/parser.y"
 {
 			md_t	*x = md_new(yyvsp[-2].string);
 			md_set(x, MC_COLOR, yyvsp[-1].color);
@@ -840,17 +842,17 @@ case 8:
 		;
     break;}
 case 9:
-#line 80 "../lib/parser.y"
+#line 82 "../lib/parser.y"
 {
 			yyval.color[0] = yyvsp[-2].ival; yyval.color[1] = yyvsp[-1].ival; yyval.color[2] = yyvsp[0].ival;
 		;
     break;}
 case 10:
-#line 85 "../lib/parser.y"
+#line 87 "../lib/parser.y"
 { yyval.string = yyvsp[0].string; ;
     break;}
 case 11:
-#line 88 "../lib/parser.y"
+#line 90 "../lib/parser.y"
 {
 			md_t	*n = md_new(yyvsp[-4].string);
 			md_set(n, MC_DATA, yyvsp[-2].mc);
@@ -858,11 +860,11 @@ case 11:
 		;
     break;}
 case 12:
-#line 94 "../lib/parser.y"
+#line 96 "../lib/parser.y"
 { yyval.string = yyvsp[0].string; ;
     break;}
 case 13:
-#line 97 "../lib/parser.y"
+#line 99 "../lib/parser.y"
 {
 			mc_node_t	*n = mc_node_new();
 			mc_node_put(n, yyvsp[0].md);
@@ -870,22 +872,22 @@ case 13:
 		;
     break;}
 case 14:
-#line 102 "../lib/parser.y"
+#line 104 "../lib/parser.y"
 {
 			mc_node_put(yyvsp[-1].mc, yyvsp[0].md);
 			yyval.mc = yyvsp[-1].mc;
 		;
     break;}
 case 15:
-#line 108 "../lib/parser.y"
+#line 110 "../lib/parser.y"
 { yyval.md = yyvsp[0].md; ;
     break;}
 case 16:
-#line 109 "../lib/parser.y"
+#line 111 "../lib/parser.y"
 { yyval.md = yyvsp[0].md; ;
     break;}
 case 17:
-#line 112 "../lib/parser.y"
+#line 114 "../lib/parser.y"
 {
 			md_t	*x = md_new("left");
 			md_set(x, MC_DATA, yyvsp[-2].mc);
@@ -893,7 +895,7 @@ case 17:
 		;
     break;}
 case 18:
-#line 117 "../lib/parser.y"
+#line 119 "../lib/parser.y"
 {
 			md_t	*x = md_new("right");
 			md_set(x, MC_DATA, yyvsp[-2].mc);
@@ -901,15 +903,15 @@ case 18:
 		;
     break;}
 case 19:
-#line 124 "../lib/parser.y"
+#line 126 "../lib/parser.y"
 { yyval.md = yyvsp[0].md; ;
     break;}
 case 20:
-#line 125 "../lib/parser.y"
+#line 127 "../lib/parser.y"
 { yyval.md = yyvsp[0].md; ;
     break;}
 case 21:
-#line 128 "../lib/parser.y"
+#line 130 "../lib/parser.y"
 {
 			mc_node_t	*n = mc_node_new();
 			mc_node_put(n, yyvsp[0].md);
@@ -917,14 +919,14 @@ case 21:
 		;
     break;}
 case 22:
-#line 133 "../lib/parser.y"
+#line 135 "../lib/parser.y"
 {
 			mc_node_put(yyvsp[-1].mc, yyvsp[0].md);
 			yyval.mc = yyvsp[-1].mc;
 		;
     break;}
 case 23:
-#line 139 "../lib/parser.y"
+#line 141 "../lib/parser.y"
 {
 			char	label[32];
 			md_t	*m;
@@ -935,7 +937,7 @@ case 23:
 		;
     break;}
 case 24:
-#line 149 "../lib/parser.y"
+#line 151 "../lib/parser.y"
 {
 			mc_node_t	*n = mc_node_new();
 			mc_node_put(n, yyvsp[0].md);
@@ -943,14 +945,14 @@ case 24:
 		;
     break;}
 case 25:
-#line 154 "../lib/parser.y"
+#line 156 "../lib/parser.y"
 {
 			mc_node_put(yyvsp[-1].mc, yyvsp[0].md);
 			yyval.mc = yyvsp[-1].mc;
 		;
     break;}
 case 26:
-#line 160 "../lib/parser.y"
+#line 162 "../lib/parser.y"
 {
 			md_t	*m = md_new(yyvsp[-2].string);
 			md_set(m, MC_STRING, yyvsp[-1].string);
@@ -958,7 +960,7 @@ case 26:
 		;
     break;}
 case 27:
-#line 172 "../lib/parser.y"
+#line 174 "../lib/parser.y"
 {
 			md_t	*m = md_new(yyvsp[-2].string);
 			md_set(m, MC_DOUBLE, &yyvsp[-1].dval);
@@ -966,7 +968,7 @@ case 27:
 		;
     break;}
 case 28:
-#line 177 "../lib/parser.y"
+#line 179 "../lib/parser.y"
 {
 			double	d;
 			md_t	*m = md_new(yyvsp[-2].string);
@@ -976,15 +978,15 @@ case 28:
 		;
     break;}
 case 30:
-#line 187 "../lib/parser.y"
+#line 189 "../lib/parser.y"
 { yyval.string = yyvsp[0].string; ;
     break;}
 case 31:
-#line 195 "../lib/parser.y"
+#line 197 "../lib/parser.y"
 { yyval.string = yyvsp[0].string; ;
     break;}
 case 32:
-#line 198 "../lib/parser.y"
+#line 200 "../lib/parser.y"
 {
 			mc_node_t *n = mc_node_new();
 			mc_node_put(n, yyvsp[0].md);
@@ -992,14 +994,14 @@ case 32:
 		;
     break;}
 case 33:
-#line 203 "../lib/parser.y"
+#line 205 "../lib/parser.y"
 {
 			mc_node_put(yyvsp[-1].mc, yyvsp[0].md);
 			yyval.mc = yyvsp[-1].mc;
 		;
     break;}
 case 34:
-#line 209 "../lib/parser.y"
+#line 211 "../lib/parser.y"
 {
 			md_t *m = md_new(yyvsp[-2].string);
 			md_set(m, MC_STRING, yyvsp[-1].string);
@@ -1007,7 +1009,7 @@ case 34:
 		;
     break;}
 case 35:
-#line 214 "../lib/parser.y"
+#line 216 "../lib/parser.y"
 {
 			md_t *m = md_new("port");
 			md_set(m, MC_INTEGER, yyvsp[-1].ival);
@@ -1015,7 +1017,7 @@ case 35:
 		;
     break;}
 case 36:
-#line 221 "../lib/parser.y"
+#line 223 "../lib/parser.y"
 {
 			md_t	*m = md_new("station");
 			md_set(m, MC_DATA, yyvsp[-2].mc);
@@ -1023,7 +1025,7 @@ case 36:
 		;
     break;}
 case 37:
-#line 227 "../lib/parser.y"
+#line 229 "../lib/parser.y"
 {
 			md_t *m = md_new(yyvsp[-2].string);
 			md_set(m, MC_STRING, yyvsp[-1].string);
@@ -1031,7 +1033,7 @@ case 37:
 		;
     break;}
 case 38:
-#line 232 "../lib/parser.y"
+#line 234 "../lib/parser.y"
 {
 			int	speed;
 			md_t	*m = md_new("speed");
@@ -1041,7 +1043,7 @@ case 38:
 		;
     break;}
 case 39:
-#line 241 "../lib/parser.y"
+#line 243 "../lib/parser.y"
 {
 			mc_node_t	*n = mc_node_new();
 			mc_node_put(n, yyvsp[0].md);
@@ -1049,7 +1051,7 @@ case 39:
 		;
     break;}
 case 40:
-#line 246 "../lib/parser.y"
+#line 248 "../lib/parser.y"
 {
 			mc_node_put(yyvsp[-1].mc, yyvsp[0].md);
 			yyval.mc = yyvsp[-1].mc;
@@ -1281,11 +1283,11 @@ yyerrhandle:
 #endif    
   return 1;
 }
-#line 253 "../lib/parser.y"
+#line 255 "../lib/parser.y"
 
 
 int	mperror(char *s) {
-	fprintf(stderr, "%s:%d: meteo conf file parse error on line %d\n",
-		__FILE__, __LINE__, mplineno);
+	mdebug(LOG_ERR, __FILE__, mplineno, 0,
+		"meteo conf file parse error on line %d", mplineno);
 	return 0;
 }

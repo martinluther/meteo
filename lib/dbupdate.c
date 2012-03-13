@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: dbupdate.c,v 1.1 2002/01/18 23:34:29 afm Exp $
+ * $Id: dbupdate.c,v 1.2 2002/01/27 21:01:42 afm Exp $
  */
 #include <dbupdate.h>
 #include <database.h>
@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <msgque.h>
+#include <mdebug.h>
 
 dest_t	*dest_new(void) {
 	dest_t	*result;
@@ -39,20 +39,20 @@ static int	dbquery(dest_t *ddp, const char *query) {
 		return -1;
 	switch (ddp->type) {
 	case DEST_NONE:
-		fprintf(stderr, "%s:%d: dest not initialized for update\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"dest not initialized for update");
 		return -1;
 		break;
 	case DEST_MYSQL:
 		if (debug)
-			fprintf(stderr, "%s:%d: sending query directly to "
-				"database\n", __FILE__, __LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"sending query directly to database");
 		return mysql_query(ddp->destdata.mysql, query);
 		break;
 	case DEST_MSGQUE:
 		if (debug)
-			fprintf(stderr, "%s:%d: sending query to msg queue "
-				"%d (length = %d)\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"sending query to msg queue %d (length = %d)",
 				ddp->destdata.msgque, strlen(query) + 1);
 		return msgque_sendquery(ddp->destdata.msgque, query,
 			strlen(query) + 1);
@@ -136,11 +136,9 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 		(now - 60)/300, (now - 60)/1800, (now - 60)/7200,
 		(now - 60)/86400);
 	if (debug)
-		fprintf(stderr, "%s:%d: query is '%s'\n", __FILE__, __LINE__,
-			query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (dbquery(ddp, query)) {
-		fprintf(stderr, "%s:%d: update query failed\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "update query failed");
 		return -1;
 	}
 	return 0;

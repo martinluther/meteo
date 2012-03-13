@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteograph.c,v 1.1 2002/01/18 23:34:32 afm Exp $
+ * $Id: meteograph.c,v 1.3 2002/01/29 20:55:29 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -21,6 +21,7 @@
 #include <database.h>
 #include <dograph.h>
 #include <printver.h>
+#include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;
@@ -60,12 +61,19 @@ int	main(int argc, char *argv[]) {
 	dg.timestamp = NULL;
 	
 	/* parse command line						*/
-	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:G:tV")))
+	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:l:G:tV")))
 		switch (c) {
+		case 'l':
+			if (mdebug_setup("meteograph", optarg) < 0) {
+				fprintf(stderr, "%s: cannot init log\n",
+					argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 'c':
 			if (chdir(optarg) < 0) {
-				fprintf(stderr, "%s:%d: cannot chdir to %s\n",
-					__FILE__, __LINE__, optarg);
+				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+					"cannot chdir to %s", optarg);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -90,10 +98,13 @@ int	main(int argc, char *argv[]) {
 		case 'a':
 			dg.useaverages = 1;
 			if (debug)
-				fprintf(stderr, "%s:%d: use of average table "
-					"requested\n", __FILE__, __LINE__);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"use of average table requested");
 			break;
 		case 'g':
+			if (debug)
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"graph for %s requested", optarg);
 			for (i = 0; i < NGRAPHS; i++) 
 				if (0 == strcasecmp(optarg, ngs[i].name))
 					dg.requestedgraphs |= ngs[i].graph;
@@ -113,41 +124,39 @@ int	main(int argc, char *argv[]) {
 	/* check for requested graphs					*/
 	if (dg.requestedgraphs == 0) {
 		if (debug)
-			fprintf(stderr, "%s:%d: no graphs selected, "
-				"creating all\n", __FILE__, __LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no graphs selected, "
+				"creating all");
 		dg.requestedgraphs = 0x3f;
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: graph mask: %02x\n", __FILE__,
-			__LINE__, dg.requestedgraphs);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "graph mask: %02x",
+			dg.requestedgraphs);
 
 	/* it is an error not to specify a configuration file		*/
 	if (NULL == conffilename) {
-		fprintf(stderr, "%s:%d: must specify -f <config>\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
 		exit(EXIT_FAILURE);
 	}
 
 	/* read the configuration file					*/
 	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
-		fprintf(stderr, "%s:%d: configuration invalid\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration invalid");
 		exit(EXIT_FAILURE);
 	}
 
 	/* open the database connection					*/
 	dg.mysql = mc_opendb(meteoconfig, O_RDONLY);
 	if (dg.mysql == NULL) {
-		fprintf(stderr, "%s:%d: could not connect to database\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+			"could not connect to database");
 		exit(EXIT_FAILURE);
 	}
 
 	/* get some other data from the configuration file		*/
 	if (NULL == (dg.prefix = mc_get_string(meteoconfig, "database.prefix",
 		NULL))) {
-		fprintf(stderr, "%s:%d: prefix not set in configuration file\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+			"prefix not set in configuration file");
 		exit(EXIT_FAILURE);
 	}
 
@@ -175,8 +184,8 @@ int	main(int argc, char *argv[]) {
 			dg.suffix = "year";
 			break;
 		default:
-			fprintf(stderr, "%s:%d: unknown interval %s\n",
-				__FILE__, __LINE__, argv[optind]);
+			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "unknown interval %s",
+				argv[optind]);
 			exit(EXIT_FAILURE);
 			break;
 		}

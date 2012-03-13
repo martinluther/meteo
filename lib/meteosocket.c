@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteosocket.c,v 1.1 2002/01/18 23:34:30 afm Exp $
+ * $Id: meteosocket.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <meteosocket.h>
 #include <sys/types.h>
@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <mdebug.h>
 
 int	meteosocket(char *socketpath, int mode) {
 	int			s;
@@ -24,8 +25,8 @@ int	meteosocket(char *socketpath, int mode) {
 
 	/* check whether the path length is acceptable			*/
 	if (strlen(socketpath) > (sizeof(su.sun_path) - 1)) {
-		fprintf(stderr, "%s:%d: socketpath to long, %d > %d\n",
-			__FILE__, __LINE__, strlen(socketpath),
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "socketpath to long, %d > %d\n",
+			  strlen(socketpath),
 			sizeof(su.sun_path) - 1);
 		errno = E2BIG;
 		return -1;
@@ -33,20 +34,19 @@ int	meteosocket(char *socketpath, int mode) {
 
 	/* check whether the socket already exists			*/
 	if (stat(socketpath, &sb) >= 0) {
-		fprintf(stderr, "%s:%d: warning: file %s exists, deleting\n",
-			__FILE__, __LINE__, socketpath);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"warning: file %s exists, deleting", socketpath);
 		if (unlink(socketpath) < 0) {
-			fprintf(stderr, "%s:%d: cannot delete file %s: "
-				"%s (%d)\n", __FILE__, __LINE__, socketpath,
-				strerror(errno), errno);
+			mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+				"cannot delete file %s", socketpath);
 			return -1;
 		}
 	}
 
 	/* create a Unix domain datagram socket				*/
 	if ((s = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) {
-		fprintf(stderr, "%s:%d: socket call fails: %s (%d)\n",
-			__FILE__, __LINE__, strerror(errno), errno);
+		mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+			"socket call fails");
 		return s;
 	}
 
@@ -59,9 +59,8 @@ int	meteosocket(char *socketpath, int mode) {
 	case METEO_SERVER:
 		/* bind to the socket					*/
 		if (bind(s, (struct sockaddr *)&su, sizeof(su)) < 0) {
-			fprintf(stderr, "%s:%d: bind to socket failed: "
-				"%s (%d)\n", __FILE__, __LINE__,
-				strerror(errno), errno);
+			mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+				"bind to socket failed");
 			return -1;
 		}
 
@@ -69,8 +68,8 @@ int	meteosocket(char *socketpath, int mode) {
 	case METEO_CLIENT:
 		/* connect to the socket				*/
 		if (connect(s, (struct sockaddr *)&su, sizeof(su)) < 0) {
-			fprintf(stderr, "%s:%d: cannot connect: %s (%d)\n",
-				__FILE__, __LINE__, strerror(errno), errno);
+			mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+				"cannot connect");
 			return -1;
 		}
 		break;
@@ -191,8 +190,8 @@ int	meteosend(int s, meteodata_t *md, char *station) {
 
 	/* send the message to the other side				*/
 	if (send(s, msg, l, 0) < l) {
-		fprintf(stderr, "%s:%d: sending message failed: %s (%d)\n",
-			__FILE__, __LINE__, strerror(errno), errno);
+		mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+			"sending message failed");
 		return -1;
 	}
 	return 0;

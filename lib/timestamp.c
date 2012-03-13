@@ -3,14 +3,14 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: timestamp.c,v 1.1 2002/01/18 23:34:30 afm Exp $
+ * $Id: timestamp.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <timestamp.h>
+#include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;

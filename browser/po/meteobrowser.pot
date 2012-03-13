@@ -1,0 +1,68 @@
+msgid "weather overview of"
+msgstr ""
+
+msgid "week from %s to %s"
+msgstr ""
+
+msgid "%A, %d %B %Y"
+msgstr ""
+
+msgid "%B %e, %Y"
+msgstr ""
+
+msgid "%B %Y"
+msgstr ""
+
+msgid "year %s"
+msgstr ""
+
+msgid ""
+"To see more details, click into the region you like inside "
+"the graphs below, to zoom out or move forward or backward "
+"in time, use the navigation bar."
+msgstr ""
+
+msgid ""
+"The <font color=\"#b40000\">red</font> curve shows the temperature, "
+"the <font color=\"#ffb4b4\">light red</font> area shows the range "
+"between maximum and minimum temperature during the sampling "
+"interval.  The <font color=\"#6464ff\">blue</font> curve shows the "
+"dew point, the temperature at which dew begins to form."
+msgstr ""
+
+msgid ""
+"The <font color=\"#7f7fff\">blue</font> graph shows "
+"average barometric pressure, the range between minimum "
+"and maximum pressure during the sampling interval is shown "
+"in <font color=\"#d2d2ff\">light blue</font>."
+msgstr ""
+
+msgid ""
+"The <font color=\"#0000ff\">blue</font> histogram shows "
+"the total rain (or moisture content of the "
+"precipitation) in <i>mm</i> during the sampling interval. "
+msgstr ""
+
+msgid ""
+"The lower part of the graph shows in <font "
+"color=\"#00ff00\">light green</font> the average wind speed "
+"during the sampling interval, the maximum speed is shown "
+"in <font color=\"#006400\">dark green</font>, scale on the "
+"left of the graph. The upper part shows the wind azimut "
+"in <font color=\"#6464ff\">blue</font>, scale on the right. "
+msgstr ""
+
+msgid ""
+"The <font color=\"#c8b400\">gold</font> histogram shows the "
+"total solar radiation in W/m^2, scale on the left of the "
+"graph.  The <font color=\"#6400c8\">pink</font> curve shows "
+"the UV index, scale on the right.  </p> <p> Note that after "
+"snow fall the readings of both sensors are not reliably, "
+"as the sensors are not automatically freed of the snow."
+msgstr ""
+
+msgid "Graphs produced by the <a href=\"http://meteo.othello.ch/\">meteo</a> "
+"package, &copy; 2002 <a href=\"mailto:afm@othello.ch\">Dr. Andreas "
+"M&uuml;ller</a>, <a href=\"http://www.othello.ch/\">Beratung und "
+"Entwicklung</a>"
+msgstr ""

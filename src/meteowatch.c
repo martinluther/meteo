@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteowatch.c,v 1.1 2002/01/18 23:34:32 afm Exp $
+ * $Id: meteowatch.c,v 1.2 2002/01/27 21:01:44 afm Exp $
  */
 #include <meteo.h>
 #include <stdio.h>
@@ -16,6 +16,7 @@
 #include <string.h>
 #include <timestamp.h>
 #include <printver.h>
+#include <mdebug.h>
 
 #define	UPDATECHECKINTERVAL	800
 #define	CHECKINTERVAL		400
@@ -30,35 +31,50 @@ typedef struct watch_s {
 
 /*
  * last_update	retrieve the timestamp of the last update for this station
+ *              that happened within the last 10 minutes (this should be much
+ *              faster than scanning the whole table)
  */
 static time_t	last_update(watch_t *w, MYSQL *mysql) {
 	char		query[1024];
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
-	time_t		lu;
+	time_t		lu, t;
+	char		timekey[128];
+	struct tm	*tmp;
+
+	/* compute a time key for the current time minus the check	*/
+	/* interval							*/
+	time(&t);
+	t -= UPDATECHECKINTERVAL;
+	tmp = localtime(&t);
+	strftime(timekey, sizeof(timekey), "%Y%m%d%H%M%S", tmp);
 
 	/* compute the query to use to retrieve the last update 	*/	
+	/* anything further than UPDATECHECKINTERVAL in the past is	*/
+	/* considered to be at the beginning of all things Unix, at the	*/
+	/* epoch							*/
+	/* XXX what is returned for max(timekey) if result set  empty?	*/
 	snprintf(query, sizeof(query),
-		"select max(timekey) from stationdata where station = '%s'",
-		w->station);
+		"select max(timekey) from stationdata where station = '%s' "
+		"and timekey > %s", w->station, timekey);
 	if (debug)
-		fprintf(stderr, "%s:%d: querying last update with query '%s'\n",
-			__FILE__, __LINE__, query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"querying last update with query '%s'", query);
 
 	/* run the query against the database				*/
 	if (mysql_query(mysql, query)) {
-		fprintf(stderr, "%s:%d: could not query database\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "could not query database");
 		return -1;
 	}
 
 	/* get the result set from the query				*/
 	res = mysql_store_result(mysql);
 	if (1 != mysql_num_rows(res)) {
-		fprintf(stderr, "%s:%d: not exactly 1 row returned\n",
-			__FILE__, __LINE__);
+		/* if nothing is returned, consider this as infinitely	*/
+		/* far in the past					*/
+		lu = 0;
 		mysql_free_result(res);
-		return -1;
+		return lu;
 	}
 	row = mysql_fetch_row(res);
 
@@ -77,18 +93,17 @@ static pid_t	find_pid(watch_t *w) {
 
 	/* open the pid file						*/
 	if (NULL == (f = fopen(w->stationpidfile, "r"))) {
-		fprintf(stderr, "%s:%d: cannot open pid file named '%s' "
-			"found\n", __FILE__, __LINE__, w->station);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"cannot open pid file named '%s' found", w->station);
 		return -1;
 	}
 
 	/* read a short integer from the file				*/
 	if (1 != fscanf(f, "%d", &p)) {
-		fprintf(stderr, "%s:%d: pid not found\n", __FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "pid not found");
 	} else {
 		if (debug)
-			fprintf(stderr, "%s:%d: pid = %d\n",
-				__FILE__, __LINE__, p);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "pid = %d", p);
 	}
 
 	/* clean up and return pid					*/
@@ -148,8 +163,8 @@ static int	watch_all(watch_t *watchlist, int stations, MYSQL *mysql) {
 	for (i = 0; i < stations; i++) {
 		rc = check_station(&watchlist[i], mysql);
 		if (rc < 0) {
-			fprintf(stderr, "%s:%d: problem detected during "
-				"check of stations %s\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"problem detected during check of stations %s",
 				watchlist[i].station);
 			rcrc--;
 		}
@@ -167,8 +182,15 @@ int	main(int argc, char *argv[]) {
 	watch_t	*watchlist;
 
 	/* parse command line						*/
-	while (EOF != (c = getopt(argc, argv, "dp:P:f:V")))
+	while (EOF != (c = getopt(argc, argv, "dp:l:P:f:V")))
 		switch (c) {
+		case 'l':
+			if (mdebug_setup("meteowatch", optarg) < 0) {
+				fprintf(stderr, "%s: cannot init log\n",
+					argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 'd':
 			debug++;
 			break;
@@ -192,30 +214,29 @@ int	main(int argc, char *argv[]) {
 
 	/* if we don't have a conf file at this point, it's a fatal err	*/
 	if (conffilename) {
-		fprintf(stderr, "%s:%d: must specify -f <config>\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
 		exit(EXIT_FAILURE);
 	}
 
 	/* remaining options should be station names, build a list	*/
 	/* of stations							*/
 	if (argc <= optind) {
-		fprintf(stderr, "%s:%d: no stations specified, exiting.\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+			"no stations specified, exiting.");
 		exit(EXIT_FAILURE);
 	}
 	stations = optind - argc;
 	if (debug)
-		fprintf(stderr, "%s:%d: %d stations specified\n", __FILE__,
-			__LINE__, stations);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%d stations specified",
+			stations);
 	watchlist = (watch_t *)malloc(stations * sizeof(watch_t));
 	for (i = optind; i < argc; i++) {
 		/* get station name					*/
 		station = strdup(argv[optind]);
 		watchlist[i].station = station;
 		if (debug)
-			fprintf(stderr, "%s:%d: setting up station %s\n",
-				__FILE__, __LINE__, station);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"setting up station %s", station);
 
 		/* set the pid file name and pid			*/
 		watchlist[i].stationpidfile = (char *)malloc(2
@@ -229,8 +250,8 @@ int	main(int argc, char *argv[]) {
 
 	/* read the configuration file					*/
 	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
-		fprintf(stderr, "%s:%d: configuration %s is invalid\n",
-			__FILE__, __LINE__, conffilename);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration %s is invalid",
+			conffilename);
 		exit(EXIT_FAILURE);
 	}
 
@@ -238,8 +259,7 @@ int	main(int argc, char *argv[]) {
 	if (!foreground) {
 		switch (daemonize(pidfilename, NULL)) {
 		case -1:
-			fprintf(stderr, "%s:%d: failed to daemonize\n",
-				__FILE__, __LINE__);
+			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "failed to daemonize");
 			exit(EXIT_FAILURE);
 			break;
 		case 0:

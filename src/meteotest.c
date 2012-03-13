@@ -15,6 +15,7 @@
 #include <davis.h>
 #include <meteo.h>
 #include <printver.h>
+#include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;

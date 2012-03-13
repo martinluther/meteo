@@ -10,8 +10,8 @@
 #include <fcntl.h>
 #include <sercom.h>
 #include <string.h>
-#include <errno.h>
 #include <meteo.h>
+#include <mdebug.h>
 
 meteocom_t	*sercom_new(char *url, int speed) {
 	meteocom_t	*r = NULL;
@@ -21,36 +21,35 @@ meteocom_t	*sercom_new(char *url, int speed) {
 
 	/* make sure the dev specified is a file URL			*/
 	if (strncmp(url, "file://", 7)) {
-		fprintf(stderr, "%s:%d: %s ist not a file url\n",
-			__FILE__, __LINE__, url);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "%s ist not a file url",
+			  url);
 		goto err;
 	}
 	dev = &url[7];
 	if (debug)
-		fprintf(stderr, "%s:%d: opening device %s\n", __FILE__,
-			__LINE__, dev);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "opening device %s", 
+			 dev);
 	
 	/* allocate memory for the serial device file descriptor	*/
 	r = com_new();
 	r->private = malloc(sizeof(int));
 	if (debug)
-		fprintf(stderr, "%s:%d: (int *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(int), r->private);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(int *)malloc(%d) = %p",
+			  sizeof(int), r->private);
 
 	/* open the serial device					*/
 	if (0 >= (*(int *)r->private = open(dev, O_RDWR|O_NOCTTY))) {
-		fprintf(stderr, "%s:%d: cannot open device: %s (%d)\n",
-			__FILE__, __LINE__, strerror(errno), errno);
+		mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+			"cannot open device");
 		goto err;
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: device '%s' open, fd = %d\n", __FILE__,
-			__LINE__, dev, *(int *)r->private);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "device '%s' open, fd = %d", 
+			 dev, *(int *)r->private);
 
 	/* set communication parameters	on the file descriptor		*/
 	if (!isatty(*(int *)r->private)) {
-		fprintf(stderr, "%s:%d: device not a terminal\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "device not a terminal");
 		return NULL;
 	}
 	tcgetattr(*(int *)r->private, &term);
@@ -81,38 +80,37 @@ meteocom_t	*sercom_new(char *url, int speed) {
 		case 19200:	speedconst = B19200; break;
 		case 38400:	speedconst = B38400; break;
 		default:
-			fprintf(stderr, "%s:%d: unknown speed: %d\n",
-				__FILE__, __LINE__, speed);
+			mdebug(LOG_ERR, MDEBUG_LOG, 0, "unknown speed: %d",
+				  speed);
 			return NULL;
 	}
 	cfsetispeed(&term, speedconst);
 	cfsetospeed(&term, speedconst);
 	if (tcsetattr(*(int *)r->private, TCSANOW, &term) < 0) {
-		fprintf(stderr, "%s:%d: cannot set speed: %s (%d)\n", __FILE__,
-			__LINE__, strerror(errno), errno);
+		mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+			"cannot set speed");
 		goto err;
 	}
 
 	/* check the baud rate actually selected			*/
 	tcgetattr(*(int *)r->private, &term);
 	if (cfgetispeed(&term) != speedconst) {
-		fprintf(stderr, "%s:%d: ispeed not set correctly: %d\n",
-			__FILE__, __LINE__, cfgetispeed(&term));
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "ispeed not set correctly: %d",
+			cfgetispeed(&term));
 		goto err;
 	}
 	if (cfgetospeed(&term) != speedconst) {
-		fprintf(stderr, "%s:%d: ospeed not set correctly: %d\n",
-			__FILE__, __LINE__, cfgetospeed(&term));
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "ospeed not set correctly: %d",
+			cfgetospeed(&term));
 		goto err;
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: speed set to %d\n", __FILE__,
-			__LINE__, speed);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "speed set to %dn", 
+			speed);
 
 	/* don't need to set communication functions, defaults are ok	*/
 	if (debug)
-		fprintf(stderr, "%s:%d: serial port initialized\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "serial port initialized");
 
 	return r;
 
@@ -123,8 +121,8 @@ err:
 
 void	sercom_free(meteocom_t *m) {
 	if (debug)
-		fprintf(stderr, "%s:%d: free((int *)%p)\n",
-			__FILE__, __LINE__, m->private);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((int *)%p)",
+			  m->private);
 	free(m->private);
 	com_free(m);
 }

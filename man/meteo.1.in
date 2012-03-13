@@ -80,6 +80,25 @@ available. A sample cron job script is
 .BR meteojob (1),
 as included in the distribution.
 
+.SH UNIFORM RESOURCE LOCATORS
+The meteo packages uses new kinds of URLs to specify meteo stations
+and log destinations. Please see the
+.BR meteo.conf (5)
+man page for meteo station URLs. Log URLS have one of two forms. If
+the log should be written to a file 
+.IR logfile ,
+use a URL of the form
+.RI file:// logfile .
+Note that in most cases, 
+.I logfile
+must be absolute.
+If messages should be sent to a 
+.BR syslog (3)
+facility 
+.IR f ,
+use an url of the form
+.RI syslog: f .
+
 .SH "PERFORMANCE IMPROVEMENTS"
 There are two areas where performance can become a problem.
 In both cases, the database is the bottleneck.

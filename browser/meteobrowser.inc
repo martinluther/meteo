@@ -4,7 +4,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.inc,v 1.1 2002/01/18 23:34:22 afm Exp $
+//   $Id: meteobrowser.inc,v 1.2 2002/01/27 21:01:42 afm Exp $
 //
 
 // include the following only if your PHP installation lacks gettext support
@@ -19,8 +19,8 @@ $stationstart[Gurin] = 1009452900;
 // the graphlist contains a colon separated list of graphs to be drawn 
 // for each station that can be browsed through the current instance of
 // the script, see the sample file for instructions.
-$graphlist[Altendorf] = "temperature:barometer:wind:rain";
-$graphlist[Gurin] = "temperature:barometer:wind:radiation:rain";
+$graphlist[Altendorf] = "temperature:pressure:wind:rain";
+$graphlist[Gurin] = "temperature:pressure:wind:radiation:rain";
 
 // the path the the meteograph binary, could be derived from the configure
 // run, but as quite a few things have to be configured in the script anyway,

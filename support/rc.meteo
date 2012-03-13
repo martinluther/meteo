@@ -5,12 +5,19 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: rc.meteo,v 1.3 2002/01/09 23:36:07 afm Exp $
+# $Id: rc.meteo,v 1.2 2002/01/30 10:54:29 afm Exp $
 #
 case .$1 in
 	.start)
-		# start the meteoloop process
-		/usr/local/bin/meteoloop -q >/dev/null 2>&1
+		# start the meteoloop process, we use the master/slave feature
+		# and the watchdog here:
+		#  -m		use master/slave, i.e. if the process talking
+		#		to the station dies, start a new one
+		#  -w 20	if nothing comes from the station for 20 secs
+		#		fire the watchdog, relying on the master to
+		#		restart us
+		#  -q		send updates to the message queue
+		/usr/local/bin/meteoloop -m -w 20 -q >/dev/null 2>&1
 
 		# start the averaging process
 		/usr/local/bin/meteoavg >/dev/null 2>&1

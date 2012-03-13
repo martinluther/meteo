@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: com.c,v 1.1 2002/01/18 23:34:28 afm Exp $
+ * $Id: com.c,v 1.3 2002/01/27 22:55:19 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +12,9 @@
 #include <com.h>
 #include <meteo.h>
 #include <sys/time.h>
+#include <mdebug.h>
+#include <fcntl.h>
+#include <string.h>
 
 static int	com_get_char(meteocom_t *m);
 static int	com_get_char_timed(meteocom_t *m, struct timeval *tv);
@@ -24,9 +27,8 @@ int	get_char(meteocom_t *m) {
 	int	c;
 	c = m->get_char(m);
 	if (debug > 1)
-		fprintf(stderr, "%s:%d: got one char %02x ('%c')\n",
-			__FILE__, __LINE__, c,
-			((c >= ' ') && (c < 0x7f)) ? c : '?');
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got one char %02x ('%c')",
+			c, ((c >= ' ') && (c < 0x7f)) ? c : '?');
 	return c;
 }
 
@@ -34,17 +36,15 @@ int	get_char_timed(meteocom_t *m, struct timeval *tv) {
 	int	c;
 	c = m->get_char_timed(m, tv);
 	if (debug > 1)
-		fprintf(stderr, "%s:%d: got one char %02x ('%c')\n",
-			__FILE__, __LINE__, c,
-			((c >= ' ') && (c < 0x7f)) ? c : '?');
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got one char %02x ('%c')",
+			c, ((c >= ' ') && (c < 0x7f)) ? c : '?');
 	return c;
 }
 
 int	put_char(meteocom_t *m, unsigned char c) {
 	if (debug > 1)
-		fprintf(stderr, "%s:%d: sending one char %02x ('%c')\n",
-			__FILE__, __LINE__, c,
-			((c >= ' ') && (c < 0x7f)) ? c : '?');
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sending one char %02x ('%c')",
+			c, ((c >= ' ') && (c < 0x7f)) ? c : '?');
 	return m->put_char(m, c);
 }
 
@@ -66,12 +66,12 @@ int	put_unsigned(meteocom_t *m, unsigned short s) {
  *                    string "OK\n\r", but do this for at most 5 seconds
  */
 int	get_acknowledge_timed(meteocom_t *m, struct timeval *tvp) {
-	int	timepassed = 0, c, ackfound = 0, index = 0;
+	int	timepassed = 0, c, ackfound = 0, idx = 0;
 	char	*expect = "\r\n\rOK\n\r";
 
 	if (debug)
-		fprintf(stderr, "%s:%d: waiting for ACK for %d.%06d sec\n",
-			__FILE__, __LINE__, tvp->tv_sec, tvp->tv_usec);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "waiting for ACK for %d.%06d "
+			"sec", tvp->tv_sec, tvp->tv_usec);
 	do {
 		c = get_char_timed(m, tvp);
 		if (c < 0) {
@@ -79,9 +79,9 @@ int	get_acknowledge_timed(meteocom_t *m, struct timeval *tvp) {
 		} else {
 			if (c == ACK)
 				ackfound = 1;
-			if (c == expect[index])
-				index++;
-			if (index == strlen(expect))
+			if (c == expect[idx])
+				idx++;
+			if (idx == strlen(expect))
 				ackfound = 1;
 		}
 		
@@ -99,8 +99,8 @@ int	get_acknowledge(meteocom_t *m) {
 int	get_buffer(meteocom_t *m, unsigned char *b, int n) {
 	int	i, c;
 	if (debug)
-		fprintf(stderr, "%s:%d: looking for buffer of %d bytes\n",
-			__FILE__, __LINE__, n);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"looking for buffer of %d bytes", n);
 	crc_start(&m->crc);
 	for (i = 0; i < n; i++) {
 		c = get_char(m);
@@ -109,16 +109,13 @@ int	get_buffer(meteocom_t *m, unsigned char *b, int n) {
 	}
 	if (debug) {
 		char	*buffer = (char *)malloc(n * 3 + 5);
-		if (debug)
-			fprintf(stderr, "%s:%d: (char *)malloc(%d) = %p\n",
-				__FILE__, __LINE__, n * 3 + 5, buffer);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(char *)malloc(%d) = %p\n", n * 3 + 5, buffer);
 		for (i = 0; i < n; i++)
 			sprintf(buffer + 3 * i, "%02x ", b[i]);
-		fprintf(stderr, "%s:%d: received data: %s\n", __FILE__,
-			__LINE__, buffer);
-		if (debug)
-			fprintf(stderr, "%s:%d: free((char *)%p)\n", 
-				__FILE__, __LINE__, buffer);
+		
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "received data: %s\n", buffer);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((char *)%p)", buffer);
 		free(buffer);
 	}
 	return 0;
@@ -131,8 +128,9 @@ meteocom_t	*com_new(void)  {
 	meteocom_t	*result;
 	result = (meteocom_t *)malloc(sizeof(meteocom_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteocom_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteocom_t), result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteocom_t *)malloc(%d) = %p",
+			sizeof(meteocom_t), result);
 	result->flags = 0;
 	result->private = NULL;
 	result->put_char = com_put_char;
@@ -148,9 +146,18 @@ meteocom_t	*com_new(void)  {
 }
 void	com_free(meteocom_t *m) {
 	if (debug)
-		fprintf(stderr, "%s:%d: free((meteocom_t *)%p)\n", __FILE__,
-			__LINE__, m);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((meteocom_t *)%p)", m);
 	free(m);
+}
+
+/*
+ * the private data contains the file descriptor, encode this fact in a
+ * special function
+ */
+static int	com_get_fd(meteocom_t *m) {
+	if (NULL == m)
+		return -1;
+	return *(int *)m->private;
 }
 
 /*
@@ -158,7 +165,7 @@ void	com_free(meteocom_t *m) {
  */
 static int	com_get_char(meteocom_t *m) {
 	unsigned char	b[1];
-	if (read(*(int *)m->private, b, 1) != 1) {
+	if (read(com_get_fd(m), b, 1) != 1) {
 		return -1;
 	}
 	return b[0];
@@ -182,7 +189,7 @@ static int	com_get_char_timed(meteocom_t *m, struct timeval *tv) {
 	memcpy(&delay, tv, sizeof(struct timeval));
 
 	/* select on the file descriptor				*/
-	fd = *(int *)m->private;
+	fd = com_get_fd(m);
 	FD_ZERO(&readfds);
 	FD_SET(fd, &readfds);
 	switch(select(fd + 1, &readfds, NULL, NULL, &delay)) {
@@ -216,8 +223,57 @@ timeout:
 }
 
 static int	com_put_char(meteocom_t *m, unsigned char c) {
-	if (1 != write(*(int *)m->private, &c, 1))
+	if (1 != write(com_get_fd(m), &c, 1))
 		return -1;
 	return 0;
 }
 
+/*
+ * com_drain	wait some time for input on the connection, read it all
+ *              and throw it away
+ */
+#define	LOOPLIMIT	10
+int	com_drain(meteocom_t *m, const struct timeval *timeout) {
+	struct timeval	tv;
+	int		loops = 0, fd, bytes, totalbytes = 0;
+	long		flags;
+	char		buffer[1024];
+
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "draining for %d.%06d secs",
+			timeout->tv_sec, timeout->tv_usec);
+
+	/* first let some time pass					*/
+	memcpy(&tv, timeout, sizeof(tv));
+	if (0 != select(0, NULL, NULL, NULL, &tv)) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, MDEBUG_ERRNO,
+			"select problem in drain");
+	}
+
+	/* get the file descriptor for this meteocom_t structure	*/
+	fd = com_get_fd(m);
+
+	/* find out whether the nowait flag is set on the file		*/
+	flags = fcntl(fd, F_GETFL);
+
+	/* set the nowait flag if necessary				*/
+	if (!(flags & O_NONBLOCK)) {
+		fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+	}
+
+	/* read a large buffer of junk					*/
+	while (loops < LOOPLIMIT) {
+		if ((bytes = read(fd, buffer, sizeof(buffer))) <= 0)
+			break;
+		totalbytes += bytes;
+		loops++;
+	}
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%d bytes drained");
+
+	/* restore the wait flag, if previously set the nowait flag	*/
+	if (!(flags & O_NONBLOCK)) {
+		fcntl(fd, F_SETFL, flags);
+	}
+	return 0;
+}

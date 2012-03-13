@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.1 2002/01/18 23:34:29 afm Exp $
+ * $Id: graph.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,6 +11,7 @@
 #include <gdfonts.h>
 #include <meteo.h>
 #include <time.h>
+#include <mdebug.h>
 
 /*
  * graph_new	create a new graph structure
@@ -19,9 +20,8 @@ graph_t	*graph_new(const char *prefix, int width, int height) {
 	graph_t	*g;
 	g = (graph_t *)malloc(sizeof(graph_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (graph_t *)malloc(%d) = %p, "
-			"prefix = %s\n",
-			__FILE__, __LINE__, sizeof(graph_t), g,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(graph_t *)malloc(%d) = %p, "
+			"prefix = %s", sizeof(graph_t), g,
 			(NULL != prefix) ? prefix : "(null)");
 	memset(g, 0, sizeof(graph_t));
 	g->prefix = strdup(prefix);
@@ -68,8 +68,7 @@ void	graph_free(graph_t *g) {
 
 	/* free the data structure					*/
 	if (debug)
-		fprintf(stderr, "%s:%d: free((graph_t *)%p)\n", __FILE__,
-			__LINE__, g);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((graph_t *)%p)", g);
 	free(g);
 }
 
@@ -104,25 +103,25 @@ int	graph_set_color(graph_t *g, int whichcolor, const int *rgb) {
 	switch (whichcolor) {
 	case GRAPH_COLOR_FOREGROUND:
 		if (debug)
-			fprintf(stderr, "%s:%d: setting foreground color %d\n",
-				__FILE__, __LINE__, c);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"setting foreground color %d", c);
 		g->fg = c;
 		break;
 	case GRAPH_COLOR_BACKGROUND:
 		if (debug)
-			fprintf(stderr, "%s:%d: setting background color %d\n",
-				__FILE__, __LINE__, c);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"setting background color %d", c);
 		g->bg = c;
 		break;
 	case GRAPH_COLOR_NODATA:
 		if (debug)
-			fprintf(stderr, "%s:%d: setting nodata color %d\n",
-				__FILE__, __LINE__, c);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"setting nodata color %d", c);
 		g->nodatacolor = c;
 		break;
 	default:
-		fprintf(stderr, "%s:%d: internal error: unknown color %d\n",
-			__FILE__, __LINE__, whichcolor);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"internal error: unknown color %d", whichcolor);
 		break;
 	}
 	return c;
@@ -133,8 +132,8 @@ int	graph_set_color(graph_t *g, int whichcolor, const int *rgb) {
  */
 int	graph_color_allocate(graph_t *g, const int *rgb) {
 	if (debug)
-		fprintf(stderr, "%s:%d: allocate color #%02x%02x%02x\n",
-			__FILE__, __LINE__, rgb[0], rgb[1], rgb[2]);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "allocate color #%02x%02x%02x",
+			  rgb[0], rgb[1], rgb[2]);
 	return gdImageColorAllocate(g->im, rgb[0], rgb[1], rgb[2]);
 }
 
@@ -146,8 +145,8 @@ void	graph_add_channel(graph_t *g, int flags, int color,
 	channelformat_t	*gf;
 	g->nchannels++;
 	if (debug)
-		fprintf(stderr, "%s:%d: adding channel: now %d\n",
-			__FILE__, __LINE__, g->nchannels);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding channel: now %d",
+			  g->nchannels);
 	g->channelfmt = (channelformat_t *)realloc(g->channelfmt,
 		g->nchannels * sizeof(channelformat_t));
 	gf = &g->channelfmt[g->nchannels - 1];
@@ -191,18 +190,19 @@ static void	graph_channel(graph_t *g, int channel) {
 		max = cf->max;
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: graphing channel %d, flags = %0x, "
-			" color = %d, offset = %f, scale = %f\n", __FILE__,
-			__LINE__, channel, flags, color, offset, scale);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"graphing channel %d, flags = %0x, "
+			" color = %d, offset = %f, scale = %f", 
+			 channel, flags, color, offset, scale);
 
 	twidth = g->urx - g->llx;
 	if (debug)
-		fprintf(stderr, "%s:%d: max channel value: %f, entries: %d\n",
-			__FILE__, __LINE__, max, g->nentries);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"max channel value: %f, entries: %d",
+			max, g->nentries);
 	if (debug)
-		fprintf(stderr, "%s:%d: parameters: start %d, "
-			"interval: %d\n", __FILE__, __LINE__, (int)g->start,
-			g->interval);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "parameters: start %d, "
+			"interval: %d", (int)g->start, g->interval);
 
 	/*
 	 * the for loop below uses the following logic:
@@ -218,8 +218,8 @@ static void	graph_channel(graph_t *g, int channel) {
 		/* find the time for the next data point we have	*/
 		when = g->data[i].when;
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: data[%d].when = %d\n",
-				__FILE__, __LINE__, i, (int)when);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "data[%d].when = %d",
+				i, (int)when);
 
 		/* skip to the next data point, or produce no data bg	*/
 		for (t = t + 1; ((t < twidth) && (tm(g,t) < when)) ; t++) {
@@ -236,13 +236,13 @@ static void	graph_channel(graph_t *g, int channel) {
 		}
 		if (t >= twidth) {
 			if (debug > 1)
-				fprintf(stderr, "%s:%d: time exceeded on "
-				"the right\n", __FILE__, __LINE__);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "time exceeded on "
+				"the right");
 			break;
 		}
 		if (debug > 1)
-			fprintf(stderr, "%s:%d: key %ld at x = %d\n", __FILE__,
-				__LINE__, tm(g,t), t);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "key %ld at x = %d", 
+				 tm(g,t), t);
 
 		/* drawing data is only possible if we have a valid	*/
 		/* channel number, i.e. the donodata flag is 0		*/
@@ -250,8 +250,8 @@ static void	graph_channel(graph_t *g, int channel) {
 			/* find the value of the data point and plot it	*/
 			value = g->data[i].data[channel];
 			if (debug > 1)
-				fprintf(stderr, "%s:%d: point (%ld, %f)\n",
-					__FILE__, __LINE__, when, value);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point (%ld, %f)",
+					  when, value);
 			if ((value <= max) && (value >= offset)) {
 				if (flags & GRAPH_LINE) {
 					x2 = g->llx + t;
@@ -267,15 +267,15 @@ static void	graph_channel(graph_t *g, int channel) {
 					if (flags & GRAPH_HIDE) y2--;
 				}
 				if (debug > 1)
-					fprintf(stderr, "%s:%d: drawing line "
-						"(%d,%d)-(%d,%d)\n", __FILE__,
-						__LINE__, x1, y1, x2, y2);
+					mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing line "
+						"(%d,%d)-(%d,%d)",
+						 x1, y1, x2, y2);
 				gdImageLine(g->im, x1, y1, x2, y2, color);
 			} else {
 				if (debug)
-					fprintf(stderr, "%s:%d: point (%ld, %f)"
-						" out of range\n", __FILE__,
-						__LINE__, when, value);
+					mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point (%ld, %f)"
+						" out of range", 
+						 when, value);
 			}
 		}
 	}
@@ -419,9 +419,9 @@ void	graph_add_grid(graph_t *g, int channel, double valint, double from,
 	max = maxvalue(g, cf);
 	width = g->urx - g->llx;
 	if (debug)
-		fprintf(stderr, "%s:%d: adding grid starting at %ld, "
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding grid starting at %ld, "
 			"interval %d, based on channel %d, "
-			"valint = %f\n", __FILE__, __LINE__,
+			"valint = %f",  
 			g->start, g->interval, channel, valint);
 
 	/* define the dotted style for ``internal'' grid lines		*/
@@ -433,14 +433,14 @@ void	graph_add_grid(graph_t *g, int channel, double valint, double from,
 	/* draw horizontal grid lines and tick marks on both data axes,	*/
 	/* as well as labels for the 					*/
 	if (debug)
-		fprintf(stderr, "%s:%d: drawing vertical lines for "
-			"offset = %f, interval = %f\n", __FILE__, __LINE__,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
+			"offset = %f, interval = %f",  
 			cf->offset, valint);
 	for (i = (from/valint);
 		vy = i * valint, y = ycoord(g, cf, vy), y >= g->ury; i++) {
 		if (debug)
-			fprintf(stderr, "%s:%d: try line for i = %d, y = %f, "
-				" y coord = %d\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"try line for i = %d, y = %f, y coord = %d",  
 				i, vy, y);
 		if ((vy < from) || (vy > to))
 			goto noline2;
@@ -480,22 +480,22 @@ void	graph_add_ticks(graph_t *g, int channel, double valint, double from,
 	max = maxvalue(g, cf);
 	width = g->urx - g->llx;
 	if (debug)
-		fprintf(stderr, "%s:%d: adding ticks starting at %ld, "
-			"interval %d, based on channel %d, "
-			"valint = %f\n", __FILE__, __LINE__,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"adding ticks starting at %ld, interval %d, based "
+			"on channel %d, valint = %f",  
 			g->start, g->interval, channel, valint);
 
 	/* draw horizontal grid lines and tick marks on both data axes,	*/
 	/* as well as labels for the 					*/
 	if (debug)
-		fprintf(stderr, "%s:%d: drawing vertical lines for "
-			"offset = %f, interval = %f\n", __FILE__, __LINE__,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
+			"offset = %f, interval = %f",  
 			cf->offset, valint);
 	for (i = from/valint;
 		vy = i * valint, y = ycoord(g, cf, vy), y >= g->ury; i++) {
 		if (debug)
-			fprintf(stderr, "%s:%d: try tick for i = %d, y = %f, "
-				" y coord = %d\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "try tick for i = %d, y = %f, "
+				" y coord = %d",  
 				i, vy, y);
 		if ((vy < from) || (vy > to))
 			goto noline2;
@@ -522,8 +522,8 @@ void	graph_add_ticks(graph_t *g, int channel, double valint, double from,
 int	graph_write_png(graph_t *g, char *filename) {
 	FILE	*file;
 	if (NULL == (file = fopen(filename, "wb"))) {
-		fprintf(stderr, "%s:%d: cannot write to file %s\n", __FILE__,
-			__LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot write to file %s", 
+			 filename);
 		return -1;
 	}
 	gdImagePng(g->im, file);

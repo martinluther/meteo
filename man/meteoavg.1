@@ -11,6 +11,8 @@ meteoavg [
 ] [
 .BI \-i interval
 ] [
+.BI \-l logurl
+] [
 .BI \-p pidfile
 ] [
 .BI \-r repeats
@@ -77,6 +79,10 @@ debugging.
 Compute averages over samples in intervals of length
 .IR interval .
 Must be one of 300, 1800, 7200 or 86400.
+.TP
+.BI \-i logurl
+send log messages to the destination described by the
+.IR logurl .
 .TP
 .BI \-p pidfile
 When running in daemon mode, write the process id of the 

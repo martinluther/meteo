@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.1 2002/01/18 23:34:22 afm Exp $
+# $Id: Makefile.am,v 1.2 2002/01/27 21:01:41 afm Exp $
 #
 BROWSERFILES = meteobrowser.php						\
 	up.png upup.png upupup.png week.png month.png year.png 		\
@@ -12,6 +12,8 @@ BROWSERFILES = meteobrowser.php						\
 BROWSERDIR = @BROWSERDIR@
 
 EXTRA_DIST = README.browser meteobrowser.inc $(BROWSERFILES)
+
+SUBDIRS = po
 
 install-data-local:
 	@if [ ! -z "$(BROWSERDIR)" ];					\

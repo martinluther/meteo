@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <meteo.h>
+#include <mdebug.h>
 
 static unsigned short crc_table [256] = {
 	0x0,  0x1021,  0x2042,  0x3063,  0x4084,  0x50a5,  0x60c6,  0x70e7,  
@@ -51,15 +52,14 @@ crc_t	*crc_new(void) {
 	crc_t	*result;
 	result = (crc_t *)malloc(sizeof(crc_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (crc_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(crc_t), result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(crc_t *)malloc(%d) = %p",
+			sizeof(crc_t), result);
 	return result;
 }
 
 void	crc_free(crc_t *crc) {
 	if (debug)
-		fprintf(stderr, "%s:%d: free((crc_t *)%p\n", __FILE__,
-			__LINE__, crc);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((crc_t *)%p\n", crc);
 	free(crc);
 }
  

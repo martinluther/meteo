@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.1 2002/01/18 23:34:22 afm Exp $
+//   $Id: meteobrowser.php,v 1.4 2002/01/30 09:49:01 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -29,6 +29,19 @@ include("meteobrowser.inc");
 //-------------------------------------------------------------------------
 // No configurable code below this line
 //-------------------------------------------------------------------------
+
+// handle localization
+if ($lang == "") {
+	$lang == $default_language;
+}
+if ($lang == "de") { $lang = "de_DE"; }
+if ($lang == "en") { $lang = "en_US"; }
+setlocale(LC_ALL, $lang);
+putenv("LANG=$lang");
+bindtextdomain("meteobrowser", "./locale");
+textdomain("meteobrowser");
+
+// handle time stamp in various formats
 function getctime($filename) {
 	$rc = stat($filename);
 	if ($rc == FALSE) {
@@ -46,6 +59,15 @@ if ($midtime == "") {
 }
 if ($station == "") {
 	$station = $station_default;
+}
+
+// if the midtime string has exactly 8 characters, then it is a date stamp
+// and must first be converted to a Unix timestamp
+if (strlen($midtime) == 8) {
+	$year = substr($midtime, 0, 4);
+	$month = substr($midtime, 4, 2);
+	$day = substr($midtime, 6, 2);
+	$midtime = mktime(12, 0, 0, $month, $day, $year);
 }
 
 // compute the local time, as a starting point to compute the canonical
@@ -93,7 +115,7 @@ switch ($level) {
 		$nextmidtime = $midtime + 86400;
 		$iconmonth = "upup.png";
 		$iconyear = "upupup.png";
-		$title = date("D, d M Y", $midtime);
+		$title = strftime(gettext("%A, %d %B %Y"), $midtime);
 		$beginintervaltime = $midtime - 86400/2;
 		$endintervaltime = $midtime + 86400/2;
 		break;
@@ -102,9 +124,12 @@ switch ($level) {
 		$nextmidtime = $midtime + 7 * 86400;
 		$iconmonth = "up.png";
 		$iconyear = "upup.png";
-		$title = sprintf("week from %s to %s",
-			date("d M Y", $midtime - 144 * $interval),
-			date("d M Y", $midtime + 144 * $interval));
+		$fromweek = strftime(gettext("%B %e, %Y"),
+				$midtime - 144 * $interval);
+		$toweek = strftime(gettext("%B %e, %Y"),
+				$midtime + 144 * $interval);
+		$title = sprintf(gettext("week from %s to %s"),
+			$fromweek, $toweek);
 		$beginintervaltime = $midtime - 3.5 * 86400;
 		$endintervaltime = $midtime + 3.5 * 86400;
 		break;
@@ -112,14 +137,14 @@ switch ($level) {
 		$previousmidtime = $midtime - 30 * 86400;
 		$nextmidtime = $midtime + 30 * 86400;
 		$iconyear = "up.png";
-		$title = date("M Y", $midtime);
+		$title = strftime("%B %Y", $midtime);
 		$beginintervaltime = $midtime - 15.5 * 86400;
 		$endintervaltime = $midtime + 16.5 * 86400;
 		break;
 	case "year":
 		$previousmidtime = $midtime - 365 * 86400;
 		$nextmidtime = $midtime + 365 * 86400;
-		$title = sprintf("year %s", date("Y", $midtime));
+		$title = sprintf(gettext("year %s"), date("Y", $midtime));
 		$beginintervaltime = $midtime - 183 * 86400;
 		$endintervaltime = $midtime + 183 * 86400;
 		break;
@@ -151,19 +176,21 @@ if ($computegraphs) {
 	system($cmd);
 }
 
+$fulltitle = $station . " " . gettext("weather overview of") . " " . $title;
+
 ?>
 
 <html>
 <head>
 <link href="meteo.css" type="text/css" rel="stylesheet">
-<title><?echo $station ." ". gettext("weather overview of") ." ". $title?></title>
+<title><?echo $fulltitle?></title>
 </head>
 <body bgcolor="#ffffff">
 <?php
 if ($level == "year") {
 	printf("<map name=\"yearmap\">\n");
 	$basicurl
-	= "meteobrowser.php?station=$station&level=month&midtime=";
+	= "meteobrowser.php?station=$station&level=month&lang=$lang&midtime=";
 	$monthcoords = array();
 	$monthcoords[-6] ="0,0,73,142";
 	$monthcoords[-5] ="74,0,104,142";
@@ -218,7 +245,8 @@ if ($level == "month") {
 			date("d M Y", $weekend));
 		printf("href=\"%s%d\">\n", $basicurl, $weektime);
 	}
-	$basicurl = "meteobrowser.php?station=$station&level=week&midtime=";
+	$basicurl
+	= "meteobrowser.php?station=$station&level=week&lang=$lang&midtime=";
 	$weeks = array();
 	$lt = localtime($midtime - 200 * 7200, 1);
 	$week = $lt[tm_wday];
@@ -243,7 +271,7 @@ if ($level == "month") {
 if ($level == "week") {
 	printf("<map name=\"weekmap\">\n");
 	$basicurl
-	= "meteobrowser.php?station=$station&level=day&midtime=";
+	= "meteobrowser.php?station=$station&level=day&lang=$lang&midtime=";
 	$daycoords = array();
 	$daycoords[-4] = "0,0,86,142";
 	$daycoords[-3] = "87,0,134,142";
@@ -275,15 +303,15 @@ if ($level == "week") {
 	printf("</map>\n");
 }
 ?>
-<h1><?echo $station ." ". gettext("weather overview of") ." ". $title?></h1>
+<h1><?echo $fulltitle?></h1>
 
-<table width="505" cellpadding="0" cellspacing="0" border="0">
+<table cellpadding="0" cellspacing="0" border="0">
 
 <tr>
-<td colspan="5">
-To see more details, click into the region you like inside the graphs
-below, to zoom out or move forward or backward in time, use the navigation
-bar.
+<td colspan="6">
+<?= gettext("To see more details, click into the region you like inside ".
+	"the graphs below, to zoom out or move forward or backward ".
+	"in time, use the navigation bar.")?>
 </td>
 </tr>
 
@@ -293,7 +321,7 @@ bar.
 <?php
 if ($beginintervaltime >= $stationstart[$station]) {
 ?>
-<a href="meteobrowser.php?station=<?= $station?>&level=<?= $level?>&midtime=<?= $previousmidtime?>"><img src="previous.png"
+<a href="meteobrowser.php?station=<?= $station?>&level=<?= $level?>&lang=<?echo $lang?>&midtime=<?= $previousmidtime?>"><img src="previous.png"
 alt="previous <?= $level?>" border="0" /></a>
 <?php
 }
@@ -304,7 +332,7 @@ alt="previous <?= $level?>" border="0" /></a>
 <?php
 if ($interval < 1800) {
 ?>
-<a href="meteobrowser.php?station=<?= $station?>&level=week&midtime=<?= $midtime?>"><img src="up.png"
+<a href="meteobrowser.php?station=<?= $station?>&level=week&lang=<?echo $lang?>&midtime=<?= $midtime?>"><img src="up.png"
 border="0" /><img src="week.png" alt="week" border="0" /><img src="up.png"
 border="0" /></a>
 <?php } else { ?>
@@ -318,7 +346,7 @@ border="0" /></a>
 <?php
 if ($interval < 7200) {
 ?>
-<a href="meteobrowser.php?station=<?= $station?>&level=month&midtime=<?= $midtime?>"><img src="<?echo $iconmonth?>" border="0" /><img src="month.png"
+<a href="meteobrowser.php?station=<?= $station?>&level=month&lang=<?echo $lang?>&midtime=<?= $midtime?>"><img src="<?echo $iconmonth?>" border="0" /><img src="month.png"
 alt="month" border="0" /><img src="<?echo $iconmonth?>" border="0" /></a>
 <?php
 }
@@ -329,7 +357,7 @@ alt="month" border="0" /><img src="<?echo $iconmonth?>" border="0" /></a>
 <?php
 if ($interval < 86400) {
 ?>
-<a href="meteobrowser.php?station=<?echo $station?>&level=year&midtime=<?echo $midtime?>"><img src="<?echo $iconyear?>" border="0" /><img src="year.png"
+<a href="meteobrowser.php?station=<?echo $station?>&level=year&lang=<?echo $lang?>&midtime=<?echo $midtime?>"><img src="<?echo $iconyear?>" border="0" /><img src="year.png"
 alt="year" border="0" /><img src="<?echo $iconyear?>" border="0" /></a>
 <?php
 }
@@ -340,21 +368,64 @@ alt="year" border="0" /><img src="<?echo $iconyear?>" border="0" /></a>
 <?php
 if ($endintervaltime <= time()) {
 ?>
-<a href="meteobrowser.php?station=<?echo $station?>&level=<?echo $level?>&midtime=<?echo $nextmidtime?>"><img src="next.png" alt="next <?echo $level?>"
+<a href="meteobrowser.php?station=<?echo $station?>&level=<?echo $level?>&lang=<?echo $lang?>&midtime=<?echo $nextmidtime?>"><img src="next.png" alt="next <?echo $level?>"
 border="0" /></a>
 <?php
 }
 ?>
 </td>
+<td>&nbsp;</td>
 
 </tr>
 
 <?php
+// the following explanations of the graphs have to be translated into 
+// the various languages the meteo package is supposed to support
+$explanation = array();
+$explanation[temperature] =
+	"The <font color=\"#b40000\">red</font> curve shows the temperature, ".
+	"the <font color=\"#ffb4b4\">light red</font> area shows the range ".
+	"between maximum and minimum temperature during the sampling ".
+	"interval.  The <font color=\"#6464ff\">blue</font> curve shows the ".
+	"dew point, the temperature at which dew begins to form.";
+$explanation[pressure] = 
+	"The <font color=\"#7f7fff\">blue</font> graph shows ".
+	"average barometric pressure, the range between minimum ".
+	"and maximum pressure during the sampling interval is shown ".
+	"in <font color=\"#d2d2ff\">light blue</font>.";
+$explanation[rain] = 
+	"The <font color=\"#0000ff\">blue</font> histogram shows ".
+	"the total rain (or moisture content of the ".
+	"precipitation) in <i>mm</i> during the sampling interval. ";
+$explanation[wind] =
+	"The lower part of the graph shows in <font ".
+	"color=\"#00ff00\">light green</font> the average wind speed ".
+	"during the sampling interval, the maximum speed is shown ".
+	"in <font color=\"#006400\">dark green</font>, scale on the ".
+	"left of the graph. The upper part shows the wind azimut ".
+	"in <font color=\"#6464ff\">blue</font>, scale on the right. ";
+$explanation[radiation] =
+	"The <font color=\"#c8b400\">gold</font> histogram shows the ".
+	"total solar radiation in W/m^2, scale on the left of the ".
+	"graph.  The <font color=\"#6400c8\">pink</font> curve shows ".
+	"the UV index, scale on the right.  </p> <p> Note that after ".
+	"snow fall the readings of both sensors are not reliably, ".
+	"as the sensors are not automatically freed of the snow.";
+$explanation[temperature_inside] = "";
+
 foreach ($graphs as $graph) {
 	printf("<tr>\n");
-	printf("<td colspan=\"5\"><img src=\"cache/%s-%s-%s-%s.png\" border=\"0\" ".
-		"usemap=\"#%smap\"></td>\n",
-		$station, $graph, $level, $endtimestamp, $level);
+	if ("day" == $level) {
+		$mapstatement = "";
+	} else {
+		$mapstatement = sprintf(" usemap=\"#%smap\"", $level);
+	}
+	printf("<td colspan=\"5\" valign=\"top\">".
+		"<img src=\"cache/%s-%s-%s-%s.png\" border=\"0\" ".
+		"width=\"500\" height=\"144\"%s /></td>\n",
+		$station, $graph, $level, $endtimestamp, $mapstatement);
+	printf("<td valign=\"top\">%s</td>\n",
+		gettext($explanation[$graph]));
 	printf("</tr>\n");
 }
 ?>
@@ -362,7 +433,8 @@ foreach ($graphs as $graph) {
 
 <hr />
 <p>
-Graphs produced by the <a href="http://meteo.othello.ch/">meteo</a> package,
+<?= gettext("Graphs produced by the ".
+"<a href=\"http://meteo.othello.ch/\">meteo</a> package,")?>
 &copy; 2002 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch/">Beratung und Entwicklung</a>
 </p>

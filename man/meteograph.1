@@ -11,6 +11,8 @@ meteograph [
 ] [
 .B \-d
 ] [
+.BI \-l logurl
+] [
 .BI \-e endtime
 ]
 .BI \-f conffile
@@ -148,6 +150,10 @@ suppress the graph named
 but otherwise produce all graphs.
 If this option is used several times, all graphs specified are
 suppressed.
+.TP
+.BI \-l logurl
+send log messages to destination described by the 
+.IR logurl .
 .TP
 .B \-t
 include the timestamp in the file name of the generated image files.

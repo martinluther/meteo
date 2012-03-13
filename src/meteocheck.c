@@ -1,10 +1,10 @@
 /*
- * conftest.c -- check the syntax of a meteo graph configuration file
- *               and dump all info in the form of a configuration file
+ * meteocheck.c -- check the syntax of a meteo graph configuration file
+ *                 and dump all info in the form of a configuration file
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteocheck.c,v 1.1 2002/01/18 23:34:31 afm Exp $
+ * $Id: meteocheck.c,v 1.2 2002/01/27 21:01:44 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <printver.h>
+#include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;
@@ -41,6 +42,13 @@ int	main(int argc, char *argv[]) {
 	/* parse the command line					*/
 	while (EOF != (c = getopt(argc, argv, "dFfPpV")))
 		switch (c) {
+		case 'l':
+			if (mdebug_setup_file("meteocheck", stderr) < 0) {
+				fprintf(stderr, "%s: cannot init log\n",
+					argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 'd':	/* increase debug level			*/
 			debug++;
 			break;
@@ -75,20 +83,19 @@ int	main(int argc, char *argv[]) {
 		filename = argv[optind];
 		infile = fopen(argv[optind], "r");
 		if (infile == NULL) {
-			fprintf(stderr, "%s:%d: cannot open conf file '%s': "
-				" %s (%d)\n", __FILE__, __LINE__,
-				filename, strerror(errno), errno);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"cannot open conf file '%s'", filename);
 			exit(EXIT_FAILURE);
 		}
 		break;
 	default:
-		fprintf(stderr, "%s:%d: not capable of handling more than "
-			"one file\n", __FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+			"not capable of handling more than one file");
 		exit(EXIT_FAILURE);
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: configuration file %s opened\n",
-			__FILE__, __LINE__, filename);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"configuration file %s opened", filename);
 
 	/* read the configuration file					*/
 	mc = mc_parse(infile);
@@ -126,7 +133,7 @@ int	main(int argc, char *argv[]) {
 				break;
 			}
 		} else {
-			fprintf(stderr, "%s missing\n", key);
+			mdebug(LOG_ERR, MDEBUG_LOG, 0, "%s missing", key);
 		}
 	}
 

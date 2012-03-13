@@ -3,31 +3,35 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beartung und Entwicklung
  *
- * $Id: watchdog.c,v 1.1 2002/01/18 23:34:30 afm Exp $ 
+ * $Id: watchdog.c,v 1.4 2002/01/30 10:38:24 afm Exp $ 
  */
 #include <watchdog.h>
 #include <meteo.h>
 #include <signal.h>
 #include <string.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <mdebug.h>
 
 static char	**wdargv = NULL;
 
 static void	wd_sigalrm(int signum) {
 	/* check for the signal that caused the handler to be called	*/
 	if (signum != SIGALRM) {
-		fprintf(stderr, "%s:%d: signal handler for wrong signal "
-			"called\n", __FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"signal handler for wrong signal called");
 		return;
 	}
 
 	/* restart the process with the the arguments in wdargv		*/
-	execvp(wdargv[0], wdargv);
-	fprintf(stderr, "%s:%d: cannot execute: %s (%d)\n", __FILE__,
-		__LINE__, strerror(errno), errno);
+	if (NULL != wdargv) {
+		execvp(wdargv[0], wdargv);
+		mdebug(LOG_CRIT, MDEBUG_LOG, MDEBUG_ERRNO, "cannot execute");
+	} else {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "no command line, exiting");
+	}
+	exit(EXIT_FAILURE);
 }
 
 /*
@@ -36,6 +40,12 @@ static void	wd_sigalrm(int signum) {
 int	wd_setup(int argc, char *argv[]) {
 	char	**p;
 	int	i;
+
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "installing watchdog");
+
+	/* install the signal handler					*/
+	signal(SIGALRM, wd_sigalrm);
 
 	/* argv must not be NULL					*/
 	if ((argc == 0) || (argv == NULL))
@@ -51,13 +61,11 @@ int	wd_setup(int argc, char *argv[]) {
 	for (i = 0; i < argc; i++) {
 		wdargv[i] = strdup(argv[i]);
 		if (debug)
-			fprintf(stderr, "%s:%d: watchdog arg[%d] = '%s'\n",
-				__FILE__, __LINE__, i, wdargv[i]);
+			mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+				"watchdog arg[%d] = '%s'", i, wdargv[i]);
 	}
 	wdargv[argc] = NULL;
 
-	/* install the signal handler					*/
-	signal(SIGALRM, wd_sigalrm);
 	return 0;
 }
 
@@ -66,8 +74,8 @@ int	wd_setup(int argc, char *argv[]) {
  */
 int	wd_arm(int timeout) {
 	if (debug)
-		fprintf(stderr, "%s:%d: arming time with timeout %d\n",
-			__FILE__, __LINE__, timeout);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "arming time with timeout %d",
+			timeout);
 	if (timeout >= 0)
 		return alarm(timeout);
 	return timeout;
@@ -82,8 +90,8 @@ int	wd_disarm(void) {
  */
 void	wd_fire(const char *reason) {
 	/* log a message						*/
-	fprintf(stderr, "%s:%d: Watchdog event fired: %s\n",
-		__FILE__, __LINE__, (reason) ? reason : "(none specified)");
+	mdebug(LOG_CRIT, MDEBUG_LOG, 0, "Watchdog event fired: %s",
+		(reason) ? reason : "(none specified)");
 
 	/* call the signal handler					*/
 	wd_sigalrm(SIGALRM);

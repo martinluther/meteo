@@ -4,13 +4,14 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: average.c,v 1.1 2002/01/18 23:34:28 afm Exp $
+ * $Id: average.c,v 1.2 2002/01/27 21:01:42 afm Exp $
  */
 #include <average.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <meteo.h>
 #include <math.h>
+#include <mdebug.h>
 
 int	average_fake = 0;
 
@@ -51,8 +52,8 @@ static MYSQL_RES	*perform_query(querydata_t *qdp, const char *clause) {
 	int		nrows;
 
 	if (debug)
-		fprintf(stderr, "%s:%d: perform_query from %s to %s, "
-			"station %s\n", __FILE__, __LINE__,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"perform_query from %s to %s, station %s\n",
 			qdp->from, qdp->to, qdp->station);
 	
 	/* compute the query string					*/
@@ -63,21 +64,20 @@ static MYSQL_RES	*perform_query(querydata_t *qdp, const char *clause) {
 		"  and group%d = %d and station = '%-8.8s'", clause,
 		qdp->from, qdp->to, qdp->interval, qdp->group, qdp->station);
 	if (debug)
-		fprintf(stderr, "%s:%d: averageing query is '%s'\n",
-			__FILE__, __LINE__, query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "averageing query is '%s'",
+			query);
 
 	/* perform the query						*/
 	if (mysql_query(qdp->mysql, query)) {
-		fprintf(stderr, "%s:%d: query for averages failed\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "query for averages failed");
 		return NULL;
 	}
 
 	/* make sure the right number of rows is returned		*/
 	res = mysql_store_result(qdp->mysql);
 	if ((nrows = mysql_num_rows(res)) != 1) {
-		fprintf(stderr, "%s:%d: %d rows returned instead of one\n",
-			__FILE__, __LINE__, nrows);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"%d rows returned instead of one\n", nrows);
 		return NULL;
 	}
 
@@ -124,17 +124,16 @@ static int	perform_update(querydata_t *qdp, avgdata_t *adp) {
 		adp->windspeed, adp->winddir, adp->windgust,
 		adp->solar, adp->uv);
 	if (debug)
-		fprintf(stderr, "%s:%d: insert query for averages: '%s'\n",
-			__FILE__, __LINE__, query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"insert query for averages: '%s'", query);
 	if (average_fake) {
-		fprintf(stderr, "%s:%d: insert faked\n", __FILE__, __LINE__);
+		mdebug(LOG_INFO, MDEBUG_LOG, 0, "insert faked");
 		return 0;
 	}
 
 	/* perform the update						*/
 	if (mysql_query(qdp->mysql, query)) {
-		fprintf(stderr, "%s:%d: insert query failed\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "insert query failed");
 		return -1;
 	}
 	return 0;
@@ -160,8 +159,8 @@ int	add_average(MYSQL *mysql, const time_t now, const int interval,
 	tp = localtime(&tot);
 	strftime(qd.to, sizeof(qd.to), "%Y%m%d%H%M%S", tp);
 	if (debug)
-		fprintf(stderr, "%s:%d: average for points between %s and %s\n",
-			__FILE__, __LINE__, qd.from, qd.to);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"average for points between %s and %s", qd.from, qd.to);
 
 	/* compute the group number					*/
 	qd.group = fromt / interval;
@@ -193,13 +192,12 @@ int	add_average(MYSQL *mysql, const time_t now, const int interval,
 		"sum(windx), sum(windy), sum(duration), max(windgust), "
 		"avg(solar), avg(uv), count(*) ");
 	if (res == NULL) {
-		fprintf(stderr, "%s:%d: nothing returned from avg query\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"nothing returned from avg query");
 		return -1;
 	} else
 		if (debug)
-			fprintf(stderr, "%s:%d: query returns row\n",
-				__FILE__, __LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query returns row");
 
 	/* get the data row						*/
 	row = mysql_fetch_row(res);
@@ -244,8 +242,8 @@ int	add_average(MYSQL *mysql, const time_t now, const int interval,
 		return perform_update(&qd, &avg);
 	} else {
 		if (debug)
-			fprintf(stderr, "%s:%d: no rows found\n", __FILE__,
-				__LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"no rows for averages table found");
 		return 0;
 	}
 }
@@ -260,10 +258,9 @@ int	have_average(MYSQL *mysql, const time_t now, const int interval,
 	/* make sure the interval matches the time			*/
 	if (0 != (now % interval)) {
 		if (debug)
-			fprintf(stderr, "%s:%d: point in time does not "
-				"match interval %d %% %d = %d\n",
-				__FILE__, __LINE__, (int)now, interval,
-				((int)now) % interval);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point in time does "
+				"not match interval %d %% %d = %d",
+				(int)now, interval, ((int)now) % interval);
 		return 1;
 	}
 
@@ -277,16 +274,15 @@ int	have_average(MYSQL *mysql, const time_t now, const int interval,
 			"	and station = '%-8.8s' "
 			"	and intval = %d", tmstmp, station, interval);
 	if (debug)
-		fprintf(stderr, "%s:%d: have_average-query is '%s'\n",
-			__FILE__, __LINE__, query);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "have_average-query is '%s'",
+			query);
 
 
 	/* perform query						*/
 	if (mysql_query(mysql, query)) {
 		if (debug)
-			fprintf(stderr, "%s:%d: have_average-query failed, "
-				"assume average does not exit\n",
-				__FILE__, __LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "have_average-query "
+				"failed, assume average does not exit");
 		return 0;
 	}
 
@@ -294,9 +290,8 @@ int	have_average(MYSQL *mysql, const time_t now, const int interval,
 	res = mysql_store_result(mysql);
 	if (mysql_num_rows(res) != 1) {
 		if (debug)
-			fprintf(stderr, "%s:%d: count(*) does not return a "
-				"row, this should not happen", __FILE__,
-				__LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "count(*) does not "
+				"return a row, this should not happen");
 		mysql_free_result(res);
 		return 0;
 	}
@@ -306,9 +301,9 @@ int	have_average(MYSQL *mysql, const time_t now, const int interval,
 	if (row[0]) {
 		if (0 < atoi(row[0])) {
 			if (debug)
-				fprintf(stderr, "%s:%d: average %s/%d "
-					"positively exists\n", __FILE__,
-					__LINE__, tmstmp, interval);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"average %s/%d positively exists",
+					tmstmp, interval);
 			mysql_free_result(res);
 			return 1;
 		}

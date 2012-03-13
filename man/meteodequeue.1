@@ -7,6 +7,8 @@ meteodequeue [
 ] [
 .B \-F
 ] [
+.BI \-l logurl
+] [
 .BI \-p pidfile
 ]
 .BI \-f conffile
@@ -25,6 +27,10 @@ table.
 .B \-d
 increase the debug level by one. Debug messages are written to standard
 error.
+.TP
+.BI \-l logurl
+send log messages to the destination described by the
+.IR logurl .
 .TP
 .BI \-f conffile
 Use 

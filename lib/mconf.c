@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mconf.c,v 1.1 2002/01/18 23:34:29 afm Exp $
+ * $Id: mconf.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -16,6 +16,7 @@
 #include <string.h>
 #include <search.h>
 #include <stdio.h>
+#include <mdebug.h>
 
 /*
  * create and destroy value types
@@ -69,7 +70,7 @@ static void	md_copy_val(md_t *result, const md_t *x) {
 		result->data.data = mc_node_copy(x->data.data);
 		break;
 	default:
-		fprintf(stderr, "%s:%d: unknown type: %d\n", __FILE__, __LINE__,
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "unknown type: %d",
 			result->type);
 		return;
 	}
@@ -292,9 +293,8 @@ mc_node_t	*mc_readconf(const char *conffilename) {
 	mc_node_t	*result;
 	if (strcmp(conffilename, "-")) {
 		if (NULL == (conffile = fopen(conffilename, "r"))) {
-			fprintf(stderr, "%s:%d: cannot read conf file %s: "
-				"%s (%d)\n", __FILE__, __LINE__, conffilename,
-				strerror(errno), errno);
+			mdebug(LOG_CRIT, MDEBUG_LOG, MDEBUG_ERRNO,
+				"cannot read conf file %s", conffilename);
 			exit(EXIT_FAILURE);
 		}
 	} else {

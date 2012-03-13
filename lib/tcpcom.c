@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: tcpcom.c,v 1.1 2002/01/18 23:34:30 afm Exp $
+ * $Id: tcpcom.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <config.h>
 #include <tcpcom.h>
@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <meteo.h>
+#include <mdebug.h>
 
 meteocom_t	*tcpcom_new(char *url) {
 	meteocom_t		*r = 0;
@@ -28,20 +29,19 @@ meteocom_t	*tcpcom_new(char *url) {
 	r = com_new();
 	r->private = malloc(sizeof(int));
 	if (debug)
-		fprintf(stderr, "%s:%d: (int *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(int), r->private);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(int *)malloc(%d) = %p",
+			sizeof(int), r->private);
 
 	/* parse the URL into hostname and port				*/
 	if (strncmp(url, "tcp://", 6) != 0) {
-		fprintf(stderr, "%s:%d: wrong method in URL\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "wrong method in URL");
 		goto err;
 	}
 	hostname = &url[6];
 	p = strchr(hostname, ':');
 	if (p == NULL) {
-		fprintf(stderr, "%s:%d: URL does not contain port part\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"URL does not contain port part");
 		goto err;
 	}
 	*p = '\0';
@@ -51,8 +51,8 @@ meteocom_t	*tcpcom_new(char *url) {
 		*p = '\0';
 	port = atoi(portstring);
 	if ((port <= 0) || (port > 65535)) {
-		fprintf(stderr, "%s:%d: illegal port specification %s\n",
-			__FILE__, __LINE__, portstring);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "illegal port specification %s",
+			portstring);
 		goto err;
 	}
 
@@ -88,8 +88,8 @@ err:
 
 void	tcpcom_free(meteocom_t *m) {
 	if (debug)
-		fprintf(stderr, "%s:%d: free((meteocom_t *)%p)\n",
-			__FILE__, __LINE__, m);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((meteocom_t *)%p)",
+			m);
 	free(m->private);
 	com_free(m);
 }

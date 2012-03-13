@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.c,v 1.1 2002/01/18 23:34:31 afm Exp $
+ * $Id: meteoavg.c,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <daemon.h>
 #include <printver.h>
+#include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;
@@ -39,9 +40,8 @@ static void	avg_daemon(MYSQL *mysql, const char *station) {
 
 			/* wait till this happens			*/
 			if (debug)
-				fprintf(stderr, "%s:%d: next event at "
-					"%-24.24s, in %d seconds\n",
-					__FILE__, __LINE__,
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"next event at %-24.24s, in %d seconds",
 					ctime(&next), (int)(next - now));
 		} while (0 != sleep(next - now));
 
@@ -52,20 +52,20 @@ static void	avg_daemon(MYSQL *mysql, const char *station) {
 		add_average(mysql, next, 300, station);
 		if (0 == (next % 1800)) {
 			if (debug)
-				fprintf(stderr, "%s:%d: adding 1/2h avgs "
-					"necessary\n", __FILE__, __LINE__);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"adding 1/2h avgs necessary");
 			add_average(mysql, next, 1800, station);
 		}
 		if (0 == (next % 7200)) {
 			if (debug)
-				fprintf(stderr, "%s:%d: adding 2h avgs "
-					"necessary\n", __FILE__, __LINE__);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"adding 2h avgs necessary");
 			add_average(mysql, next, 7200, station);
 		}
 		if (0 == (next % 86400)) {
 			if (debug)
-				fprintf(stderr, "%s:%d: adding 1day avgs "
-					"necessary\n", __FILE__, __LINE__);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"adding 1day avgs necessary");
 			add_average(mysql, next, 86400, station);
 		}
 	}
@@ -81,16 +81,23 @@ int	main(int argc, char *argv[]) {
 	char		*pidfilename = "/var/run/meteoavg-%s.pid";
 
 	/* parse the command line					*/
-	while (EOF != (c = getopt(argc, argv, "adf:Fi:r:np:V")))
+	while (EOF != (c = getopt(argc, argv, "adf:Fil::r:np:V")))
 		switch (c) {
+		case 'l':
+			if (mdebug_setup("meteoavg", optarg) < 0) {
+				fprintf(stderr, "%s: cannot init log\n",
+					argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 'd':
 			debug++;
 			break;
 		case 'a':
 			all = 1;
 			if (debug)
-				fprintf(stderr, "%s:%d: all averages forced\n",
-					__FILE__, __LINE__);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"all averages forced");
 			break;
 		case 'f':
 			conffilename = optarg;
@@ -107,8 +114,8 @@ int	main(int argc, char *argv[]) {
 			case 86400:
 				break;
 			default:
-				fprintf(stderr, "%s:%d: illegal interval: %d\n",
-					__FILE__, __LINE__, interval);
+				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+					"illegal interval: %d", interval);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -135,47 +142,43 @@ int	main(int argc, char *argv[]) {
 		/* recent averages					*/
 		daemonmode = 1;
 		if (debug)
-			fprintf(stderr, "%s:%d: running in daemon mode\n",
-				__FILE__, __LINE__);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"running in daemon mode");
 		break;
 	case 1:
 		if ((naverages < 0) || (interval == 0)) {
-			fprintf(stderr, "%s:%d: must specify repeats (-r) if "
-				"if only first interval end given\n", __FILE__,
-				__LINE__);
+			mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+				"must specify repeats (-r) if if only first "
+				"interval end given");
 			exit(EXIT_FAILURE);
 		}
 		if (debug)
-			fprintf(stderr, "%s:%d: start timestamp: %s\n",
-				__FILE__, __LINE__, argv[optind]);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start timestamp: %s",
+				argv[optind]);
 		fromt = string2time(argv[optind]);
 		tot = fromt + interval * naverages;
 		break;
 	case 2:
 		if (debug)
-			fprintf(stderr, "%s%d: interval %s - %s\n",
-				__FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "interval %s - %s",
 				argv[optind], argv[optind + 1]);
 		fromt = string2time(argv[optind]);
 		tot = string2time(argv[optind + 1]);
 		break;
 	default:
-		fprintf(stderr, "%s:%d: wrong number of arguments\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "wrong number of arguments");
 		exit(EXIT_FAILURE);
 	}
 
 	/* it is an error not to specify a configuration file		*/
 	if (conffilename == NULL) {
-		fprintf(stderr, "%s:%d: must specify -f <config>\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
 		exit(EXIT_FAILURE);
 	}
 
 	/* read the configuration file					*/
 	if (NULL == (meteoconfig = mc_readconf(conffilename))) {
-		fprintf(stderr, "%s:%d: configuration invalid\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration invalid");
 		exit(EXIT_FAILURE);
 	}
 
@@ -183,24 +186,21 @@ int	main(int argc, char *argv[]) {
 	/* 1. Station must be defined					*/
 	if (NULL == (station = mc_get_string(meteoconfig, "database.prefix",
 		NULL))) {
-		fprintf(stderr, "%s:%d: station name not defined\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "station name not defined");
+		exit(EXIT_FAILURE);
 	}
 	station = strdup(station);
 	if (debug)
-		fprintf(stderr, "%s:%d: station = %s\n", __FILE__, __LINE__,
-			station);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station = %s", station);
 	/* interval must be set						*/
 	if ((interval <= 0) && (!daemonmode)) {
-		fprintf(stderr, "%s:%d: interval (-i) not specified\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "interval (-i) not specified");
 		exit(EXIT_FAILURE);
 	}
 
 	mysql = mc_opendb(meteoconfig, O_RDWR);
 	if (mysql == NULL) {
-		fprintf(stderr, "%s:%d: cannot connect to database\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot connect to database");
 		exit(EXIT_FAILURE);
 	}
 
@@ -210,8 +210,8 @@ int	main(int argc, char *argv[]) {
 		if (0 == foreground)
 			switch (daemonize(pidfilename, station)) {
 			case -1:
-				fprintf(stderr, "%s:%d: cannot daemonize\n",
-					__FILE__, __LINE__);
+				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+					"cannot daemonize");
 				exit(EXIT_FAILURE);
 				break;
 			case 0:
@@ -220,8 +220,8 @@ int	main(int argc, char *argv[]) {
 				break;
 			default:
 				if (debug)
-					fprintf(stderr, "%s:%d: new pid = %d\n",
-						__FILE__, __LINE__, getpid());
+					mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+						"new pid = %d", getpid());
 				break;
 			}
 
@@ -236,14 +236,13 @@ int	main(int argc, char *argv[]) {
 		/* compute updates in the range according to the 	*/
 		/* command line parameters				*/
 		if (debug)
-			fprintf(stderr, "%s:%d: start querying for averages "
-				"between %d and %d\n", __FILE__, __LINE__,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"start querying for averages between %d and %d",
 				(int)fromt, (int)tot);
 		for (t = fromt; t <= tot; t += interval) {
 			if (debug)
-				fprintf(stderr, "%s:%d: averages for time "
-					"%d/%d, station '%s'\n",
-					__FILE__, __LINE__,
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"averages for time %d/%d, station '%s'",
 					(int)t, interval, station);
 			if (!all)
 				haveavg = have_average(mysql, t, interval,
@@ -253,9 +252,9 @@ int	main(int argc, char *argv[]) {
 			if (!haveavg) {
 				if (add_average(mysql, t, interval,
 					station) < 0) {
-					fprintf(stderr, "%s:%d: update at time "
-						"%d failed\n", __FILE__,
-						__LINE__, (int)t);
+					mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+						"update at time %d failed",
+						(int)t);
 					exit(EXIT_FAILURE);
 				}
 			}

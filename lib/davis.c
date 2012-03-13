@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: davis.c,v 1.1 2002/01/18 23:34:28 afm Exp $
+ * $Id: davis.c,v 1.3 2002/01/27 22:55:19 afm Exp $
  */
 #include <meteodata.h>
 #include <davis.h>
@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <meteo.h>
+#include <mdebug.h>
 
 static meteovalue_t	*davis_get_temperature(meteoaccess_t *m);
 static meteovalue_t	*davis_get_temperature_inside(meteoaccess_t *m);
@@ -40,29 +41,29 @@ static unsigned char	*get_station_nibbles(meteoaccess_t *m,
 
 	bank = offset >> 8;
         if (debug)
-                fprintf(stderr, "%s:%d: %d nibbles from bank %d at offset "
-                        "%02x requested\n", __FILE__, __LINE__, size, bank,
-                        offset);
+                mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"%d nibbles from bank %d at offset %02x requested",
+			size, bank, offset);
 
 	put_string(m->m, "WRD");
 	put_char(m->m, (size << 4) | (2 + (bank << 1)));
 	put_char(m->m, offset);
 	put_char(m->m, 0x0d);
 	if (debug)
-		fprintf(stderr, "%s:%d: command 'WRD %02x %02x' written\n",
-			__FILE__, __LINE__, (size << 4) | (2 + (bank << 1)),
-			offset);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"command 'WRD %02x %02x' written",
+			(size << 4) | (2 + (bank << 1)), offset);
 	if (get_acknowledge(m->m) < 0) {
 		return NULL;
 	}
 	l = (size + 1)/2;
 	if (debug)
-		fprintf(stderr, "%s:%d: expecting %d reply bytes\n",
-			__FILE__, __LINE__, l);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "expecting %d reply bytes", l);
 	result = (unsigned char *)malloc(l);
 	if (debug)
-		fprintf(stderr, "%s:%d: (unsigned char *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, l, result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(unsigned char *)malloc(%d) = %p",
+			l, result);
 	get_buffer(m->m, result, l);
 	return result;
 }
@@ -75,28 +76,29 @@ static unsigned char	*get_link_nibbles(meteoaccess_t *m, unsigned int offset,
 
 	bank = offset >> 8;
 	if (debug)
-		fprintf(stderr, "%s:%d: %d nibbles from bank %d at offset "
-			"%02x requested\n", __FILE__, __LINE__, size, bank,
-			offset);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"%d nibbles from bank %d at offset %02x requested",
+			size, bank, offset);
 	put_string(m->m, "RRD");
 	put_char(m->m, bank);
 	put_char(m->m, offset);
 	put_char(m->m, size - 1);
 	put_char(m->m, 0x0d);
 	if (debug)
-		fprintf(stderr, "%s:%d: command 'RRD %d %02x %d' written\n",
-			__FILE__, __LINE__, bank, offset, size - 1);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"command 'RRD %d %02x %d' written",
+			  bank, offset, size - 1);
 	if (get_acknowledge(m->m) < 0) {
 		return NULL;
 	}
 	l = (size + 1)/2;
 	if (debug)
-		fprintf(stderr, "%s:%d: expecting %d reply bytes\n",
-			__FILE__, __LINE__, l);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "expecting %d reply bytes", l);
 	result = (unsigned char *)malloc(l);
 	if (debug)
-		fprintf(stderr, "%s:%d: (unsigned char *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, l, result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(unsigned char *)malloc(%d) = %p",
+			l, result);
 	get_buffer(m->m, result, l);
 	return result;
 }
@@ -122,11 +124,13 @@ static time_t	get_station_time(meteoaccess_t *m,
 	tm.tm_mday = bcd2int(d[0]);
 	tm.tm_mon = d[1] - 1;
 	tm.tm_year = tmp->tm_year;
-	if (debug) fprintf(stderr, "%s:%d: free((unsigned char *)%p)\n",
-		__FILE__, __LINE__, t);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"free((unsigned char *)%p)", t);
 	free(t);
-	if (debug) fprintf(stderr, "%s:%d: free((unsigned char *)%p)\n",
-		__FILE__, __LINE__, d);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"free((unsigned char *)%p)", d);
 	free(d);
 	now = mktime(&tm);
 	return now;
@@ -148,13 +152,14 @@ static double	get_station_value(meteoaccess_t *m, unsigned int offset,
 	for (i = l - 1; i >= 0; i--) {
 		result = result * 256. + t[i];
 	}
-	if (debug) fprintf(stderr, "%s:%d: free((unsigned char *)%p)\n",
-		__FILE__, __LINE__, t);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"free((unsigned char *)%p)", t);
 	free(t);
 	if (debug)
-		fprintf(stderr, "%s:%d: value(offset = %02x, bank = %d, "
-			"size = %d) = %10.4f\n", __FILE__, __LINE__, offset,
-			bank, size, result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"value(offset = %02x, bank = %d, size = %d) = %10.4f",
+			offset, bank, size, result);
 	return result;
 }
 
@@ -174,13 +179,14 @@ static double	get_link_value(meteoaccess_t *m, unsigned int offset,
 	for (i = l - 1; i >= 0; i--) {
 		result = result * 256. + t[i];
 	}
-	if (debug) fprintf(stderr, "%s:%d: free((unsigned char *)%p)\n",
-		__FILE__, __LINE__, t);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"free((unsigned char *)%p)", t);
 	free(t);
 	if (debug)
-		fprintf(stderr, "%s:%d: value(offset = %02x, bank = %d, "
-			"size = %d) = %10.4f\n", __FILE__, __LINE__, offset,
-			bank, size, result);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"value(offset = %02x, bank = %d, size = %d) = %10.4f",
+			offset, bank, size, result);
 	return result;
 }
 
@@ -188,20 +194,21 @@ int	vantage_wakeup(meteocom_t *m) {
 	struct timeval	tv;
 	int		i, c;
 	if (debug)
-		fprintf(stderr, "%s:%d: this is Vantage station, "
-			"try wake up\n", __FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"this is Vantage station, try wake up");
 	for (i = 0; i < 3; i++) {
 		put_char(m, '\n');
 		tv.tv_sec = 5; tv.tv_usec = 0;
 		c = get_char_timed(m, &tv);
 		switch (c) {
 		case -1:
-			fprintf(stderr, "%s:%d: warning: waking up of Vantage "
-				"station failed\n", __FILE__, __LINE__);
+			mdebug(LOG_WARNING, MDEBUG_LOG, 0,
+				"warning: waking up of Vantage station failed");
 			break;
 		case '\n':
-			fprintf(stderr, "%s:%d: station: waked up\n", __FILE__,
-				__LINE__);
+			if (debug)
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"station: waked up");
 			return 0;
 			break;
 		}
@@ -218,16 +225,15 @@ static int	davis_sync(meteocom_t *m) {
 	/* a few seconds (reading data all the time) and make sure the	*/
 	/* last character you get is the ACK				*/
 	if (debug)
-		fprintf(stderr, "%s:%d: sync'ing Davis station\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sync'ing Davis station");
 
 	/* some Davis stations need to be awakened, most notably the	*/
 	/* Vantage pro. So if the type string in the configuration is	*/
 	/* Vantage, we must send a '\r' and wait for a '\n'		*/
 	if (m->flags & COM_VANTAGE) {
 		if (vantage_wakeup(m) < 0) {
-			fprintf(stderr, "%s:%d: cannot wake up Vantage "
-				"station\n", __FILE__, __LINE__);
+			mdebug(LOG_ERR, MDEBUG_LOG, 0,
+				"cannot wake up Vantage station");
 			return -1;
 		}
 	}
@@ -242,14 +248,14 @@ static int	davis_sync(meteocom_t *m) {
 	if (c1 >= 0) 
 		result = 0;
 	else
-		fprintf(stderr, "%s:%d: return char is not an ACK, "
-			"but 0x%02x\n", __FILE__, __LINE__, c1);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"return char is not an ACK, but 0x%02x", c1);
 
 	/* we should now be sync'ed, write a debug message about the	*/
 	/* state 							*/
 	if (debug)
-		fprintf(stderr, "%s:%d: station %ssync'ed\n", __FILE__,
-			__LINE__, (result < 0) ? "not " : "");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station %ssync'ed", 
+			 (result < 0) ? "not " : "");
 	return result;
 }
 
@@ -258,21 +264,22 @@ meteoaccess_t	*davis_new(meteocom_t *m) {
 	unsigned char	*b;
 
 	if (debug)
-		fprintf(stderr, "%s:%d: initializing Davis weather station\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"initializing Davis weather station");
 
 	/* sync the communications with the station			*/
 	if (davis_sync(m) < 0) {
-		fprintf(stderr, "%s:%d: synchronization with station failed\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0,
+			"synchronization with station failed");
 		return NULL;
 	}
 
 	/* create a new structure					*/
 	md = (meteoaccess_t *)malloc(sizeof(meteoaccess_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteoaccess_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteoaccess_t), md);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteoaccess_t *)malloc(%d) = %p",
+			sizeof(meteoaccess_t), md);
 	memset(md, 0, sizeof(meteoaccess_t));
 	md->m = m;
 
@@ -305,14 +312,16 @@ meteoaccess_t	*davis_new(meteocom_t *m) {
 		if (b == NULL) return NULL;
 		md->private = malloc(sizeof(int));
 		if (debug)
-			fprintf(stderr, "%s:%d: (int *)malloc(%d) = %p\n",
-				__FILE__, __LINE__, sizeof(int), md->private);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"(int *)malloc(%d) = %p",
+				sizeof(int), md->private);
 		*(int *)md->private = (0x0f & (*b));
 		if (debug)
-			fprintf(stderr, "%s:%d: version: %d\n",
-				__FILE__, __LINE__, *(int *)md->private);
-		if (debug) fprintf(stderr, "%s:%d: free((unsigned char *)%p)\n",
-			__FILE__, __LINE__, b);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "version: %d",
+				*(int *)md->private);
+		if (debug)
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"free((unsigned char *)%p)", b);
 		free(b);
 	}
 
@@ -326,8 +335,9 @@ static meteovalue_t	*davis_get_temperature(meteoaccess_t *m) {
 	/* allocate result memory					*/
 	v = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t), v);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), v);
 	v->flags = METEOVALUE_TEMPERATURE;
 	v->unit = UNIT_FAHRENHEIT;
 
@@ -355,8 +365,9 @@ static meteovalue_t	*davis_get_temperature_inside(meteoaccess_t *m) {
 	/* allocate result memory					*/
 	v = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t), v);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), v);
 	v->flags = METEOVALUE_TEMPERATURE_INSIDE;
 	v->unit = UNIT_FAHRENHEIT;
 
@@ -384,8 +395,9 @@ static meteovalue_t	*davis_get_humidity(meteoaccess_t *m) {
 	/* allocate memory						*/
 	v = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t), v);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), v);
 	v->flags = METEOVALUE_HUMIDITY;
 	v->unit = UNIT_NONE;
 
@@ -414,8 +426,9 @@ static meteovalue_t	*davis_get_humidity_inside(meteoaccess_t *m) {
 	/* allocate memory						*/
 	v = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t), v);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), v);
 	v->flags = METEOVALUE_HUMIDITY_INSIDE;
 	v->unit = UNIT_NONE;
 
@@ -444,8 +457,9 @@ static meteovalue_t	*davis_get_barometer(meteoaccess_t *m) {
 	/* allocate memory						*/
 	v = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t), v);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), v);
 	v->flags = METEOVALUE_BAROMETER;
 	v->unit = UNIT_INHG;
 
@@ -463,8 +477,9 @@ static wind_t	*davis_get_wind(meteoaccess_t *m) {
 	/* allocate memory						*/
 	w = (wind_t *)malloc(sizeof(wind_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (wind_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(wind_t), w);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(wind_t *)malloc(%d) = %p",
+			sizeof(wind_t), w);
 	memset(w, 0, sizeof(w));
 
 	/* get wind direction from station				*/
@@ -491,8 +506,9 @@ static rain_t	*davis_get_rain(meteoaccess_t *m) {
 
 	v = (rain_t *)malloc(sizeof(rain_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (rain_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(rain_t), v);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(rain_t *)malloc(%d) = %p",
+			  sizeof(rain_t), v);
 	v->rain = get_station_value(m, 0x01d2, 4);
 	v->raintotal = get_station_value(m, 0x01ce, 4);
 	cal = get_station_value(m, 0x01d6, 4);
@@ -526,8 +542,9 @@ static meteodata_t	*davis_get_update(meteoaccess_t *m) {
 	/* allocate a result structure					*/
 	results = (meteodata_t *)malloc(sizeof(meteodata_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteodata_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteodata_t), results);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteodata_t *)malloc(%d) = %p",
+			sizeof(meteodata_t), results);
 	memset(results, 0, sizeof(meteodata_t));
 
 	/* disable the archive timer					*/
@@ -548,53 +565,54 @@ static meteodata_t	*davis_get_update(meteoaccess_t *m) {
 	results->temperature
 		= (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t),
-			results->temperature);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), results->temperature);
 	memset(results->temperature, 0, sizeof(meteovalue_t));
 
 	results->temperature_inside
 		= (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t),
-			results->temperature_inside);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), results->temperature_inside);
 	memset(results->temperature_inside, 0, sizeof(meteovalue_t));
 
 	results->humidity
 		= (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t),
-			results->humidity);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), results->humidity);
 	memset(results->humidity, 0, sizeof(meteovalue_t));
 
 	results->humidity_inside
 		= (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t),
-			results->humidity_inside);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), results->humidity_inside);
 	memset(results->humidity_inside, 0, sizeof(meteovalue_t));
 
 	results->barometer
 		= (meteovalue_t *)malloc(sizeof(meteovalue_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (meteovalue_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(meteovalue_t),
-			results->barometer);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(meteovalue_t *)malloc(%d) = %p",
+			sizeof(meteovalue_t), results->barometer);
 	memset(results->barometer, 0, sizeof(meteovalue_t));
 
 	results->wind = (wind_t *)malloc(sizeof(wind_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (wind_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(wind_t), results->wind);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"(wind_t *)malloc(%d) = %p",
+			sizeof(wind_t), results->wind);
 	memset(results->wind, 0, sizeof(wind_t));
 
 	results->rain = (rain_t *)malloc(sizeof(rain_t));
 	if (debug)
-		fprintf(stderr, "%s:%d: (rain_t *)malloc(%d) = %p\n",
-			__FILE__, __LINE__, sizeof(rain_t), results->rain);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(rain_t *)malloc(%d) = %p",
+			sizeof(rain_t), results->rain);
 	memset(results->rain, 0, sizeof(rain_t));
 	
 	/* read values from archive image				*/

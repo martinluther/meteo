@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.1 2002/01/18 23:34:27 afm Exp $
+# $Id: Makefile.am,v 1.3 2002/01/27 22:55:19 afm Exp $
 #
 
 lib_LTLIBRARIES = libmeteo.la
@@ -32,6 +32,7 @@ libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 		\
 	msgque.c dbupdate.c meteosocket.c mconf.c			\
 	scanner.c parser.c average.c database.c timestamp.c dograph.c	\
 	daemon.c watchdog.c printver.c					\
+	pdebug.c mdebug.c						\
 	$(VERSION_FILE)
 
 meteo_vers.c:	../configure.in

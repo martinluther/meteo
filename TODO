@@ -1,13 +1,15 @@
 TODO
 ----
 
-* support i18n in the meteobrowser
+* find cause of frequent crashes of meteoloop and make it more robust,
+  complete work on the watchdog
 
 * modify tables so that the group number can also be indexed
 
 * create indexes to speed up search
 
-* preform correct device locking when using a serial device
+* preform correct device locking when using a serial device, should be done
+  in sercom.c
 
 * generalize the davis code for other weather stations
 
@@ -16,4 +18,4 @@ TODO
 * use web colors in the graphs to avoid dither and false colors
 
 --
-$Id: TODO,v 1.9 2002/01/16 00:31:53 afm Exp $
+$Id: TODO,v 1.13 2002/01/29 20:55:28 afm Exp $

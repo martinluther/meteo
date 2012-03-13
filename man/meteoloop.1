@@ -3,13 +3,15 @@
 meteoloop \- compute averages of meteo data
 .SH SYNOPSIS
 meteoloop [
+.B \-m
+] [
 .B \-d
 ] [
 .B \-V
 ] [
 .B \-F
 ] [
-.BI \-i interval
+.BI \-l logurl
 ] [
 .BI \-p pidfile
 ] [
@@ -40,6 +42,11 @@ be picked up by the
 program.
 .SH OPTIONS
 .TP
+.B \-m
+run a master and a slave process. The master will just wait for the
+child to exit, and immediately spawn a new child. This will ensure
+that there always is a child reading data from the meteo station.
+.TP
 .B \-d
 increase the debug level by one. Debug messages are written to standard
 error.
@@ -68,6 +75,10 @@ for the configuration syntax. This argument is mandatory.
 .B \-F
 stay in foreground. Useful during debugging.
 .TP
+.BI \-l logurl
+send log messages to the destination described by the 
+.IR logurl .
+.TP
 .BI \-p pidfile
 When running in daemon mode, write the process id of the 
 .BR meteoavg (1)
@@ -93,6 +104,9 @@ to
 and cause it to restart. It is suggested that
 .BR meteowatch (1)
 be used for that purpose.
+Note that the -m option must be used to make sure
+.BR meteoloop (1)
+knows what to do when the watchdog timer fires.
 .TP
 .B \-V
 print version information and exit.

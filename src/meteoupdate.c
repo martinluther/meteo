@@ -6,7 +6,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoupdate.c,v 1.1 2002/01/18 23:34:32 afm Exp $
+ * $Id: meteoupdate.c,v 1.2 2002/01/27 21:01:44 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,6 +23,7 @@
 #include <msgque.h>
 #include <unistd.h>
 #include <printver.h>
+#include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;

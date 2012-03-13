@@ -3,14 +3,14 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: database.c,v 1.1 2002/01/18 23:34:28 afm Exp $
+ * $Id: database.c,v 1.2 2002/01/27 21:01:42 afm Exp $
  */
 #include <database.h>
 #include <string.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <meteo.h>
+#include <mdebug.h>
 
 MYSQL	*mc_opendb(const mc_node_t *lmeteoconfig, const int mode) {
 	const char	*database, *host, *user, *password, *prefix;
@@ -31,17 +31,15 @@ MYSQL	*mc_opendb(const mc_node_t *lmeteoconfig, const int mode) {
 
 	prefix = mc_get_string(lmeteoconfig, "database.prefix", NULL);
 	if (prefix == NULL) {
-		fprintf(stderr, "%s:%d: prefix must be set!\n", __FILE__,
-			__LINE__);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "prefix must be set!");
 		return NULL;
 	}
 
 	/* create a new database structure				*/
 	mysql = (MYSQL *)malloc(sizeof(MYSQL));
 	if (NULL == mysql) {
-		fprintf(stderr, "%s:%d: cannot allocate mysql structure: "
-			"%s (%d)\n", __FILE__, __LINE__,
-			strerror(errno), errno);
+		mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
+			"cannot allocate mysql structure");
 		return NULL;
 	}
 
@@ -51,13 +49,11 @@ MYSQL	*mc_opendb(const mc_node_t *lmeteoconfig, const int mode) {
 	/* connect to the database server				*/
 	if (NULL == mysql_real_connect(mysql, host, user, password, database,
 		0, NULL, 0)) {
-		fprintf(stderr, "%s:%d: cannot connect to database\n",
-			__FILE__, __LINE__);
-		exit(EXIT_FAILURE);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot connect to database");
+		return NULL;
 	}
 	if (debug)
-		fprintf(stderr, "%s:%d: connected to database\n",
-			__FILE__, __LINE__);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "connected to database");
 
 	/* return the mysql query					*/
 	return mysql;

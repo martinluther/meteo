@@ -4,9 +4,11 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: parser.y,v 1.1 2002/01/18 23:34:30 afm Exp $
+ * $Id: parser.y,v 1.2 2002/01/27 21:01:43 afm Exp $
  */
 #include <mconf.h>
+#include <pdebug.h>
+#include <mdebug.h>
 
 extern int	mplineno;
 mc_node_t	*mpconffile;
@@ -253,7 +255,7 @@ stationparameters:	stationparameter	{
 %%
 
 int	mperror(char *s) {
-	fprintf(stderr, "%s:%d: meteo conf file parse error on line %d\n",
-		__FILE__, __LINE__, mplineno);
+	mdebug(LOG_ERR, __FILE__, mplineno, 0,
+		"meteo conf file parse error on line %d", mplineno);
 	return 0;
 }

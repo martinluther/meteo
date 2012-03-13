@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.1 2002/01/18 23:34:31 afm Exp $
+# $Id: Makefile.am,v 1.2 2002/01/27 22:55:20 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
@@ -32,3 +32,6 @@ meteoavg_LDADD = ../lib/libmeteo.la
 meteodequeue_LDADD = ../lib/libmeteo.la
 meteowatch_LDADD = ../lib/libmeteo.la
 
+
+test:	meteoloop
+	./meteoloop -m -l file://`pwd`/logfile -d -F -w 2 -f `pwd`/../conf/meteo.conf
