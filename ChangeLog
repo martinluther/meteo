@@ -1,0 +1,73 @@
+Release 0.1.6:
+	* added documentation: meteo.html and meteodata.html
+	* added the capability to become a daemon to the meteoavg, meteoloop
+	  and meteodequeue programs
+	* added a -a option to meteograph that forces the use of the average
+	  table. Use the meteoavg program to fill the averages table
+	* added an option to meteograph that allows to select the graphs to
+	  be produced
+	* message queues are now fully implemented to decouple data collection
+	  from the wheather station and updates of the database. So if the
+	  database blocks (e.g. because of a long running query), no data
+	  from the station is lost.
+	* fixed quite a serious bug in the computation of the total wind
+	  speed. It worked for the Monitor, where the updates follow
+	  roughly every second, but it failed for the vantage, where the
+	  updates take 5 seconds.
+	* fixed quite a serious unit conversion bug in the davis_loop
+	  function
+	* added wake up code: Vantage station needs a wake up signal before
+	  the first command is sent
+	* added speed directive to configuration file: serial speed is
+	  now configurable
+	* portability fixes for Linux
+	* added generic functions to compute averages
+	* added a program to compute averages after the fact
+	* added a new table to the database to hold averages, so that the
+	  computation of the averages doesn't take that much time any longer
+	  (we should be able to do it from a CGI program)
+	* unified configuration file reading with a single new function in
+	  mconf.c
+
+Release 0.1.5:
+	* modify meteoloop so that it reads a configuration file
+	* meteograph did not close the configuration file after being done
+	  with it
+	* allow to configure writer as well as the read only user from the
+	  configuration file
+
+Release 0.1.4:
+	* fix a bug in labeling code, weekly labels were no longer displayed
+	  after change to daylight saving time
+	* implemented a configuration file scanner/parser to be
+	  able to configure ranges and colors of the graphs without modifying
+	  the source code
+	* database connection parameters configurable through the configuration
+	  file
+
+Release 0.1.3:
+	* fix bug in year labeling code, labels now appear
+	* adapt precipitation display ranges to something more reasonable
+	* fix dotted line for transparency
+
+Release 0.1.2:
+	* fix a bug in temperature max/min display (they were simply wrong)
+	* added some support for message queues, not finished
+
+Release 0.1.1:
+	* improve the graphs with better scales for wind
+	* improve the graph API by decoupling grid and ticks
+	* added a sync function to the davis interface code (based on
+	  the timed read)
+	* added a time read function to the meteocom structure
+	* add memory debugging to all source files
+	* fix missing include for string.h in tcpcom.c
+
+Release 0.1.0:
+	* meteotest now retrieves a full data set and displays it in HTML
+	* added conversion functions for temperature, wind speed and
+	  barometric pressure
+	* liboolized/automakeized/autoconfized/shtoolized the package
+
+--
+$Id: ChangeLog,v 1.13 2001/12/29 20:39:54 afm Exp $

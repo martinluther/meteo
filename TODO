@@ -1,0 +1,24 @@
+TODO
+----
+
+* teach meteoloop how to compute averages and maintain the average table
+
+* modify tables so that the group number can also be indexed
+
+* create indexes to speed up search
+
+* preform correct device locking when using a serial device
+
+* in the davis access code, get the extreme values as well
+
+* generalize the davis code for other weather stations
+
+* include conversion functions to scientific units: K, mb, m/s etc
+
+* add a separate process that consolidates averages to an extra table
+  so they don't need to be recomputed every time the graphs are rebuilt
+
+* use web colors in the graphs to avoid dither and false colors
+
+--
+$Id: TODO,v 1.5 2001/12/10 00:28:03 afm Exp $

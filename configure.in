@@ -1,0 +1,50 @@
+AC_PREREQ(2.12)dnl
+AC_REVISION([1.0])dnl
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(meteo.h)
+AC_CANONICAL_SYSTEM
+AM_INIT_AUTOMAKE(meteo, 0.1.6)
+AM_CONFIG_HEADER(config.h)
+
+dnl add support for libtool
+dnl AC_LIBLTDL_CONVENIENCE
+dnl AC_SUBST(INCLTDL)
+dnl AC_SUBST(LIBLTDL)
+dnl AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+dnl AC_CONFIG_SUBDIRS(libltdl)
+dnl AC_CHECK_LIB(dl, dlopen)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AM_PROG_LEX
+if test "${LEX}" != flex
+then
+	AC_MSG_ERROR(The meteo programs require the use of flex)
+fi
+AC_PROG_YACC
+
+dnl Checks for libraries.
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(socket, socket)
+AC_CHECK_LIB(resolv, res_query)
+AC_CHECK_LIB(m, atan2)
+AC_CHECK_LIB(mysqlclient, mysql_query)
+AC_CHECK_LIB(gd, gdImageCreate)
+AC_CHECK_LIB(z, gzopen)
+AC_CHECK_LIB(png, png_read_image)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h unistd.h mysql/mysql.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(strerror)
+
+
+AC_OUTPUT(Makefile)

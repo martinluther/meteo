@@ -1,0 +1,168 @@
+#! /bin/sh
+#
+# meteooverview -- generate an meteo data overview
+#
+# (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
+#
+# $Id: meteooverview,v 1.4 2001/12/29 20:39:56 afm Exp $
+#
+name=${1}
+
+cat > ${name}-meteo.html <<EOF
+<html>
+<head>
+<title>${name} Weather Overview</title>
+</head>
+<body bgcolor="#ffffff">
+<h1>${name} Weather Overview</h1>
+
+<table border="1">
+<tr>
+<td>&nbsp;</td>
+<th><a href="${name}-day.html">Day</a></th>
+<th><a href="${name}-week.html">Week</a></th>
+<th><a href="${name}-month.html">Month</a></th>
+<th><a href="${name}-year.html">Year</a></th>
+</tr>
+
+<tr>
+<td><a href="${name}-temperature.html">Temperature</a></td>
+<td><img src="${name}-temperature-day.png" width="125" height="36"></td>
+<td><img src="${name}-temperature-week.png" width="125" height="36"></td>
+<td><img src="${name}-temperature-month.png" width="125" height="36"></td>
+<td><img src="${name}-temperature-year.png" width="125" height="36"></td>
+</tr>
+
+<tr>
+<td><a href="${name}-barometer.html">Pressure</a></td>
+<td><img src="${name}-barometer-day.png" width="125" height="36"></td>
+<td><img src="${name}-barometer-week.png" width="125" height="36"></td>
+<td><img src="${name}-barometer-month.png" width="125" height="36"></td>
+<td><img src="${name}-barometer-year.png" width="125" height="36"></td>
+</tr>
+
+<tr>
+<td><a href="${name}-wind.html">Wind</a></td>
+<td><img src="${name}-wind-day.png" width="125" height="36"></td>
+<td><img src="${name}-wind-week.png" width="125" height="36"></td>
+<td><img src="${name}-wind-month.png" width="125" height="36"></td>
+<td><img src="${name}-wind-year.png" width="125" height="36"></td>
+</tr>
+
+<tr>
+<td><a href="${name}-radiation.html">Radiation</a></td>
+<td><img src="${name}-radiation-day.png" width="125" height="36"></td>
+<td><img src="${name}-radiation-week.png" width="125" height="36"></td>
+<td><img src="${name}-radiation-month.png" width="125" height="36"></td>
+<td><img src="${name}-radiation-year.png" width="125" height="36"></td>
+</tr>
+
+<tr>
+<td><a href="${name}-rain.html">Precipitation</a></td>
+<td><img src="${name}-rain-day.png" width="125" height="36"></td>
+<td><img src="${name}-rain-week.png" width="125" height="36"></td>
+<td><img src="${name}-rain-month.png" width="125" height="36"></td>
+<td><img src="${name}-rain-year.png" width="125" height="36"></td>
+</tr>
+
+</table>
+</body>
+</html>
+EOF
+
+vertical () {
+name=${1}
+period=${2}
+key=${3}
+cat >${name}-${key}.html <<EOF
+<html>
+<head>
+<title>${name} Weather Year Overview</title>
+</head>
+<body bgcolor="#ffffff">
+<h1>${name} Weather: ${period} Overview</h1>
+<table>
+<tr>
+<td><img src="${name}-temperature-${key}.png"></td>
+<td valign="top">
+The <font color="#b40000">red</font> curve shows the temperature,
+the <font color="#ffb4b4">light red</font> area shows the range between
+maximum and minimum temperature during the sampling interval.
+The <font color="#6464ff">blue</font> curve shows the dew point, the
+temperature at which dew begins to form.
+</td>
+</tr>
+<tr>
+<td><img src="${name}-barometer-${key}.png"></td>
+<td valign="top">The <font color="#7f7fff">blue</font> graph shows
+average barometric pressure, the range between minimum and maximum
+pressure during the sampling interval is shown in
+<font color="#d2d2ff">light blue</font>.
+</td>
+</tr>
+<tr>
+<td><img src="${name}-wind-${key}.png"></td>
+<td valign="top">
+The lower part of the graph shows in <font color="#00ff00">light green</font>
+the average wind speed during the sampling interval, the maximum speed
+is shown in <font color="#006400">dark green</font>, scale on the
+left of the graph. The upper part
+shows the wind azimut in <font color="#6464ff">blue</font>, scale on the
+right.
+</td>
+</tr>
+<tr>
+<td><img src="${name}-radiation-${key}.png"></td>
+<td valign="top">The <font color="#c8b400">gold</font> histogram shows
+the total solar radiation in W/m^2, scale on the left of the graph.
+The <font color="#6400c8">pink</font> curve shows the UV index,
+scale on the right.
+</td>
+</tr>
+<tr>
+<td><img src="${name}-rain-${key}.png"></td>
+<td valign="top">The <font color="0000ff">blue</font> histogram shows
+the total rain (or moisture content of snow of the precipitation) in
+<i>mm</i> during the sampling interval.
+</td>
+</tr>
+</table>
+</body>
+</html>
+EOF
+}
+
+vertical ${name} Day day
+vertical ${name} Week week
+vertical ${name} Month month
+vertical ${name} Year year
+
+horizontal () {
+name=${1}
+value="${2}"
+key=${3}
+cat > ${name}-${key}.html <<EOF
+<html>
+<head>
+<title>${name} Weather: ${value}</title>
+</head>
+<body bgcolor="#ffffff">
+<h1>${name} Weather: ${value}</h1>
+<p><img src="${name}-${key}-day.png"></p>
+<p><img src="${name}-${key}-week.png"></p>
+<p><img src="${name}-${key}-month.png"></p>
+<p><img src="${name}-${key}-year.png"></p>
+</p>
+</body>
+</html>
+EOF
+}
+
+horizontal ${name} Temperature temperature
+horizontal ${name} Temperature\ inside temperature_inside
+horizontal ${name} Pressure barometer
+horizontal ${name} Wind wind
+horizontal ${name} Radiation radiation
+horizontal ${name} Precipitation rain
+
+exit 0
