@@ -52,8 +52,8 @@ modern operating systems it is known to run on. Linux users have a
 distinct advantage here, the usually don't have to do anything to get
 these packages:
 
-GD	To compile this package, you will need a complete installation of
-	Tom Boutell's GD library, which you can get from www.boutell.com.
+GD2	To compile this package, you will need a complete installation of
+	Tom Boutell's GD2 library, which you can get from www.boutell.com.
 	Note that the meteo programs expect to be able to create PNG images,
 	so zlib and libpng must also be installed. Some installations with
 	GD already installed may also need the freetype libraries, as GD
@@ -157,4 +157,4 @@ Thanks to all those who have helped.
 
 
 --
-$Id: README,v 1.28 2003/06/09 07:38:17 afm Exp $
+$Id: README,v 1.29 2003/06/12 00:45:15 afm Exp $

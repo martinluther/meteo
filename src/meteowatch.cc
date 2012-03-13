@@ -4,14 +4,14 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteowatch.cc,v 1.2 2003/06/08 11:08:32 afm Exp $
+ * $Id: meteowatch.cc,v 1.3 2003/06/12 01:01:09 afm Exp $
  */
 #include <meteo.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <daemon.h>
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include <signal.h>
 #include <string.h>
 #include <timestamp.h>

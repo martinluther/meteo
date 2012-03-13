@@ -468,7 +468,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE LN_S ECHO RANLIB ac_ct_RANLIB CPP EGREP LIBTOOL LIBTOOL_DEPS CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MSGFMT LIBXML_LIBS LIBXML_CFLAGS METEOCONFFILE BROWSERDIR HTMLDIR CONFIGDATE LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE LN_S ECHO RANLIB ac_ct_RANLIB CPP EGREP LIBTOOL LIBTOOL_DEPS CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MSGFMT MYSQL_LIBS MYSQL_CFLAGS GDLIB_LIBS GDLIB_LDFLAGS GDLIB_CFLAGS LIBXML_LIBS LIBXML_CFLAGS METEOCONFFILE BROWSERDIR HTMLDIR CONFIGDATE LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1801,7 +1801,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=meteo
- VERSION=0.7.2
+ VERSION=0.7.3
 
 
 cat >>confdefs.h <<_ACEOF
@@ -9328,273 +9328,49 @@ fi
 
 
 
-echo "$as_me:$LINENO: checking for mysql_query in -lmysqlclient" >&5
-echo $ECHO_N "checking for mysql_query in -lmysqlclient... $ECHO_C" >&6
-if test "${ac_cv_lib_mysqlclient_mysql_query+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
+MYSQL_CONFIG=mysql_config
+echo "$as_me:$LINENO: checking looking for mysqlclient library" >&5
+echo $ECHO_N "checking looking for mysqlclient library... $ECHO_C" >&6
+if ${MYSQL_CONFIG} --libs > /dev/null 2>&1
+then
+	MYSQLVERS=`${MYSQL_CONFIG} --version`
+	MYSQL_LIBS=`${MYSQL_CONFIG} --libs`
+	MYSQL_CFLAGS=`${MYSQL_CONFIG} --cflags`
+
+
+	echo "$as_me:$LINENO: result: ${MYSQLVERS} found" >&5
+echo "${ECHO_T}${MYSQLVERS} found" >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmysqlclient  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
+	{ { echo "$as_me:$LINENO: error: Could not find libmysqlclient anywhere, check http://www.mysql.com/" >&5
+echo "$as_me: error: Could not find libmysqlclient anywhere, check http://www.mysql.com/" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+CFLAGS="${MYSQL_CFLAGS} ${CFLAGS}"
+CXXFLAGS="${MYSQL_CFLAGS} ${CXXFLAGS}"
+LIBS="${MYSQL_LIBS} ${LIBS}"
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char mysql_query ();
-int
-main ()
-{
-mysql_query ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_mysqlclient_mysql_query=yes
+GDLIB_CONFIG=gdlib-config
+echo "$as_me:$LINENO: checking looking for gd library" >&5
+echo $ECHO_N "checking looking for gd library... $ECHO_C" >&6
+if ${GDLIB_CONFIG} --libs > /dev/null 2>&1
+then
+	GDLIBVERS=`${GDLIB_CONFIG} --version`
+	GDLIB_LIBS=`${GDLIB_CONFIG} --libs`
+	GDLIB_LDFLAGS=`${GDLIB_CONFIG} --ldflags`
+	GDLIB_CFLAGS=`${GDLIB_CONFIG} --cflags`
+
+
+
+	echo "$as_me:$LINENO: result: ${GDLIBVERS} found" >&5
+echo "${ECHO_T}${GDLIBVERS} found" >&6
 else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_mysqlclient_mysql_query=no
+	{ { echo "$as_me:$LINENO: error: Could not find libgd anywhere, check http://www.boutell.com/" >&5
+echo "$as_me: error: Could not find libgd anywhere, check http://www.boutell.com/" >&2;}
+   { (exit 1); exit 1; }; }
 fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_mysqlclient_mysql_query" >&5
-echo "${ECHO_T}$ac_cv_lib_mysqlclient_mysql_query" >&6
-if test $ac_cv_lib_mysqlclient_mysql_query = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBMYSQLCLIENT 1
-_ACEOF
-
-  LIBS="-lmysqlclient $LIBS"
-
-else
-  echo "the mysql client library is required, fix your include dirs"
-	echo "e.g. using CPPFLAGS, or install MySQL from http://www.mysql.org"
-	exit 1
-fi
-
-
-echo "$as_me:$LINENO: checking for gdImageCreate in -lgd" >&5
-echo $ECHO_N "checking for gdImageCreate in -lgd... $ECHO_C" >&6
-if test "${ac_cv_lib_gd_gdImageCreate+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lgd  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char gdImageCreate ();
-int
-main ()
-{
-gdImageCreate ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_gd_gdImageCreate=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_gd_gdImageCreate=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_gd_gdImageCreate" >&5
-echo "${ECHO_T}$ac_cv_lib_gd_gdImageCreate" >&6
-if test $ac_cv_lib_gd_gdImageCreate = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGD 1
-_ACEOF
-
-  LIBS="-lgd $LIBS"
-
-else
-  echo "The GD library is required, get it from http://www.boutell.com"
-	exit 1
-fi
-
-
-echo "$as_me:$LINENO: checking for gzopen in -lz" >&5
-echo $ECHO_N "checking for gzopen in -lz... $ECHO_C" >&6
-if test "${ac_cv_lib_z_gzopen+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char gzopen ();
-int
-main ()
-{
-gzopen ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_z_gzopen=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_z_gzopen=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_z_gzopen" >&5
-echo "${ECHO_T}$ac_cv_lib_z_gzopen" >&6
-if test $ac_cv_lib_z_gzopen = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBZ 1
-_ACEOF
-
-  LIBS="-lz $LIBS"
-
-else
-  echo "zlib is required for PNG"
-	exit 1
-fi
-
-
-echo "$as_me:$LINENO: checking for png_read_image in -lpng" >&5
-echo $ECHO_N "checking for png_read_image in -lpng... $ECHO_C" >&6
-if test "${ac_cv_lib_png_png_read_image+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpng  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char png_read_image ();
-int
-main ()
-{
-png_read_image ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_png_png_read_image=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_png_png_read_image=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_png_png_read_image" >&5
-echo "${ECHO_T}$ac_cv_lib_png_png_read_image" >&6
-if test $ac_cv_lib_png_png_read_image = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPNG 1
-_ACEOF
-
-  LIBS="-lpng $LIBS"
-
-else
-  echo "the PNG library is required, get it from http://www.png.org"
-	exit 1
-fi
+CFLAGS="${GDLIB_CFLAGS} ${CFLAGS}"
+CXXFLAGS="${GDLIB_CXXFLAGS} ${CXXFLAGS}"
+LIBS="${GDLIB_LDFLAGS} -lgd ${GDLIB_LIBS} ${LIBS}"
 
 
 echo "$as_me:$LINENO: checking for ANSI C header files" >&5
@@ -10765,6 +10541,11 @@ s,@CXXDEPMODE@,$CXXDEPMODE,;t t
 s,@am__fastdepCXX_TRUE@,$am__fastdepCXX_TRUE,;t t
 s,@am__fastdepCXX_FALSE@,$am__fastdepCXX_FALSE,;t t
 s,@MSGFMT@,$MSGFMT,;t t
+s,@MYSQL_LIBS@,$MYSQL_LIBS,;t t
+s,@MYSQL_CFLAGS@,$MYSQL_CFLAGS,;t t
+s,@GDLIB_LIBS@,$GDLIB_LIBS,;t t
+s,@GDLIB_LDFLAGS@,$GDLIB_LDFLAGS,;t t
+s,@GDLIB_CFLAGS@,$GDLIB_CFLAGS,;t t
 s,@LIBXML_LIBS@,$LIBXML_LIBS,;t t
 s,@LIBXML_CFLAGS@,$LIBXML_CFLAGS,;t t
 s,@METEOCONFFILE@,$METEOCONFFILE,;t t

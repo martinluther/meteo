@@ -3,12 +3,11 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.10 2003/06/09 07:33:21 afm Exp $
+ * $Id: dograph.c,v 1.11 2003/06/12 00:45:15 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
 #include <graph.h>
-#include <mysql/mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

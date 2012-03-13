@@ -205,6 +205,16 @@ xml2-config script is found on the PATH. The configure script will
 use that program's output to correctly set compiler and linker flags
 to include and link libxml2.
 
+   Likewise for the MySQL library, make sure the program mysql_config is
+found on the path. The GD2 library uses the program gdlib-config, which
+is usually in /usr/local/bin, make sure the program is found during the
+configure step.
+
+   As a consequence, zlib and libpng are no longer detected by the
+configure script, the script just assumes that they exist where the
+config scripts for mysql and gdlib think they are.
+
+
 Special issues
 ==============
 
@@ -315,4 +325,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.12 2003/06/09 07:33:21 afm Exp $
+$Id: INSTALL,v 1.13 2003/06/12 00:45:15 afm Exp $

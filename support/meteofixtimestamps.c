@@ -4,12 +4,12 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteofixtimestamps.c,v 1.1 2002/11/18 02:39:25 afm Exp $
+ * $Id: meteofixtimestamps.c,v 1.2 2003/06/12 01:01:09 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>

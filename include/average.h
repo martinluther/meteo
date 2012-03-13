@@ -3,12 +3,12 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: average.h,v 1.2 2003/06/06 15:11:05 afm Exp $
+ * $Id: average.h,v 1.3 2003/06/12 00:45:15 afm Exp $
  */
 #ifndef _AVERAGE_H
 #define _AVERAGE_H
 
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include <time.h>
 
 #ifdef __cplusplus

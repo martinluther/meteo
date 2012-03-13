@@ -3,13 +3,13 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteograph.cc,v 1.2 2003/06/08 22:32:10 afm Exp $
+ * $Id: meteograph.cc,v 1.3 2003/06/12 01:01:09 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
 #include <xmlconf.h>
 #include <graph.h>
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

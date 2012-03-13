@@ -11,7 +11,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include <msgque.h>
 
 namespace meteo {

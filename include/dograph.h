@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.h,v 1.5 2003/06/06 15:11:05 afm Exp $
+ * $Id: dograph.h,v 1.6 2003/06/12 00:45:15 afm Exp $
  */
 #ifndef _DOGRAPH_H
 #define _DOGRAPH_H
@@ -11,7 +11,7 @@
 #include <meteo.h>
 #include <meteograph.h>
 #include <graph.h>
-#include <mysql/mysql.h>
+#include <mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
