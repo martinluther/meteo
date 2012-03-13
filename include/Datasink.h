@@ -29,7 +29,7 @@ public:
 	FileDatasink(std::string& filename) : file(filename.c_str()) { }
 	virtual	~FileDatasink(void) { }
 	virtual void	receive(const std::string& query) {
-		file << query << std::endl;
+		file << query << ";" << std::endl;
 	}
 };
 

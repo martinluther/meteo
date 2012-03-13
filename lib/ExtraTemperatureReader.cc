@@ -8,7 +8,7 @@
 namespace meteo {
 
 ExtraTemperatureReader::ExtraTemperatureReader(int o)
-	: BytePacketReader(o, true) {
+	: BytePacketReader(o, false) {
 }
 
 ExtraTemperatureReader::~ExtraTemperatureReader(void) {

@@ -1801,7 +1801,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=meteo
- VERSION=0.9.3
+ VERSION=0.9.4
 
 
 cat >>confdefs.h <<_ACEOF
@@ -12697,7 +12697,7 @@ HTMLDIR="${with_html_dir}"
 CONFIGDATE=`date +"%B %d, %Y" | tr 'A-Z' 'a-z'`
 
 
-                                                                                                                                                      ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile browser/Makefile browser/po/Makefile db/Makefile man/Makefile man/meteo.1 html/news.html"
+                                                                                                                                                                ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile browser/Makefile browser/po/Makefile db/Makefile man/Makefile man/meteo.1 html/news.html html/get.html"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -13276,6 +13276,7 @@ do
   "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
   "man/meteo.1" ) CONFIG_FILES="$CONFIG_FILES man/meteo.1" ;;
   "html/news.html" ) CONFIG_FILES="$CONFIG_FILES html/news.html" ;;
+  "html/get.html" ) CONFIG_FILES="$CONFIG_FILES html/get.html" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "include/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

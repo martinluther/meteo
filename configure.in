@@ -5,7 +5,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT
 AC_CONFIG_SRCDIR([include/crc.h])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(meteo, 0.9.3)
+AM_INIT_AUTOMAKE(meteo, 0.9.4)
 AM_CONFIG_HEADER(include/config.h)
 
 dnl add support for libtool
@@ -143,5 +143,5 @@ AC_SUBST(CONFIGDATE)
 AC_CONFIG_FILES([Makefile include/Makefile lib/Makefile src/Makefile
 support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile
 browser/Makefile browser/po/Makefile
-db/Makefile man/Makefile man/meteo.1 html/news.html])
+db/Makefile man/Makefile man/meteo.1 html/news.html html/get.html])
 AC_OUTPUT

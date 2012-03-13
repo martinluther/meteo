@@ -47,7 +47,7 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 	}
 
 	// read the temperature and humidity calibration numbers
-	std::string	packet = eeprom(0x50, 29);
+	std::string	packet = eeprom(0x32, 29);
 
 	// calibrate ordinary temperature sensors
 	calibrateReader("console.temperature",

@@ -146,7 +146,7 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.11 2003/11/01 19:58:05 afm Exp $
+# $Id: Makefile.am,v 1.12 2003/11/19 22:27:07 afm Exp $
 #
 HTMLFILES = meteodata.html meteo-install.html meteo.css gallery.html	\
 	about.html ack.html config.html index.html inhalt.html		\
@@ -158,14 +158,14 @@ TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../INSTALL \
 
 EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.html	\
 	about.html ack.html config.html index.html inhalt.html		\
-	news.html.in requ.html uti.html get.html $(IMAGES)
+	news.html.in requ.html uti.html get.html.in $(IMAGES)
 
 subdir = html
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = news.html
+CONFIG_CLEAN_FILES = news.html get.html
 DIST_SOURCES =
-DIST_COMMON = Makefile.am Makefile.in news.html.in
+DIST_COMMON = Makefile.am Makefile.in get.html.in news.html.in
 all: all-am
 
 .SUFFIXES:
@@ -175,6 +175,8 @@ $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 news.html: $(top_builddir)/config.status news.html.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+get.html: $(top_builddir)/config.status get.html.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:

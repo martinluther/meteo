@@ -1,3 +1,16 @@
+Release 0.9.4:
+	* fixed the offset for calibration numbers for temperature. It was
+	  given as 0x50, but this should rather be a decimal value, or
+	  to be consistent: 0x32.
+	* fixed a type error in the ExtraTemperatureReader: we were reading
+	  signed bytes instead of unsigned bytes, which cause very strange
+	  temperatures indeed.
+
+Release 0.9.3:
+	* fix a missing header in meteolabel.cc
+	* fix a missing ; in the FileDatasink class
+	* fix a serious bug in the VantagePro calibration number code
+
 Release 0.9.2:
 	* iss.rainrate had the wrong type reader associated with it, problem
 	  noted by Carsten Guenther
@@ -540,4 +553,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.106 2003/11/11 08:13:53 afm Exp $
+$Id: ChangeLog,v 1.108 2003/11/28 20:57:58 afm Exp $
