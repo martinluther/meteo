@@ -3,6 +3,8 @@
  *                  be a common subclass of all the value types.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicValue.cc,v 1.8 2004/02/25 23:48:04 afm Exp $
  */
 #include <BasicValue.h>
 #include <mdebug.h>

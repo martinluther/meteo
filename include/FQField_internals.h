@@ -2,6 +2,8 @@
  * FQField_internals.h -- oracle that gives us information about fields
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: FQField_internals.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _FQField_internals_h
 #define _FQField_internals_h

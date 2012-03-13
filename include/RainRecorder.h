@@ -2,6 +2,8 @@
  * RainRecorder.h -- encapsulate how rain is measured
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: RainRecorder.h,v 1.5 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _RainRecorder_h
 #define _RainRecorder_h

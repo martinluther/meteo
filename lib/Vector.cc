@@ -2,6 +2,8 @@
  * Vector.cc -- Vector arithmetic
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Vector.cc,v 1.11 2004/02/25 23:48:06 afm Exp $
  */
 #include <Vector.h>
 #include <math.h>

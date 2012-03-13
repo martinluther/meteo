@@ -4,6 +4,8 @@
  *            are defined in MinmaxValue.h, Wind.h and Rain.h
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Value.h,v 1.3 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Value_h
 #define _Value_h

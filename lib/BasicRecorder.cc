@@ -3,6 +3,8 @@
  *                     be a common subclass of all the Recorder types.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicRecorder.cc,v 1.10 2004/02/25 23:48:04 afm Exp $
  */
 #include <BasicRecorder.h>
 #include <mdebug.h>

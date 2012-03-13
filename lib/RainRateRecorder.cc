@@ -2,6 +2,8 @@
  * RainRateRecorder.cc -- implement rain rate recording
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: RainRateRecorder.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <RainRateRecorder.h>
 #include <MeteoException.h>

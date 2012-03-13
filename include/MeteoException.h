@@ -2,6 +2,8 @@
  * MeteoException.h -- common exception class for Meteo Project
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: MeteoException.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _MeteoException_h 
 #define _MeteoException_h

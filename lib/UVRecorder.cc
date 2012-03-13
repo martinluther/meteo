@@ -2,6 +2,8 @@
  * UVRecorder.cc -- implement UV value
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: UVRecorder.cc,v 1.2 2004/02/25 23:48:06 afm Exp $
  */
 #include <UVRecorder.h>
 #include <MeteoException.h>

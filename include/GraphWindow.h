@@ -2,6 +2,8 @@
  * GraphWindow.h -- abstracts graphs inside windows
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: GraphWindow.h,v 1.13 2004/02/27 22:09:04 afm Exp $
  */
 #ifndef _GraphWindow_h
 #define _GraphWindow_h
@@ -50,6 +52,7 @@ public:
 		endtime = starttime + getWidth() * interval;
 	}
 	int	getInterval(void) const { return interval; }
+	int	getOffset(void) const { return offset; }
 	time_t	getEndTime(void) const { return endtime; }
 	time_t	getEndTimekey(void) const { return getEndTime() + offset; }
 	time_t	getStartTime(void) { return starttime; }
@@ -107,6 +110,13 @@ public:
 	}
 
 	// handle graphing, single points
+	void	drawPoint(const Point& p, const Color& color) {
+		parent.drawPoint(p, color);
+	}
+	void	drawPoint(bool useleftscale, const GraphPoint& gp,
+		const Color& color) {
+		drawPoint(getPoint(useleftscale, gp), color);
+	}
 	void	drawHistogram(bool useleftscale, const GraphPoint& gp,
 		const Color& color) {
 		parent.drawLine(getPoint(useleftscale, gp),

@@ -2,6 +2,8 @@
  * BytePacketReader.cc -- implementation of byte reading packets
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BytePacketReader.cc,v 1.3 2004/02/25 23:48:04 afm Exp $
  */
 #include <BytePacketReader.h>
 #include <mdebug.h>

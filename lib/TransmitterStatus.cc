@@ -2,6 +2,8 @@
  * TransmitterStatus.cc -- implement voltage (for VantagePro console battery)
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: TransmitterStatus.cc,v 1.2 2004/02/25 23:48:06 afm Exp $
  */
 #include <TransmitterStatus.h>
 #include <MeteoException.h>

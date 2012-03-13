@@ -2,6 +2,8 @@
  * Scale.cc -- implementation scales of vertical axes of a Graphwindow
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Scale.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <Scale.h>
 #include <Configuration.h>

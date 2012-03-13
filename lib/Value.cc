@@ -4,6 +4,8 @@
  *             management
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Value.cc,v 1.5 2004/02/25 23:48:06 afm Exp $
  */
 #include <Value.h>
 #include <MeteoException.h>

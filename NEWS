@@ -1,3 +1,17 @@
+0.9.7	some bug fixes
+	removal of offset configuration variable
+	added averages configuration in XML file, so the user now gets full
+	control about which averages are compute, and how
+	battery and transmitter fields now work
+	sunrise and sunset can also be stored in the database (this is a
+		waste of space, but who cares about a few gibabytes these
+		days)
+	added channel of type sun, which indicates the time during which
+		the sun is above the horizon
+
+0.9.6	some bug fixes
+	removal of header table
+
 0.9.5	some minor fixes
 
 (for further news please check the ChangeLog)
@@ -8,4 +22,4 @@
 	Aron Spike (voluntered to test GroWeather).
 
 --
-$Id: NEWS,v 1.21 2004/01/07 21:53:37 afm Exp $
+$Id: NEWS,v 1.24 2004/02/27 22:09:04 afm Exp $

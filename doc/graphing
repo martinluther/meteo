@@ -1,0 +1,154 @@
+Using meteo for graphing only
+=============================
+
+In some applications closely related to a weather station, meteo may be
+useful just for graphing. In such applications, some external program,
+e.g. some cron jobs, may retrieve the data from an external source an
+place it in the sdata table. Meteo can then be used to compute averages
+or other types of accumulations, and draw suitable graphs.
+
+An example application: an astronomical observatory, which uses a weather
+station to measure environmental conditions, but also has sensors for
+the temperature of the telescope mirror, and flags indicating whether
+the observatory dome is open and the degree of cloud coverage.
+
+The following configuration description uses the observatory application
+as an example.
+
+Station configuration
+---------------------
+
+To graph such additional data, it must be assigned to a ficticious station
+and to a sensor array connected to this station. For the observatory
+example, there will be a station called OBS, with two sensor arrays:
+the telescope and the outside. The telescope has a temperature sensor
+and a sensor shutter indicating the time the camera shutter of the
+telescope was open. The outside sensor array may have an indicator showing
+that the dome is open, and sensors for moisture and clouds. An XML
+configuration for such a station would look like:
+
+    <station name="OBS">
+      <sensors>
+	<sensor name="outside">
+	  <field>moist</field>
+	  <field>clouds</field>
+	</sensor>
+	<sensor name="telescope">
+	  <field>mirror</field>
+	  <field>shutter</field>
+	  <field>dome</field>
+	</sensor>
+      </sensors>
+      <averages>
+	<sensor name="outside">
+	  <average name="moist" base="moist" operator="avg"/>
+	  <average name="clouds" base="clouds" operator="avg"/>
+	</sensor>
+	<sensor name="telescope">
+	  <average name="mirror" base="mirror" operator="avg"/>
+	  <average name="shutter" base="shutter" operator="sum"/>
+	  <average name="dome" base="dome" operator="sum"/>
+	</sensor>
+      </averages>
+    </station>
+
+Note the averages configuration. With these settings, you can run a
+meteoavg process for the station OBS and you will end up with averaged
+data in the avg table. However, for this to be possible, you also need
+to add suitable entries in the control tables in the database.
+
+Database configuration
+----------------------
+
+For the database, the fully qualified names for the additional
+data fields must also have corresponding entries in the station,
+sensor and mfield tables. First of all, we need an entry in the
+station table:
+
+      +------+----+----------+--------+
+      | name | id | timezone | offset |
+      +------+----+----------+--------+
+      | OBS  |  3 | MST      | -25200 |
+      +------+----+----------+--------+
+
+There are two sensor stations associated with this station, described
+by the following entries of the sensor table:
+
+      +-----------+----+-----------+
+      | name      | id | stationid |
+      +-----------+----+-----------+
+      | telescope |  8 |         3 |
+      | outside   |  7 |         3 |
+      +-----------+----+-----------+
+
+Finally, there are the 5 additional field types:
+
+      +---------+-----+------+-------+
+      | name    | id  | unit | class |
+      +---------+-----+------+-------+
+      | mirror  | 123 | F    | NULL  |
+      | shutter | 124 |      | NULL  |
+      | dome    | 125 |      | NULL  |
+      | moist   | 126 |      | NULL  |
+      | clouds  | 127 |      | NULL  |
+      +---------+-----+------+-------+
+
+
+Computing averages
+------------------
+
+To maintain averages, run a meteoavg process with the following command line
+
+    /usr/local/bin/meteoavg -l syslog:local0 -s OBS
+
+To recompute the averages for the interval 300 and the month of february
+2004, use the command
+
+    /usr/local/bin/meteoavg -l syslog:local0 -s OBS -i 300 \
+	-a 20040201000000 20040229235900
+
+Generating graphs
+-----------------
+
+To generate graphs, you must first define the graph in the XML configuration
+file. Here is a sample configuration that plots moisture and clouds from the
+observatory in red and green:
+
+    <graph name="OBS.outside"
+        height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">moisture</leftlabel>
+      <rightlabel align="center">clouds</rightlabel>
+      <leftaxis type="static" min="0" max="100" first="0" last="100"
+        step="10" format="%.0f" ticks="yes" gridlines="yes"/>
+      <rightaxis type="static" min="0" max="100" first="0" last="100"
+        step="10" format="%.0f" ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+        <query>
+          <select name="m">OBS.outside.moist</select>
+          <select name="c">OBS.outside.clouds</select>
+        </query>
+        <channel color="#00ff00" type="curve" scale="left" name="m"/>
+        <channel color="#ff0000" type="curve" scale="right" name="c"/>
+      </channels>
+    </graph>
+
+With this configuration entry, you can generate graphs using commands
+like
+
+    /usr/local/bin/meteodraw -s OBS -L m200402 -g OBS.outside
+
+This will create a month graph for the outside parameters of the observatory
+for the month of february 2004.
+
+
+Alternatives
+------------
+
+There are of course alternatives like Tobi Oetiker's RRDtool. Meteo is
+most appropriate if you need to compare the weather data with the additional
+sensors, which is undoubtedly the case for the observatory application.
+
+
+--
+$Id: graphing,v 1.1 2004/02/27 16:03:11 afm Exp $

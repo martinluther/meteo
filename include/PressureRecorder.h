@@ -2,6 +2,8 @@
  * PressureRecorder.h -- pressure abstraction
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: PressureRecorder.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _PressureRecorder_h
 #define _PressureRecorder_h

@@ -3,6 +3,8 @@
  *                   with minimal contention
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ChunkDumper.cc,v 1.4 2004/02/25 23:48:04 afm Exp $
  */
 #include <ChunkDumper.h>
 
@@ -114,7 +116,7 @@ int	ChunkDumper::dumpSdata(int start, int sensorid) {
 		"select timekey, sensorid, fieldid, value "
 		"from sdata "
 		"where sensorid = %d "
-		"  and timekey > %d and timekey <= %d",
+		"  and timekey >= %d and timekey < %d",
 		sensorid, start, end);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sdata query: %s", query);
 	BasicQueryResult	bqr = qp(query);
@@ -126,6 +128,7 @@ int	ChunkDumper::dumpSdata(int start, int sensorid) {
 		sdata++;
 	}
 
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "next start time: %d", end);
 	return end;
 }
 
@@ -139,25 +142,26 @@ int	ChunkDumper::dumpAvg(const int start, int sensorid) {
 		"select timekey, intval, sensorid, fieldid, value "
 		"from avg "
 		"where sensorid = %d "
-		"  and timekey > %d and timekey <= %d",
+		"  and timekey >= %d and timekey < %d",
 		sensorid, start, end);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sdata query: %s", query);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "avg query: %s", query);
 	BasicQueryResult	bqr = qp(query);
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query complete");
 
 	for (BasicQueryResult::iterator i = bqr.begin(); i != bqr.end(); i++) {
-		sdatafile << out("insert into sdata(timekey, intval, "
+		avgfile << out("insert into avg(timekey, intval, "
 			"sensorid, fieldid, value)", *i) << std::endl;
-		sdata++;
+		avg++;
 	}
 
-	return endtime;
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "next start time: %d", end);
+	return end;
 }
 
 // read a chunk of data from the database
 void	ChunkDumper::dump(int sensorid) {
 	char	query[1024];
-	int	t, last, end;
+	int	t, last, end = endtime;
 
 	// dump the sdata table
 	if (dosdata) {
@@ -169,21 +173,26 @@ void	ChunkDumper::dump(int sensorid) {
 				sensorid);
 			BasicQueryResult	bqr = qp(query);
 			t = atoi((*bqr.begin())[0].c_str());
-			last = atoi((*bqr.begin())[0].c_str());
+			last = atoi((*bqr.begin())[1].c_str());
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "data from %d to %d",
 				t, last);
 		} else {
 			t = starttime;
 		}
 		// find the end time
-		if (endtime < 0) {
+		if (end < 0) {
 			end = last;
-		} else {
+		}
+		if (end < 0) {
 			end = time(NULL);
 		}
-		while (t < end) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "performing dumps between "
+			"%d and %d", t, end);
+		while ((t > 0) && (t < end)) {
 			t = dumpSdata(t, sensorid);
 		}
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"sdata dump complete at end time %d", t);
 	}
 
 	// dump the avg table
@@ -196,21 +205,27 @@ void	ChunkDumper::dump(int sensorid) {
 				sensorid);
 			BasicQueryResult	bqr = qp(query);
 			t = atoi((*bqr.begin())[0].c_str());
-			last = atoi((*bqr.begin())[0].c_str());
+			last = atoi((*bqr.begin())[1].c_str());
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "data from %d to %d",
 				t, last);
 		} else {
 			t = starttime;
 		}
 		// find the end time
-		if (endtime < 0) {
+		end = endtime;
+		if (end < 0) {
 			end = last;
-		} else {
+		}
+		if (end < 0) {
 			end = time(NULL);
 		}
-		while (t < end) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "performing dumps between "
+			"%d and %d", t, end);
+		while ((t > 0) && (t < end)) {
 			t = dumpAvg(t, sensorid);
 		}
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"avg dump complete at end time %d", t);
 	}
 }
 

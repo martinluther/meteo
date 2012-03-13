@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.13 2004/02/24 23:33:20 afm Exp $
+# $Id: Makefile.am,v 1.15 2004/02/25 23:37:57 afm Exp $
 #
 HTML =	ack.html gallery.html prereq.html install.html util.html 	\
 	news.html about.html config.html
@@ -21,7 +21,7 @@ install-data-local:	html
 	then								\
 		echo "installing the HTML documentation in $(HTMLDIR)";	\
 		mkdir -p "$(HTMLDIR)";					\
-		cp $(HTMLFILES) $(TEXTFILES) "$(HTMLDIR)";		\
+		cp $(HTMLFILES) $(TEXTFILES) $(IMAGES) "$(HTMLDIR)";	\
 	else								\
 		echo "info: HTML docs not installed, used --with-html-dir"; \
 	fi

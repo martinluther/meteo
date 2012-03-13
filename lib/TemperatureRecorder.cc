@@ -2,6 +2,8 @@
  * TemperatureRecorder.cc -- implement temperature
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: TemperatureRecorder.cc,v 1.3 2004/02/25 23:48:05 afm Exp $
  */
 #include <TemperatureRecorder.h>
 #include <MeteoException.h>

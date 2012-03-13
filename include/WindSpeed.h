@@ -2,6 +2,8 @@
  * WindSpeed.h -- encapsulate windspeed
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: WindSpeed.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _WindSpeed_h
 #define _WindSpeed_h

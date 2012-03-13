@@ -4,6 +4,8 @@
  *                  about maximum and minimum
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: MinmaxRecorder.h,v 1.5 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _MinmaxRecorder_h
 #define _MinmaxRecorder_h

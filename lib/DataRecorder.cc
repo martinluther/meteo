@@ -2,6 +2,8 @@
  * DataRecorder.cc -- implement accumulator class
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: DataRecorder.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
  */
 #include <DataRecorder.h>
 #include <RecorderFactory.h>

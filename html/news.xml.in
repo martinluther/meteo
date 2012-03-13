@@ -3,11 +3,16 @@
 	news.xml	news about meteo
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: news.xml.in,v 1.1 2004/02/24 23:33:21 afm Exp $
+	$Id: news.xml.in,v 1.2 2004/02/26 23:43:12 afm Exp $
 -->
 
 <page name="news">
 <h1>News</h1>
+<p>
+Release 0.9.7 solves a long standing problem: how to specify which
+values have to be averaged using what type of aggregation function.
+This information is now in the XML configuration file.
+</p>
 <p>
 Release 0.9.6 fixes some nasty bugs in the offset code, which even caused
 some graphs at low resolution (month and year graphs) to incorrectly

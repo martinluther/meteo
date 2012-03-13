@@ -2,6 +2,8 @@
  * Converter.cc -- class to convert values from one system to another
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Converter.cc,v 1.5 2004/02/25 23:48:04 afm Exp $
  */
 #include <Converter.h>
 #include <BasicConverter.h>

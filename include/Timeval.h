@@ -2,6 +2,8 @@
  * Timeval.h --
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Timeval.h,v 1.6 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Timeval_h
 #define _Timeval_h

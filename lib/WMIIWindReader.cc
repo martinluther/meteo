@@ -2,6 +2,8 @@
  * WMIIWindReader.cc -- read wind off a Davis Weather Monitor loop packet
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: WMIIWindReader.cc,v 1.4 2004/02/25 23:48:06 afm Exp $
  */
 #include <WMIIWindReader.h>
 #include <ValueFactory.h>

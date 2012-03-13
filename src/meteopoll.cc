@@ -4,6 +4,8 @@
  *                 nonmetric units
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: meteopoll.cc,v 1.26 2004/02/25 23:41:13 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

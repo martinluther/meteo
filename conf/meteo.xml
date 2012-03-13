@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.23 2004/02/24 23:33:20 afm Exp $
+ $Id: meteo.xml,v 1.28 2004/02/27 22:09:04 afm Exp $
 
   -->
 <meteo>
@@ -76,10 +76,35 @@
         <field>wind</field>
       </sensor>
     </sensors>
+    <averages>
+      <sensor name="inside">
+	<average name="temperature" base="temperature" operator="avg"/>
+	<average name="temperature_min" base="temperature" operator="min"/>
+	<average name="temperature_max" base="temperature" operator="max"/>
+	<average name="humidity" base="humidity" operator="avg"/>
+	<average name="humidity_min" base="humidity" operator="min"/>
+	<average name="humidity_max" base="humidity" operator="max"/>
+	<average name="barometer" base="barometer" operator="avg"/>
+	<average name="barometer_min" base="barometer" operator="min"/>
+	<average name="barometer_max" base="barometer" operator="max"/>
+      </sensor>
+      <sensor name="outside">
+	<average name="temperature" base="temperature" operator="avg"/>
+	<average name="temperature_min" base="temperature" operator="min"/>
+	<average name="temperature_max" base="temperature" operator="max"/>
+	<average name="humidity" base="humidity" operator="avg"/>
+	<average name="humidity_min" base="humidity" operator="min"/>
+	<average name="humidity_max" base="humidity" operator="max"/>
+	<average name="wind" base="wind" operator="wind"/>
+	<average name="winddir" base="wind" operator="winddir"/>
+	<average name="windgust" base="windgust" operator="max"/>
+	<average name="rain" base="rain" operator="sum"/>
+      </sensor>
+    </averages>
   </station>
 
   <station name="Gurin">
-    <url>file:///dev/ttyS0</url>
+    <url>file:///dev/ttyS1</url>
     <type>VantagePro</type>
     <speed>19200</speed>
     <sensors>
@@ -88,6 +113,9 @@
         <field>humidity</field>
         <field>barometer</field>
         <field>battery</field>
+        <field>transmitter</field>
+        <field>sunrise</field>
+        <field>sunset</field>
       </sensor>
       <sensor name="iss">
         <field>temperature</field>
@@ -98,6 +126,38 @@
         <field>uv</field>
       </sensor>
     </sensors>
+    <averages>
+      <sensor name="console">
+	<average name="temperature" base="temperature" operator="avg"/>
+	<average name="temperature_min" base="temperature" operator="min"/>
+	<average name="temperature_max" base="temperature" operator="max"/>
+	<average name="humidity" base="humidity" operator="avg"/>
+	<average name="humidity_min" base="humidity" operator="min"/>
+	<average name="humidity_max" base="humidity" operator="max"/>
+	<average name="barometer" base="barometer" operator="avg"/>
+	<average name="barometer_min" base="barometer" operator="min"/>
+	<average name="barometer_max" base="barometer" operator="max"/>
+	<average name="battery" base="battery" operator="avg"/>
+	<average name="sunrise" base="sunrise" operator="avg"/>
+	<average name="sunset" base="sunset" operator="avg"/>
+      </sensor>
+      <sensor name="iss">
+	<average name="temperature" base="temperature" operator="avg"/>
+	<average name="temperature_min" base="temperature" operator="min"/>
+	<average name="temperature_max" base="temperature" operator="max"/>
+	<average name="humidity" base="humidity" operator="avg"/>
+	<average name="humidity_min" base="humidity" operator="min"/>
+	<average name="humidity_max" base="humidity" operator="max"/>
+	<average name="wind" base="wind" operator="wind"/>
+	<average name="winddir" base="wind" operator="winddir"/>
+	<average name="windgust" base="windgust" operator="max"/>
+	<average name="solar" base="solar" operator="avg"/>
+	<average name="uv" base="uv" operator="avg"/>
+	<average name="rain" base="rain" operator="sum"/>
+	<average name="rainrate" base="rainrate" operator="avg"/>
+	<average name="transmitter" base="transmitter" operator="avg"/>
+      </sensor>
+    </averages>
   </station>
 
   <station name="Lajeado">
@@ -124,7 +184,69 @@
         <field>moisture</field>
       </sensor>
     </sensors>
-    <offset>-10800</offset>
+    <averages>
+      <sensor name="console">
+	<average name="temperature" base="temperature" operator="avg"/>
+	<average name="temperature_min" base="temperature" operator="min"/>
+	<average name="temperature_max" base="temperature" operator="max"/>
+	<average name="humidity" base="humidity" operator="avg"/>
+	<average name="humidity_min" base="humidity" operator="min"/>
+	<average name="humidity_max" base="humidity" operator="max"/>
+	<average name="barometer" base="barometer" operator="avg"/>
+	<average name="barometer_min" base="barometer" operator="min"/>
+	<average name="barometer_max" base="barometer" operator="max"/>
+	<average name="battery" base="battery" operator="avg"/>
+	<average name="sunrise" base="sunrise" operator="avg"/>
+	<average name="sunset" base="sunset" operator="avg"/>
+      </sensor>
+      <sensor name="iss">
+	<average name="temperature" base="temperature" operator="avg"/>
+	<average name="temperature_min" base="temperature" operator="min"/>
+	<average name="temperature_max" base="temperature" operator="max"/>
+	<average name="humidity" base="humidity" operator="avg"/>
+	<average name="humidity_min" base="humidity" operator="min"/>
+	<average name="humidity_max" base="humidity" operator="max"/>
+	<average name="wind" base="wind" operator="wind"/>
+	<average name="winddir" base="wind" operator="winddir"/>
+	<average name="windgust" base="windgust" operator="max"/>
+	<average name="solar" base="solar" operator="avg"/>
+	<average name="uv" base="uv" operator="avg"/>
+	<average name="rain" base="rain" operator="sum"/>
+	<average name="rainrate" base="rainrate" operator="avg"/>
+	<average name="transmitter" base="transmitter" operator="avg"/>
+      </sensor>
+      <sensor name="soil1">
+	<!-- soil temperature changes very slowly, so it does not make
+	     sense to compute averages for it				-->
+        <average name="temperature" base="temperature" operator="avg"/>
+        <average name="moisture" base="moisture" operator="avg"/>
+      </sensor>
+    </averages>
+  </station>
+
+  <station name="OBS">
+    <sensors>
+      <sensor name="outside">
+        <field>moist</field>
+        <field>clouds</field>
+      </sensor>
+      <sensor name="telescope">
+        <field>mirror</field>
+        <field>shutter</field>
+        <field>dome</field>
+      </sensor>
+    </sensors>
+    <averages>
+      <sensor name="outside">
+        <average name="moist" base="moist" operator="avg"/>
+        <average name="clouds" base="clouds" operator="avg"/>
+      </sensor>
+      <sensor name="telescope">
+        <average name="mirror" base="mirror" operator="avg"/>
+        <average name="shutter" base="shutter" operator="sum"/>
+        <average name="dome" base="dome" operator="sum"/>
+      </sensor>
+    </averages>
   </station>
 
   <!--
@@ -310,8 +432,8 @@
     <graph name="Lajeado.pressure" offset="-10800"
 	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Pressure (hPa)</leftlabel>
-      <leftaxis type="static" min="930" max="990"
-	first="930" last="990" step="10" format="%.0f"
+      <leftaxis type="static" min="970" max="1030"
+	first="970" last="1030" step="10" format="%.0f"
 	ticks="yes" gridlines="yes"/>
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
@@ -468,6 +590,373 @@
       </channels>
     </graph>
 
+    <graph name="Gurin.temperature-new" offset="3600"
+	height="300" width="600" bgcolor="#ffffff" fgcolor="#000000">
+      <!-- label and axis definitions -->
+      <leftlabel align="center">Temperatur grad C</leftlabel>
+      <rightlabel align="center">relative Humidity %</rightlabel>
+      <leftaxis type="dynamic" maxname="tt" minname="dd" min="-100" max="100"
+	origin="0" maxtickcount="20"
+	first="-100" 
+	last="100" step="10" format="%.1f" ticks="yes" gridlines="yes"/>
+      <rightaxis min="0" max="100" first="0" last="100" step="20" format="%3.0f"
+        ticks="yes" gridlines="no"/>
+      <!-- the graphwindow tag defines the area inside the image where the
+	   data will be plotted -->
+      <graphwindow llx="55" lly="19" urx="545" ury="293"/>
+
+      <!-- the channels contains the query definitions that tell meteodraw
+	   how to retrieve the data from the database, and give it symbolic
+	   names, and thq channel tags that describe how the data should
+	   be plotted -->
+      <channels>
+	<!-- 
+	  the query tag describes how data has to be retrived and modified
+	  before graphing.
+	-->
+	<query>
+	  <!-- give certain data sets in the DB a symbolic name -->
+	  <select name="t">Gurin.iss.temperature</select>
+	  <select name="tmax">Gurin.iss.temperature_max</select>
+	  <select name="tmin">Gurin.iss.temperature_min</select>
+	  <select name="h">Gurin.iss.humidity</select>
+	  <select name="hmax">Gurin.iss.humidity_max</select>
+	  <select name="hmin">Gurin.iss.humidity_min</select>
+	  <!-- perform some arithmetic on the data sets, give the result
+	       again a symbolic name -->
+	  <data name="tt">
+	    <function name="floor" limit="-50">
+	      <function name="ceil" limit="50">
+		<value name="t"/>
+	      </function>
+	    </function>
+	  </data>
+	  <data name="dewpointmin">
+	    <function2 name="dewpoint">
+	      <value name="hmin"/>
+	      <value name="tmin"/>
+	    </function2>
+	  </data>
+	  <data name="dewpointmax">
+	    <function2 name="dewpoint">
+	      <value name="hmax"/>
+	      <value name="tmax"/>
+	    </function2>
+	  </data>
+	  <data name="dewpoint">
+	    <function2 name="dewpoint">
+	      <value name="h"/>
+	      <value name="t"/>
+	    </function2>
+	  </data>
+	  <data name="dd">
+	    <function name="floor" limit="-50">
+	      <value name="dewpoint"/>
+	    </function>
+	  </data>
+	</query>
+
+	<!-- draw graphs for the datasets as specified in the previous tags -->
+	<channel color="#aaaaff" type="range" scale="left"
+	  namelower="dewpointmin" nameupper="dewpointmax"/>
+	<channel color="#0000ff" type="curve" scale="left" name="dewpoint"/>
+	<channel color="#ffaaaa" type="range" scale="left"
+	  namelower="tmin" nameupper="tmax"/>
+	<channel color="#654321" type="curve" scale="left" name="tt"/>
+	<channel color="#dddddd" type="nodata" name="t"/>
+
+      </channels>
+    </graph>
+
+    <!-- Temperature graph -->
+    <graph name="Gurin.temperature" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">Temperature (deg C)</leftlabel>
+      <leftaxis type="static" min="-15" max="35"
+	first="-10" last="30" step="10" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="t">Gurin.iss.temperature</select>
+	  <select name="tmin">Gurin.iss.temperature_min</select>
+	  <select name="tmax">Gurin.iss.temperature_max</select>
+	  <select name="h">Gurin.iss.humidity</select>
+	  <select name="hmin">Gurin.iss.humidity_min</select>
+	  <select name="hmax">Gurin.iss.humidity_max</select>
+	  <data name="dewpoint">
+	    <function2 name="dewpoint">
+	      <value name="h"/>
+	      <value name="t"/>
+	    </function2>
+	  </data>
+	  <data name="dewpointmax">
+	    <function2 name="dewpoint">
+	      <value name="hmax"/>
+	      <value name="tmax"/>
+	    </function2>
+	  </data>
+	  <data name="dewpointmin">
+	    <function2 name="dewpoint">
+	      <value name="hmin"/>
+	      <value name="tmin"/>
+	    </function2>
+	  </data>
+	</query>
+	<channel color="#d2d2ff" type="range" scale="left"
+	  nameupper="dewpointmax" namelower="dewpointmin"/>
+	<channel color="#6464ff" type="curve" scale="left" name="dewpoint"/>
+	<channel color="#ffb4b4" type="range" scale="left"
+	  nameupper="tmax" namelower="tmin"/>
+	<channel color="#b40000" type="curve" scale="left" name="t"/>
+	<channel color="#e6e6e6" type="nodata" name="t"/>
+      </channels>
+    </graph>
+
+    <!-- inside Temperature graph -->
+    <graph name="Gurin.temperature_inside" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">Temperature (deg C)</leftlabel>
+      <leftaxis type="static" min="-15" max="35"
+	first="-10" last="30" step="10" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="t">Gurin.console.temperature</select>
+	  <select name="tmin">Gurin.console.temperature_min</select>
+	  <select name="tmax">Gurin.console.temperature_max</select>
+	  <select name="h">Gurin.console.humidity</select>
+	  <select name="hmin">Gurin.console.humidity_min</select>
+	  <select name="hmax">Gurin.console.humidity_max</select>
+	  <data name="dewpoint">
+	    <function2 name="dewpoint">
+	      <value name="h"/>
+	      <value name="t"/>
+	    </function2>
+	  </data>
+	  <data name="dewpointmax">
+	    <function2 name="dewpoint">
+	      <value name="hmax"/>
+	      <value name="tmax"/>
+	    </function2>
+	  </data>
+	  <data name="dewpointmin">
+	    <function2 name="dewpoint">
+	      <value name="hmin"/>
+	      <value name="tmin"/>
+	    </function2>
+	  </data>
+	</query>
+	<channel color="#d2d2ff" type="range" scale="left"
+	  nameupper="dewpointmax" namelower="dewpointmin"/>
+	<channel color="#6464ff" type="curve" scale="left" name="dewpoint"/>
+	<channel color="#ffb4b4" type="range" scale="left"
+	  nameupper="tmax" namelower="tmin"/>
+	<channel color="#b40000" type="curve" scale="left" name="t"/>
+	<channel color="#e6e6e6" type="nodata" name="t"/>
+	<channel color="#ff0000" type="sun" station="Gurin"/>
+      </channels>
+    </graph>
+
+    <!-- Pressure -->
+    <graph name="Gurin.pressure" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">Pressure (hPa)</leftlabel>
+      <leftaxis type="static" min="830" max="890"
+	first="830" last="890" step="10" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="p">Gurin.console.barometer</select>
+	  <select name="pmin">Gurin.console.barometer_max</select>
+	  <select name="pmax">Gurin.console.barometer_min</select>
+	</query>
+	<channel color="#d2d2ff" type="range" scale="left"
+	  nameupper="pmax" namelower="pmin"/>
+	<channel color="#7f7fff" type="curve" scale="left" name="p"/>
+	<channel color="#e6e6e6" type="nodata" name="p"/>
+      </channels>
+    </graph>
+
+    <!-- Wind -->
+    <graph name="Gurin.wind" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="bottom">Speed (m/s)</leftlabel>
+      <rightlabel align="top">Azimut (deg)</rightlabel>
+      <leftaxis type="static" min="0" max="25"
+	first="0" last="15" step="5" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <rightaxis type="static" min="-540" max="360"
+	first="0" last="360" step="180" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="azi">Gurin.iss.winddir</select>
+	  <select name="v">Gurin.iss.wind</select>
+	  <select name="vmax">Gurin.iss.windgust</select>
+	</query>
+	<!-- note that there are some cultural differences with the wind
+	     letters below. In Switzerland, Nordwind means wind _from_ the
+	     north, which is wind with azimut 180deg. In other places, the
+	     letters may be interpreted just the other way round, so you
+	     will prefer to use letters="NESW" (pointed out by Mark Trettin)
+	  -->
+	<channel type="windbackground" scale="right"
+	  northcolor="#e0e0ff" southcolor="#ffe0e0"
+	  westcolor="#e0ffe0" eastcolor="#ffffc8"
+	  letters="SWNE" />
+	<channel color="#6464ff" type="curve" scale="right" name="azi"/>
+	<channel color="#006400" type="histogram" scale="left" name="vmax"/>
+	<channel color="#00ff00" type="histogram" scale="left" name="v"/>
+	<channel color="#ffffff" type="lowdata" name="vmax" limit="0.1"/>
+	<channel color="#e6e6e6" type="nodata" name="azi"/>
+      </channels>
+    </graph>
+
+    <!-- Radiation -->
+    <graph name="Gurin.radiation" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">Solar Radiation (M/m2)</leftlabel>
+      <rightlabel align="center">UV index</rightlabel>
+      <leftaxis type="static" min="0" max="1200"
+	first="0" last="1200" step="200" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <leftaxis interval="86400" type="static" min="0" max="600"
+	first="0" last="600" step="100" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <rightaxis type="static" min="0" max="12"
+	first="0" last="12" step="2" format="%.0f"
+	ticks="yes" gridlines="no"/>
+      <rightaxis interval="86400" type="static" min="0" max="6"
+	first="0" last="6" step="1" format="%.0f"
+	ticks="yes" gridlines="no"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="solar">Gurin.iss.solar</select>
+	  <select name="uv">Gurin.iss.uv</select>
+	</query>
+	<channel color="#c8b400" type="histogram" scale="left" name="solar"/>
+	<channel color="#6400c8" type="curve" scale="right" name="uv"/>
+	<channel color="#e6e6e6" type="nodata" name="solar"/>
+      </channels>
+    </graph>
+
+    <!-- Rain -->
+    <graph name="Gurin.rain" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">Precipitation (mm)</leftlabel>
+      <rightlabel align="center">Total rain (mm)</rightlabel>
+      <leftaxis interval="300" type="static" min="0" max="6"
+	first="0" last="6" step="1" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <leftaxis interval="1800" type="static" min="0" max="10"
+	first="0" last="10" step="2" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <leftaxis type="static" min="0" max="30"
+	first="0" last="30" step="10" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <rightaxis type="dynamic" minname="totalrain" maxname="totalrain"
+	origin="0" maxtickcount="10" step="10" ticks="yes" gridlines="no"
+	format="%3.0f" />
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="rain">Gurin.iss.rain</select>
+	  <data name="totalrain">
+	    <function name="accumulate">
+	      <value name="rain"/>
+	    </function>
+	  </data>
+	</query>
+	<channel color="#0000ff" type="histogram" scale="left" name="rain"/>
+	<channel color="#00ffff3f" type="curve" scale="right" name="totalrain"/>
+	<channel color="#f3f3f33f" type="nodata" name="rain"/>
+      </channels>
+    </graph>
+
+    <!-- humidity graph -->
+    <graph name="Gurin.humidity" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">relavite Humdity (%)</leftlabel>
+      <leftaxis type="static" min="0" max="100"
+	first="0" last="100" step="20" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="h">Gurin.iss.humidity</select>
+	  <select name="hmin">Gurin.iss.humidity_max</select>
+	  <select name="hmax">Gurin.iss.humidity_min</select>
+	</query>
+	<channel color="#d2d2ff" type="range" scale="left"
+	  nameupper="hmax" namelower="hmin"/>
+	<channel color="#7f7fff" type="curve" scale="left" name="h"/>
+	<channel color="#e6e6e6" type="nodata" name="h"/>
+      </channels>
+    </graph>
+
+
+    <!-- humidity_inside graph -->
+    <graph name="Gurin.humidity_inside" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">relavite Humdity (%)</leftlabel>
+      <leftaxis type="static" min="0" max="100"
+	first="0" last="100" step="20" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="h">Gurin.console.humidity</select>
+	  <select name="hmin">Gurin.console.humidity_max</select>
+	  <select name="hmax">Gurin.console.humidity_min</select>
+	</query>
+	<channel color="#d2d2ff" type="range" scale="left"
+	  nameupper="hmax" namelower="hmin"/>
+	<channel color="#7f7fff" type="curve" scale="left" name="h"/>
+	<channel color="#e6e6e6" type="nodata" name="h"/>
+      </channels>
+    </graph>
+
+    <!-- console battery graph -->
+    <graph name="Gurin.battery" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">Battery voltage (V)</leftlabel>
+      <leftaxis type="static" min="0" max="5"
+	first="0" last="5" step="1" format="%.0f"
+	ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="b">Gurin.console.battery</select>
+	</query>
+	<channel color="#7f7fff" type="curve" scale="left" name="b"/>
+	<channel color="#e6e6e6" type="nodata" name="b"/>
+      </channels>
+    </graph>
+
+    <!-- observatory graphs -->
+    <graph name="OBS.outside"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
+      <leftlabel align="center">moisture</leftlabel>
+      <rightlabel align="center">clouds</rightlabel>
+      <leftaxis type="static" min="0" max="100" first="0" last="100"
+	step="10" format="%.0f" ticks="yes" gridlines="yes"/>
+      <rightaxis type="static" min="0" max="100" first="0" last="100"
+	step="10" format="%.0f" ticks="yes" gridlines="yes"/>
+      <graphwindow llx="55" lly="19" urx="455" ury="139"/>
+      <channels>
+	<query>
+	  <select name="m">OBS.outside.moist</select>
+	  <select name="c">OBS.outside.clouds</select>
+	</query>
+	<channel color="#00ff00" type="curve" scale="left" name="m"/>
+	<channel color="#ff0000" type="curve" scale="right" name="c"/>
+      </channels>
+    </graph>
 
   </graphs>
 

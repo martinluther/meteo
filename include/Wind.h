@@ -2,6 +2,8 @@
  * Wind.h -- wind class
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Wind.h,v 1.13 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Wind_h
 #define _Wind_h

@@ -113,14 +113,17 @@ table indicates the start of the interval. Furthermore, this
 value is always such that it is divisible by the length of the interval
 in seconds. This works well for UTC.
 
-To correct for local time, the offset variable was added. The timekey
+To correct for local time, the offset variable was added to the station
+table (it previously was configured in the XML configuration, but other
+applications without access to the meteo.xml file may need the data too).
+The timekey
 field in the avg table however retains its mathematical properties,
 i.e. it should be divisible by the aggregation interval. But we would
 of course want the aggregation interval of length 86400 to cover a
 day from midnight to midnight. So a given timekey must be corrected
 by the local time offset to give the first data item of an aggregation
 interval. If the offset is
-.I o (negativ on the western hemisphere), and
+.I o (negative on the western hemisphere), and
 the aggregation interval length is
 .iR i,
 then
@@ -170,6 +173,37 @@ with this offset applied, timekey 106567600 points to the
 averages of values between 00:00 on october 9, 2003 and 23:59 on the
 same day. However, that Unix time points to 21:00 local time on 
 october 8, 2003.
+
+Put the other way round, if one converts the timekey used in the 
+avg table to a time string relative to UTC, it shows the same time
+as the corresponding unix time would when converted to a string
+relative to the local time zone.
+
+.SH "SUNRISE AND SUNSET"
+
+The sunrise and sunset values stored in sdata are unix timestamps.
+A more useful form for display is hours and minutes, and this can be
+computed as follows directly in SQL. First a query that computes
+seconds after midnight:
+
+.nf
+.in +4
+select (value - (timekey - timekey % 86400) + 3600) % 86400
+from sdata
+where fieldid = 100
+.in -4
+.fi
+
+To retrieve a timestamp directly, use the from_unixtime function
+of MySQL:
+
+.nf
+.in +4
+select from_unixtime(value)
+from sdata
+where fieldid = 100
+.in -4
+.fi
 
 .SH "SEE ALSO"
 .BR meteo (1),

@@ -3,6 +3,8 @@
  *                     in a basic class
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicConverter.h,v 1.4 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _BasicConverter_h
 #define _BasicConverter_h

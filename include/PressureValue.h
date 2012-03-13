@@ -2,6 +2,8 @@
  * PressureValue.h -- pressure abstraction
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: PressureValue.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _PressureValue_h
 #define _PressureValue_h

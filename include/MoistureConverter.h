@@ -2,6 +2,8 @@
  * MoistureConverter.h -- convert soil moisture values
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: MoistureConverter.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _MoistureConverter_h
 #define _MoistureConverter_h

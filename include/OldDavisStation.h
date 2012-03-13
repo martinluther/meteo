@@ -3,6 +3,8 @@
  *                      to Old Davis stations.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: OldDavisStation.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _OldDavisStation_h
 #define _OldDavisStation_h

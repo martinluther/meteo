@@ -2,6 +2,8 @@
  * BasicValueFactory.cc -- create a new BasicValue based on class name and unit
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicValueFactory.cc,v 1.10 2004/02/26 14:00:19 afm Exp $
  */
 #include <BasicValueFactory.h>
 #include <BasicValue.h>
@@ -20,6 +22,7 @@
 #include <MeteoException.h>
 #include <TransmitterStatus.h>
 #include <VoltageValue.h>
+#include <TimeValue.h>
 
 namespace meteo {
 
@@ -67,6 +70,12 @@ static BasicValue	*getBasicValueFromClassnameAndUnit(
 	}
 	if (classname == "VoltageValue") {
 		return (BasicValue *)new VoltageValue(unit); // delete ~Value
+	}
+	if (classname == "TransmitterStatus") {
+		return (BasicValue *)new TransmitterStatus(unit); // delete ~Value
+	}
+	if (classname == "TimeValue") {
+		return (BasicValue *)new TimeValue(unit); // delete ~Value
 	}
 	throw MeteoException("unknown field class: ", classname);
 }
@@ -129,6 +138,10 @@ static BasicValue	*getBasicValueFromOld(const BasicValue *other) {
 	if (classname == "TransmitterStatus") {
 		return (BasicValue *)
 			new TransmitterStatus(*(TransmitterStatus *)other); // delete ~Value
+	}
+	if (classname == "TimeValue") {
+		return (BasicValue *)
+			new TimeValue(*(TimeValue *)other); // delete ~Value
 	}
 	throw MeteoException("unknown field class: ", classname);
 }

@@ -2,6 +2,8 @@
  * QueryResult.h -- perform database queries against the averages table
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: QueryResult.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _QueryResult_h
 #define _QueryResult_h

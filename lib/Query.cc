@@ -2,6 +2,8 @@
  * Query.cc -- perform database queries against 
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Query.cc,v 1.18 2004/02/27 22:09:04 afm Exp $
  */
 #include <Query.h>
 #include <mdebug.h>
@@ -69,10 +71,10 @@ std::string	Query::getQuery(void) const {
 			start, end, interval);
 	} else {
 		snprintf(b, sizeof(b),
-			"select timekey, sensorid, fieldid, value from sdata "
+			"select timekey + %d, sensorid, fieldid, value from sdata "
 			"where timekey >= %ld "
 			"  and timekey <= %ld ",
-			start, end);
+			offset, start, end);
 	}
 	std::string	query(b);
 

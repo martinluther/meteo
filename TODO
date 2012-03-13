@@ -1,11 +1,12 @@
 TODO
 ----
 
+Wishes
+
+* add timezone flag to meteodraw program, since some platforms ignore the
+  timezone environment variable, notably Mac OS X
+
 * add legend attribute to channel tag, which includes a legend in the graph
-
-* fix the wrong alignment (vertical) of the ImageMap
-
-* missing classes: TimeConverter, TimeRecorder
 
 * test the new minimum range code in GraphWindow.cc
 
@@ -13,18 +14,13 @@ TODO
 
 Bugs
 
-* meteolast still does not work...
+* check 60 seconds graphs, there seem to be some problems with computed
+  channels
 
 * there seems to be a bug in the browser, where meteolabels are computed
   incorrectly and attributes show up multiple times
 
-* Receiver Status/ISS battery seem to be incorrect
-
 * on a make clean, remove the .mo files in browser/po
 
-* make sure meteodraw does not crash with a segmentation fault when asked
-  to draw a curve for data that does not exist (name not specified anywhere
-  in the XML file)
-
 --
-$Id: TODO,v 1.44 2004/02/24 23:33:20 afm Exp $
+$Id: TODO,v 1.49 2004/02/27 22:09:04 afm Exp $

@@ -3,6 +3,8 @@
  *                between differen units
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Converter.h,v 1.5 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Converter_h
 #define _Converter_h

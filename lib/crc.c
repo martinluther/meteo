@@ -2,6 +2,8 @@
  * crc.c -- compute CRC for Davis Instruments data interface
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: crc.c,v 1.7 2004/02/25 23:52:35 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

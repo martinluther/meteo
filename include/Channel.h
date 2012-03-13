@@ -2,6 +2,8 @@
  * Channel.h -- abstract communication device to talk to the station
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Channel.h,v 1.7 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Channel_h
 #define _Channel_h

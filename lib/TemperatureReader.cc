@@ -2,6 +2,8 @@
  * TemperatureReader.cc -- read temperatures from Davis packets
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: TemperatureReader.cc,v 1.4 2004/02/25 23:48:05 afm Exp $
  */
 #include <TemperatureReader.h>
 #include <mdebug.h>

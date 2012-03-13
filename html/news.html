@@ -12,6 +12,11 @@
 <div id="content">
 <h1>News</h1>
 <p>
+Release 0.9.7 solves a long standing problem: how to specify which
+values have to be averaged using what type of aggregation function.
+This information is now in the XML configuration file.
+</p>
+<p>
 Release 0.9.6 fixes some nasty bugs in the offset code, which even caused
 some graphs at low resolution (month and year graphs) to incorrectly
 display. Since some of the incorrect code was in the averager class, it
@@ -28,7 +33,7 @@ I would like to thank the University for their generous support,
 and all the people involved for their continued help and encouragment.
 </p>
 <p>
-The current release (version 0.9.6) was published on february 24, 2004.
+The current release (version 0.9.7) was published on february 27, 2004.
 See the <a href="NEWS">NEWS</a> file for the most important changes
 in this release.
 For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.
@@ -56,7 +61,7 @@ such radical changes would not have been possible.
 <p>Here are some highlights of the recent release history:
 Release 0.7.0 comes with a rewrite of the backend, and deals much
 better with missing data (NULLs in the database instead of special
-values, that loose their special meaning when averaging).
+values, that loose their special meaning when averagin).
 Release 0.8.0 introduces a new graphing backend which is much
 more flexible than in previous releases.
 </p>

@@ -2,6 +2,8 @@
  * ExtraTemperatureReader.cc -- read extra temperatures from Davis packets
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ExtraTemperatureReader.cc,v 1.4 2004/02/25 23:48:05 afm Exp $
  */
 #include <ExtraTemperatureReader.h>
 

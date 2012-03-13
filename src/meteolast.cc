@@ -3,6 +3,8 @@
  *                  in an XML based format
  * 
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: meteolast.cc,v 1.14 2004/02/27 16:03:50 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -22,6 +24,7 @@
 #include <Query.h>
 #include <QueryProcessor.h>
 #include <MeteoException.h>
+#include <Timestamp.h>
 #include <iostream>
 
 void	usage(const char *progname) {
@@ -47,7 +50,7 @@ static int	meteolast(int argc, char *argv[]) {
 	timekey = time(NULL);
 
 	// parse command line
-	while (EOF != (c = getopt(argc, argv, "l:df:Vh?t:+w:xH")))
+	while (EOF != (c = getopt(argc, argv, "l:df:Vh?t:T:+w:xH")))
 		switch (c) {
 		case 'l':
 			logurl = optarg;
@@ -70,6 +73,13 @@ static int	meteolast(int argc, char *argv[]) {
 			usage(argv[0]);
 			exit(EXIT_SUCCESS);
 			break;
+		case 'T':
+			do { // creates a block, keeps compiler from complaining
+			     // about skipping ts initialization
+				meteo::Timestamp	ts(optarg);
+				timekey = ts.getTime();
+			} while (0);
+			break;
 		case 't':
 			timekey = atoi(optarg);
 			break;
@@ -83,6 +93,10 @@ static int	meteolast(int argc, char *argv[]) {
 			window = atoi(optarg);
 			break;
 		}
+
+	// log search base
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "base timekey %d: %s", timekey,
+		ctime(&timekey));
 
 	// create a list of station names from the remaining arguments
 	std::list<std::string>	stationlist;

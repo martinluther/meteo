@@ -3,7 +3,7 @@
 	ack.xml		acknowledgment page
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: ack.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+	$Id: ack.xml,v 1.2 2004/02/25 23:37:57 afm Exp $
 -->
 
 <page name="ack">
@@ -17,6 +17,11 @@ Over time, many people have contributed by submitting bug reports
 (the bugs themselves were all my fault, of course). I tried to
 keep track of them in the AUTHORS file, please send me mail if I
 forgot someone.
+</p>
+<p>
+Some customers have supported meteo by buying support for installation
+and configuration of a weather station, but have choosen to
+remain anonymous, at least on the meteo web site.
 </p>
 <p>
 This software was mainly developed by

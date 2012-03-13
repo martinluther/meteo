@@ -5,6 +5,8 @@
  * for (little endian) Davis Stations
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: NibblePacketReader.cc,v 1.3 2004/02/25 23:48:05 afm Exp $
  */
 #include <NibblePacketReader.h>
 #include <mdebug.h>

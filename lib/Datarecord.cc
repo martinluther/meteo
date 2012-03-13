@@ -2,6 +2,8 @@
  * Datarecord.cc -- weather station data abstraction
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Datarecord.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

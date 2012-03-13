@@ -2,6 +2,8 @@
  * Station.cc -- weather station abstraction
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Station.cc,v 1.34 2004/02/27 16:03:50 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -126,7 +128,7 @@ int	Station::addAllReaders(const stationreaders_t *stationspec) {
 				srp->param1, srp->param2, srp->readerunit);
 			counter++;
 		} catch (MeteoException& me) {
-			mdebug(LOG_INFO, MDEBUG_LOG, 0, "reader %s not added",
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "reader %s not added",
 				srp->readername);
 		}
 	}

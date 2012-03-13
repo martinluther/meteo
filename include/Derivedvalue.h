@@ -3,6 +3,8 @@
  *                   on temperature
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Derivedvalue.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Derivedvalue_h
 #define _Derivedvalue_h

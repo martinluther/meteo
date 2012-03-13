@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.36 2003/11/02 21:52:47 afm Exp $
+# $Id: Makefile.am,v 1.38 2004/02/27 22:09:04 afm Exp $
 #
 
 lib_LTLIBRARIES = libmeteo.la
@@ -21,18 +21,19 @@ libmeteo_la_SOURCES =							\
 	TemperatureValue.cc HumidityValue.cc PressureValue.cc		\
 	SolarValue.cc UVValue.cc MoistureValue.cc LeafwetnessValue.cc	\
 	LevelValue.cc WindSpeed.cc Wind.cc Rain.cc RainRate.cc		\
+	TimeValue.cc							\
 	BasicValueFactory.cc ValueFactory.cc				\
 	BasicRecorder.cc Recorder.cc MinmaxRecorder.cc 			\
 	TemperatureRecorder.cc HumidityRecorder.cc PressureRecorder.cc	\
 	SolarRecorder.cc UVRecorder.cc MoistureRecorder.cc 		\
 	LeafwetnessRecorder.cc LevelRecorder.cc VoltageRecorder.cc	\
 	WindRecorder.cc RainRecorder.cc RainRateRecorder.cc		\
-	RecorderFactory.cc TransmitterRecorder.cc			\
-	DataRecorder.cc							\
+	RecorderFactory.cc TransmitterRecorder.cc TimeRecorder.cc	\
+	DataRecorder.cc LastRecorder.cc					\
 	Converter.cc BasicConverter.cc ConverterFactory.cc		\
 	TemperatureConverter.cc HumidityConverter.cc 			\
 	PressureConverter.cc SolarConverter.cc UVConverter.cc		\
-	RainConverter.cc RainRateConverter.cc 				\
+	RainConverter.cc RainRateConverter.cc TimeConverter.cc		\
 	MoistureConverter.cc LeafwetnessConverter.cc LevelConverter.cc	\
 	WindConverter.cc VoltageConverter.cc TransmitterConverter.cc	\
 	Configuration.cc Field_internals.cc Field.cc StationInfo.cc	\
@@ -59,8 +60,7 @@ libmeteo_la_SOURCES =							\
 	Tdata.cc 							\
 	Point.cc Dimension.cc Rectangle.cc Color.cc Label.cc Frame.cc	\
 	Scale.cc Axis.cc GraphPoint.cc MapArea.cc ImageMap.cc 		\
-	GraphWindow.cc 							\
-	Graphics.cc							\
+	SunData.cc GraphWindow.cc Graphics.cc				\
 	Datarecord.cc							\
 	Averager.cc							\
 	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\

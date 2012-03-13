@@ -2,6 +2,8 @@
  * SerialChannel.cc -- encapsulate the communication logic 
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: SerialChannel.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

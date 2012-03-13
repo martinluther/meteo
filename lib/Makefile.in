@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.36 2003/11/02 21:52:47 afm Exp $
+# $Id: Makefile.am,v 1.38 2004/02/27 22:09:04 afm Exp $
 #
 
 SOURCES = $(libmeteo_la_SOURCES)
@@ -63,25 +63,26 @@ am_libmeteo_la_OBJECTS = MeteoException.lo Vector.lo BasicValue.lo \
 	TemperatureValue.lo HumidityValue.lo PressureValue.lo \
 	SolarValue.lo UVValue.lo MoistureValue.lo LeafwetnessValue.lo \
 	LevelValue.lo WindSpeed.lo Wind.lo Rain.lo RainRate.lo \
-	BasicValueFactory.lo ValueFactory.lo BasicRecorder.lo \
-	Recorder.lo MinmaxRecorder.lo TemperatureRecorder.lo \
-	HumidityRecorder.lo PressureRecorder.lo SolarRecorder.lo \
-	UVRecorder.lo MoistureRecorder.lo LeafwetnessRecorder.lo \
-	LevelRecorder.lo VoltageRecorder.lo WindRecorder.lo \
-	RainRecorder.lo RainRateRecorder.lo RecorderFactory.lo \
-	TransmitterRecorder.lo DataRecorder.lo Converter.lo \
-	BasicConverter.lo ConverterFactory.lo TemperatureConverter.lo \
+	TimeValue.lo BasicValueFactory.lo ValueFactory.lo \
+	BasicRecorder.lo Recorder.lo MinmaxRecorder.lo \
+	TemperatureRecorder.lo HumidityRecorder.lo PressureRecorder.lo \
+	SolarRecorder.lo UVRecorder.lo MoistureRecorder.lo \
+	LeafwetnessRecorder.lo LevelRecorder.lo VoltageRecorder.lo \
+	WindRecorder.lo RainRecorder.lo RainRateRecorder.lo \
+	RecorderFactory.lo TransmitterRecorder.lo TimeRecorder.lo \
+	DataRecorder.lo LastRecorder.lo Converter.lo BasicConverter.lo \
+	ConverterFactory.lo TemperatureConverter.lo \
 	HumidityConverter.lo PressureConverter.lo SolarConverter.lo \
 	UVConverter.lo RainConverter.lo RainRateConverter.lo \
-	MoistureConverter.lo LeafwetnessConverter.lo LevelConverter.lo \
-	WindConverter.lo VoltageConverter.lo TransmitterConverter.lo \
-	Configuration.lo Field_internals.lo Field.lo StationInfo.lo \
-	FQField.lo FQField_internals.lo Timeval.lo Channel.lo \
-	SerialChannel.lo TcpChannel.lo FileChannel.lo \
-	ChannelFactory.lo SensorStationInfo.lo SensorStation.lo \
-	Station.lo DavisStation.lo OldDavisStation.lo WMII.lo \
-	GroWeather.lo Energy.lo Health.lo VantagePro.lo ReaderInfo.lo \
-	StationFactory.lo Calibrator.lo PacketReader.lo \
+	TimeConverter.lo MoistureConverter.lo LeafwetnessConverter.lo \
+	LevelConverter.lo WindConverter.lo VoltageConverter.lo \
+	TransmitterConverter.lo Configuration.lo Field_internals.lo \
+	Field.lo StationInfo.lo FQField.lo FQField_internals.lo \
+	Timeval.lo Channel.lo SerialChannel.lo TcpChannel.lo \
+	FileChannel.lo ChannelFactory.lo SensorStationInfo.lo \
+	SensorStation.lo Station.lo DavisStation.lo OldDavisStation.lo \
+	WMII.lo GroWeather.lo Energy.lo Health.lo VantagePro.lo \
+	ReaderInfo.lo StationFactory.lo Calibrator.lo PacketReader.lo \
 	BasicPacketReader.lo BytePacketReader.lo ShortPacketReader.lo \
 	NibblePacketReader.lo TemperatureReader.lo \
 	OldTemperatureReader.lo ExtraTemperatureReader.lo \
@@ -93,9 +94,10 @@ am_libmeteo_la_OBJECTS = MeteoException.lo Vector.lo BasicValue.lo \
 	Windchill.lo Query.lo QueryResult.lo QueryProcessor.lo \
 	Tdata.lo Point.lo Dimension.lo Rectangle.lo Color.lo Label.lo \
 	Frame.lo Scale.lo Axis.lo GraphPoint.lo MapArea.lo ImageMap.lo \
-	GraphWindow.lo Graphics.lo Datarecord.lo Averager.lo \
-	MsgCommon.lo MsgQueuer.lo MsgDequeuer.lo Timestamp.lo crc.lo \
-	Daemon.lo ChunkDumper.lo printver.lo mdebug.lo
+	SunData.lo GraphWindow.lo Graphics.lo Datarecord.lo \
+	Averager.lo MsgCommon.lo MsgQueuer.lo MsgDequeuer.lo \
+	Timestamp.lo crc.lo Daemon.lo ChunkDumper.lo printver.lo \
+	mdebug.lo
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -137,6 +139,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/HumidityRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/HumidityValue.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ImageMap.Plo ./$(DEPDIR)/Label.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LastRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LeafwetnessConverter.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LeafwetnessRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LeafwetnessValue.Plo \
@@ -185,12 +188,16 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SolarValue.Plo ./$(DEPDIR)/Station.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/StationFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/StationInfo.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/TcpChannel.Plo ./$(DEPDIR)/Tdata.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SunData.Plo ./$(DEPDIR)/TcpChannel.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Tdata.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TemperatureConverter.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TemperatureReader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TemperatureRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TemperatureValue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TimeConverter.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TimeReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TimeRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TimeValue.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Timelabel.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Timestamp.Plo ./$(DEPDIR)/Timeval.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TransmitterConverter.Plo \
@@ -356,18 +363,19 @@ libmeteo_la_SOURCES = \
 	TemperatureValue.cc HumidityValue.cc PressureValue.cc		\
 	SolarValue.cc UVValue.cc MoistureValue.cc LeafwetnessValue.cc	\
 	LevelValue.cc WindSpeed.cc Wind.cc Rain.cc RainRate.cc		\
+	TimeValue.cc							\
 	BasicValueFactory.cc ValueFactory.cc				\
 	BasicRecorder.cc Recorder.cc MinmaxRecorder.cc 			\
 	TemperatureRecorder.cc HumidityRecorder.cc PressureRecorder.cc	\
 	SolarRecorder.cc UVRecorder.cc MoistureRecorder.cc 		\
 	LeafwetnessRecorder.cc LevelRecorder.cc VoltageRecorder.cc	\
 	WindRecorder.cc RainRecorder.cc RainRateRecorder.cc		\
-	RecorderFactory.cc TransmitterRecorder.cc			\
-	DataRecorder.cc							\
+	RecorderFactory.cc TransmitterRecorder.cc TimeRecorder.cc	\
+	DataRecorder.cc LastRecorder.cc					\
 	Converter.cc BasicConverter.cc ConverterFactory.cc		\
 	TemperatureConverter.cc HumidityConverter.cc 			\
 	PressureConverter.cc SolarConverter.cc UVConverter.cc		\
-	RainConverter.cc RainRateConverter.cc 				\
+	RainConverter.cc RainRateConverter.cc TimeConverter.cc		\
 	MoistureConverter.cc LeafwetnessConverter.cc LevelConverter.cc	\
 	WindConverter.cc VoltageConverter.cc TransmitterConverter.cc	\
 	Configuration.cc Field_internals.cc Field.cc StationInfo.cc	\
@@ -394,8 +402,7 @@ libmeteo_la_SOURCES = \
 	Tdata.cc 							\
 	Point.cc Dimension.cc Rectangle.cc Color.cc Label.cc Frame.cc	\
 	Scale.cc Axis.cc GraphPoint.cc MapArea.cc ImageMap.cc 		\
-	GraphWindow.cc 							\
-	Graphics.cc							\
+	SunData.cc GraphWindow.cc Graphics.cc				\
 	Datarecord.cc							\
 	Averager.cc							\
 	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\
@@ -521,6 +528,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HumidityValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ImageMap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Label.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LastRecorder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeafwetnessConverter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeafwetnessRecorder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeafwetnessValue.Plo@am__quote@
@@ -574,13 +582,17 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Station.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StationFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StationInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SunData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TcpChannel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Tdata.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureConverter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureReader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureRecorder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeConverter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timelabel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timestamp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timeval.Plo@am__quote@

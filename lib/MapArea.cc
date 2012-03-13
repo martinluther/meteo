@@ -2,6 +2,8 @@
  * MapArea.cc -- implementation of MapArea methods
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: MapArea.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <MapArea.h>
 #include <mdebug.h>

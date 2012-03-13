@@ -2,6 +2,8 @@
  * RainRateRecorder.h -- encapsulate rain rate
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: RainRateRecorder.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _RainRateRecorder_h
 #define _RainRateRecorder_h

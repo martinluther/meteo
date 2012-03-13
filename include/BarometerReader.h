@@ -2,6 +2,8 @@
  * BarometerReader.h -- read pressure from a Davis Vantage Pro packet.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BarometerReader.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _BarometerReader_h
 #define _BarometerReader_h

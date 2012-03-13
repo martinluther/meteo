@@ -2,6 +2,8 @@
  * PacketReaderFactory.cc -- creates packet reader from a specification
  *
  * (c) 2003 Dr Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: PacketReaderFactory.cc,v 1.10 2004/02/25 23:48:05 afm Exp $
  */
 #include <PacketReaderFactory.h>
 #include <mdebug.h>

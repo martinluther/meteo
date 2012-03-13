@@ -5,6 +5,8 @@
  *                 for the station classes
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicValue.h,v 1.4 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _BasicValue_h
 #define _BasicValue_h

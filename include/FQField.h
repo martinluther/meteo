@@ -2,6 +2,8 @@
  * FQField.h -- oracle that gives us information about fields
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: FQField.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _FQField_h
 #define _FQField_h

@@ -2,6 +2,8 @@
  * Heatindex.cc -- class encapsulating dew point computation
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Heatindex.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <Heatindex.h>
 #include <math.h>

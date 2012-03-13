@@ -2,6 +2,8 @@
  * MsgQueuer.cc -- send messages to a queue
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: MsgQueuer.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
  */
 #include <MsgQueuer.h>
 

@@ -2,6 +2,8 @@
  * VantagePro.h -- encode Vantage Pro Station information
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: VantagePro.h,v 1.4 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _VantagePro_h
 #define _VantagePro_h

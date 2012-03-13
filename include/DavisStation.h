@@ -3,6 +3,8 @@
  *                   to Davis stations.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: DavisStation.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _DavisStation_h
 #define _DavisStation_h

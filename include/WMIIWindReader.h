@@ -2,6 +2,8 @@
  * WMIIWindReader.h -- read wind from a Davis Weather Monitor II packet
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: WMIIWindReader.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _WMIIWindReader_h
 #define _WMIIWindReader_h

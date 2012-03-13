@@ -2,6 +2,8 @@
  * QueryProcessor.cc -- perform database queries against 
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: QueryProcessor.cc,v 1.17 2004/02/27 16:03:50 afm Exp $
  */
 #include <QueryProcessor.h>
 #include <Configuration.h>
@@ -392,15 +394,17 @@ Datarecord	QueryProcessor::nearRecord(const time_t timekey,
 			windspeed = value;
 			windunit = unit;
 			windname = fqfn.getString();
+			break;
 		}
 		if (fieldname == "winddir") {
 			winddir = value;
+			break;
 		}
 
 		// skip all other fields that begin with "wind"
 		Value	v = ValueFactory::getValue(classname, value, unit);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding value: %f %s",
-			v.getValue(), v.getUnit().c_str());
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding value %s: %f %s",
+			fieldname.c_str(), v.getValue(), v.getUnit().c_str());
 		result.addField(fqfn.getString(), v);
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "done with %s", 
 			fqfn.getString().c_str());

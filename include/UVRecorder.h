@@ -4,6 +4,8 @@
  *                 about maximum and minimum
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: UVRecorder.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _UVRecorder_h
 #define _UVRecorder_h

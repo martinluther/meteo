@@ -2,6 +2,8 @@
  * Averager.cc -- compute averages for a given station
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Averager.cc,v 1.15 2004/02/26 23:43:12 afm Exp $
  */
 #include <Averager.h>
 #include <StationInfo.h>
@@ -33,6 +35,8 @@ Averager::Averager(const std::string& s) : queryproc(true, true), station(s) {
 	fake = false;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "writable QueryProcessor created");
 	offset = StationInfo(station).getOffset();
+	mdebug(LOG_ERR, MDEBUG_LOG, 0, "offset for %s: %d", s.c_str(),
+		offset);
 }
 
 // affected rows reporting function
@@ -84,8 +88,8 @@ public:
 };
 
 // add a simple value
-int	Averager::addSimpleValue(time_t timekey, int interval, int sensorid,
-		int mfieldid, double value) {
+int	Averager::addSimpleValue(const time_t timekey, const int interval,
+		const int sensorid, const int targetid, const double value) {
 	int	rows = 0;
 
 	// create the insert query
@@ -93,9 +97,9 @@ int	Averager::addSimpleValue(time_t timekey, int interval, int sensorid,
 	snprintf(query, sizeof(query),
 		"insert into avg(timekey, intval, sensorid, fieldid, value) "
 		"values (%ld, %d, %d, %d, %.5f)",
-		timekey, interval, sensorid, mfieldid, value);
+		timekey, interval, sensorid, targetid, value);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "simple query [id = (%d,%d)]: %s",
-		sensorid, mfieldid, query);
+		sensorid, targetid, query);
 
 	// send the query off to the database
 	if (!fake)
@@ -106,20 +110,12 @@ int	Averager::addSimpleValue(time_t timekey, int interval, int sensorid,
 
 // addGeneric	add computed values to the database
 int	Averager::addGeneric(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid,
+		const int sensorid, const int targetid, const int baseid,
 		const std::string& op) {
 	int	rows = 0;
 
 	// some variables need for the queries
 	groupinfo	gi(timekey, interval, offset);
-
-	// compute the fieldoffset: note that this places a restriction on the
-	// field ids in the mfield table.
-	int	fieldoffset = 0;
-	if (op == "max")
-		fieldoffset = 2;
-	if (op == "min")
-		fieldoffset = 1;
 
 	// create the insert query
 	char	query[1024];
@@ -131,10 +127,9 @@ int	Averager::addGeneric(const time_t timekey, const int interval,
 		"  and b.sensorid = %d and b.fieldid = %d "
 		"group by 1, 2, 3, 4",
 		gi.getTimekey(), gi.getInterval(), sensorid,
-			mfieldid + fieldoffset,
-			op.c_str(),
+			targetid, op.c_str(),
 		gi.getFrom(), gi.getTo(),
-		sensorid, mfieldid);
+		sensorid, baseid);
 	reportinterval("addGeneric", interval, gi.getFrom(), gi.getTo(),
 		gi.getTimekey(), __LINE__);
 
@@ -152,39 +147,42 @@ int	Averager::addGeneric(const time_t timekey, const int interval,
 // addSum	add sum (as computed by the sum method of the database)
 //		to the avg table
 int	Averager::addSum(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid) {
-	return addGeneric(timekey, interval, sensorid, mfieldid, "sum");
+		const int sensorid, const int baseid) {
+	return addGeneric(timekey, interval, sensorid, baseid, baseid, "sum");
 }
 
 // addMax	add maxima (as computed by the max method of the database)
 //		to the avg table
 int	Averager::addMax(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid) {
-	return addGeneric(timekey, interval, sensorid, mfieldid, "max");
+		const int sensorid, const int baseid) {
+	return addGeneric(timekey, interval, sensorid, baseid + 2, baseid,
+		"max");
 }
 
 // addMin	add minima (as computed by the min method of the database)
 //		to the avg table
 int	Averager::addMin(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid) {
-	return addGeneric(timekey, interval, sensorid, mfieldid, "min");
+		const int sensorid, const int baseid) {
+	return addGeneric(timekey, interval, sensorid, baseid + 1, baseid,
+		"min");
 }
 
 // addAvg	add averages (as computed by the avg method of the database)
 //		to the avg table
 int	Averager::addAvg(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid) {
-	return addGeneric(timekey, interval, sensorid, mfieldid, "avg");
+		const int sensorid, const int baseid) {
+	return addGeneric(timekey, interval, sensorid, baseid, baseid,
+		"avg");
 }
 
 // addWindVector	add a single wind vector to the avg table
 int	Averager::addWindVector(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid, const Vector& v) {
+		const int sensorid, const Vector& v) {
 	int	rows = 0;
 
 	// get ids for wind direction and speed components
-	int	windspeedid = mfieldid;
-	int	winddirid = windspeedid + 1;
+	int	windspeedid = Field().getId("wind");
+	int	winddirid = Field().getId("winddir");
 
 	// add wind azimut and speed
 	rows += addSimpleValue(timekey, interval, sensorid, winddirid,
@@ -198,18 +196,17 @@ int	Averager::addWindVector(const time_t timekey, const int interval,
 
 // addWind	add wind averages and maxima
 int	Averager::addWind(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid) {
+		const int sensorid) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "add wind from sensor %d", sensorid);
 	int	rows = 0;
 	// some variables need for the queries
 	groupinfo	gi(timekey, interval, offset);
 
-	// get the ids for windx, windy and windgust
-	int	windgustid = mfieldid + 2;
-	int	windxid = mfieldid + 3;
-	int	windyid = mfieldid + 4;
+	// get the ids for windx and windy
+	int	windxid = Field().getId("windx");
+	int	windyid = Field().getId("windy");
 
-	// note: the following has as a consequence, that duration and
+	// note: the following has as a consequence that duration and
 	// samples must be associated with the wind sensor station, this
 	// is also what the meteodbmigration tool assumes
 	int	durationid = Field().getId("duration");
@@ -260,8 +257,7 @@ int	Averager::addWind(const time_t timekey, const int interval,
 			// add the vector
 			reportinterval("wind Vector", interval, 
 				gi.getFrom(), gi.getTo(), timekey, __LINE__);
-			rows += addWindVector(timekey, interval,
-				sensorid, mfieldid, v);
+			rows += addWindVector(timekey, interval, sensorid, v);
 
 			// add duration and samples
 			rows += addSimpleValue(timekey, interval, sensorid,
@@ -271,105 +267,89 @@ int	Averager::addWind(const time_t timekey, const int interval,
 		}
 	}
 
-	// produce a query to compute the maxima
-	snprintf(query, sizeof(query),
-		"insert into avg(timekey, intval, sensorid, fieldid, value) "
-		"select %ld, %d, %d, %d, max(value) "
-		"from sdata b "
-		"where b.timekey >= %ld and b.timekey <= %ld "
-		"  and b.sensorid = %d and b.fieldid = %d "
-		"group by 1, 2, 3, 4",
-		timekey, interval, sensorid, windgustid,
-		gi.getFrom(), gi.getTo(),
-		sensorid, windgustid);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "windgust query is %s", query);
-	reportinterval("wind gust", interval, gi.getFrom(), gi.getTo(), timekey,
-		__LINE__);
-
-	// send the query to the database
-	if (!fake)
-		rows += queryproc.perform(query);
-
 	// return the number of rows added
 	return rows;
 }
 
 // add the averages for a given sensorstation and field
 int	Averager::add(const time_t timekey, const int interval,
-		const int sensorid, const int mfieldid,
-		const std::string& fieldname) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "add averages of %d->%s",
-		mfieldid, fieldname.c_str());
-	int	a = 0;
+		const int sensorid, const int targetid, const int baseid,
+		const std::string& op) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "add averages of %d = %s(%d)",
+		targetid, op.c_str(), baseid);
 
-	// handle the special cases of rain and wind
-	if (fieldname == "wind") {
-		return addWind(timekey, interval, sensorid, mfieldid);
-	}
-	if (fieldname == "rain") {
-		return addSum(timekey, interval, sensorid, mfieldid);
+	// handle the special case of wind
+	if (op == "wind") {
+		//  handle wind
+		return addWind(timekey, interval, sensorid);
 	}
 
 	// handle all the other fields in a generic way
-	a += addAvg(timekey, interval, sensorid, mfieldid);
+	return addGeneric(timekey, interval, sensorid, targetid, baseid, op);
+}
 
-	// check for maximum and minimum
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding extrema");
-	if (Field().hasMaximum(mfieldid)) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "add %s_max",
-			fieldname.c_str());
-		a += addMax(timekey, interval, sensorid, mfieldid);
+// remove existing averages
+int	Averager::remove(const time_t timekey, const int interval,
+		const int sensorid) {
+	int	deletedrows = 0;
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		"removing old avg at %ld, interval %d for sensor %d",
+		timekey, interval, sensorid);
+	char	 query[1024];
+	snprintf(query, sizeof(query),
+		"delete from avg "
+		"where timekey = %ld "
+		"  and intval = %d "
+		"  and sensorid = %d",
+		timekey, interval, sensorid);
+	if (!fake) {
+		deletedrows = queryproc.perform(query);
+		REPORT(-deletedrows);
 	}
-	if (Field().hasMinimum(mfieldid)) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "add %s_min",
-			fieldname.c_str());
-		a += addMin(timekey, interval, sensorid, mfieldid);
-	}
-	return a;
+	return -deletedrows;
 }
 
 // add all averages for a given sensor station
 int	Averager::add(const time_t timekey, const int interval,
-		const int sensorid, const bool replace) {
+		const std::string& sensor, const bool replace) {
 	int	a = 0;
-	int	deletedrows;
-	// get all sensors for this sensorid
-	SensorStationInfo	si(sensorid);	// this does an unnecessary
-						// lookup, but well...
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "looking for fieldnames");
-	stringlist	fn = si.getFieldnames();
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%d has %d fields", sensorid,
-		fn.size());
+	// get all sensors for this sensor
+	SensorStationInfo	si(station, sensor);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "looking for target names");
+	stringlist	targetnames = si.getAverages();
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s has %d fields", sensor.c_str(),
+		targetnames.size());
+
+	// find the sensor id
+	int	sensorid = si.getId();
 
 	// if we are replacing, we should first clean out the averages table
 	// for this sensorid
 	if (replace) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"removing old avg at %ld, interval %d for sensor %d",
-			timekey, interval, sensorid);
-		char	 query[1024];
-		snprintf(query, sizeof(query),
-			"delete from avg "
-			"where timekey = %ld "
-			"  and intval = %d "
-			"  and sensorid = %d",
-			timekey, interval, sensorid);
-		if (!fake) {
-			deletedrows = queryproc.perform(query);
-			REPORT(-deletedrows);
-		}
+		remove(timekey, interval, sensorid);
 	}
 
 	// for each field name, retrieve the field id (we already know
 	// the sensor id)
 	stringlist::iterator	i;
-	for (i = fn.begin(); i != fn.end(); i++) {
+	for (i = targetnames.begin(); i != targetnames.end(); i++) {
+		// report on the name of the field we are about to add
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding field name %s",
 			i->c_str());
-		int	mfieldid = Field().getId(*i);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding data for %d->%s",
-			mfieldid, i->c_str());
-		a += add(timekey, interval, sensorid, mfieldid, *i);
+		int	targetid = Field().getId(*i);
+
+		// now find out the operator and the base
+		std::string	base = si.getBase(*i);
+		std::string	op = si.getOperator(*i);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "computing %s(%s)",
+			op.c_str(), base.c_str());
+
+		// now add the data for each of the target fields
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"adding data for %s.%s based on %s(%s)",
+			sensor.c_str(), i->c_str(), op.c_str(), base.c_str());
+		int	baseid = Field().getId(base);
+		a += add(timekey, interval, sensorid, targetid, baseid, op);
 	}
 	return a;
 }
@@ -381,6 +361,14 @@ int	Averager::add(const time_t timekey, const int interval,
 	int	a = 0;
 	StationInfo	si(station);
 
+	// find out whether this timekey really is a legal timekey
+	if (0 != (timekey % interval)) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%d not a valid timekey, "
+			"skipping avg computation for intval %d", timekey,
+			interval);
+		return a;
+	}
+
 	// find out about the fields we should process, and what we should
 	// do about them
 	stringlist	sensors = si.getSensornames();
@@ -390,8 +378,7 @@ int	Averager::add(const time_t timekey, const int interval,
 	// go through the sensors and add all averages for the sensor
 	stringlist::iterator	i;
 	for (i = sensors.begin(); i != sensors.end(); i++) {
-		SensorStationInfo	ssi(station, *i);
-		a += add(timekey, interval, ssi.getId(), replace);
+		a += add(timekey, interval, *i, replace);
 	}
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "added %d averages", a);
 	return a;

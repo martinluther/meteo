@@ -3,6 +3,8 @@
  *                 contributed by Jeff Wabik
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Windchill.cc,v 1.3 2004/02/25 23:48:06 afm Exp $
  */
 #include <Windchill.h>
 #include <math.h>

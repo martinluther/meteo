@@ -2,6 +2,8 @@
  * Datarecord.h -- encode Station information
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Datarecord.h,v 1.8 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Datarecord_h
 #define _Datarecord_h

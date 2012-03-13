@@ -2,6 +2,8 @@
  * Query.h -- perform database queries against the averages table
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Query.h,v 1.15 2004/02/27 22:09:04 afm Exp $
  */
 #ifndef _Query_h
 #define _Query_h
@@ -38,10 +40,12 @@ class	Query {
 	imap_t	idmap;
 	time_t	start, end;
 	int	interval;
+	int	offset;
 public:
 	Query(void) { }
-	Query(int i, time_t s, time_t e) {
+	Query(int i, time_t s, time_t e, int off) {
 		interval = i; start = s - s % i; end = e - e % i;
+		offset = off;
 	}
 	~Query(void) { }
 
@@ -52,6 +56,8 @@ public:
 	time_t	getStart(void) const { return start; }
 	void	setEnd(time_t e) { end = e; }
 	time_t	getEnd(void) const { return end; }
+	void	setOffset(int off) { offset = off; }
+	int	getOffset(void) { return offset; }
 	void	addSelect(const std::string& n, const std::string& fqfieldname);
 	int	getSelectCount(void) const { return select.size(); }
 	std::string	getNameById(const fieldid& id) const;

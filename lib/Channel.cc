@@ -2,6 +2,8 @@
  * Channel.cc -- encapsulate the communication logic 
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: Channel.cc,v 1.12 2004/02/25 23:48:04 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

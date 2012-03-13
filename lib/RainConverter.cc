@@ -2,6 +2,8 @@
  * RainConverter.cc -- class to convert values from one system to another
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: RainConverter.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <RainConverter.h>
 #include <MeteoException.h>

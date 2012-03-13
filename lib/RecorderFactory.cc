@@ -3,6 +3,8 @@
  *                       in the database
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: RecorderFactory.cc,v 1.9 2004/02/26 14:00:19 afm Exp $
  */
 #include <RecorderFactory.h>
 #include <Field.h>
@@ -22,6 +24,7 @@
 #include <WindRecorder.h>
 #include <VoltageRecorder.h>
 #include <TransmitterRecorder.h>
+#include <TimeRecorder.h>
 
 namespace meteo {
 
@@ -67,6 +70,9 @@ Recorder	RecorderFactory::getRecorder(const std::string& mfieldname) {
 	}
 	if (classname == "TransmitterStatus") {
 		br = new TransmitterRecorder(unit);	// delete by ~Recorder
+	}
+	if (classname == "TimeValue") {
+		br = new TimeRecorder(unit);	// delete by ~Recorder
 	}
 	if (br == NULL) {
 		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot create class %s",

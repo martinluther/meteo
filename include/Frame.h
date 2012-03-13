@@ -3,6 +3,8 @@
  *            the meteo data graph
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Frame.h,v 1.12 2004/02/27 22:09:04 afm Exp $
  */
 #ifndef _Frame_h 
 #define _Frame_h
@@ -42,8 +44,13 @@ public:
 	void	setBackground(const std::string& c);
 	Color	getColorFromHexString(const std::string& c) const;
 
+	// access to frame dimensions
+	int	getHeight(void) const { return outer.getHeight(); }
+	int	getWidth(void) const { return outer.getWidth(); }
+
 	// drawing functions (this functions perform some limited form
 	// of clipping)
+	void	drawPoint(const Point& p, const Color& color);
 	void	drawRectangle(const Rectangle& rectangle, const Color& color);
 	void	drawLine(const Point& p1, const Point& p2, const Color& color,
 			linestyle style);

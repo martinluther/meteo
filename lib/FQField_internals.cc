@@ -2,6 +2,8 @@
  * FQField_internals.cc -- implement field query oracle
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: FQField_internals.cc,v 1.4 2004/02/27 16:03:50 afm Exp $
  */
 #include <FQField_internals.h>
 #include <MeteoException.h>
@@ -104,7 +106,7 @@ fieldid	FQField_internals::lookup(const std::string& fieldname) {
 
 	BasicQueryResult	bqr = qp(query);
 	if (bqr.size() == 0) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "nothing known about %s",
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "nothing known about %s",
 			fieldname.c_str());
 		throw MeteoException("nothing known about field", fieldname);
 	}

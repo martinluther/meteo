@@ -3,6 +3,8 @@
  *                        Pro packet.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: VoltageReader.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _VoltageReader_h
 #define _VoltageReader_h

@@ -2,6 +2,8 @@
  * PacketReaderFactory.h -- create a packet based on a specification
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: PacketReaderFactory.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _PacketReaderFactory_h
 #define _PacketReaderFactory_h

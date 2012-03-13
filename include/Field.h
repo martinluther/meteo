@@ -2,6 +2,8 @@
  * Field.h -- oracle that gives us information about fields
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Field.h,v 1.6 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Field_h
 #define _Field_h

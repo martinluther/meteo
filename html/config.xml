@@ -3,7 +3,7 @@
 	config.xml	configuring the software
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: config.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+	$Id: config.xml,v 1.2 2004/02/25 23:37:57 afm Exp $
 -->
 <page name="config">
 <h1>Configuring the software</h1>
@@ -11,42 +11,64 @@
 After the software has been installed, it must be configured.
 Follow the steps below for a successful configuration:
 </p>
-<ol>
-<li>
+<h2>Configuration file: meteo.xml</h2>
+<p>
 Most configuration happens inside the 
-<b>meteo.xml</b>(5) configuration file. A sample file is include
+<strong>meteo.xml</strong>(5) configuration file. A sample file is include
 with the distribution. To find out what sensor names are known for
-a particular station type, use the <b>meteosensors</b>(1) utility.
-</li>
-<li>
-A minimal installation will run one instance of <b>meteopoll</b>(1)
-to collect data from the weather station and write it to the database
-(with the <b>-b mysql</b> option to directly write the data to the
-database).
-It will also use
-
-<b>meteoavg</b>(1) to compute averages and store them in the
-averages table.
-Furthermore, it will run a cron job using
-<b>meteodraw</b>(1) to update the graphs for the web page, a sample
-cron job script is included in the distribution.
-</li>
-<li>
-More sophisticated installations will make use of the decoupling
-of weather station and database through a message queue, which involves
-running the <b>meteopoll</b>(1) program with the <b>-b msgqueue</b> option,
-and in addition running an instance of the dequeuer process
-<b>meteodequeue</b>(1).
-</li>
-<li>
+a particular station type, use the <strong>meteosensors</strong>(1) utility.
+</p>
+<h2>Processes</h2>
+<p>
+For details of the configuration of all the programs, please consult
+the manual pages installed with the distribution. This page only describes
+there principal functions and relation to each other.
+</p>
+<h3>Daemons</h3>
+<p>
+A full fledged meteo installation uses 3 permanently running processes
+and some cron jobs to do its work. The processes and there functions are:
+</p>
+<dl>
+<dt>metepoll</dt>
+<dd>This program talks to the weather station, collects data from its sensors
+and writes new records to the <code>sdata</code> table every minute.
+There are actually two copies of meteopoll: one copy does the actual work,
+the other acts as a watchdog. If the working copy gets killed, e.g. by
+a communications timeout, the watchdog copy spawns a new worker to try to
+contact the weather station again. <strong>meteopoll</strong>(1)
+does not write to the database. The database my be locked by long running
+queries for extended periods of time, waiting for the database would
+make <strong>meteopoll</strong>(1) loose some data. To prevent this,
+<strong>meteopoll</strong>(1) usually writes the updates to a message queue,
+and  lets the <strong>meteodequeue</strong>(1) program add them to the
+database.
+</dd>
+<dt>meteodequeue</dt>
+<dd>This program opens the messages queue and reads updates which it
+then sends to the database.
+</dd>
+<dt>meteoavg</dt>
+<dd>
+The meteoavg program computes the averages needed for graphing.
+This program can also be used to rebuild the <code>avg</code> table 
+from the <code>sdata</code> table.
+</dd>
+</dl>
+<p>
+The sample start script <code>rc.meteo</code> in the support directory
+of the distribution starts all three processes at once.
+</p>
+<h3>Cron Jobs</h3>
+<p>
+In addition to these daemons, you need to run <strong>meteodraw</strong>(1)
+periodically to generate updated graphs for the web site.
+A sample cron job script is included in the distribution.
+</p>
+<h3>PHP scripts</h3>
+<p>
 To top off the installation, configure the meteo browser to allow
 graphical browsing of the meteo database.
 See the <a href="http://meteo.othello.ch/README.browser">README.browser</a> for details.
-
-</li>
-</ol>
-<p>
-For details of the configuration of all these programs, please consult
-the manual pages installed with the distribution.
 </p>
 </page>

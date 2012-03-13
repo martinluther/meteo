@@ -2,6 +2,8 @@
  * Datasink.cc -- data sink class: where do we send our data
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Datasink.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
  */
 #include <Datasink.h>
 #include <Configuration.h>

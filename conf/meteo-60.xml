@@ -6,12 +6,12 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo-60.xml,v 1.2 2003/08/24 20:26:40 afm Exp $
+ $Id: meteo-60.xml,v 1.3 2004/02/27 22:09:04 afm Exp $
 
   -->
 <meteo>
   <database>
-    <hostname>timon</hostname>
+    <hostname>localhost</hostname>
     <dbname>meteo</dbname>
     <user>meteo</user>
     <password>public</password>
@@ -22,26 +22,22 @@
     <prefix>meteo</prefix>
   </database>
 
-  <units>
-    <temperature>C</temperature>
-  </units>
-
   <station name="Altendorf">
     <!-- <url>file:///dev/ttyS0</url> -->
-    <speed>2400</speed>
     <url>tcp://weathermonitor.othello.ch:10001</url>
     <type>WMII</type>
+    <speed>2400</speed>
   </station>
 
   <station name="Gurin">
     <url>file:///dev/ttyS0</url>
-    <speed>2400</speed>
     <type>VantagePro</type>
+    <speed>2400</speed>
   </station>
 
   <graphs>
     <!-- Temperature graph -->
-    <graph name="temperature" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.temperature" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">Temperature (deg C)</leftlabel>
       <leftaxis type="static" min="-15" max="35"
@@ -50,8 +46,8 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="t">temperature</select>
-	  <select name="h">humidity</select>
+	  <select name="t">Gurin.iss.temperature</select>
+	  <select name="h">Gurin.iss.humidity</select>
 	  <data name="dewpoint">
 	    <function2 name="dewpoint">
 	      <value name="h"/>
@@ -62,12 +58,13 @@
 	<channel color="#6464ff" type="curve" scale="left" name="dewpoint"/>
 	<channel color="#b40000" type="curve" scale="left" name="t"/>
 	<channel color="#e6e6e6" type="nodata" name="t"/>
+	<channel color="#00ff00" type="sun" station="Gurin"/>
       </channels>
     </graph>
 
     <!-- inside Temperature graph -->
-    <graph name="temperature_inside" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Gurin.temperature_inside" offset="3600"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Temperature (deg C)</leftlabel>
       <leftaxis type="static" min="-15" max="35"
 	first="-10" last="30" step="10" format="%.0f"
@@ -75,8 +72,8 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="t">temperature_inside</select>
-	  <select name="h">humidity_inside</select>
+	  <select name="t">Gurin.console.temperature</select>
+	  <select name="h">Gurin.console.humidity</select>
 	  <data name="dewpoint">
 	    <function2 name="dewpoint">
 	      <value name="h"/>
@@ -87,11 +84,12 @@
 	<channel color="#6464ff" type="curve" scale="left" name="dewpoint"/>
 	<channel color="#b40000" type="curve" scale="left" name="t"/>
 	<channel color="#e6e6e6" type="nodata" name="t"/>
+	<channel color="#00ff00" type="sun" station="Gurin"/>
       </channels>
     </graph>
 
     <!-- Pressure -->
-    <graph name="pressure" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.pressure" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">Pressure (hPa)</leftlabel>
       <leftaxis type="dynamic" minname="p" maxname="p"
@@ -100,15 +98,16 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="p">barometer</select>
+	  <select name="p">Gurin.console.barometer</select>
 	</query>
 	<channel color="#7f7fff" type="curve" scale="left" name="p"/>
 	<channel color="#e6e6e6" type="nodata" name="p"/>
+	<channel color="#00ff00" type="sun" station="Gurin"/>
       </channels>
     </graph>
 
     <!-- Wind -->
-    <graph name="wind" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.wind" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="bottom">Speed (m/s)</leftlabel>
       <rightlabel align="top">Azimut (deg)</rightlabel>
@@ -121,9 +120,9 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="azi">winddir</select>
-	  <select name="v">windspeed</select>
-	  <select name="vmax">windgust</select>
+	  <select name="azi">Gurin.iss.winddir</select>
+	  <select name="v">Gurin.iss.windspeed</select>
+	  <select name="vmax">Gurin.iss.windgust</select>
 	</query>
 	<channel type="windbackground" scale="right"
 	  northcolor="#e0e0ff" southcolor="#ffe0e0"
@@ -138,7 +137,7 @@
     </graph>
 
     <!-- Radiation -->
-    <graph name="radiation" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.radiation" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">Solar Radiation (M/m2)</leftlabel>
       <rightlabel align="center">UV index</rightlabel>
@@ -151,8 +150,8 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="solar">solar</select>
-	  <select name="uv">uv</select>
+	  <select name="solar">Gurin.iss.solar</select>
+	  <select name="uv">Gurin.iss.uv</select>
 	</query>
 	<channel color="#c8b400" type="histogram" scale="left" name="solar"/>
 	<channel color="#6400c8" type="curve" scale="right" name="uv"/>
@@ -161,7 +160,7 @@
     </graph>
 
     <!-- Rain -->
-    <graph name="rain" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.rain" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">Precipitation (mm)</leftlabel>
       <leftaxis type="static" min="0" max="30"
@@ -170,7 +169,7 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="rain">rain</select>
+	  <select name="rain">Gurin.iss.rain</select>
 	</query>
 	<channel color="#0000ff" type="histogram" scale="left" name="rain"/>
 	<channel color="#e6e6e6" type="nodata" name="rain"/>
@@ -178,7 +177,7 @@
     </graph>
 
     <!-- humidity graph -->
-    <graph name="humidity" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.humidity" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">relavite Humdity (%)</leftlabel>
       <leftaxis type="static" min="0" max="100"
@@ -187,7 +186,7 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="h">humidity</select>
+	  <select name="h">Gurin.iss.humidity</select>
 	</query>
 	<channel color="#7f7fff" type="curve" scale="left" name="h"/>
 	<channel color="#e6e6e6" type="nodata" name="h"/>
@@ -196,7 +195,7 @@
 
 
     <!-- humidity_inside graph -->
-    <graph name="humidity_inside" height="144" width="500" bgcolor="#ffffff"
+    <graph name="Gurin.humidity_inside" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">relavite Humdity (%)</leftlabel>
       <leftaxis type="static" min="0" max="100"
@@ -205,7 +204,7 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="h">humidity_inside</select>
+	  <select name="h">Gurin.console.humidity</select>
 	</query>
 	<channel color="#7f7fff" type="curve" scale="left" name="h"/>
 	<channel color="#e6e6e6" type="nodata" name="h"/>

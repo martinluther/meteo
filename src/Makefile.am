@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.43 2004/02/24 23:33:21 afm Exp $
+# $Id: Makefile.am,v 1.49 2004/02/27 22:09:04 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
@@ -34,13 +34,12 @@ test:	meteopoll
 #		-f `pwd`/../conf/meteo.xml -I -p ../src/ 
 testdraw:	meteodraw
 	cp /dev/null /var/tmp/meteodraw.log
-	DYLD_BIND_AT_LAUNCH=1 TZ=BRT ./meteodraw -s Lajeado -d -d \
+	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin -d -d \
 		-l file:///var/tmp/meteodraw.log \
 		-f ../conf/meteo.xml -I -p ../src/ \
 		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L y2003 \
-		-g Lajeado.rain -g Lajeado.temperature -g Lajeado.humidity \
-		-g Lajeado.wind -g Lajeado.radiation
+		-L d20040227 \
+		-g Gurin.battery
 
 testmap:	meteodraw
 	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Lajeado -d -d \
@@ -52,24 +51,23 @@ testmap:	meteodraw
 #
 # drawing high resolution graphs uses a different configuration file
 #
-testdraw60:
+testdraw60:	meteodraw
 	cp /dev/null /var/tmp/meteodraw.log
-	DYLD_BIND_AT_LAUNCH=1 TZ=BRST./meteodraw -s Gurin \
+	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin \
 		-l file:///var/tmp/meteodraw.log -d -d \
 		-f `pwd`/../conf/meteo-60.xml -I -p ../src/ \
 		-u "/browser/meteobrowser.php?lang=de" \
-		-L w200339 -g temperature -g temperature_inside -g pressure \
-		-g radiation -g rain -g wind -g humidity -g humidity_inside -m
+		-L h2004022720 -g Gurin.temperature_inside
 
 #
 # test computing averages
 #
 testavg:	meteoavg
 	cp /dev/null /var/tmp/meteoavg.log
-	DYLD_BIND_AT_LAUNCH=1 ./meteoavg -sLajeado \
-		-l file:///var/tmp/meteoavg.log \
-		-i 86400 -f `pwd`/../conf/meteo.xml -a \
-		20030901000000 20031002160000
+	DYLD_BIND_AT_LAUNCH=1 ./meteoavg -s OBS \
+		-d -l file:///var/tmp/meteoavg.log \
+		-i 7200 -f `pwd`/../conf/meteo.xml -a \
+		20040201000000 20040226000000
 
 testavgd:	meteoavg
 	cp /dev/null /var/tmp/meteoavg.log
@@ -96,6 +94,8 @@ testlast:	meteolast
 # test the dump programm
 #
 testdump:	meteodbdump
+	cp /dev/null /var/tmp/meteodump.log
 	DYLD_BIND_AT_LAUNCH=1 ./meteodbdump -r -s Lajeado \
-		-l file:///- -d -b testdump- -f `pwd`/../conf/meteo.xml avg
+		-l file:///var/tmp/meteodump.log -d -b testdump- \
+		-f `pwd`/../conf/meteo.xml avg sdata
 	

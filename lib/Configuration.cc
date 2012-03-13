@@ -3,6 +3,8 @@
  *                    interested clients
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Configuration.cc,v 1.13 2004/02/25 23:48:04 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

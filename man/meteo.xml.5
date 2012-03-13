@@ -160,8 +160,9 @@ uses UDS-10 device server):
 .in -4
 .fi
 
-The <offset> tag can be used to specify the grouping offset for the
-averages with this station. Please consult
+The <offset> tag is no longer supported, the offset for a station is now
+set in the station table in the database.
+Please consult
 .BR meteo.sql (5)
 for an explanation of the issue.
 
@@ -207,6 +208,82 @@ sensors:
 Please read the file doc/sensors for details about sensors and a
 complete list of sensors known to meteo.
 
+.SH AVERAGES
+
+The 
+.BR meteoavg (1)
+program computes averages from the data in the sdata table and stores
+it in the avg table.
+The set of averages actually computed by meteoavg and
+the methods used to compute the averages are specified in the <averages>
+element inside the station configuration.
+Each average that is to be computed is specified with a field element
+as in the following example
+
+.nf
+.in +4
+<station>
+.in +4
+ ...
+<sensors>
+.in +4
+ ...
+.in -4
+</sensors>
+<averages>
+.in +4
+<sensor name="iss">
+.in +4
+<average name="temperature" base="temperature" operator="avg"/>
+<average name="temperature_min" base="temperature" operator="min"/>
+<average name="temperature_max" base="temperature" operator="max"/>
+<average name="humidity" base="humidity" operator="avg"/>
+<average name="humidity_min" base="humidity" operator="min"/>
+<average name="humidity_max" base="humidity" operator="max"/>
+<average name="rain" base="rain" operator="sum"/>
+<average name="wind" base="wind" operator="wind"/>
+<average name="winddir" base="wind" operator="wind"/>
+<average name="windgust" base="windgust" operator="max"/>
+<average name="solar" base="solar" operator="avg"/>
+<average name="uv" base="uv" operator="avg"/>
+.in -4
+</sensor>
+<sensor name="console">
+.in +4
+<average name="temperature" base="temperature" operator="avg"/>
+<average name="temperature_min" base="temperature" operator="min"/>
+<average name="temperature_max" base="temperature" operator="max"/>
+<average name="humidity" base="humidity" operator="avg"/>
+<average name="humidity_min" base="humidity" operator="min"/>
+<average name="humidity_max" base="humidity" operator="max"/>
+<average name="barometer" base="barometer" operator="avg"/>
+<average name="barometer_min" base="barometer" operator="min"/>
+<average name="barometer_max" base="barometer" operator="max"/>
+.in -4
+</sensor>
+.in -4
+</averages>
+.in -4
+</station>
+.in -4
+.fi
+
+Each average element has the three attributes name, base and operator, which
+have the following meaning. The name is the field name in the mfield table
+for the value to be stored in the avg table. The base is the field name
+of the field in the sdata table that should be used to base the computation.
+The operator field describes the operation used to compute the average.
+The following operator values are known:
+
+.TS
+tab(&);
+l l.
+min&sql min aggregation operator
+max&SQL max aggregation operator
+avg&SQL avg aggregation operator
+sum&SQL sum aggregation operator
+wind&pseudo operator for wind aggregation
+.TE
 
 .SH UNITS
 

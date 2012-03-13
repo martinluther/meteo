@@ -2,6 +2,8 @@
  * Calibrator.cc -- implementation of linear transformation
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Calibrator.cc,v 1.4 2004/02/25 23:48:04 afm Exp $
  */
 #include <Calibrator.h>
 #include <mdebug.h>

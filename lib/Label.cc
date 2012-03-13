@@ -2,6 +2,8 @@
  * Label.cc -- represent labels at left and right of a graph
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Label.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <Label.h>
 #include <mdebug.h>

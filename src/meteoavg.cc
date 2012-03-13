@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.cc,v 1.11 2004/02/24 23:33:21 afm Exp $
+ * $Id: meteoavg.cc,v 1.13 2004/02/26 23:43:12 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -60,9 +60,16 @@ static void	avg_daemon(const std::string& station) {
 					"next event at %-24.24s, in %d seconds",
 					ctime(&next), (int)(next - now));
 		} while (0 != sleep(next - now));
+		// at this point we cake out of the sleep without an interrupt,
+		// so the the time is now == next
 
-		// find the point in the past which to compute the avgs
+		// find the point in the past which to compute the avgs, this
+		// will normally be about 30 seconds back
 		next -= next % 300;
+
+		// compute the timekey that corresponds to this time
+		time_t	timekey = next + offset; 
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "averages for time %d, timekey %d", next, timekey);
 
 		// compute all necessary averages. We have to add offset 
 		// to the first argument because the Averager will again
@@ -70,22 +77,10 @@ static void	avg_daemon(const std::string& station) {
 		// to indicate the end of the time interval, but now
 		// it points to the beginning, so we have to substract the
 		// interval length to get the same behaviour
-		avg.add(next - 300, 300, false);
-		if (0 == ((next + offset) % 1800)) {
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"adding 1/2h avgs necessary");
-			avg.add(next - 1800, 1800, false);
-		}
-		if (0 == ((next + offset) % 7200)) {
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"adding 2h avgs necessary");
-			avg.add(next - 7200, 7200, false);
-		}
-		if (0 == ((next + offset) % 86400)) {
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"adding 1day avgs necessary");
-			avg.add(next - 86400, 86400, false);
-		}
+		avg.add(timekey - 300, 300, false);
+		avg.add(timekey - 1800, 1800, false);
+		avg.add(timekey - 7200, 7200, false);
+		avg.add(timekey - 86400, 86400, false);
 	}
 }
 

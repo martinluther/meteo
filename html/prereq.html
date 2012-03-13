@@ -11,6 +11,7 @@
 </div>
 <div id="content">
 <h1>Requirements</h1>
+<h2>Hardware</h2>
 <p>Generally speaking, <b>meteo</b> is quite lean, at least for current
 hardware. The reference installation is on a dual 60MHz processor
 SPARCstation 20 with 200MB of RAM, this can hardly be called current,
@@ -37,12 +38,53 @@ the CPU load.
 <p>
 <strong>Database space:</strong> 
 The most important requirement for meteo is database space. A VantagePro Plus
-station uses about 970kB in the <i>sdata</i>, <i>avg</i> and <i>header</i>
+station uses about 970kB in the <i>sdata</i> and <i>avg</i>
 per day of database space, or about 343MB per year. On october 30th, 2003,
 the database on the meteo website was about 1.4GB in size and contained
-more than 47mio rows in the three large tables, more than 30mio rows
+more than 47mio rows in the large tables, more than 30mio rows
 in the <i>sdata</i> table alone.
 </p>
+<h2>Software</h2>
+<p>
+Most parts of meteo are written in C++. You'll need a current version of
+the GNU C++ compiler g++ to compile it. Please note that at least on Solaris,
+you should not try to use a g++ that uses the native assembler and linker,
+as this combination will trigger a bug that causes meteopoll to terminate
+prematurely. Do yourself a favor and use g++ 3.3 with the GNU assembler
+and linker.
+</p>
+<p>
+On some plattforms, libtool's support is rather new, and not always reliable.
+In particular, you should use <code>--disable-shared</code> on Mac OS X.
+</p>
+<p>
+meteo needs the following additional packages to build:
+</p>
+<dl>
+<dt>mysql</dt>
+<dd>If not installed yet on your system, get a copy from the
+<a href="http://www.mysql.com/">MySQL website</a>.
+The system running the meteo software needs only the client libraries,
+but to compile, you'll need the headers also. The MySQL server does not
+need to run on the same machine.</dd>
+<dt>libxml2</dt>
+<dd>
+<a href="http://www.libxml.org/">Libxml2</a> is used to parse the
+configuration file and to provide access to its contents.</dd>
+<dt>libpng</dt>
+<dd>The meteodraw program always creates PNG images. The GD2 library (see
+below needs <a href="http://www.libpng.org">libpng</a> to encode such images.
+Note the libpng depends on <a href="http://www.zlib.org/">zlib</a>.</dd>
+<dt>GD2</dt>
+<dd>
+<a href="http://www.boutell.com">Thomas Boutell</a>'s
+<a href="http://www.obutell.com/gd/">GD library</a> is
+used to draw the graphs.</dd>
+<dt>gettext</dt>
+<dd>The localization of the meteobrowser is done using gettext. If you want
+to change the translations, you will need
+<a href="http://www.gnu.org/software/gettext/gettext.html">gettext</a>.</dd>
+</dl>
 </div>
 <div id="footer">
   &#169; 2004 <a href="mailto:afm@othello.ch">Dr. Andreas M&#252;ller</a>,

@@ -3,6 +3,8 @@
  *                         from a data packet
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicPacketReader.cc,v 1.9 2004/02/25 23:48:04 afm Exp $
  */
 #include <BasicPacketReader.h>
 #include <ValueFactory.h>

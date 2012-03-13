@@ -2,6 +2,8 @@
  * Tdata.h -- time dependent data, uses an STL map
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Tdata.h,v 1.11 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Tdata_h
 #define _Tdata_h

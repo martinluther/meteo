@@ -3,6 +3,8 @@
  *                     station.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: SensorStation.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
  */
 #include <SensorStation.h>
 #include <SensorStationInfo.h>

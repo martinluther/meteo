@@ -2,6 +2,8 @@
  * ImageMap.h -- abstracts graphs inside windows
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ImageMap.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _ImageMap_h
 #define _ImageMap_h

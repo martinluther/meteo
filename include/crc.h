@@ -2,6 +2,8 @@
  * crc.h -- compute CRC for Davis Instruments data interface
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: crc.h,v 1.3 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _CRC_H
 #define _CRC_H

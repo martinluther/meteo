@@ -2,6 +2,8 @@
  * Vector.h -- encapsulates vector operations for wind
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Vector.h,v 1.9 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Vector_h
 #define _Vector_h

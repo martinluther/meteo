@@ -2,6 +2,8 @@
  * RainRate.h -- encapsulate how rain rate is measured
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: RainRate.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _RainRate_h
 #define _RainRate_h

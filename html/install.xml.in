@@ -3,19 +3,25 @@
 	install.xml	installtion of meteo
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: install.xml.in,v 1.1 2004/02/24 23:33:20 afm Exp $
+	$Id: install.xml.in,v 1.3 2004/02/27 16:03:50 afm Exp $
 -->
 
 <page name="install">
 
 <h1>Getting and installing the software</h1>
+<h2>Download</h2>
 <p>
 The meteo package is free software distributed under the
 <a href="http://meteo.othello.ch/COPYING">GNU general
 public license GPL</a>. The full license is included with the package.
 The current version is 0.9.6, it can be downloaded from
-
 <a href="http://meteo.othello.ch/download/meteo-0.9.6.tar.gz">http://meteo.othello.ch/download/meteo-0.9.6.tar.gz</a>.
+</p>
+<h2>Build</h2>
+<p>
+Before configuring and building the software, make sure that your build
+system meets all the prerequisites as described on the
+<a href="prereq.html">prerequisites page</a>.
 </p>
 <p>
 Configuration and Installation of the package follow the familiar
@@ -24,9 +30,143 @@ Configuration and Installation of the package follow the familiar
 As a quick guide to meteo, read <a href="http://meteo.othello.ch/SETUP">SETUP</a>.
 </p>
 <p>
+The most common failures during build usually have to do with missing libraries
+and header files. Many Linux systems have separate packages for libraries
+and headers, to build the software, you have to install both.  E.g.
+SuSE systems have the headers in RPMs with the string <code>-devel</code>
+in the name.
+</p>
+<p>
 If you encounter problems installing or using the meteo package,
 you can try your luck with the mailing list, just send a message
 containing nothing but "subscribe meteo" in the body to 
 <a href="mailto:majordomo@lists.othello.ch">majordomo@lists.othello.ch</a>.
+</p>
+
+<h2>Install</h2>
+<p>
+The install target of the Makefile installs the programs in
+<code>/usr/local/bin</code> and <code>/usr/local/sbin</code>,
+the libraries in <code>/usr/local/lib</code> and a sample configuration
+file in <code>/usr/local/etc/meteo.xml</code>.
+</p>
+
+<h2>Database setup</h2>
+<p>
+Most meteo programs need access to the database. The database not only contains
+the data read from the weather station, but also structural information about
+the sensors of a station. This is done so that applications don't need to
+be able to read the meteo XML configuration file to make use of the data.
+The meteo XML configuration file contains instructions that are relevant
+to the meteo programs only, e.g. the communications parameters to talk
+to the weather station, or the description of the graphs drawn by meteodraw.
+</p>
+<p>
+To create an initially empty database, you can use the script
+<code>meteo.sql</code>
+in the db directory of the distribution. This will create the necessary tables
+and add entries for the fields known to meteo. Since it will also create
+entries in the station and sensor tables for weather stations used during
+development, you will probably want to modify existing records or
+add records describing your own station.
+</p>
+<p>
+To add records to these tables are modify some records, you can use a web based
+tool like phpMyAdmin or send SQL statements directly to the database using
+the mysql program. To add an entry for a new station Foo with id 47 (must be
+smaller than 128), you would use
+<pre>
+mysql> insert into station(name, id, timezone, offset) values ('Foo', 47, 'BRT', -10800);
+</pre>
+This station is 3 hours west of Grenwich.
+</p>
+<p>
+Each station has a couple of sensor arrays. The VantagePro station usually
+comes with some sensors in the console, and some in the integrated sensor
+suite ISS, so the VantagePro has the sensor arrays <code>console</code>
+and <code>iss</code>. But you can add additional sensors to the VantagePro,
+e.g. a soil station or an extra temperature/humidity sensor. A sensor array
+can only have one sensor of a given type, e.g. it can only have one temperature
+sensor. For the <code>console</code>, the temperatur sensor is the
+inside temperature, for the <code>iss</code>, it is the outside temperature,
+and if you have a <code>soil1</code> sensor array connected to your VantagePro,
+its temperature sensor measures soil temperature.
+</p>
+<p>
+For each sensor array, you need an entry in the <code>sensor</code> table.
+The sensor table just keeps track of the names of the sensor arrays and
+connects them to stations. To create sensor entries for the Foo-station
+above, you could use
+<pre>
+mysql> insert into sensor(name, id, stationid) values ('console', 85, 47);
+mysql> insert into sensor(name, id, stationid) values ('iss', 86, 47);
+</pre>
+</p>
+<p>
+The <code>mfield</code> table contains the various field types known
+to meteo. The only column of interest is <code>unit</code>, which
+specifies the units for the values stored in the database. The defaults
+in meteo.sql use metric units. Note that all stations in the database
+use the same units, and all fields of the same type use the same units.
+E.g. you cannot have metric units for soil temperature and Fahrenheit
+for outside temperature. Note that you can still convert values to
+other units for graphing using the XML expression syntax of meteodraw.
+The <code>unit</code> column only affects the units in the database.
+</p>
+<p>
+When meteo adds an entry to the <code>sdata</code> or <code>avg</code>
+tables, it builds the primary key from the time, the sensor id and the
+fieldid (as found in the mfield table).
+</p>
+<h2>Database Access Rights</h2>
+<p>
+All meteo programs that access the database must be able to read
+all 5 tables. The following statement creates a user meteo who has
+read access to all tables of the meteo database:
+<pre>
+mysql> grant select on meteo.* to meteo@localhost identified by 'public';
+</pre>
+The meteoavg and meteopoll programs need update rights to the <code>sdata</code>
+and <code>avg</code> tables. The following statement actually grants
+some more rights:
+<pre>
+mysql> grant all on meteo.* to writer@localhost identified by 'secret';
+</pre>
+</p>
+<h2>Upgrade from a previous version</h2>
+<p>
+Please read the ChangeLog or the NEWS files for specific information about
+upgrading. If any large scale conversions are necessary, there will
+be programms supporting this in the support directory of the distribution.
+</p>
+<h3>Upgrade to 0.9.7</h3>
+<p>
+This release adds the offset field to the <code>station</code> table.
+To create this field and populate it, use the following commands:
+<pre>
+mysql> alter table station add column offset int not null default 0;
+mysql> update station set offset = -10800 where name = 'Lajeado';
+</pre>
+All the references to the offset in station configurations in
+meteo.xml can be deleted. The graph definitions still need offsets.
+The reason for this change was that the offset is needed by independent
+applications, so it should be available through the database. It previously
+was only available through the XML configuration file.
+</p>
+<p>
+The averages are no longer computed automatically. There is now a new
+averages element in the station definition in the XML configuration file
+which defines how each field is to be averaged.
+The sample configuration file includes suitable definitions for VantagePro
+and Weather Monitor II, which you can copy into your existing configuration
+file.  Please read the new
+section in the <strong>meteo.xml</strong>(5) manual page for details.
+</p>
+<h3>Upgrade to 0.9.6</h3>
+<p>
+The <code>header</code> table is no longer needed, you can drop it using
+<pre>
+mysql> drop table header;
+</pre>
 </p>
 </page>

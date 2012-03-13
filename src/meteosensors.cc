@@ -2,6 +2,8 @@
  * meteosensors.cc -- report the names of the sensors a station knows about
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: meteosensors.cc,v 1.3 2004/02/25 23:41:13 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>

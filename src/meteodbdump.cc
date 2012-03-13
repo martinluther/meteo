@@ -10,6 +10,7 @@
  *                   is hardly useful anybody but me.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ * $Id: meteodbdump.cc,v 1.12 2004/02/25 23:41:13 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>

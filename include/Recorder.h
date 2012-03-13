@@ -4,6 +4,8 @@
  *            are defined in MinmaxRecorder.h, Wind.h and Rain.h
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Recorder.h,v 1.4 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Recorder_h
 #define _Recorder_h

@@ -3,6 +3,8 @@
  *            graph
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Label.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Label_h 
 #define _Label_h

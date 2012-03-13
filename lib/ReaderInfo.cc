@@ -2,6 +2,8 @@
  * ReaderInfo.cc -- show information about readers of a station
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ReaderInfo.cc,v 1.8 2004/02/26 23:43:12 afm Exp $
  */
 #include <ReaderInfo.h>
 #include <mdebug.h>
@@ -39,7 +41,7 @@ static	stationreaders_t	vantageproreaders[46] = {
 	{ "extra7.humidity", "SignedBytePacketReader", 40, 1, "%" },
 	{ "iss.rainrate", "RainRateReader", 41, 2, "in/h" },
 	{ "iss.uv", "UVReader", 43, 1, "index" },
-	{ "iss.solar", "UnsignedLittleEndianShortPacketReader", 44, 1, "W/m2" },
+	{ "iss.solar", "SignedLittleEndianShortPacketReader", 44, 1, "W/m2" },
 	{ "iss.rain", "RainReader", 50, 1, "in" },
 	{ "soil1.moisture", "UnsignedBytePacketReader", 62, 1, "cb" },
 	{ "soil2.moisture", "UnsignedBytePacketReader", 63, 1, "cb" },
@@ -49,11 +51,10 @@ static	stationreaders_t	vantageproreaders[46] = {
 	{ "leaf2.wetness", "UnsignedBytePacketReader", 67, 1, "index" },
 	{ "leaf3.wetness", "UnsignedBytePacketReader", 68, 1, "index" },
 	{ "leaf4.wetness", "UnsignedBytePacketReader", 69, 1, "index" },
-	{ "console.transmitter", "BasicReader", 86, 1, "" },
+	{ "iss.transmitter", "UnsignedBytePacketReader", 86, 1, "" },
 	{ "console.battery", "VoltageReader", 87, 2, "V" },
-	{ "iss.battery", "UnsignedBytePacketReader", 86, 1, "" },
-	{ "console.sunrise", "TimeReader", 91, 2, "" },
-	{ "console.sunset", "TimeReader", 93, 2, "" },
+	{ "console.sunrise", "TimeReader", 91, 2, "unix" },
+	{ "console.sunset", "TimeReader", 93, 2, "unix" },
 	{ NULL, NULL, 0, 0, NULL }
 };
 

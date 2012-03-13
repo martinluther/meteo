@@ -2,6 +2,8 @@
  * WMII.cc -- Weather Monitor II station implementation
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: WMII.cc,v 1.14 2004/02/25 23:48:06 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

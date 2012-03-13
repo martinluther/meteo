@@ -2,6 +2,8 @@
  * StationInfo.cc -- retreive information about a station
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: StationInfo.cc,v 1.6 2004/02/25 23:48:05 afm Exp $
  */
 #include <StationInfo.h>
 #include <Configuration.h>
@@ -32,11 +34,22 @@ std::string	StationInfo::getField(const std::string& fieldname) const {
 int	StationInfo::getId(void) const {
 	return atoi(getField("id").c_str());
 }
-int	StationInfo::getOffset(void) const {
-	Configuration	conf;
-	std::string	offsetxpath = "/meteo/station[@name='" + stationname
-					+ "']/offset";
-	return conf.getInt(offsetxpath, 0);
+int	StationInfo::getOffset(void) {
+	// in case we have done the query before, return the already known
+	// offset value
+	if (offsetknown) {
+		return offset;
+	}
+
+	// get the offset as a string
+	std::string	offsetstring = getField("offset");
+
+	// remember the offset value
+	offset = atoi(offsetstring.c_str());
+	offsetknown = true;
+
+	// return the field
+	return offset;
 }
 std::string	StationInfo::getTimezone(void) const {
 	std::string	f = getField("timezone");

@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mdebug.h,v 1.3 2003/06/12 23:29:46 afm Exp $
+ * $Id: mdebug.h,v 1.5 2004/02/25 23:56:45 afm Exp $
  */
 #ifndef _MDEBUG_H
 #define _MDEBUG_H

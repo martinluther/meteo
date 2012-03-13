@@ -2,6 +2,8 @@
  * Energy.cc -- Energy station implementation
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Energy.cc,v 1.12 2004/02/25 23:48:05 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

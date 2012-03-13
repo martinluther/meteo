@@ -2,6 +2,8 @@
  * BasicConverter.cc -- base class for converters
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicConverter.cc,v 1.6 2004/02/25 23:48:04 afm Exp $
  */
 #include <BasicConverter.h>
 #include <mdebug.h>

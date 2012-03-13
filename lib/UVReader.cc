@@ -2,6 +2,8 @@
  * UVReader.cc -- read uv index from Davis packets
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: UVReader.cc,v 1.3 2004/02/25 23:48:06 afm Exp $
  */
 #include <UVReader.h>
 

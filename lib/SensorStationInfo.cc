@@ -2,6 +2,8 @@
  * SensorStationInfo.cc -- access to information about SensorStations
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: SensorStationInfo.cc,v 1.5 2004/02/26 23:43:12 afm Exp $
  */
 #include <SensorStationInfo.h>
 #include <QueryProcessor.h>
@@ -190,6 +192,28 @@ stringlist	SensorStationInfo::getQualifiedFieldnames(void) const {
 		result.push_back(stationname + "." + name + "." + *i);
 	}
 	return result;
+}
+
+// access to averages info (from the configuration file), these are essentially
+// XPath lookups
+static std::string	getAveragesXpath(const std::string& stationname,
+	const std::string& name) {
+	return "/meteo/station[@name='" + stationname + "']/averages/"
+		"sensor[@name='" + name + "']/average";
+}
+stringlist	SensorStationInfo::getAverages(void) const {
+	return Configuration().getStringList(getAveragesXpath(stationname, name)
+		+ "/@name");
+}
+std::string	SensorStationInfo::getBase(const std::string& average)
+	const {
+	return Configuration().getString(getAveragesXpath(stationname, name)
+		+ "[@name='" + average + "']/@base", "");
+}
+std::string	SensorStationInfo::getOperator(const std::string&
+	average) const {
+	return Configuration().getString(getAveragesXpath(stationname, name)
+		+ "[@name='" + average + "']/@operator", "");
 }
 
 } /* namespace meteo */

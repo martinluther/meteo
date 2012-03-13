@@ -2,6 +2,8 @@
  * OldWindReader.cc -- read wind off a Davis Weather Monitor loop packet
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: OldWindReader.cc,v 1.4 2004/02/25 23:48:05 afm Exp $
  */
 #include <OldWindReader.h>
 #include <ValueFactory.h>

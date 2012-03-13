@@ -2,6 +2,8 @@
  * VantageProWindReader.cc -- read wind off a Davis VantagePro loop packet
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: VantageProWindReader.cc,v 1.4 2004/02/26 23:43:12 afm Exp $
  */
 #include <VantageProWindReader.h>
 #include <MeteoException.h>
@@ -19,7 +21,6 @@ VantageProWindReader::~VantageProWindReader(void) {
 
 double	VantageProWindReader::value(const std::string& packet) const {
 	if (!valid(packet)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "invalid wind data in packet");
 		throw MeteoException("invalid wind data in packet", "");
 	}
 	return windspeedreader(packet);
@@ -27,7 +28,6 @@ double	VantageProWindReader::value(const std::string& packet) const {
 
 Value	VantageProWindReader::v(const std::string& packet) const {
 	if (!valid(packet)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "invalid wind data in packet");
 		throw MeteoException("invalid wind data in packet", "");
 	}
 	double	speed = windspeedreader(packet);

@@ -2,6 +2,8 @@
  * ValueFactory.h -- creates value objects based on the configuration
  *                   
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ValueFactory.h,v 1.3 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _ValueFactory_h
 #define _ValueFactory_h

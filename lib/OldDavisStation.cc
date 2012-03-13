@@ -2,6 +2,8 @@
  * OldDavisStation.cc -- Old Davis weather station common functionality
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: OldDavisStation.cc,v 1.9 2004/02/25 23:48:05 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

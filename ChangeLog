@@ -1,3 +1,37 @@
+Release 0.9.7:
+	* checked that 60-seconds interval graphs work, at least partially,
+	  this needs some review
+	* added new channel of type sun, which indicates the time during which
+	  the sun is above the horizon, at least for VantagePro stations that
+	  are capable of reporting the sunrise and sunset
+	* added description of how to use meteo to graph additional data
+	* fixed the image map coordinate system problem (vertical axis in GD
+	  has opposite orientation from web)
+	* modified the Averager so that what it does is now described in
+	  the configuration file.
+	* add TimeValue, TimeConverter and TimeRecorder classes so that we
+	  can now read the sunrise and sunset values
+	* solar radiation seems to be a signed value (important to detect
+	  illegal values), it was configured as unsigned in ReaderInfo.cc
+	* the meteoavg.cc had the offset computation incorrect when running
+	  in daemon mode, resulting in the averages being computed with a
+	  delay.
+	* transmitter status could not be displayed because the class name
+	  in ReaderInfo.cc was incorrect
+	* added Id tags to all files
+	* fixed several bugs in the reorganised ChunkDumper, so meteodbdump
+	  works again.
+	* completed missing image in the installation of the web pages
+	* eliminated the offset configuration variable and moved all the
+	  offset stuff into the database, where it is needed by applications
+	  that bypass the meteo programs and access the database directly.
+	  There still is an offset in the graphing code, because graphs are
+	  not strictly tied to stations. Actually we would need an offset
+	  for each channel, as only the channels are tied to a station. But
+	  this is probably a task for a real data analysis tool.
+	* improved the Install/Configure chapters on the web site to the point
+	  that they may actually be useful.
+
 Release 0.9.6:
 	* Eric Varsanyi pointed out and fixed a bug in the computation of
 	  time from the timestamp.
@@ -586,4 +620,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.113 2004/02/24 23:33:20 afm Exp $
+$Id: ChangeLog,v 1.119 2004/02/27 22:09:04 afm Exp $

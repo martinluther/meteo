@@ -2,6 +2,8 @@
  * VantageProWindReader.h -- read wind from a Davis Vantage Pro packet
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: VantageProWindReader.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _VantageProWindReader_h
 #define _VantageProWindReader_h

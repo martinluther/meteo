@@ -3,6 +3,8 @@
  *                        station constructors
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: SensorStationInfo.h,v 1.5 2004/02/26 23:43:12 afm Exp $
  */
 #ifndef _SensorStationInfo_h
 #define _SensorStationInfo_h
@@ -34,6 +36,11 @@ public:
 	// methods to retrieve fields
 	stringlist	getFieldnames(void) const;
 	stringlist	getQualifiedFieldnames(void) const;
+
+	// access to the averages info
+	stringlist	getAverages(void) const;
+	std::string	getBase(const std::string& average) const;
+	std::string	getOperator(const std::string& average) const;
 };
 
 } /* namespace meteo */

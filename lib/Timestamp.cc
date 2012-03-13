@@ -2,6 +2,8 @@
  * Timestamp.cc -- timestamp class for conversion of localtime to time
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: Timestamp.cc,v 1.4 2004/02/25 23:48:06 afm Exp $
  */
 #include <Timestamp.h>
 

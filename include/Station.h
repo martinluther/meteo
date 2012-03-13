@@ -2,6 +2,8 @@
  * Station.h -- encode Station information
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Station.h,v 1.18 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Station_h
 #define _Station_h

@@ -1,7 +1,9 @@
 /*
- * Graphics.cc -- draw mete data graphics specified in XML files
+ * Graphics.cc -- draw meteo data graphics specified in XML files
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Graphics.cc,v 1.18 2004/02/27 22:09:04 afm Exp $
  */
 #include <Graphics.h>
 #include <Configuration.h>
@@ -10,6 +12,7 @@
 #include <Dataset.h>
 #include <MeteoException.h>
 #include <libxml/tree.h>
+#include <SunData.h>
 
 namespace meteo {
 
@@ -125,6 +128,13 @@ static void	drawChannel(xmlNodePtr x, GraphWindow *gw, const Dataset *ds) {
 		return;
 	}
 
+	// this is supposed to draw the sunset and sunrise axis color, but
+	// we should do this at the and, when everything else has been drawn.
+	if (type == "sun") {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sunrise and sunset delayed");
+		return;
+	}
+
 	// if we arrive at this point, then an illegal type specification
 	// was found
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "illegal channel type: %s",
@@ -170,6 +180,9 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 	f->setForeground(conf.getString(basepath + "/@fgcolor", "#000000"));
 	f->setBackground(conf.getString(basepath + "/@bgcolor", "#ffffff"));
 
+	// we will need a database connection later on
+	QueryProcessor	qp(false);
+
 	// retrieve the offset from the configuration
 	int	offset = conf.getInt(basepath + "/@offset", 0);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "offset set to %d", offset);
@@ -193,7 +206,7 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 						: gw->getStartTimekey();
 		time_t	et = (interval == 60)	? gw->getEndTime()
 						: gw->getEndTimekey();
-		Query	q(interval, st, et);
+		Query	q(interval, st, et, gw->getOffset());
 		stringlist	vn = conf.getStringList(basepath
 					+ "/channels/query/select/@name");
 		stringlist::iterator	i;
@@ -204,7 +217,6 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 		}
 
 		// retrieve data from database
-		QueryProcessor	qp(false);
 		QueryResult	qr;
 		qp.perform(q, qr);
 
@@ -255,6 +267,9 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 
 	// draw a frame around the graph (this cleans up some artifacts)
 	gw->drawFrame();
+
+	// now check whether there is a sun channel directive
+	drawSun(basepath);
 }
 
 Graphics::~Graphics(void) {
@@ -277,6 +292,38 @@ std::string	Graphics::mapString(const std::string& url,
 
 std::string	Graphics::imageTagString(const std::string& filename) const {
 	return gw->imageTagString(filename);
+}
+
+// draw the sunrise/sunset info on the axis
+void	Graphics::drawSun(const std::string& basepath) {
+	// this does not make sense for the year graphs
+	if (gw->getInterval() == 86400) {
+		return;
+	}
+
+	// create a new SunData object
+	Configuration	conf;
+	std::string	station = conf.getString(basepath
+		+ "/channels/channel[@type='sun']/@station", "");
+	if (station == "") {
+		// if station not found, we assume it is not necessary to draw
+		// the sun stuff
+		return;
+	}
+	int	offset = conf.getInt(basepath + "/@offset", 0);
+
+	// find the color
+	Color	color = gw->getColorFromHexString(conf.getString(basepath
+		+ "/channels/channel[@type='sun']/@color", "#ff0000"));
+
+	// create the list of points that are during the day (sun above horizon)
+	SunData	sd(station, offset);
+	std::vector<time_t>	r = sd(gw->getInterval(), gw->getStartTimekey(),
+		gw->getEndTimekey());
+	for (std::vector<time_t>::iterator i = r.begin(); i != r.end(); i++) {
+		time_t	t = *i - offset;
+		gw->drawPoint(gw->getBottomPoint(t), color);
+	}
 }
 
 } /* namespace meteo */

@@ -3,6 +3,8 @@
  *                       them to doubles
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: NibblePacketReader.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _NibblePacketReader_h
 #define _NibblePacketReader_h

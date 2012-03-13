@@ -2,6 +2,8 @@
  * ValueFactory.h -- create a new value object of the right type
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ValueFactory.cc,v 1.6 2004/02/25 23:48:06 afm Exp $
  */
 #include <ValueFactory.h>
 

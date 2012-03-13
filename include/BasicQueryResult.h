@@ -2,6 +2,8 @@
  * BasicQueryResult.h -- result of a primitive query
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicQueryResult.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _BasicQueryResult_h
 #define _BasicQueryResult_h

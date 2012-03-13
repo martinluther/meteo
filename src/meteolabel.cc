@@ -3,6 +3,8 @@
  *                  and navigating up and down
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: meteolabel.cc,v 1.6 2004/02/25 23:41:13 afm Exp $
  */
 #include <Timelabel.h>
 #include <MeteoException.h>

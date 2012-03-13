@@ -1,12 +1,14 @@
  /*
  * BasicRecorder.h -- base class for all the recorder classes. Recorder classes
- *                    take care of accumulating data, but the cannot be
+ *                    take care of accumulating data, but they cannot be
  *                    converted to other units. They also know about maxima
  *                    and minima (at least some derived classes do), but
  *                    there is no direct relation to Recorder classes, which are
  *                    only used for updating)
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: BasicRecorder.h,v 1.7 2004/02/26 14:00:19 afm Exp $
  */
 #ifndef _BasicRecorder_h
 #define _BasicRecorder_h
@@ -32,7 +34,7 @@ protected:
 public:
 	BasicRecorder(const std::string& unit);
 	virtual	~BasicRecorder(void);
-	virtual void	reset(void);	// resets data fileds
+	virtual void	reset(void);	// resets data fields
 	virtual std::string	getValueClass(void) const {
 		return "BasicValue";
 	}

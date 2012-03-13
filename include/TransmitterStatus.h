@@ -2,6 +2,8 @@
  * TransmitterStatus.h -- encapsulate the VantagePro transmitter status
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: TransmitterStatus.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _TransmitterStatus_h
 #define _TransmitterStatus_h

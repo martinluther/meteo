@@ -3,6 +3,8 @@
  *                      server
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: RecorderFactory.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _RecorderFactory_h
 #define _RecorderFactory_h

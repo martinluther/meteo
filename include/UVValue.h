@@ -4,6 +4,8 @@
  *                 about maximum and minimum
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: UVValue.h,v 1.2 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _UVValue_h
 #define _UVValue_h

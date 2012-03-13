@@ -2,6 +2,8 @@
  * FQField.cc -- implement field query oracle
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: FQField.cc,v 1.3 2004/02/25 23:48:05 afm Exp $
  */
 #include <FQField.h>
 #include <FQField_internals.h>

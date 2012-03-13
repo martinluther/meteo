@@ -2,6 +2,8 @@
  * GraphWindow.cc -- implementation of graphing functions
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: GraphWindow.cc,v 1.15 2004/02/27 16:03:50 afm Exp $
  */
 #include <GraphWindow.h>
 #include <Configuration.h>
@@ -301,9 +303,11 @@ static bool	middleOfMonth(time_t t, int interval, struct tm *tmp) {
 
 MapArea	GraphWindow::getArea(time_t start, time_t end) const {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding area %d - %d", start, end);
-	// compute dimensions for the rectangle
-	Point	ll(getXFromTime(start), window.getLow());
-	Point	ur(getXFromTime(end), window.getHigh());
+	// compute dimensions for the rectangle, but convert them to the
+	// usual web coordinate system for image maps, which is upside down
+	// from the gd coordinate system.
+	Point	ll(getXFromTime(start), parent.getHeight() - window.getLow());
+	Point	ur(getXFromTime(end), parent.getHeight() - window.getHigh());
 	Rectangle r(ll, ur);
 
 	// compute mid time for this area

@@ -2,6 +2,8 @@
  * Dewpoint.cc -- class encapsulating dew point computation
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Dewpoint.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
  */
 #include <Dewpoint.h>
 #include <math.h>

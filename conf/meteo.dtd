@@ -22,16 +22,20 @@
 <!ELEMENT updatefile (#PCDATA)>
 <!ELEMENT prefix (#PCDATA)>
 
-<!ELEMENT station (url, type, speed?, sensors, offset?)>
+<!ELEMENT station (url?, type?, speed?, sensors?, averages?)>
 <!ATTLIST station name CDATA #REQUIRED>
 <!ELEMENT url (#PCDATA)>
 <!ELEMENT speed (#PCDATA)>
 <!ELEMENT type (#PCDATA)>
 <!ELEMENT sensors (sensor*)>
-<!ELEMENT sensor (field*)>
+<!ELEMENT averages (sensor*)>
+<!ELEMENT sensor (field* | average*)>
 <!ATTLIST sensor name CDATA #REQUIRED>
 <!ELEMENT field (#PCDATA)>
-<!ELEMENT offset (#PCDATA)>
+<!ELEMENT average (#PCDATA)>
+<!ATTLIST average name	CDATA #REQUIRED>
+<!ATTLIST average base	CDATA #REQUIRED>
+<!ATTLIST average operator	CDATA #REQUIRED>
 
 <!ELEMENT graphs (graph+)>
 
@@ -76,7 +80,7 @@
 <!ELEMENT channel EMPTY>
 <!ATTLIST channel color	CDATA #IMPLIED>
 <!ATTLIST channel type	( curve | histogram | range | nodata | lowdata |
-			windbackground ) #REQUIRED>
+			windbackground | sun ) #REQUIRED>
 <!ATTLIST channel name	CDATA #IMPLIED>
 <!ATTLIST channel namelower	CDATA #IMPLIED>
 <!ATTLIST channel nameupper	CDATA #IMPLIED>
@@ -87,6 +91,7 @@
 <!ATTLIST channel eastcolor CDATA #IMPLIED>
 <!ATTLIST channel letters CDATA #IMPLIED>
 <!ATTLIST channel limit CDATA #IMPLIED>
+<!ATTLIST channel station CDATA #IMPLIED>
 
 <!ELEMENT leftaxis EMPTY>
 <!ATTLIST leftaxis type	( static | dynamic | toprange | bottomrange )

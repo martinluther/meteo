@@ -2,6 +2,8 @@
  * QueryResult.cc -- perform database queries against 
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: QueryResult.cc,v 1.3 2004/02/25 23:48:05 afm Exp $
  */
 #include <QueryResult.h>
 #include <mdebug.h>

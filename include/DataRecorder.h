@@ -3,6 +3,8 @@
  *                   a station
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: DataRecorder.h,v 1.4 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _DataRecorder_h
 #define _DataRecorder_h

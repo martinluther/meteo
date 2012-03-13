@@ -2,6 +2,7 @@
  * meteodraw.cc -- create meteo drawings
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ * $Id: meteodraw.cc,v 1.17 2004/02/25 23:41:13 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>

@@ -3,6 +3,8 @@
  *                month or year canonical
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: Timelabel.h,v 1.6 2004/02/25 23:52:35 afm Exp $
  */
 #ifndef _Timelabel_h
 #define _Timelabel_h

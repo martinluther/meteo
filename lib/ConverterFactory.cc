@@ -3,6 +3,8 @@
  *                        class
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ConverterFactory.cc,v 1.8 2004/02/26 14:00:19 afm Exp $
  */
 #include <ConverterFactory.h>
 #include <mdebug.h>
@@ -19,6 +21,8 @@
 #include <UVConverter.h>
 #include <LeafwetnessConverter.h>
 #include <VoltageConverter.h>
+#include <TransmitterConverter.h>
+#include <TimeConverter.h>
 
 namespace meteo {
 
@@ -66,6 +70,12 @@ BasicConverter	*ConverterFactory::newConverter(const std::string& classname,
 	}
 	if (classname == "VoltageValue") {
 		return new VoltageConverter(targetunit); // delete ~Converter
+	}
+	if (classname == "TransmitterStatus") {
+		return new TransmitterConverter(targetunit); // delete ~Converter
+	}
+	if (classname == "TimeValue") {
+		return new TimeConverter(targetunit); // delete ~Converter
 	}
 	mdebug(LOG_ERR, MDEBUG_LOG, 0, "no converter for class %s",
 		classname.c_str());

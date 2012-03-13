@@ -3,6 +3,8 @@
  *                             Pro packet.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ExtraTemperatureReader.h,v 1.2 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _ExtraTemperatureReader_h
 #define _ExtraTemperatureReader_h

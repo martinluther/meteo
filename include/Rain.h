@@ -2,6 +2,8 @@
  * Rain.h -- encapsulate how rain is measured
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: Rain.h,v 1.14 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _Rain_h
 #define _Rain_h

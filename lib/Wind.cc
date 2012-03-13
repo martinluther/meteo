@@ -2,6 +2,8 @@
  * Wind.cc -- wind 
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
+ *
+ * $Id: Wind.cc,v 1.14 2004/02/26 14:00:19 afm Exp $
  */
 #include <Wind.h>
 #include <WindConverter.h>
@@ -60,7 +62,7 @@ Vector	Wind::getVectorValue(void) const {
 	if (!hasValue())
 		throw MeteoException("cannot retrieve Vector without value",
 			"");
-	return Vector(getValue(), getAzideg(), true);
+	return Vector(getValue(), (short unsigned)getAzideg(), true);
 }
 
 // get string forms for display purposes

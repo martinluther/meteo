@@ -2,6 +2,8 @@
  * Timeval.cc -- time arithmetic
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Timeval.cc,v 1.6 2004/02/25 23:48:06 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

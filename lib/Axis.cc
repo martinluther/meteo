@@ -2,6 +2,8 @@
  * Axis.cc -- axis implementation for graphing
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Axis.cc,v 1.2 2004/02/25 23:48:04 afm Exp $
  */
 #include <Axis.h>
 #include <Configuration.h>

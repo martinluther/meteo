@@ -2,6 +2,8 @@
  * Frame.cc -- framework for drawing graphs
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Frame.cc,v 1.17 2004/02/27 22:09:04 afm Exp $
  */
 #include <Frame.h>
 #include <mdebug.h>
@@ -41,6 +43,7 @@ public:
 
 	// drawing and writing
 	void	setLinestyle(const Color& c, linestyle style);
+	void	drawPoint(const Point& p, const Color& c);
 	void	drawLine(const Point& p1, const Point& p2, const Color& c,
 			linestyle style);
 	void	drawRectangle(const Rectangle& rectangle, const Color& c);
@@ -113,6 +116,16 @@ void	frame_internals::setLinestyle(const Color& color, linestyle style) {
 
 	// XXX set the style for the next drawing operation
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing style set");
+}
+
+void	frame_internals::drawPoint(const Point& point, const Color& color) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "draw point (%d, %d)\n",
+		point.getX(), point.getY());
+	// find the color
+	int	colorindex = getColorIndex(color);
+	// draw the pixel
+	gdImageSetPixel(gd, getX(point), getY(point), colorindex);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point set");
 }
 
 void	frame_internals::drawLine(const Point& p1, const Point& p2,
@@ -300,6 +313,11 @@ Color	Frame::getColorFromHexString(const std::string& c) const {
 			"using foreground", c.c_str());
 	}
 	return foreground;
+}
+
+void	Frame::drawPoint(const Point& p, const Color& color) {
+	setupInternals();
+	fi->drawPoint(p, color);
 }
 
 void	Frame::drawLine(const Point& p1, const Point& p2, const Color& color,

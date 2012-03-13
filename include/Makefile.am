@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.37 2003/11/02 21:52:47 afm Exp $
+# $Id: Makefile.am,v 1.39 2004/02/27 22:09:04 afm Exp $
 #
 
 noinst_HEADERS =							\
@@ -11,13 +11,14 @@ noinst_HEADERS =							\
 	Value.h BasicValue.h VoltageValue.h TransmitterStatus.h		\
 	TemperatureValue.h HumidityValue.h PressureValue.h 		\
 	SolarValue.h UVValue.h MoistureValue.h LeafwetnessValue.h 	\
-	LevelValue.h WindSpeed.h Wind.h Rain.h RainRate.h		\
+	LevelValue.h WindSpeed.h Wind.h Rain.h RainRate.h TimeValue.h	\
 	BasicValueFactory.h ValueFactory.h				\
 	Recorder.h BasicRecorder.h MinmaxRecorder.h VoltageRecorder.h	\
 	TemperatureRecorder.h HumidityRecorder.h PressureRecorder.h	\
-	SolarRecorder.h UVRecorder.h MoistureRecorder.h			\
+	SolarRecorder.h UVRecorder.h MoistureRecorder.h TimeRecorder.h	\
 	LeafwetnessRecorder.h LevelRecorder.h WindRecorder.h		\
 	RainRecorder.h RainRateRecorder.h TransmitterRecorder.h		\
+	LastRecorder.h							\
 	RecorderFactory.h DataRecorder.h 				\
 	Configuration.h Field.h Field_internals.h StationInfo.h		\
 	FQField.h FQField_internals.h					\
@@ -27,7 +28,7 @@ noinst_HEADERS =							\
 	Station.h DavisStation.h OldDavisStation.h 			\
 	WMII.h GroWeather.h Energy.h Health.h				\
 	VantagePro.h ReaderInfo.h StationFactory.h			\
-	Converter.h BasicConverter.h ConverterFactory.h			\
+	Converter.h BasicConverter.h ConverterFactory.h TimeConverter.h	\
 	TemperatureConverter.h HumidityConverter.h RainConverter.h	\
 	PressureConverter.h SolarConverter.h UVConverter.h		\
 	MoistureConverter.h LeafwetnessConverter.h LevelConverter.h	\
@@ -46,7 +47,7 @@ noinst_HEADERS =							\
 	Tdata.h Dataset.h						\
 	Point.h Dimension.h Rectangle.h Color.h Label.h Frame.h		\
 	Scale.h Axis.h GraphPoint.h MapArea.h ImageMap.h GraphWindow.h	\
-	Graphics.h							\
+	Graphics.h SunData.h						\
 	Datarecord.h Averager.h						\
 	MsgCommon.h MsgQueuer.h MsgDequeuer.h				\
 	Timestamp.h							\

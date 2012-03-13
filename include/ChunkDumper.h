@@ -3,6 +3,8 @@
  *                  that the contention on the tables remains small
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: ChunkDumper.h,v 1.3 2004/02/25 23:52:34 afm Exp $
  */
 #ifndef _ChunkDumper_h
 #define _ChunkDumper_h

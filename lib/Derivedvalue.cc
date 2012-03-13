@@ -2,6 +2,8 @@
  * Derivedvalue.cc -- class encapsulating derived value computation
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+ *
+ * $Id: Derivedvalue.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
  */
 #include <Derivedvalue.h>
 #include <math.h>
