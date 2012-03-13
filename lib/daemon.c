@@ -3,11 +3,12 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: daemon.c,v 1.4 2003/05/29 20:42:09 afm Exp $
+ * $Id: daemon.c,v 1.5 2003/06/11 19:51:35 afm Exp $
  */
 #include <daemon.h>
 #include <meteo.h>
 #include <string.h>
+#include <stdlib.h> /* some systems have alloca defined in stdlib.h */
 #include <unistd.h>
 #include <mdebug.h>
 #include <sys/types.h>

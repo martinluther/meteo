@@ -26,6 +26,7 @@ double	Vector::getAzi(void) const {
 		return a + 360.;
 	if (a > 360.)
 		return a - 360.;
+	return a;
 }
 
 double	Vector::getAbs(void) const {

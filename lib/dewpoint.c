@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dewpoint.c,v 1.3 2003/06/08 22:32:10 afm Exp $
+ * $Id: dewpoint.c,v 1.4 2003/06/11 19:51:35 afm Exp $
  */
 #include <dewpoint.h>
 #include <math.h>
@@ -42,7 +42,6 @@ double	dewpoint(double humidity, double temp) {
 			"find_tempunit was not called in "
 			"program, dewpoint may be wrong");
 
-unitknown:
 	if (tempunit == UNIT_CELSIUS) {
 		tempC = temp;
 		goto celsiusknown;

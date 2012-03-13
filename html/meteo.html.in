@@ -2,7 +2,7 @@
 <head>
 <link href="meteo.css" type="text/css" rel="stylesheet">
 <title>Meteo Software Package</title>
-<!-- $Id: meteo.html.in,v 1.8 2003/06/09 00:59:25 afm Exp $ -->
+<!-- $Id: meteo.html.in,v 1.9 2003/06/10 04:19:12 afm Exp $ -->
 </head>
 <body bgcolor="#ffffff">
 <h1>Meteo</h1>
@@ -100,12 +100,15 @@ configuration file format (now XML based).
 <p>
 Walter Poxon has contributed an
 <a href="meteo-install.html">Installation Howto</a> (thanks Walter!),
-which goes into some more detail.
+which goes into some more detail. He also wrote some scripts to upload
+weather data to the
+<a href="http://www.weatherunderground.com/">Weather Underground</a>.
 </p>
 <h2>Getting and installing the software</h2>
 <p>
-The meteo package is free software distributed under the GNU general
-public license GPL. The full license is included with the package.
+The meteo package is free software distributed under the
+<a href="COPYING">GNU general
+public license GPL</a>. The full license is included with the package.
 The current version is @VERSION@, it can be downloaded from
 <a href="http://meteo.othello.ch/download/meteo-@VERSION@.tar.gz">http://meteo.othello.ch/download/meteo-@VERSION@.tar.gz</a>.
 </p>
@@ -113,6 +116,7 @@ The current version is @VERSION@, it can be downloaded from
 Configuration and Installation of the package follow the familiar
 <tt>configure; make; make install</tt> pattern. For details see the
 <tt><a href="INSTALL">INSTALL</a></tt> in the distribution.
+As a quick guide to meteo, read <a href="SETUP">SETUP</a>.
 </p>
 <p>
 If you encounter problems installing or using the meteo package,
@@ -200,7 +204,7 @@ forgot someone.
 <p>
 This software was mainly developed by
 <a href="mailto:andreas.mueller@othello.ch">Andreas M&uuml;ller</a>,
-contributions by others are detailed in the <a href="README">README</a>.
+contributions by others are detailed in the <a href="AUTHORS">AUTHORS</a>.
 You can also see the <a href="http://meteo.othello.ch/temp.html">server room
 temperature</a> where the main development machine lives.
 </p>
@@ -210,7 +214,7 @@ temperature</a> where the main development machine lives.
 &copy; 2001 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch">Beratung und Entwicklung</a>
 <br />
-<i>Last modified: $Date: 2003/06/09 00:59:25 $</i>
+<i>Last modified: $Date: 2003/06/10 04:19:12 $</i>
 </p>
 </body>
 </html>

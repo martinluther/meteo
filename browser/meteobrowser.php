@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.11 2003/05/04 16:31:58 afm Exp $
+//   $Id: meteobrowser.php,v 1.12 2003/06/10 04:19:12 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -271,7 +271,7 @@ if ($HTTP_GET_VARS[level] == "month") {
 		}
 		$week = $week2;
 	}
-	for ($i = 1; $i <= $count; $i++) {
+	for ($i = 0; $i <= $count; $i++) {
 		weekarea($i);
 	}
 	printf("</map>\n");

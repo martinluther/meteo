@@ -3,10 +3,11 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.5 2003/06/09 00:27:37 afm Exp $
+# $Id: Makefile.am,v 1.6 2003/06/10 04:19:12 afm Exp $
 #
 HTMLFILES = meteo.html meteodata.html meteo-install.html meteo.css
-TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../COPYING
+TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../INSTALL \
+	../COPYING ../SETUP
 HTMLDIR = @HTMLDIR@
 EXTRA_DIST = meteo.html.in meteodata.html meteo-install.html meteo.css
 
