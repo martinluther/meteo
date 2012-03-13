@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodata.c,v 1.3 2002/03/14 15:06:15 afm Exp $
+ * $Id: meteodata.c,v 1.4 2002/08/24 14:56:21 afm Exp $
  */
 #include <meteodata.h>
 #include <stdlib.h>
@@ -101,7 +101,7 @@ void	meteodata_free(meteodata_t *a) {
 void	meteodata_update(meteodata_t *a,
 	double temperature, double temperature_inside, /* FAHRENHEIT */
 	double humidity, double humidity_inside, /* % HUMIDITY */
-	double barometer, /* IN HG */
+	double barometer, /* IN HG */ int barotrend,
 	double speed /* MPH */, double direction /* DEGREE */,
 	double rain /* MM */, double solar /* WM2 */, double uv /* INDEX */) {
 	struct timeval	now;
@@ -124,6 +124,7 @@ void	meteodata_update(meteodata_t *a,
 	meteovalue_set(a->humidity, humidity);
 	meteovalue_set(a->humidity_inside, humidity_inside);
 	meteovalue_set(a->barometer, barometer);
+	a->barotrend = barotrend;
 	meteowind_set(a->wind, speed, direction);
 	meteorain_set(a->rain, rain);
 	meteovalue_set(a->solar, solar);
@@ -200,6 +201,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->barometer->max = 0.;
 	a->barometer->min = 10000.;
 	a->barometer->unit = UNIT_INHG;
+	a->barotrend = BAROTREND_UNKNOWN;
 
 	if (a->wind == NULL) {
 		a->wind = (wind_t *)malloc(sizeof(wind_t));
@@ -256,6 +258,7 @@ void	meteodata_start(meteodata_t *a) {
 #define	value(a, u) unitconvert(a->unit, u, a->value)
 
 void	meteodata_display(FILE *o, meteodata_t *a) {
+	char	*trendstring = "?";
 	fprintf(o, "parameter          value    min    max\n");
 	fprintf(o, "temperature out    %5.1f  %5.1f  %5.1f deg C\n",
 		value(a->temperature, UNIT_CELSIUS),
@@ -273,10 +276,17 @@ void	meteodata_display(FILE *o, meteodata_t *a) {
 		value(a->humidity_inside, UNIT_NONE),
 		minvalue(a->humidity_inside, UNIT_NONE),
 		maxvalue(a->humidity_inside, UNIT_NONE));
-	fprintf(o, "barometer         %6.1f %6.1f %6.1f hPa\n",
+	switch (a->barotrend) {
+		case BAROTREND_FALLING_RAPIDLY: trendstring = "vv"; break;
+		case BAROTREND_FALLING_SLOWLY: trendstring = "v"; break;
+		case BAROTREND_STEADY: trendstring = "-"; break;
+		case BAROTREND_RISING_SLOWLY: trendstring = "^"; break;
+		case BAROTREND_RISING_RAPIDLY: trendstring = "^^"; break;
+	}
+	fprintf(o, "barometer         %6.1f %6.1f %6.1f hPa trend: %s\n",
 		value(a->barometer, UNIT_HPA),
 		minvalue(a->barometer, UNIT_HPA),
-		maxvalue(a->barometer, UNIT_HPA));
+		maxvalue(a->barometer, UNIT_HPA), trendstring);
 	fprintf(o, "solar radiation   %6.1f %6.1f %6.1f W/m2\n",
 		value(a->solar, UNIT_WM2),
 		minvalue(a->solar, UNIT_WM2),

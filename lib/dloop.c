@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dloop.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: dloop.c,v 1.3 2002/08/24 14:56:21 afm Exp $
  */
 #include <config.h>
 #include <dloop.h>
@@ -75,8 +75,8 @@ static int	get_monitor_image(loop_t *l, meteodata_t *m) {
 
 	/* update the meteodata record					*/
 	meteodata_update(m, temperature, temperature_inside,
-		humidity, humidity_inside, barometer, speed, direction, rain,
-		0., 0.);
+		humidity, humidity_inside, barometer, BAROTREND_UNKNOWN,
+		speed, direction, rain, 0., 0.);
 
 	/* return the filled in sensor image				*/
 	return 0;
@@ -88,7 +88,7 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 	double		temperature, temperature_inside, humidity,
 			humidity_inside, barometer, speed, direction,
 			rain, uv, solar;
-	int		i;
+	int		i, barotrend = BAROTREND_UNKNOWN;
 
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "about to read a LOOP packet "
@@ -107,7 +107,10 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 		imagedump(image, VANTAGE_LOOP_SIZE);
 
 	/* check for loop packet type					*/
-	if (0 != strcmp("LOOP", (char *)image)) {
+	/* in the APRIL 2002 revision B firmware of the vantage pro,	*/
+	/* the returned string was changed to LOO and a character 	*/
+	/* indicating barometric trend					*/
+	if (0 != strncmp("LOO", (char *)image, 3)) {
 		mdebug(LOG_ERR, MDEBUG_LOG, 0, "this is not a Vantage LOOP "
 			"packet");
 		return -1;
@@ -129,10 +132,19 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 	uv = (double)image[43]/10.;
 	solar = (image[45] * 256. + image[44]);
 
+	/* decode the baro trend value, if available			*/
+	switch ((signed char)image[3]) {
+		case -60: barotrend = BAROTREND_FALLING_RAPIDLY; break;
+		case -20: barotrend = BAROTREND_FALLING_SLOWLY; break;
+		case 0: barotrend = BAROTREND_STEADY; break;
+		case 20: barotrend = BAROTREND_RISING_SLOWLY; break;
+		case 60: barotrend = BAROTREND_RISING_RAPIDLY; break;
+	}
+
 	/* update the meteodata record					*/
 	meteodata_update(m, temperature, temperature_inside,
-		humidity, humidity_inside, barometer, speed, direction, rain,
-		solar, uv);
+		humidity, humidity_inside, barometer, barotrend,
+		speed, direction, rain, solar, uv);
 
 	/* return the filled in sensor image				*/
 	return 0;

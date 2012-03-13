@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: scanner.l,v 1.2 2002/03/03 22:09:38 afm Exp $
+ * $Id: scanner.l,v 1.3 2002/08/24 14:56:21 afm Exp $
  */
 #include <mconf.h>
 #include <parser.h>
@@ -34,7 +34,7 @@ number	-?(([0-9]+)|([0-9]*\.[0-9]+))
 		}
 {number}	{ mplval.dval = atof(mptext); return MP_NUMBER; }
 
-pressure|temperature|temperature_inside|rain|wind|radiation {
+pressure|temperature|temperature_inside|rain|wind|radiation|humidity|humidity_inside {
 		mplval.string = strdup(mptext);
 		return MP_GRAPHNAME;
 	}

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteograph.c,v 1.3 2002/01/29 20:55:29 afm Exp $
+ * $Id: meteograph.c,v 1.4 2002/08/24 14:56:21 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -31,7 +31,7 @@ typedef struct namegraph_s {
 	int	graph;
 } namegraph_t;
 
-#define	NGRAPHS	10
+#define	NGRAPHS	14
 static namegraph_t	ngs[NGRAPHS] = {
 	{ "barometer",		DOGRAPH_BAROMETER			},
 	{ "pressure",		DOGRAPH_BAROMETER			},
@@ -39,11 +39,32 @@ static namegraph_t	ngs[NGRAPHS] = {
 	{ "thermo",		DOGRAPH_TEMPERATURE			},
 	{ "temperature_inside",	DOGRAPH_TEMPERATURE_INSIDE		},
 	{ "thermo_inside",	DOGRAPH_TEMPERATURE_INSIDE		},
+	{ "humidity",		DOGRAPH_HUMIDITY			},
+	{ "hygro",		DOGRAPH_HUMIDITY			},
+	{ "humidity_inside",	DOGRAPH_HUMIDITY_INSIDE			},
+	{ "hygro_inside",	DOGRAPH_HUMIDITY_INSIDE			},
 	{ "rain",		DOGRAPH_RAIN				},
 	{ "precipitation",	DOGRAPH_RAIN				},
 	{ "wind",		DOGRAPH_WIND				},
 	{ "radiation",		DOGRAPH_RADIATION			}
 };
+
+void	usage(void) {
+	printf(
+"usage: meteograph [ -adtV ] [ -l logfile ] [ -c dir ] [ -G graph ] \n"
+"[ -g graph ] [ -f config ] [ -e endtime ] [ -V ]\n"
+"	-a		use averages table\n"
+"	-d		increase debug level\n"
+"	-t		include timestamp in generated file name\n"
+"	-V		display version and exit\n"
+"	-l logfile	write debug log to logfile\n"
+"	-c dir		change directory to dir before writing any image files\n"
+"	-g graph	include only graph (can be given multiple times)\n"
+"	-G graph	exclude graph (can given multiple times)\n"
+"			[ -g and -G can not be used simulatineouly ]\n"
+"	-f config	use configuration file config\n"
+"	-e endtime	specify end time of graph\n");
+}
 
 int	main(int argc, char *argv[]) {
 	char		*conffilename = METEOCONFFILE;
@@ -61,8 +82,12 @@ int	main(int argc, char *argv[]) {
 	dg.timestamp = NULL;
 	
 	/* parse command line						*/
-	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:l:G:tV")))
+	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:l:G:tV?")))
 		switch (c) {
+		case '?':
+			usage();
+			exit(EXIT_SUCCESS);
+			break;
 		case 'l':
 			if (mdebug_setup("meteograph", optarg) < 0) {
 				fprintf(stderr, "%s: cannot init log\n",
@@ -110,7 +135,7 @@ int	main(int argc, char *argv[]) {
 					dg.requestedgraphs |= ngs[i].graph;
 			break;
 		case 'G':
-			if (!G) { dg.requestedgraphs = 0x3f; G = 1; }
+			if (!G) { dg.requestedgraphs = 0xff; G = 1; }
 			for (i = 0; i < NGRAPHS; i++) 
 				if (0 == strcasecmp(optarg, ngs[i].name))
 					dg.requestedgraphs ^= ngs[i].graph;
@@ -119,6 +144,10 @@ int	main(int argc, char *argv[]) {
 			fprintver(stdout);
 			exit(EXIT_SUCCESS);
 			break;
+		default:
+			fprintf(stderr, "%s:%d: unknown option: %c\n", c);
+			usage();
+			exit(EXIT_FAILURE);
 		}
 
 	/* check for requested graphs					*/
@@ -126,7 +155,7 @@ int	main(int argc, char *argv[]) {
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no graphs selected, "
 				"creating all");
-		dg.requestedgraphs = 0x3f;
+		dg.requestedgraphs = 0xff;
 	}
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "graph mask: %02x",

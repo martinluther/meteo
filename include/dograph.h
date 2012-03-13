@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.h,v 1.1 2002/01/18 23:34:26 afm Exp $
+ * $Id: dograph.h,v 1.2 2002/08/24 14:56:21 afm Exp $
  */
 #ifndef _DOGRAPH_H
 #define _DOGRAPH_H
@@ -30,6 +30,8 @@
 #define	DOGRAPH_RAIN			1 << 3
 #define	DOGRAPH_WIND			1 << 4
 #define	DOGRAPH_RADIATION		1 << 5
+#define	DOGRAPH_HUMIDITY		1 << 6
+#define	DOGRAPH_HUMIDITY_INSIDE		1 << 7
 
 typedef struct dograph_s {
 	MYSQL		*mysql;
@@ -48,6 +50,8 @@ extern int	set_colors(graph_t *graph, int channel, mc_node_t *conf);
 extern void	baro_graphs(dograph_t *dgp, int interval);
 extern void	temp_graphs(dograph_t *dgp, int interval);
 extern void	temp_graphs_inside(dograph_t *dgp, int interval);
+extern void	humidity_graphs(dograph_t *dgp, int interval);
+extern void	humidity_graphs_inside(dograph_t *dgp, int interval);
 extern void	rain_graphs(dograph_t *dgp, int interval);
 extern void	wind_graphs(dograph_t *dgp, int interval);
 extern void	radiation_graphs(dograph_t *dgp, int interval);

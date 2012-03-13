@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: dbupdate.c,v 1.2 2002/01/27 21:01:42 afm Exp $
+ * $Id: dbupdate.c,v 1.3 2002/06/22 15:57:40 afm Exp $
  */
 #include <dbupdate.h>
 #include <database.h>
@@ -35,6 +35,7 @@ void	dest_free(dest_t *d) {
 }
 
 static int	dbquery(dest_t *ddp, const char *query) {
+	int	rc;
 	if (NULL == ddp)
 		return -1;
 	switch (ddp->type) {
@@ -47,7 +48,12 @@ static int	dbquery(dest_t *ddp, const char *query) {
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 				"sending query directly to database");
-		return mysql_query(ddp->destdata.mysql, query);
+		rc = mysql_query(ddp->destdata.mysql, query);
+		if (rc) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"update query failed: %s", ddp->destdata.mysql);
+		}
+		return rc;
 		break;
 	case DEST_MSGQUE:
 		if (debug)

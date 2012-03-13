@@ -6,7 +6,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoupdate.c,v 1.2 2002/01/27 21:01:44 afm Exp $
+ * $Id: meteoupdate.c,v 1.3 2002/06/22 15:57:40 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -99,8 +99,8 @@ int	main(int argc, char *argv[]) {
 
 		/* send the update to the database			*/
 		if (mysql_query(&mysql, query)) {
-			fprintf(stderr, "%s:%d: query failed\n", __FILE__,
-				__LINE__);
+			fprintf(stderr, "%s:%d: query failed: %s\n", __FILE__,
+				__LINE__, mysql_error(&mysql));
 			exit(EXIT_FAILURE);
 		}
 	} while (1);

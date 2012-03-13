@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.c,v 1.2 2002/01/27 21:01:44 afm Exp $
+ * $Id: meteodequeue.c,v 1.3 2002/06/22 15:57:40 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -31,7 +31,8 @@ static void	dequeue_one(int mq, MYSQL *mysql) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 			"query being sent to database is '%s'", buffer);
 	if (mysql_query(mysql, buffer)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "query failed: '%s'", buffer);
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "query '%s' failed: %s", buffer,
+			mysql_error(mysql));
 	}
 }
 

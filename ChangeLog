@@ -1,3 +1,14 @@
+Release 0.3.4:
+	* added individual graphs for humidity and humidity_inside
+	* updated autoconf/automake to newer releases (2.52/1.5)
+	* added support for the new Vantage Pro releases: Davis has changed
+	  the data returned from the LOOP command to include barometric trend,
+	  breaking compatibility
+	* changed the meteobrowser.php script to use HTTP_GET_VARS throughout,
+	  so that it does work with the defaults of PHP 4.2 (though you should
+	  use even newer releases of PHP because of security issues)
+	* improve error messages to simplify debugging
+
 Release 0.3.3:
 	* fixed a sprintf format bug in meteodata.c:221
 	* added db/README explaining how to set up the database
@@ -174,4 +185,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.35 2002/03/14 15:06:15 afm Exp $
+$Id: ChangeLog,v 1.38 2002/08/24 14:56:21 afm Exp $

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.4 2002/03/03 22:09:38 afm Exp $
+ * $Id: dograph.c,v 1.6 2002/08/24 14:56:21 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -95,6 +95,12 @@ int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
 	case DOGRAPH_TEMPERATURE_INSIDE:
 		thisname = "temperature_inside";
 		break;
+	case DOGRAPH_HUMIDITY:
+		thisname = "humidity";
+		break;
+	case DOGRAPH_HUMIDITY_INSIDE:
+		thisname = "humidity_inside";
+		break;
 	case DOGRAPH_BAROMETER:
 		thisname = "pressure";
 		break;
@@ -135,6 +141,10 @@ int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
  */
 static color_t	pressure_default_color = { 127, 127, 255 };
 static color_t	pressure_default_rangecolor = { 210, 210, 255 };
+#define	PRESSURESCALEDEFAULT	0.5
+#define	PRESSUREMINDEFAULT	930.
+#define	PRESSUREMAXDEFAULT	980.
+#define	PRESSURESTEPDEFAULT	10.
 
 void	baro_graphs(dograph_t *dgp, int interval) {
 	graph_t		*g;
@@ -161,25 +171,26 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 			pressure_default_color));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"min", 930.),
+			"min", PRESSUREMINDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"scale", 0.5));
+			"scale", PRESSURESCALEDEFAULT));
 	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"min", 930.),
+			"min", PRESSUREMINDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"scale", 0.5));
+			"scale", PRESSURESCALEDEFAULT));
 	graph_add_channel(g, GRAPH_LINE, blue,
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"min", 930.),
+			"min", PRESSUREMINDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"scale", 0.5));
+			"scale", PRESSURESCALEDEFAULT));
 
 	/* retrieve the data from the database				*/
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data: %s",
+			mysql_error(dgp->mysql));
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -216,18 +227,18 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 	graph_add_time(g);
 	graph_add_grid(g, 0,
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"step", 10.),
+			"step", PRESSURESTEPDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"start", 930.),
+			"start", PRESSUREMINDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"end", 980.));
+			"end", PRESSUREMAXDEFAULT));
 	graph_add_ticks(g, 0,
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"step", 10.),
+			"step", PRESSURESTEPDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"start", 930.),
+			"start", PRESSUREMINDEFAULT),
 		mc_get_double_f(meteoconfig, "pressure", "left", interval,
-			"end", 980.),
+			"end", PRESSUREMAXDEFAULT),
 		mc_get_string_f(meteoconfig, "pressure", "left", interval,
 			"format", "%.0f"),
 		0);
@@ -249,11 +260,160 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 }
 
 /*
+ * humidity graphs
+ */
+static color_t	humidity_default_color = { 100, 100, 255 };
+static color_t	humidity_default_rangecolor = { 210, 210, 255 };
+
+#define	HUMIDITYSTRING	(inside) ? "humidity_inside" : "humidity"
+#define	HUMIDITYSTRING1(a)	(inside) ? ("humidity_inside." ## a)	\
+					 : ("humidity." ## a)
+#define	HUMIDITYSCALEDEFAULT	0.8333333
+#define	HUMIDITYMINDEFAULT	0.
+#define	HUMIDITYMAXDEFAULT	100.
+#define	HUMIDITYSTEPDEFAULT	20.
+
+static void	humidity_graphs_both(dograph_t *dgp, int interval, int inside) {
+	graph_t		*g;
+	char		query[2048], filename[1024];
+	int		i, rangecolor, blue, nentries;
+	entry_t		*data;
+	double		*humiditydata;
+	MYSQL_RES	*res;
+	MYSQL_ROW	row;
+	time_t		start;
+
+
+	start = dgp->end;
+	g = setup_graph(dgp, query, sizeof(query), interval, &start,
+		(inside) ? "max(humidity_inside), min(humidity_inside), "
+			   "avg(humidity_inside)"
+		         : "max(humidity), min(humidity), avg(humidity)",
+		(inside) ? "humidity_inside_max, humidity_inside_min, "
+			   "humidity_inside"
+			 : "humidity_max, humidity_min, humidity");
+	set_colors(g, (inside) ? DOGRAPH_HUMIDITY_INSIDE : DOGRAPH_HUMIDITY,
+		meteoconfig);
+	graph_label(g, mc_get_string_f(meteoconfig, 
+		HUMIDITYSTRING, "left",
+		interval, "label", "rel. Humidity (%)"), 0);
+	rangecolor = graph_color_allocate(g,
+		mc_get_color(meteoconfig, HUMIDITYSTRING1("rangecolor"),
+			humidity_default_rangecolor));
+	blue = graph_color_allocate(g,
+		mc_get_color(meteoconfig, HUMIDITYSTRING1("color"),
+			humidity_default_color));
+	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"min", HUMIDITYMINDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"scale", HUMIDITYSCALEDEFAULT));
+	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"min", HUMIDITYMINDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"scale", HUMIDITYSCALEDEFAULT));
+	graph_add_channel(g, GRAPH_LINE, blue,
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"min", HUMIDITYMINDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"scale", HUMIDITYSCALEDEFAULT));
+
+	/* retrieve the data from the database				*/
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
+	if (mysql_query(dgp->mysql, query)) {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data: %s",
+			mysql_error(dgp->mysql));
+		exit(EXIT_FAILURE);
+	}
+	res = mysql_store_result(dgp->mysql);
+
+	/* find out how many rows there are				*/
+	nentries = mysql_num_rows(res);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"humidity query returns %d rows", nentries);
+
+	/* allocate memory to store all the data			*/
+	data = (entry_t *)malloc(sizeof(entry_t) * nentries);
+	humiditydata = (double *)malloc(sizeof(double) * nentries * 3);
+
+	/* read row by row and store in the data array			*/
+	for (i = 0; i < nentries; i++) {
+		row = mysql_fetch_row(res);
+		data[i].when = atoi(row[0]);
+		data[i].data = &humiditydata[i * 3];
+		data[i].data[0] = atof(row[1]);
+		data[i].data[1] = atof(row[2]);
+		data[i].data[2] = atof(row[3]);
+		if (debug > 1)
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"%9d %6.1f %6.1f %6.1f", (int)data[i].when,
+				data[i].data[0], data[i].data[1],
+				data[i].data[2]);
+	}
+
+	/* display the data retrieved from the database			*/
+	graph_add_data(g, start, interval, nentries, data);
+
+	/* display the grid						*/
+	graph_add_time(g);
+	graph_add_grid(g, 0,
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"step", HUMIDITYSTEPDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"start", HUMIDITYMINDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"end", HUMIDITYMAXDEFAULT));
+	graph_add_ticks(g, 0,
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"step", HUMIDITYSTEPDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"start", HUMIDITYMINDEFAULT),
+		mc_get_double_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"end", HUMIDITYMAXDEFAULT),
+		mc_get_string_f(meteoconfig, HUMIDITYSTRING, "left", interval,
+			"format", "%.0f"),
+		0);
+
+	/* compute the filename for the graph				*/
+	create_filename(filename, sizeof(filename), dgp, HUMIDITYSTRING);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "humidity filename = %s",
+			filename);
+	graph_write_png(g, filename);
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image written to %s",
+			filename);
+	
+	/* free the SQL data						*/
+	mysql_free_result(res);
+	free(humiditydata);
+	free(data);
+}
+void	humidity_graphs(dograph_t *dgp, int interval) {
+	humidity_graphs_both(dgp, interval, 0);
+}
+void	humidity_graphs_inside(dograph_t *dgp, int interval) {
+	humidity_graphs_both(dgp, interval, 1);
+}
+
+/*
  * temperature graphs
  */
 static color_t	temp_default_color = { 180, 0, 0 };
 static color_t	temp_default_rangecolor = { 255, 180, 180 };
 static color_t	temp_default_dewcolor = { 100, 100, 255 };
+
+#define	TEMPERATURESCALEDEFAULT	.5
+#define	TEMPERATUREMINDEFAULT	-10.
+#define	TEMPERATUREMAXDEFAULT	30.
+#define	TEMPERATURESTEPDEFAULT	10.
+
+#define	TEMPERATURESTRING	(inside) ? "temperature_inside" : "temperature"
+#define	TEMPERATURESTRING1(a)	(inside) ? ("temperature_inside" ## a) \
+					 : ("temperature" ## a)
 static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	time_t		start;
 	graph_t		*g;
@@ -293,59 +453,45 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	}
 	
 	/* adornments of the temperature graph				*/
-	graph_label(g, mc_get_string_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+	graph_label(g, mc_get_string_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "label",
 			"Temperature (deg C)"), 0);
 	rangecolor = graph_color_allocate(g,
-		mc_get_color(meteoconfig,
-			(inside)	? "temperature_inside.rangecolor"
-					: "temperature.rangecolor",
+		mc_get_color(meteoconfig, TEMPERATURESTRING1(".rangecolor"),
 			temp_default_rangecolor));
 	color = graph_color_allocate(g,
-		mc_get_color(meteoconfig,
-			(inside)	? "temperature_inside.color"
-					: "temperature.color",
+		mc_get_color(meteoconfig, TEMPERATURESTRING1(".color"),
 			temp_default_color));
 	dewcolor = graph_color_allocate(g,
-		mc_get_color(meteoconfig,
-			(inside)	? "temperature_inside.dewcolor"
-					: "temperature.dewcolor",
+		mc_get_color(meteoconfig, TEMPERATURESTRING1(".dewcolor"),
 			temp_default_dewcolor));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "min", -15.),
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "scale", .5));
 	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "min",-15.),
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "scale", .5));
 	graph_add_channel(g, GRAPH_LINE, dewcolor,
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "min", -15.),
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "scale", .5));
 	graph_add_channel(g, GRAPH_LINE, color,
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "min", -15.),
-		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+		mc_get_double_f(meteoconfig, TEMPERATURESTRING,
 			"left", interval, "scale", .5));
 
 	/* retrieve the data from the database				*/
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data: %s",
+			mysql_error(dgp->mysql));
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -365,10 +511,10 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 		row = mysql_fetch_row(res);
 		data[i].when = atoi(row[0]);
 		data[i].data = &tempdata[i * 4];
-		data[i].data[0] = atof(row[2]);	/* max temperature	*/
-		data[i].data[1] = atof(row[1]);	/* min temeprature	*/
-		data[i].data[3] = atof(row[3]); /* average temperature	*/
-		/* compute the dew point based on temperature/humidity	*/
+		data[i].data[0] = atof(row[2]); /* max temperature      */
+		data[i].data[1] = atof(row[1]); /* min temeprature      */
+		data[i].data[3] = atof(row[3]); /* average temperature  */
+		/* compute the dew point based on temperature/humidity  */
 		data[i].data[2] = atof(row[4]);
 		if (data[i].data[2] > 100.) data[i].data[2] = 100.;
 		data[i].data[2] = dewpoint(data[i].data[2], data[i].data[3]);
@@ -386,33 +532,31 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	graph_add_time(g);
 	graph_add_grid(g, 0,
 		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
-			"left", interval, "step", 10.),
+			TEMPERATURESTRING,
+			"left", interval, "step", TEMPERATURESTEPDEFAULT),
 		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
-			"left", interval, "sart", -10.),
+			TEMPERATURESTRING,
+			"left", interval, "sart", TEMPERATUREMINDEFAULT),
 		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
-			"left", interval, "end", 30.));
+			TEMPERATURESTRING,
+			"left", interval, "end", TEMPERATUREMAXDEFAULT));
 	graph_add_ticks(g, 0,
 		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
-			"left", interval, "step", 10.),
+			TEMPERATURESTRING,
+			"left", interval, "step", TEMPERATURESTEPDEFAULT),
 		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
-			"left", interval, "start", -10.),
+			TEMPERATURESTRING,
+			"left", interval, "start", TEMPERATUREMINDEFAULT),
 		mc_get_double_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
-			"left", interval, "end", 30.),
+			TEMPERATURESTRING,
+			"left", interval, "end", TEMPERATUREMAXDEFAULT),
 		mc_get_string_f(meteoconfig,
-			(inside)	? "temperature_inside" : "temperature",
+			TEMPERATURESTRING,
 			"left", interval, "format", "%.0f"),
 		0);
 
 	/* compute the filename for the graph				*/
-	create_filename(filename, sizeof(filename), dgp,
-		(inside)	? "temperature_inside"
-				: "temperature");
+	create_filename(filename, sizeof(filename), dgp, TEMPERATURESTRING);
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "temperature filename = %s",
 			filename);
@@ -438,6 +582,11 @@ void	temp_graphs_inside(dograph_t *dgp, int interval) {
  */
 static color_t	rain_default_color = { 0, 0, 255 };
 
+#define	RAINDEFAULTMIN	0.
+#define	RAINDEFAULTMAX	30.
+#define	RAINDEFAULTSCALE	0.01
+#define	RAINDEFAULTSTEP	1.
+
 void	rain_graphs(dograph_t *dgp, int interval) {
 	time_t		start;
 	graph_t		*g;
@@ -461,15 +610,16 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 		mc_get_color(meteoconfig, "rain.color", rain_default_color));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, color, 
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"min", 0.),
+			"min", RAINDEFAULTMIN),
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"scale", .01));
+			"scale", RAINDEFAULTSCALE));
 
 	/* retrieve the data from the database				*/
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data: %s",
+			mysql_error(dgp->mysql));
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -502,18 +652,18 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	graph_add_time(g);
 	graph_add_grid(g, 0,
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"step", 1.),
+			"step", RAINDEFAULTSTEP),
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"start", 0.),
+			"start", RAINDEFAULTMIN),
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"end", 30.));
+			"end", RAINDEFAULTMAX));
 	graph_add_ticks(g, 0,
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"step", 1.),
+			"step", RAINDEFAULTSTEP),
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"start", 0.),
+			"start", RAINDEFAULTMIN),
 		mc_get_double_f(meteoconfig, "rain", "left", interval,
-			"end", 30.),
+			"end", RAINDEFAULTMAX),
 		mc_get_string_f(meteoconfig, "rain", "left", interval,
 			"format", "%.1f"),
 		0);
@@ -588,6 +738,19 @@ static color_t	wind_default_color = { 100, 100, 255 };
 static color_t	wind_default_gustcolor = { 0, 100, 0 };
 static color_t	wind_default_speedcolor = { 0, 255, 0 };
 
+#define	WINDSPEEDDEFAULTSCALE	0.25
+#define	WINDSPEEDDEFAULTMIN	0.
+#define	WINDSPEEDDEFAULTMAX	10.
+#define	WINDSPEEDDEFAULTSTART	0.
+#define	WINDSPEEDDEFAULTEND	10.
+#define	WINDSPEEDDEFAULTSTEP	5.
+
+#define	WINDDIRDEFAULTSCALE	8.
+#define	WINDDIRDEFAULTSTART	0.
+#define	WINDDIRDEFAULTEND	100.
+#define	WINDDIRDEFAULTMIN	-400.
+#define	WINDDIRDEFAULTSTEP	180.
+
 void	wind_graphs(dograph_t *dgp, int interval) {
 	time_t		start;
 	graph_t		*g;
@@ -617,25 +780,26 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 		"wind.speedcolor", wind_default_speedcolor));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, gustcolor,
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"min", 0.),
+			"min", WINDSPEEDDEFAULTMIN),
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"scale", .25));
+			"scale", WINDSPEEDDEFAULTSCALE));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, speedcolor,
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"min", 0.),
+			"min", WINDSPEEDDEFAULTMIN),
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"scale", .25));
+			"scale", WINDSPEEDDEFAULTSCALE));
 	graph_add_channel(g, GRAPH_LINE, dircolor,
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"min", -400.),
+			"min", WINDDIRDEFAULTMIN),
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"scale", 8.));
+			"scale", WINDDIRDEFAULTSCALE));
 
 	/* retrieve the data from the database				*/
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data: %s",
+			mysql_error(dgp->mysql));
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -681,37 +845,37 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	graph_add_time(g);
 	graph_add_grid(g, 0,
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"step", 5.),
+			"step", WINDSPEEDDEFAULTSTEP),
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"start", 0.),
+			"start", WINDSPEEDDEFAULTSTART),
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"end", 10.));
+			"end", WINDSPEEDDEFAULTEND));
 	graph_add_grid(g, 2,
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"step", 180.),
+			"step", WINDDIRDEFAULTSTEP),
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"start", 0.),
+			"start", WINDDIRDEFAULTSTART),
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"end", 360.));
+			"end", WINDDIRDEFAULTEND));
 	graph_add_ticks(g,
 		0,
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"step", 5.),
+			"step", WINDSPEEDDEFAULTSTEP),
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"start", 0.),
+			"start", WINDSPEEDDEFAULTSTART),
 		mc_get_double_f(meteoconfig, "wind", "left", interval,
-			"end", 10.),
+			"end", WINDSPEEDDEFAULTEND),
 		mc_get_string_f(meteoconfig, "wind", "left", interval,
 			"format", "%.0f"),
 		0);
 	graph_add_ticks(g,
 		2,
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"step", 180.),
+			"step", WINDDIRDEFAULTSTEP),
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"start", 0.),
+			"start", WINDDIRDEFAULTSTART),
 		mc_get_double_f(meteoconfig, "wind", "right", interval,
-			"end", 360.),
+			"end", WINDDIRDEFAULTEND),
 		mc_get_string_f(meteoconfig, "wind", "right", interval,
 			"format", "%.0f"),
 		1);
@@ -772,7 +936,8 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "query is '%s'", query);
 	if (mysql_query(dgp->mysql, query)) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data");
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot retrieve data: %s",
+			mysql_error(dgp->mysql));
 		exit(EXIT_FAILURE);
 	}
 	res = mysql_store_result(dgp->mysql);
@@ -869,6 +1034,10 @@ void	all_graphs(dograph_t *dgp, int interval) {
 		temp_graphs(dgp, interval);
 	if (dgp->requestedgraphs & DOGRAPH_TEMPERATURE_INSIDE)
 		temp_graphs_inside(dgp, interval);
+	if (dgp->requestedgraphs & DOGRAPH_HUMIDITY)
+		humidity_graphs(dgp, interval);
+	if (dgp->requestedgraphs & DOGRAPH_HUMIDITY_INSIDE)
+		humidity_graphs_inside(dgp, interval);
 	if (dgp->requestedgraphs & DOGRAPH_RAIN)
 		rain_graphs(dgp, interval);
 	if (dgp->requestedgraphs & DOGRAPH_WIND)

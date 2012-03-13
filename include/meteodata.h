@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodata.h,v 1.1 2002/01/18 23:34:26 afm Exp $
+ * $Id: meteodata.h,v 1.2 2002/08/24 14:56:21 afm Exp $
  */
 #ifndef _METEODATA_H
 #define _METEODATA_H
@@ -58,12 +58,20 @@ typedef struct rain {
 	int	flags;
 } rain_t;
 
+#define	BAROTREND_UNKNOWN		-1
+#define BAROTREND_FALLING_RAPIDLY	0
+#define BAROTREND_FALLING_SLOWLY	1
+#define	BAROTREND_STEADY		2
+#define BAROTREND_RISING_SLOWLY		3
+#define BAROTREND_RISING_RAPIDLY	4
+
 typedef struct meteodata {
 	meteovalue_t	*temperature;
 	meteovalue_t	*temperature_inside;
 	meteovalue_t	*humidity;
 	meteovalue_t	*humidity_inside;
 	meteovalue_t	*barometer;
+	int		barotrend;
 	wind_t		*wind;
 	rain_t		*rain;
 	meteovalue_t	*uv;
@@ -80,6 +88,7 @@ typedef struct meteoaccess {
 	meteovalue_t	*(*get_humidity)();
 	meteovalue_t	*(*get_humidity_inside)();
 	meteovalue_t	*(*get_barometer)();
+	int		(*get_barotrend)();
 	wind_t		*(*get_wind)();
 	rain_t		*(*get_rain)();
 	meteodata_t	*(*get_data)();
@@ -92,6 +101,7 @@ typedef struct meteoaccess {
 #define	get_humidity(m)			(m->get_humidity(m))
 #define	get_humidity_inside(m)		(m->get_humidity_inside(m))
 #define	get_barometer(m)		(m->get_barometer(m))
+#define get_barotrend(m)		(m->get_barotrend(m))
 #define	get_rain(m)			(m->get_rain(m))
 #define	get_wind(m)			(m->get_wind(m))
 #define get_data(m)			(m->get_data(m))
@@ -104,7 +114,8 @@ extern meteodata_t	*meteodata_new(void);
 extern void	meteodata_free(meteodata_t *a);
 extern void	meteodata_update(meteodata_t *a,
 		double temperature, double temperature_inside,
-		double humidity, double humidity_inside, double barometer,
+		double humidity, double humidity_inside,
+		double barometer, int barotrend,
 		double speed, double direction, double rain, double solar,
 		double uv);
 extern void	meteodata_start(meteodata_t *a);

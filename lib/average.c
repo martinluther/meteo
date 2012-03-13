@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: average.c,v 1.2 2002/01/27 21:01:42 afm Exp $
+ * $Id: average.c,v 1.3 2002/06/22 15:57:40 afm Exp $
  */
 #include <average.h>
 #include <stdlib.h>
@@ -69,7 +69,8 @@ static MYSQL_RES	*perform_query(querydata_t *qdp, const char *clause) {
 
 	/* perform the query						*/
 	if (mysql_query(qdp->mysql, query)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "query for averages failed");
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "query for averages failed: %s",
+			mysql_error(qdp->mysql));
 		return NULL;
 	}
 
@@ -133,7 +134,8 @@ static int	perform_update(querydata_t *qdp, avgdata_t *adp) {
 
 	/* perform the update						*/
 	if (mysql_query(qdp->mysql, query)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "insert query failed");
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "insert query failed: %s",
+			mysql_error(qdp->mysql));
 		return -1;
 	}
 	return 0;
@@ -175,7 +177,10 @@ int	add_average(MYSQL *mysql, const time_t now, const int interval,
 		"delete from averages "
 		"where timekey = %s and intval = %d and station = '%-8.8s'",
 		qd.to, interval, station);
-	mysql_query(mysql, query);
+	if (mysql_query(mysql, query)) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot delete row: %s",
+			mysql_error(mysql));
+	}
 
 	/*
 	 * perform a query for all the values we need to compute averages

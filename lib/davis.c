@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: davis.c,v 1.3 2002/01/27 22:55:19 afm Exp $
+ * $Id: davis.c,v 1.4 2002/08/24 14:56:21 afm Exp $
  */
 #include <meteodata.h>
 #include <davis.h>
@@ -18,6 +18,8 @@ static meteovalue_t	*davis_get_temperature_inside(meteoaccess_t *m);
 static meteovalue_t	*davis_get_humidity(meteoaccess_t *m);
 static meteovalue_t	*davis_get_humidity_inside(meteoaccess_t *m);
 static meteovalue_t	*davis_get_barometer(meteoaccess_t *m);
+static int		davis_get_barotrend(meteoaccess_t *m);
+#define	vantage_get_barotrend	davis_get_barotrend
 static wind_t		*davis_get_wind(meteoaccess_t *m);
 static rain_t		*davis_get_rain(meteoaccess_t *m);
 static meteodata_t	*davis_get_data(meteoaccess_t *m);
@@ -290,6 +292,7 @@ meteoaccess_t	*davis_new(meteocom_t *m) {
 		md->get_humidity = vantage_get_humidity;
 		md->get_humidity_inside = vantage_get_humidity_inside;
 		md->get_barometer = vantage_get_barometer;
+		md->get_barotrend = vantage_get_barotrend;
 		md->get_wind = vantage_get_wind;
 		md->get_rain = vantage_get_rain;
 		md->get_data = vantage_get_data;
@@ -300,6 +303,7 @@ meteoaccess_t	*davis_new(meteocom_t *m) {
 		md->get_humidity = davis_get_humidity;
 		md->get_humidity_inside = davis_get_humidity_inside;
 		md->get_barometer = davis_get_barometer;
+		md->get_barotrend = davis_get_barotrend;
 		md->get_wind = davis_get_wind;
 		md->get_rain = davis_get_rain;
 		md->get_data = davis_get_data;
@@ -467,8 +471,12 @@ static meteovalue_t	*davis_get_barometer(meteoaccess_t *m) {
 	v->value = get_station_value(m, 0x0100, 4)/1000.;
 	if (v->value < 1000)
 		v->flags |= METEOVALUE_HASVALUE;
-	
+
 	return v;
+}
+
+static int	davis_get_barotrend(meteoaccess_t *m) {
+	return BAROTREND_UNKNOWN;
 }
 
 static wind_t	*davis_get_wind(meteoaccess_t *m) {
@@ -621,6 +629,7 @@ static meteodata_t	*davis_get_update(meteoaccess_t *m) {
 	results->barometer->unit = UNIT_INHG;
 	results->barometer->flags
 		|= METEOVALUE_HASVALUE | METEOVALUE_BAROMETER;
+	results->barotrend = BAROTREND_UNKNOWN;
 
 	/* outside humidity						*/
 	results->humidity->value = get_link_value(m, 0x18e, 2);

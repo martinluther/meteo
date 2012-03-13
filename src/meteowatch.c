@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteowatch.c,v 1.2 2002/01/27 21:01:44 afm Exp $
+ * $Id: meteowatch.c,v 1.3 2002/06/22 15:57:40 afm Exp $
  */
 #include <meteo.h>
 #include <stdio.h>
@@ -63,7 +63,8 @@ static time_t	last_update(watch_t *w, MYSQL *mysql) {
 
 	/* run the query against the database				*/
 	if (mysql_query(mysql, query)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "could not query database");
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "could not query database: %s",
+			mysql_error(mysql));
 		return -1;
 	}
 
