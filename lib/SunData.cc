@@ -3,25 +3,45 @@
 //               the sun is above the horizon
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-// $Id: SunData.cc,v 1.1 2004/02/27 22:09:04 afm Exp $
+// $Id: SunData.cc,v 1.3 2004/05/08 22:07:17 afm Exp $
 //
 #include <SunData.h>
+#include <StationInfo.h>
 #include <SensorStationInfo.h>
 #include <Field.h>
 #include <QueryProcessor.h>
 
 namespace meteo {
 
-SunData::SunData(const std::string &station, int off) {
-	// find the sensorid
-	SensorStationInfo	si(station, "console");
-	sensorid = si.getId();
-	
-	// store the offset
-	offset = off;
+void	SunData::setCompute(bool _compute) {
+	if (sensorid >= 0) {
+		compute = _compute;
+	}
 }
 
-std::vector<time_t>	SunData::operator()(int interval, time_t startkey,
+SunData::SunData(const std::string &station, int off) {
+	sensorid = -1;
+	compute = false;
+	// find the station type
+	StationInfo	si(station);
+	if (si.getStationtype() == "VantagePro") {
+		SensorStationInfo	ssi(station, "console");
+		sensorid = ssi.getId();
+	} else {
+		compute = true;
+	}
+	
+	// store the offset (this is not the offset in the station, but
+	// the offset in the graph!)
+	offset = off;
+
+	// create a Sun object for this station
+	double	longitude = si.getLongitude();
+	double	latitude = si.getLatitude();
+	thesun = Sun(longitude, latitude);
+}
+
+std::vector<time_t>	SunData::from_database(int interval, time_t startkey,
 	time_t endkey) {
 	char	query[1024];
 
@@ -79,6 +99,31 @@ std::vector<time_t>	SunData::operator()(int interval, time_t startkey,
 	
 	// return the result
 	return result;
+}
+
+// use the sun class to compute the sunrise and sunset times
+std::vector<time_t>	SunData::computed(int interval, time_t startkey,
+	time_t endkey) {
+	std::vector<time_t>	result;
+	for (time_t tk = startkey; tk <= endkey; tk += interval) {
+		time_t	t = tk - offset;
+		if ((thesun.sunrise(t) <= t) && (thesun.sunset(t) >= t))
+			result.push_back(tk);
+	}
+	return result;
+}
+
+// the operator() automatically selects either the database or computation
+std::vector<time_t>	SunData::operator()(int interval, time_t startkey,
+	time_t endkey) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "compute daylight timekeys between "
+		"%d and %d, interval %d", startkey, endkey, interval);
+	if (compute) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "compute sun position");
+		return computed(interval, startkey, endkey);
+	}
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get sun position from database");
+	return from_database(interval, startkey, endkey);
 }
 
 } // namespace meteo

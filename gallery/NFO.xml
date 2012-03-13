@@ -1,0 +1,22 @@
+<meteo-registration>
+  <name>NFO</name>
+  <location>
+    <city>Silver City</city>
+    <state>NM</state>
+    <country>USA</country>
+    <longitude>-108.1897</longitude>
+    <latitude>32.7708</latitude>
+  </location>
+  <contact>Bill Neely, neely.NOSPAM@nfo.edu</contact>
+  <comments>Bombproof once it's running.  We use the software to provide
+            additional telemetry from the observatory also.  This data is
+            input into the database with PHP and then we use meteodraw to 
+            graph it.</comments>
+  <technical-info>
+    <connection>serial</connection>
+    <additional-sensors></additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://65.123.150.9</url>
+  </urls>
+</meteo-registration>

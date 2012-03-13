@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- contributed by (c) 2004 Karl Behrends -->
+<plist version="1.0">
+<dict>
+	<key>Description</key>
+	<string>meteo weather logger</string>
+	<key>OrderPreference</key>
+	<string>None</string>
+	<key>Provides</key>
+	<array>
+		<string>meteo</string>
+	</array>
+	<key>Requires</key>
+	<array>
+		<string>MySQL</string>
+	</array>
+	</dict>
+</plist>

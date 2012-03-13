@@ -1,0 +1,23 @@
+<meteo-registration>
+  <name>Martin Luther College</name>
+  <location>
+    <city>New Ulm</city>
+    <state>MN</state>
+    <country>United States of America</country>
+    <longitude>-94.46028</longitude>
+    <latitude>44.3125</latitude>
+    <altitude>274</altitude>
+  </location>
+  <contact></contact>
+  <comment></comment>
+  <technical-info>
+    <station-type>GroWeather</station-type>
+    <connection>Serial</connection>
+  </technical-info>
+  <urls>
+    <url>http://weather.mlc-wels.edu/</url>
+    <browser-url>http://weather.mlc-wels.edu/meteo/</browser-url>
+    <info-url></info-url>
+  </urls>
+</meteo-registration>
+

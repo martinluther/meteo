@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+# /Library/StartupItems/meteo/meteo
+#
+# A script to automatically start up meteo on system bootup for Mac OS X. 
+# the StartupParameters.plist file in this directory will require MySQL
+# to have started up successfully.
+#
+# contributed to the meteo package: (c) 2004 Karl Berends 
+#
+
+# Source the common setup functions for startup scripts
+test -r /etc/rc.common || exit 1
+. /etc/rc.common
+
+# Specify meteo station to operate on 
+station=ChinoHills
+
+StartService ()
+{
+	ConsoleMessage "Starting meteopoll, meteoavg, and meteodb=queue"
+	# start the meteopoll process
+	/usr/local/bin/meteopoll -l syslog:local0 -s ${station} \
+		-b msgqueue >/dev/null 2>&1
+
+	# start the averaging process
+	/usr/local/bin/meteoavg -l syslog:local0 -s ${station} \
+		>/dev/null 2>&1
+
+	# remove the msg queue file
+	rm /tmp/meteodb-queue
+	
+	# start the dequeuer
+	/usr/local/bin/meteodequeue -l syslog:local0 >/dev/null 2>&1
+}
+
+StopService ()
+{
+	ConsoleMessage "Stopping meteopoll, meteoavg, and meteodb=queue"
+	# stop the dequeuer
+	if [ -r /var/run/meteodequeue.pid ]
+	then
+		kill `cat /var/run/meteodequeue.pid`
+	fi
+	# stop the averager
+	if [ -r /var/run/meteoavg-${station}.pid ]
+	then
+		kill `cat /var/run/meteoavg-${station}.pid`
+	fi
+	# stop the poll process
+	if [ -r /var/run/meteopoll-${station}.pid ]
+	then
+		kill `cat /var/run/meteopoll-${station}.pid`
+	fi
+}
+
+RestartService ()
+{
+	ConsoleMessage "Restarting meteopoll, meteoavg, and meteodb=queue"
+	StopService
+	StartService
+}
+
+RunService "$1"

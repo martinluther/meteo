@@ -1,0 +1,10 @@
+The file sunriset.c was written by Paul Schlyter of the Swedish 
+Amateur Astronomer's society. It is described on
+
+	http://home.tiscali.se/pausch/comp/riset.html
+
+where it can also be downloaded. sunriset.c is included in the
+meteopackage with permission.
+
+--
+$Id: README.sunriset,v 1.1 2004/05/08 21:08:55 afm Exp $

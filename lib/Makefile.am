@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.39 2004/03/19 21:58:03 afm Exp $
+# $Id: Makefile.am,v 1.41 2004/05/08 21:08:55 afm Exp $
 #
 
 lib_LTLIBRARIES = libmeteo.la
@@ -60,7 +60,7 @@ libmeteo_la_SOURCES =							\
 	Tdata.cc 							\
 	Point.cc Dimension.cc Rectangle.cc Color.cc Label.cc Frame.cc	\
 	Scale.cc Axis.cc GraphPoint.cc MapArea.cc ImageMap.cc 		\
-	SunData.cc GraphWindow.cc Graphics.cc				\
+	SunData.cc Sun.cc GraphWindow.cc Graphics.cc			\
 	Datarecord.cc							\
 	Averager.cc							\
 	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\
@@ -72,4 +72,4 @@ libmeteo_la_SOURCES =							\
 	printver.c							\
 	mdebug.c  
 
-EXTRA_DIST = README
+EXTRA_DIST = README README.sunriset

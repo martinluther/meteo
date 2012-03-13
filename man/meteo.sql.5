@@ -45,7 +45,8 @@ links the station name to the station id. The SQL command
 
 .nf
 .in +3
-insert into station(name, id, timezone) values ('Lajeado', 0, 'GMT-3');
+insert into station(name, id, timezone, offset, longitude, latitude, altitude)
+   values ('Lajeado', 0, 'GMT-3', -10800, -29.46693, -51.96138, 166);
 .in -3
 .fi
 

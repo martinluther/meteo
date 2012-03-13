@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.51 2004/03/20 01:15:55 afm Exp $
+# $Id: Makefile.am,v 1.52 2004/05/08 20:09:32 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
@@ -11,7 +11,8 @@ AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
 LDADD = ../lib/libmeteo.la
 
 bin_PROGRAMS = meteopoll meteoavg meteolast				\
-	meteodequeue meteodraw meteolabel meteodbdump meteosensors
+	meteodequeue meteodraw meteolabel meteodbdump meteosensors	\
+	meteosunriset
  
 meteoavg_SOURCES = meteoavg.cc
 meteodequeue_SOURCES = meteodequeue.cc
@@ -21,6 +22,7 @@ meteolabel_SOURCES = meteolabel.cc
 meteolast_SOURCES = meteolast.cc
 meteodbdump_SOURCES = meteodbdump.cc
 meteosensors_SOURCES = meteosensors.cc
+meteosunriset_SOURCES = meteosunriset.cc
 
 test:	meteopoll
 	cp /dev/null /var/tmp/meteopoll.log
@@ -34,32 +36,12 @@ test:	meteopoll
 #		-f `pwd`/../conf/meteo.xml -I -p ../src/ 
 testdraw:	meteodraw
 	cp /dev/null /var/tmp/meteodraw.log
-	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -x -s Lajeado -d -d \
+	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -x -s Altendorf -d -d \
 		-l file:///var/tmp/meteodraw.log \
 		-f ../conf/meteo.xml -I -p ../src/ \
 		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L m200309 \
-		-g Lajeado.temperature & \
-	./meteodraw -s Lajeado -x -d -d \
-		-l file:///var/tmp/meteodraw.log \
-		-f ../conf/meteo.xml -I -p ../src/ \
-		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L m200309 \
-		-g Lajeado.radiation & \
-	./meteodraw -s Lajeado -x -d -d \
-		-l file:///var/tmp/meteodraw.log \
-		-f ../conf/meteo.xml -I -p ../src/ \
-		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L m200309 \
-		-g Lajeado.wind & \
-	./meteodraw -s Lajeado -x -d -d \
-		-l file:///var/tmp/meteodraw.log \
-		-f ../conf/meteo.xml -I -p ../src/ \
-		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L m200309 \
-		-g Lajeado.humidity
-
-
+		-L d20040401 \
+		-g Altendorf.temperature
 
 testmap:	meteodraw
 	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Lajeado -d -d \

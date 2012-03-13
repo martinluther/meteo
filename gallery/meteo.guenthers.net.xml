@@ -1,0 +1,24 @@
+<meteo-registration>
+  <name>meteo.guenthers.net</name>
+  <location>
+    <city>Bergisch Gladbach</city>
+    <state>Nordrhein-Westfalen</state>
+    <country>Deutschland / Germany</country>
+    <longitude>007.133</longitude>
+    <latitude>50.983</latitude>
+  </location>
+  <contact>cguenther.NOSPAM@guenthers.net</contact>
+  <comments>The Setup includes approx. 12 additional Wireless Temperature/Humidity/Pressure-Sensors from ELV, http://www.ELV.de, Type e.g. IA2000 to monitor some points in the house and garage. The Station itself will control a Pan/Tilt/Zoom-Weathercamera in the near future to have the camera looking straight into the wind.</comments>
+  <technical-info>
+    <station-type>VantagePro Plus Wireless</station-type>
+    <connection>Equinox Multiport SST-8P, polls Vantage, ELV, controls Weathercam</connection>
+    <additional-sensors>soil moisture</additional-sensors>
+    <additional-sensors>solar/uv</additional-sensors>
+    <additional-sensors>ext. Non-Davis Temp/Hum/Press</additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://meteo.guenthers.net/</url>
+    <browser-url>http://meteo.guenthers.net/meteobrowser.php</browser-url>
+    <info-url>http://meteo.guenthers.net/</info-url>
+  </urls>
+</meteo-registration>

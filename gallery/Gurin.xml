@@ -6,13 +6,14 @@
     <country>Switzerland</country>
     <longitude>8.5</longitude>
     <latitude>46.3</latitude>
+    <altitude>2000</altitude>
   </location>
   <contact>Dr. Andreas M&#xFC;ller, http://www.othello.ch</contact>
-  <comment>Altendorf was built as a prototype for the station in Bosco/Gurin,
+  <comments>Altendorf was built as a prototype for the station in Bosco/Gurin,
     which was originally intended for tourist information. However, the
     temperature graphs were considered too sophisticated by the marketing types,
     and are no longer shown on the tourist information page of Bosco/Gurin.
-  </comment>
+  </comments>
   <technical-info>
     <station-type>VantagePro</station-type>
     <connection>via UDS-10 device server</connection>

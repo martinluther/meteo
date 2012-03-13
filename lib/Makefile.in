@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.39 2004/03/19 21:58:03 afm Exp $
+# $Id: Makefile.am,v 1.41 2004/05/08 21:08:55 afm Exp $
 #
 
 SOURCES = $(libmeteo_la_SOURCES)
@@ -94,7 +94,7 @@ am_libmeteo_la_OBJECTS = MeteoException.lo Vector.lo BasicValue.lo \
 	Windchill.lo Query.lo QueryResult.lo QueryProcessor.lo \
 	Tdata.lo Point.lo Dimension.lo Rectangle.lo Color.lo Label.lo \
 	Frame.lo Scale.lo Axis.lo GraphPoint.lo MapArea.lo ImageMap.lo \
-	SunData.lo GraphWindow.lo Graphics.lo Datarecord.lo \
+	SunData.lo Sun.lo GraphWindow.lo Graphics.lo Datarecord.lo \
 	Averager.lo MsgCommon.lo MsgQueuer.lo MsgDequeuer.lo \
 	Timestamp.lo crc.lo Daemon.lo ChunkDumper.lo Lock.lo \
 	printver.lo mdebug.lo
@@ -188,7 +188,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SolarRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/SolarValue.Plo ./$(DEPDIR)/Station.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/StationFactory.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/StationInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/StationInfo.Plo ./$(DEPDIR)/Sun.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/SunData.Plo ./$(DEPDIR)/TcpChannel.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Tdata.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/TemperatureConverter.Plo \
@@ -403,7 +403,7 @@ libmeteo_la_SOURCES = \
 	Tdata.cc 							\
 	Point.cc Dimension.cc Rectangle.cc Color.cc Label.cc Frame.cc	\
 	Scale.cc Axis.cc GraphPoint.cc MapArea.cc ImageMap.cc 		\
-	SunData.cc GraphWindow.cc Graphics.cc				\
+	SunData.cc Sun.cc GraphWindow.cc Graphics.cc			\
 	Datarecord.cc							\
 	Averager.cc							\
 	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\
@@ -415,7 +415,7 @@ libmeteo_la_SOURCES = \
 	printver.c							\
 	mdebug.c  
 
-EXTRA_DIST = README
+EXTRA_DIST = README README.sunriset
 all: all-am
 
 .SUFFIXES:
@@ -585,6 +585,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Station.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StationFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StationInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sun.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SunData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TcpChannel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Tdata.Plo@am__quote@

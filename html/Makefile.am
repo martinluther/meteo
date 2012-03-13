@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.16 2004/04/30 13:25:13 afm Exp $
+# $Id: Makefile.am,v 1.17 2004/05/08 22:39:43 afm Exp $
 #
 HTML =	ack.html gallery.html prereq.html install.html util.html 	\
 	news.html about.html config.html gallery.html
@@ -15,7 +15,7 @@ HTMLDIR = @HTMLDIR@
 EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.xml	\
 	about.xml ack.xml config.xml news.xml.in prereq.xml util.xml 	\
 	$(IMAGES) meteo.xsl $(HTML) gallery_template.xml 		\
-	gallery.xml.in buildgallery.sh
+	gallery.xml.in gallery.xsl buildgallery.sh
 
 install-data-local:	html
 	@if [ ! -z "$(HTMLDIR)" ];					\

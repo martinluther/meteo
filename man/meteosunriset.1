@@ -1,0 +1,52 @@
+.TH METEOSUNRISET "1" "May 2004" "Meteo station tools" Othello
+.SH NAME
+meteosunriset \- compute sunrise and sunset for a station
+.SH SYNOPSIS
+meteosunriset [
+.BI \-e elevation
+] [
+.BI \-f configfile
+] [
+.BI \-F format
+] [
+-V
+] 
+.BI \-s station label ...
+.SH DESCRIPTION
+The 
+.BR meteosunriset (1)
+programm computes sunrise and sunset times for 
+a station at a given time label. If the timelabel is not a day label,
+then sunrise and sunset time are computed for the day in the middle
+of the interval represented by the time label.
+
+The output consists of one line for each timelabel specified, and
+contains the label, the sunrise and the sunset time in the form
+HH:MM, or formatted using the format string if specified.
+.SH OPTIONS
+.TP
+.BI \-e elevation
+return the time when sun is
+.I elevation
+degrees above the horizon.
+.TP
+.BI \-f configfile
+use the configuration file
+.I configfile
+instead of the default.
+.TP
+.BI \-F format
+use the format string 
+.I format
+to format the time.
+.TP
+.BI \-V
+display the version of meteo and exit.
+
+.SH "SEE ALSO"
+.BR meteo (1),
+.BR meteo.xml (5)
+.BR strftime
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.29 2004/04/30 13:25:13 afm Exp $
+//   $Id: meteobrowser.php,v 1.30 2004/05/08 22:39:43 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -84,9 +84,9 @@ if ("" != $conflist[$station]) {
 }
 
 // compute the names of images for the images
-$basecmd = escapeshellcmd($meteodraw." -s $station ".
+$basecmd = $meteodraw." -s $station ".
 		"-f $conffile ".
-		"-p $cachedir -L $HTTP_GET_VARS[label] -u $baseurl");
+		"-p $cachedir -L $HTTP_GET_VARS[label] -u $baseurl";
  
 //printf("<pre>%s</pre>\n", $basecmd);
 

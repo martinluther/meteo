@@ -3,11 +3,12 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.8 2003/10/24 16:15:17 afm Exp $
+# $Id: Makefile.am,v 1.9 2004/05/08 22:07:17 afm Exp $
 #
 noinst_DATA = rc.meteo
 EXTRA_DIST = meteojob meteooverview meteodbmigrate How_to_migrate	\
-	How_to_migrate2 README $(noinst_DATA)
+	How_to_migrate2 README $(noinst_DATA) 				\
+	meteo StartupParameters.plist
 
 install-exec-local:
 	cp meteojob $(DESTDIR)$(bindir)/meteojob.default

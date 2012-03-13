@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: StationInfo.cc,v 1.6 2004/02/25 23:48:05 afm Exp $
+ * $Id: StationInfo.cc,v 1.7 2004/05/08 20:09:32 afm Exp $
  */
 #include <StationInfo.h>
 #include <Configuration.h>
@@ -58,12 +58,40 @@ std::string	StationInfo::getTimezone(void) const {
 	return f;
 }
 
+double	StationInfo::getLongitude(void) const {
+	std::string	f = getField("longitude");
+	if (f == "NULL")
+		throw MeteoException("Longitude not found", "");
+	return atof(f.c_str());
+}
+
+double	StationInfo::getLatitude(void) const {
+	std::string	f = getField("latitude");
+	if (f == "NULL")
+		throw MeteoException("Latitude not found", "");
+	return atof(f.c_str());
+}
+
+double	StationInfo::getAltitude(void) const {
+	std::string	f = getField("altitude");
+	if (f == "NULL")
+		throw MeteoException("Altitude not found", "");
+	return atof(f.c_str());
+}
+
 // retrieve the nonqualified names of the sensors
 stringlist	StationInfo::getSensornames(void) const {
 	Configuration	conf;
 	std::string	fieldnamexpath = "/meteo/station[@name='"
 				+ stationname + "']/sensors/sensor/@name";
 	return conf.getStringList(fieldnamexpath);
+}
+
+std::string	StationInfo::getStationtype(void) const {
+	Configuration	conf;
+	std::string	fieldnamexpath = "/meteo/station[@name='"
+				+ stationname + "']/type";
+	return conf.getString(fieldnamexpath, "");
 }
 
 intlist	StationInfo::getSensorIds(void) const {

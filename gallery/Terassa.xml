@@ -1,0 +1,21 @@
+<meteo-registration>
+  <name>Terrassa</name>
+  <location>
+    <city>Terrassa</city>
+    <state>Barcelona</state>
+    <country>Spain</country>
+    <longitude>2.0216</longitude>
+    <latitude>41.5727</latitude>
+    <altitude>307</altitude>
+  </location>
+  <contact>Josep Sort, http://meteo.infoterrassa.com</contact>
+  <comments></comments>
+  <technical-info>
+    <station-type>WMII</station-type>
+    <connection>serial</connection>
+  </technical-info>
+  <urls>
+    <url>http://meteo.infoterrassa.com</url>
+    <info-url>http://meteo.infoterrassa.com</info-url>
+  </urls>
+</meteo-registration>

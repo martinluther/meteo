@@ -122,27 +122,27 @@ by a timekey tk is tk - offset;
 The following diagram illustrates relationships between the different
 tables.
 
-                                         +----------+
-                                         | avg      |
-                  +-----------+          +----------+
-                  | sensor    |          |*timekey  |
-+----------+      +-----------+          |*intval   |
-| station  |      |*id        |<----+----|*sensorid |
-+----------+      | name      |     |    |*fieldid  |----.
-|*id       |<-----| stationid |     |    | value    |    |
-| name     |      +-----------+     |    +----------+    |
-| offset   |                        |                    |
-+----------+                        |                    |    +--------+
-                                    |                    |    | mfield |
-                                    |                    |    +--------+
-                                    |    +----------+    +--->|*id     |
-                                    |    | sdata    |    |    | name   |
-                                    |    +----------+    |    | unit   |
-                                    `----|*sensorid |    |    | class  |
-                                         |*fieldid  |----'    | title  |
-                                         |*timekey  |         +--------+
-                                         | value    |
-                                         +----------+
+                                          +----------+
+                                          | avg      |
+                   +-----------+          +----------+
+                   | sensor    |          |*timekey  |
++-----------+      +-----------+          |*intval   |
+| station   |      |*id        |<----+----|*sensorid |
++-----------+      | name      |     |    |*fieldid  |----.
+|*id        |<-----| stationid |     |    | value    |    |
+| name      |      +-----------+     |    +----------+    |
+| offset    |                        |                    |
+| longitude |                        |                    |    +--------+
+| latitude  |                        |                    |    | mfield |
+| altitude  |                        |                    |    +--------+
++-----------+                        |    +----------+    +--->|*id     |
+                                     |    | sdata    |    |    | name   |
+                                     |    +----------+    |    | unit   |
+                                     `----|*sensorid |    |    | class  |
+                                          |*fieldid  |----'    | title  |
+                                          |*timekey  |         +--------+
+                                          | value    |
+                                          +----------+
 
 
 
@@ -233,4 +233,4 @@ Note that for the VantagePro and WMII, the necessary methods are already
 implemented, so only the last step needs to be added.
 
 --
-$Id: README,v 1.7 2004/03/19 21:58:03 afm Exp $
+$Id: README,v 1.8 2004/05/08 20:09:31 afm Exp $

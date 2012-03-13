@@ -26,5 +26,12 @@ rc.meteo
 	Sample start/stop script to start all the processes needed
 	for a full meteo installation.
 
+meteo
+StartupParameters.plist
+	On Mac OS X, place these two files in /Library/StartupItems/meteo
+	(you'll have to create this directory), which will start the
+	meteo processes on Mac OS X after MySQL has been started.
+	(contributed by Kent Behrends)
+
 --
-$Id: README,v 1.1 2003/10/24 16:15:17 afm Exp $
+$Id: README,v 1.3 2004/05/08 22:15:11 afm Exp $

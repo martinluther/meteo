@@ -1,11 +1,22 @@
 How to upgrade from previous versions
 =====================================
 
-To 0.9.9-11
+To 0.9.14
+---------
+
+The station table now includes longitude, latitude and altitude.
+
+  mysql> alter table station add column longitude double not null;
+  mysql> alter table station add column latitude double not null;
+  mysql> alter table station add column altitude double not null;
+  mysql> update station set longitude = ..., latitude = ..., altitude = ...
+         where id = ...;
+
+To 0.9.9-13
 -------------------
 
 No changes in the database were introduced in these releases, so upgrading
-from 0.9.8 is trivial: just install over your current installtion.
+from 0.9.8 is trivial: just install over your current installation.
 
 0.9.x to 0.9.{7,8}
 ------------------

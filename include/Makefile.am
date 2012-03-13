@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.40 2004/03/19 21:58:03 afm Exp $
+# $Id: Makefile.am,v 1.41 2004/05/08 20:09:32 afm Exp $
 #
 
 noinst_HEADERS =							\
@@ -47,7 +47,7 @@ noinst_HEADERS =							\
 	Tdata.h Dataset.h						\
 	Point.h Dimension.h Rectangle.h Color.h Label.h Frame.h		\
 	Scale.h Axis.h GraphPoint.h MapArea.h ImageMap.h GraphWindow.h	\
-	Graphics.h SunData.h						\
+	Graphics.h SunData.h Sun.h					\
 	Datarecord.h Averager.h						\
 	MsgCommon.h MsgQueuer.h MsgDequeuer.h				\
 	Timestamp.h							\

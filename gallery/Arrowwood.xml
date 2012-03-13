@@ -1,0 +1,24 @@
+<meteo-registration>
+  <name>Arrowwood</name>
+  <location>
+    <city>Monument</city>
+    <state>Colorado</state>
+    <country>USA</country>
+    <longitude>-104.8205</longitude>
+    <latitude>39.1051</latitude>
+    <altitude>2286</altitude>
+  </location>
+  <contact>chance at rtlogic dot com</contact>
+  <comments>If you use Mozilla, a streaming video feed can be seen at http://geurin.homelinux.com:8000/multipart
+  </comments>
+  <technical-info>
+    <station-type>VantagePro</station-type>
+    <connection>Keyspan 4-port serial-to-USB adapter</connection>
+    <additional-sensors></additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://geurin.homelinux.com:8081/Arrowwood-meteo.html</url>
+    <browser-url></browser-url>
+    <info-url></info-url>
+  </urls>
+</meteo-registration>

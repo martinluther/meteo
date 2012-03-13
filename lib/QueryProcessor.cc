@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: QueryProcessor.cc,v 1.17 2004/02/27 16:03:50 afm Exp $
+ * $Id: QueryProcessor.cc,v 1.18 2004/05/08 20:09:32 afm Exp $
  */
 #include <QueryProcessor.h>
 #include <Configuration.h>
@@ -394,11 +394,11 @@ Datarecord	QueryProcessor::nearRecord(const time_t timekey,
 			windspeed = value;
 			windunit = unit;
 			windname = fqfn.getString();
-			break;
+			continue;
 		}
 		if (fieldname == "winddir") {
 			winddir = value;
-			break;
+			continue;
 		}
 
 		// skip all other fields that begin with "wind"

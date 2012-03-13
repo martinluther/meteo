@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Graphics.cc,v 1.18 2004/02/27 22:09:04 afm Exp $
+ * $Id: Graphics.cc,v 1.19 2004/05/08 20:09:32 afm Exp $
  */
 #include <Graphics.h>
 #include <Configuration.h>
@@ -13,6 +13,7 @@
 #include <MeteoException.h>
 #include <libxml/tree.h>
 #include <SunData.h>
+#include <StationInfo.h>
 
 namespace meteo {
 
@@ -310,14 +311,31 @@ void	Graphics::drawSun(const std::string& basepath) {
 		// the sun stuff
 		return;
 	}
-	int	offset = conf.getInt(basepath + "/@offset", 0);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sunrise/sunset station: %s",
+		station.c_str());
+
+	// get the offset
+	StationInfo	s(station);
+	int	offset = s.getOffset();
 
 	// find the color
 	Color	color = gw->getColorFromHexString(conf.getString(basepath
 		+ "/channels/channel[@type='sun']/@color", "#ff0000"));
 
-	// create the list of points that are during the day (sun above horizon)
+	// create the SunData object
 	SunData	sd(station, offset);
+
+	// find out whether this station should use the database or 
+	// compute sun position itself
+	std::string	method = conf.getString("/meteo/station[@name='"
+		+ station + "']/sun/@method", "database");
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "method: %s", method.c_str());
+	if (method != "database") {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "switching to computed sun");
+		sd.setCompute(true);
+	}
+
+	// create the list of points that are during the day (sun above horizon)
 	std::vector<time_t>	r = sd(gw->getInterval(), gw->getStartTimekey(),
 		gw->getEndTimekey());
 	for (std::vector<time_t>::iterator i = r.begin(); i != r.end(); i++) {

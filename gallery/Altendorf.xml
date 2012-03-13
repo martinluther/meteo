@@ -4,11 +4,12 @@
     <city>Altendorf</city>
     <state>SZ</state>
     <country>Switzerland</country>
-    <longitude></longitude>
-    <latitude></latitude>
+    <longitude>8.81</longitude>
+    <latitude>47.18</latitude>
+    <altitude>610</altitude>
   </location>
   <contact>Dr. Andreas M&#xFC;ller, http://www.othello.ch</contact>
-  <comment>This was the prototype station that started it all</comment>
+  <comments>This was the prototype station that started it all</comments>
   <technical-info>
     <station-type>WMII</station-type>
     <connection>via UDS-10 device server</connection>

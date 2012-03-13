@@ -73,6 +73,16 @@ Contributors: in no particular order, email addresses withheld to protect
 				for winddir)
 	Kirk Meyer		pointed out a remote code execution problem
 				in meteobrowser.php
+	Kent Behrends		contributed startup files for Mac OS X
+				(see in the support directory)
+
+The routines for sunrise and sunset are based on sunriset.c by Paul
+Schlyter. The original file with copyright information from which
+Sun.cc has been derived is in the lib directory. Additional info in
+lib/README.sunriset.
+
+For contributors to the gallery, please check the XML files in the
+gallery subdiretory of the src distribution.
 
 --
-$Id: AUTHORS,v 1.16 2004/04/28 19:35:15 afm Exp $
+$Id: AUTHORS,v 1.20 2004/05/08 22:15:11 afm Exp $

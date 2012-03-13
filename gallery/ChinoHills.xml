@@ -1,0 +1,23 @@
+<meteo-registration>
+  <name>ChinoHills</name>
+  <location>
+    <city>Chino Hills</city>
+    <state>CA</state>
+    <country>US</country>
+    <longitude>-117.742</longitude>
+    <latitude>33.978</latitude>
+    <altitude>278</altitude>
+  </location>
+  <contact>kent at bci dot com, http://www.bci.com/weather</contact>
+  <comments>Wireless. Solar Powered. Running on a Macintosh g4/933 OS X in southern California, U.S.</comments>
+  <technical-info>
+    <station-type>VantagePro</station-type>
+    <connection>Keyspan twin serial to USB adaptor</connection>
+    <additional-sensors>solar, uv</additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://ozma.no-ip.com/weather/ChinoHills/ChinoHills-meteo.html</url>
+    <browser-url>http://ozma.no-ip.com/weather/ChinoHills/meteobrowser.php</browser-url>
+    <info-url>http://ozma.no-ip.com/weather/ChinoHills/setup.html</info-url>
+  </urls>
+</meteo-registration>

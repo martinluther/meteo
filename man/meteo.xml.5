@@ -327,6 +327,13 @@ sum&SQL sum aggregation operator
 wind&pseudo operator for wind aggregation
 .TE
 
+.SH "SUNRISE AND SUNSET"
+
+Starting with version 0.9.14, meteodraw can compute sunrise and sunset
+times, so that it is no longer necessary to rely on the data delivered
+by the station. To configure the station to compute sunrise and sunset
+add the element <sun method="compute"/> to the station definition.
+
 .SH UNITS
 
 Starting with version 0.9.0, units are configured in the database.
@@ -678,6 +685,17 @@ the wind for swiss users: `Nordwind' means wind from the north, i.e.
 a wind with an azimut of 180deg. Of course, this is a wind blowing to
 the south, so some people may prefer the letter S for this direction,
 or the setting letters="NESW".
+
+The type
+.I sun
+draws a colored line along the time axis to indicate daylight.
+You must specify the station relative to which to determine sunrise
+and sunset. For VantagePro stations the default is to use sunrise
+and sunset times from the station, but if the <sun method="compute"/>
+flag is set in the station configuration, sunrise and sunset is computed
+for the VantagePro as well. For all other stations, the <sun/> element
+is not necessary, as sunrise and sunset are always computed.
+Note that this only works if longitude and latitude are correct.
 
 .SH EXAMPLES
 The meteo.xml and meteo-60.xml included in the distribution show how these

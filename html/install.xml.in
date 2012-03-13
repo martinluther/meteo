@@ -3,7 +3,7 @@
 	install.xml	installtion of meteo
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: install.xml.in,v 1.5 2004/03/19 21:58:03 afm Exp $
+	$Id: install.xml.in,v 1.7 2004/05/08 20:27:42 afm Exp $
 -->
 
 <page name="install">
@@ -139,9 +139,21 @@ Please read the ChangeLog or the NEWS files for specific information about
 upgrading. If any large scale conversions are necessary, there will
 be programms supporting this in the support directory of the distribution.
 </p>
-<h3>Upgrade to 0.9.8</h3>
+<h3>Upgrade to 0.9.14</h3>
 <p>
-Just install 0.9.8 over 0.9.7, there are no changes in database structure
+The station table now includes longitude, latitude and altitude fields,
+which can be added using the following SQL:
+<pre>
+  mysql> alter table station add column longitude double not null;
+  mysql> alter table station add column latitude double not null;
+  mysql> alter table station add column altitude double not null;
+  mysql> update station set longitude = ..., latitude = ..., altitude = ...
+         where id = ...;
+</pre>
+</p>
+<h3>Upgrade to 0.9.8-0.9.13</h3>
+<p>
+Just install over 0.9.7, there are no changes in database structure
 or configuration files. Please note, however, that the 0.9.7 sample
 config file had a bug, it included a average element for a nonexistent
 winddir operator. This didn't stop meteoavg from working, but it caused

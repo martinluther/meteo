@@ -3,27 +3,30 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.22 2004/04/28 19:35:15 afm Exp $
+-- $Id: meteo.sql,v 1.23 2004/05/08 20:09:32 afm Exp $
 --
 create table if not exists station (
 	name		varchar(60) not null,
 	id		tinyint not null,
 	timezone	varchar(12),	-- time zone
 	offset		int not null,
+	longitude	double not null,
+	latitude	double not null,
+	altitude	double not null,
 	primary key(id)
 );
 -- Altendorf:	a WeatherMonitor II
-insert into station(name, id, timezone, offset)
-	values ('Altendorf', 0, 'MET', 3600);
+insert into station(name, id, timezone, offset, longitude, latitude, altitude)
+	values ('Altendorf', 0, 'MET', 3600, 47.18, 8.81, 610);
 -- Gurin: a VantagePro Plus, recently converted to wireless operation
-insert into station(name, id, timezone, offset)
-	values ('Gurin', 1, 'MET', 3600);
+insert into station(name, id, timezone, offset, longitude, latitude, altitude)
+	values ('Gurin', 1, 'MET', 3600, 46.3, 8.5, 2000);
 -- Lajeado: a VantagePro Plus with soil moisture and soil temperature sensor
-insert into station(name, id, timezone, offset)
-	values ('Lajeado', 2, 'MET', -10800);
+insert into station(name, id, timezone, offset, longitude, latitude, altitude)
+	values ('Lajeado', 2, 'MET', -10800, -29.46693, -51.96138, 166);
 -- Frauenfeld: a cabled VantagePro Plus 
-insert into station(name, id, timezone, offset)
-	values ('Frauenfeld', 3, 'MET', 3600);
+insert into station(name, id, timezone, offset, longitude, latitude, altitude)
+	values ('Frauenfeld', 3, 'MET', 3600, 8.9, 47.55, 477);
 
 create table if not exists sensor (
 	name		varchar(60) not null,

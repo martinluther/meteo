@@ -1,0 +1,27 @@
+<meteo-registration>
+  <name>Lajeado</name>
+  <location>
+    <city>Lajeado</city>
+    <state>Rio Grande do Sul</state>
+    <country>Brazil</country>
+    <longitude>-51.96138</longitude>
+    <latitude>-29.46693</latitude>
+    <altitude>166</altitude>
+  </location>
+  <contact>
+	Tiago Giovanaz da Silva
+	tgs [at] solis.coop.br  
+  </contact>
+  <comments>
+	We were told the weather station would only be accessible by a Windows		software... They were really wrong!
+  </comments>
+  <technical-info>
+    <station-type>VantagePro</station-type>
+    <connection>serial</connection>
+    <additional-sensors>uv,solar,soil-moisture,soil-temperature</additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://www.univates.br/handler.php?module=fred&amp;action=view&amp;sys_date=&amp;article=761</url>
+    <browser-url>http://www.univates.br/handler.php?module=fred&amp;action=view&amp;sys_date=&amp;article=761</browser-url>
+  </urls>
+</meteo-registration>
