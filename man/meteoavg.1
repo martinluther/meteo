@@ -80,9 +80,11 @@ debugging.
 .BI \-i interval
 Compute averages over samples in intervals of length
 .IR interval .
-Must be one of 300, 1800, 7200 or 86400.
+Must be one of 300, 1800, 7200 or 86400. In command line mode, this option
+is mandatory. In daemon mode, averages for all intervals are computed whenever
+they are due.
 .TP
-.BI \-i logurl
+.BI \-l logurl
 send log messages to the destination described by the
 .IR logurl . See
 .BR meteo (1)

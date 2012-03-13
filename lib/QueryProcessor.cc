@@ -237,23 +237,32 @@ BasicQueryResult QueryProcessor_internal::operator()(const std::string& query) {
 	MYSQL_RES	*mres;
 	mres = mysql_store_result(mysql);
 
-	// retrieve the result set
+	// for UPDATE/INSERT it is ok to return NULL, but we should only
+	// work on mres if it is not NULL. But since we have to return a
+	// BasicQueryResult, we create one here, even if we don't fill in
+	// anything
 	BasicQueryResult	result;
-	MYSQL_ROW	row;
-	int		nfields = mysql_num_fields(mres);
-	while (NULL != (row = mysql_fetch_row(mres))) {
-		Row	r;
-		for (int i = 0; i < nfields; i++) {
-			if (row[i] != NULL)
-				r.push_back(std::string(row[i]));
-			else
-				r.push_back(std::string("NULL"));
+	if (NULL != mres) {
+		// retrieve the result set (since NULL != mres we know there
+		// is some result set)
+		MYSQL_ROW	row;
+		int		nfields = mysql_num_fields(mres);
+		while (NULL != (row = mysql_fetch_row(mres))) {
+			Row	r;
+			for (int i = 0; i < nfields; i++) {
+				if (row[i] != NULL)
+					r.push_back(std::string(row[i]));
+				else
+					r.push_back(std::string("NULL"));
+			}
+			result.push_back(r);
 		}
-		result.push_back(r);
+		int	nrows = mysql_num_rows(mres);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%p, %d rows found",
+			this, nrows);
+		// free 
+		mysql_free_result(mres);
 	}
-	int	nrows = mysql_num_rows(mres);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%p, %d rows found", this, nrows);
-	mysql_free_result(mres);
 
 	// return the result
 	return result;

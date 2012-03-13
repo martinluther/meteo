@@ -41,6 +41,9 @@ static BasicValue	*getBasicValueFromClassnameAndUnit(
 	if (classname == "Wind") {
 		return (BasicValue *)new Wind(unit); // delete ~Value
 	}
+	if (classname == "WindSpeed") {
+		return (BasicValue *)new WindSpeed(unit); // delete ~Value
+	}
 	if (classname == "Rain") {
 		return (BasicValue *)new Rain(unit); // delete ~Value
 	}
@@ -86,6 +89,10 @@ static BasicValue	*getBasicValueFromOld(const BasicValue *other) {
 	if (classname == "Wind") {
 		return (BasicValue *)
 			new Wind(*(Wind *)other); // delete ~Value
+	}
+	if (classname == "WindSpeed") {
+		return (BasicValue *)
+			new WindSpeed(*(WindSpeed *)other); // delete ~Value
 	}
 	if (classname == "Rain") {
 		return (BasicValue *)

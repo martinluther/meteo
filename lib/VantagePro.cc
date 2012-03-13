@@ -48,12 +48,22 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 
 	// read the temperature and humidity calibration numbers
 	std::string	packet = eeprom(0x32, 29);
+#define	CAL_OFFSET	0x32
+#define	TEMP_IN		51
+#define	TEMP_OUT_CAL	52
+#define	TEMP_CAL	53
+#define	HUM_IN_CAL	68
+#define	HUM_CAL		69
+#define	DIR_CAL		77
+#define	CAL(a)		(a - CAL_OFFSET)
 
 	// calibrate ordinary temperature sensors
 	calibrateReader("console.temperature",
-		Calibrator(1., BytePacketReader(0, true).value(packet)/10.));
+		Calibrator(1., BytePacketReader(CAL(TEMP_IN), true)
+			.value(packet)/10.));
 	calibrateReader("iss.temperature",
-		Calibrator(1., BytePacketReader(2, true).value(packet)/10.));
+		Calibrator(1., BytePacketReader(CAL(TEMP_CAL), true)
+			.value(packet)/10.));
 
 	// extra temperature calibration
 	for (int i = 0; i < 7; i++) {
@@ -61,7 +71,7 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 		snprintf(f, sizeof(f), "extra%d.temperature", i + 1);
 		if (hasReader(f)) {
 			calibrateReader(f, Calibrator(1.,
-				BytePacketReader(4 + 2*i, true).value(packet)));
+				BytePacketReader(CAL(TEMP_CAL) + i, true).value(packet)));
 		}
 	}
 
@@ -71,7 +81,7 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 		snprintf(f, sizeof(f), "soil%d.temperature", i + 1);
 		if (hasReader(f)) {
 			calibrateReader(f, Calibrator(1.,
-				BytePacketReader(18 + 2*i, true)
+				BytePacketReader(CAL(TEMP_CAL) + 7 + i, true)
 					.value(packet)/10.));
 		}
 	}
@@ -82,19 +92,21 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 		snprintf(f, sizeof(f), "leaf%d.temperature", i + 1);
 		if (hasReader(f)) {
 			calibrateReader(f, Calibrator(1.,
-				BytePacketReader(26 + 2*i, true)
+				BytePacketReader(CAL(TEMP_CAL) + 11 + i, true)
 					.value(packet)/10.));
 		}
 	}
 
 	// inside humidity calibration
-	Calibrator	humcal(1., BytePacketReader(34, true).value(packet));
+	Calibrator	humcal(1., BytePacketReader(CAL(HUM_IN_CAL), true)
+		.value(packet));
 	humcal.setTopclip(100.);
 	humcal.setBottomclip(0.);
 	calibrateReader("console.humidity", humcal);
 
 	// outside humidity calibration
-	Calibrator	humcal2(1., BytePacketReader(35, true).value(packet));
+	Calibrator	humcal2(1., BytePacketReader(CAL(HUM_CAL), true)
+		.value(packet));
 	humcal2.setTopclip(100.);
 	humcal2.setBottomclip(0.);
 	calibrateReader("iss.humidity", humcal2);
@@ -105,7 +117,8 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 		snprintf(f, sizeof(f), "extra%d.humidity", i + 1);
 		if (hasReader(f)) {
 			Calibrator	cal(1.,
-				BytePacketReader(36 + i, true).value(packet));
+				BytePacketReader(CAL(HUM_CAL) + 1 + i, true)
+					.value(packet));
 			cal.setTopclip(100.);
 			cal.setBottomclip(0.);
 			calibrateReader(f, cal);

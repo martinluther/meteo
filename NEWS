@@ -1,19 +1,11 @@
+0.9.5	some minor fixes
+
+(for further news please check the ChangeLog)
+
 0.9.0	Major rewrite of many aspects of meteo sponsored by the University
 	Univates in Lajeado in Rio Grande do Sul, Southern Brazil. Further
 	contributions: Jeff Wabik (new derived value computations) and
 	Aron Spike (voluntered to test GroWeather).
 
-0.8.6	Attention: the configuration file syntax has changed slightly:
-	the unit tag inside the station is no longer supported, use the
-	units tag just inside the meteo tag.
-
-0.8.1-6	Many bug fixes in the new graphing code. Especially the addition of
-	an accumulation function (very useful for rain) has shown that we
-	are on the right track.
-
-0.8.0	This release comes with a complete rewrite of the graphing engine.
-	Graphs can now be specified completely in XML, there are only very
-	few items left that cannot be specified in the XML file.
-
 --
-$Id: NEWS,v 1.20 2003/10/24 13:15:29 afm Exp $
+$Id: NEWS,v 1.21 2004/01/07 21:53:37 afm Exp $

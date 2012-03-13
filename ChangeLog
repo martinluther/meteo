@@ -1,3 +1,13 @@
+Release 0.9.5:
+	* fixed another bug in the calibration number reading code for
+	  Vantage Pro, the offsets were still wrong. This has now been changed
+	  to use symbolic names, the code became much more readable.
+	  (bug pointed out by Martin Hofbauer)
+	* the BasicValueFactory was unable to create WindSpeed objects,
+	  causing problems in meteolast (bug pointed out by Martin Hofbauer)
+	* fixed a bug in QueryProcessor.cc pointed out by Stephen Huberty
+	* fixed some manual page problems
+
 Release 0.9.4:
 	* fixed the offset for calibration numbers for temperature. It was
 	  given as 0x50, but this should rather be a decimal value, or
@@ -553,4 +563,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.108 2003/11/28 20:57:58 afm Exp $
+$Id: ChangeLog,v 1.111 2004/01/13 09:07:18 afm Exp $

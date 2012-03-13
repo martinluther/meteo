@@ -60,6 +60,7 @@ Contributors: in no particular order, email addresses withheld to protect
 				new meteo web site design
 	Carsten Guenther	found a bug in ReaderInfo.cc, where all the
 				extra humidity readers had the same name
+	Stephen Huberty		found a bug in QueryProcessor.cc
 
 --
-$Id: AUTHORS,v 1.11 2003/11/10 06:01:12 afm Exp $
+$Id: AUTHORS,v 1.12 2004/01/07 21:53:37 afm Exp $

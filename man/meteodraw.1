@@ -15,8 +15,6 @@ meteodraw [
 ] [
 .BI \-g graphname
 ] [
-.BI \-G graphname
-] [
 .BI \-p prefix
 ] [
 .BI \-u url
@@ -47,14 +45,13 @@ the
 option in the format
 .IR YYYYMMDDhhmmss .
 
-By default, all graphs are produced, i.e. for temperature, inside
-temperature, humidity, inside humidity,
-barometric pressure, wind, rain and radiation.
+By default, no graphs are produced, since with the much more flexible configuration
+since meteo 0.9.x, there is no resonable default set of graphs.
 The
 .B \-g
-and
-.B \-G
-options allow to modify the list of graphs to be produced.
+option allows to modify the list of graphs to be produced, the argument to 
+.B \-g
+is the name of the graph as specified by the name attribute if the graph element.
 The graphs are stored in files in the current working directory
 unless a different directory is specified with the 
 .B \-c
