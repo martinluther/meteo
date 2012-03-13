@@ -2,7 +2,7 @@
  * meteodraw.cc -- create meteo drawings
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
- * $Id: meteodraw.cc,v 1.17 2004/02/25 23:41:13 afm Exp $
+ * $Id: meteodraw.cc,v 1.18 2004/03/01 09:44:08 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,8 +132,6 @@ static void	usage(void) {
 "	-m              write image map info to stdout\n"
 "	-c dir		change directory to dir before writing any image files\n"
 "	-g graph	include only graph (can be given multiple times)\n"
-"	-G graph	exclude graph (can be given multiple times)\n"
-"			[ -g and -G can not be used simulatineouly ]\n"
 "	-f config	use configuration file config\n"
 "	-p prefix	store images in files with this prefix\n"
 "	-u url		use this URL prefix for image maps\n"

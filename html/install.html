@@ -139,6 +139,15 @@ Please read the ChangeLog or the NEWS files for specific information about
 upgrading. If any large scale conversions are necessary, there will
 be programms supporting this in the support directory of the distribution.
 </p>
+<h3>Upgrade to 0.9.8</h3>
+<p>
+Just install 0.9.8 over 0.9.7, there are no changes in database structure
+or configuration files. Please note, however, that the 0.9.7 sample
+config file had a bug, it included a average element for a nonexistent
+winddir operator. This didn't stop meteoavg from working, but it caused
+many error messages. If you still have this element in your meteo.xml,
+you should remove to save space on your log partition.
+</p>
 <h3>Upgrade to 0.9.7</h3>
 <p>
 This release adds the offset field to the <code>station</code> table.

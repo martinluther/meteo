@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.28 2004/02/27 22:09:04 afm Exp $
+ $Id: meteo.xml,v 1.29 2004/03/01 09:44:08 afm Exp $
 
   -->
 <meteo>
@@ -96,7 +96,6 @@
 	<average name="humidity_min" base="humidity" operator="min"/>
 	<average name="humidity_max" base="humidity" operator="max"/>
 	<average name="wind" base="wind" operator="wind"/>
-	<average name="winddir" base="wind" operator="winddir"/>
 	<average name="windgust" base="windgust" operator="max"/>
 	<average name="rain" base="rain" operator="sum"/>
       </sensor>

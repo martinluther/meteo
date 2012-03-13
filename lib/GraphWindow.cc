@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: GraphWindow.cc,v 1.15 2004/02/27 16:03:50 afm Exp $
+ * $Id: GraphWindow.cc,v 1.16 2004/03/01 09:44:08 afm Exp $
  */
 #include <GraphWindow.h>
 #include <Configuration.h>
@@ -312,7 +312,10 @@ MapArea	GraphWindow::getArea(time_t start, time_t end) const {
 
 	// compute mid time for this area
 	Level	l(interval);
-	Timelabel	tl((start + end)/2, l.down());
+	// we compute the averages of start and end, but since the sum of the
+	// two will overflow an integer, we would end up with an integer.
+	// Therefore we have to devide by 2 first, and add afterwards!
+	Timelabel	tl(start/2 + end/2, l.down());
 
 	return MapArea(r, tl.getString(), start);
 }

@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.25 2003/10/30 23:21:24 afm Exp $
+//   $Id: meteobrowser.php,v 1.26 2004/03/01 09:44:08 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -47,6 +47,11 @@ if ($HTTP_GET_VARS[lang] == "") {
 }
 if ($HTTP_GET_VARS[lang] == "de") { $HTTP_GET_VARS[lang] = "de_DE"; }
 if ($HTTP_GET_VARS[lang] == "en") { $HTTP_GET_VARS[lang] = "en_US"; }
+if ($HTTP_GET_VARS[station] != "") {
+	$station = $HTTP_GET_VARS[station];
+} else {
+	$station = $station_default;
+}
 $baseurl = $pageurl."?lang=$HTTP_GET_VARS[lang]&station=$HTTP_GET_VARS[station]";
 setlocale(LC_ALL, $HTTP_GET_VARS[lang]);
 putenv("LANG=$HTTP_GET_VARS[lang]");

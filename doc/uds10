@@ -59,6 +59,20 @@ UDS-10, you must use a null-modem connector, i.e. the RxD and TxD
 lines  must  be  crossed  (the UDS-10 behaves like a PC as far as
 wiring is concerned, you could directly connect a modem).
 
+If you only have a gender changer and a DB9-to-DB25 connector  as
+I  had  when  I  installed  the Bosco/Gurin station, you may help
+yourself by cutting the cable and reconnecting. Here is  how  you
+have to connect the wires:
+
+        red  -----------------  red
+
+      green  --------o--------  yellow
+
+     yellow  --------o--------  green
+
+There  is  no  need to connect the black wire, it seems to be un-
+used.
+
 Configuring the Lantronix UDS-10
 --------------------------------
 
@@ -91,5 +105,5 @@ the computer also plays some role (e.g. for computations of  rain
 rate or wind speed), this is why the flush modes are 00.
 
 --
-$Id: uds10.in,v 1.1 2003/06/03 23:00:44 afm Exp $
+$Id: uds10.in,v 1.2 2004/03/01 09:44:08 afm Exp $
 

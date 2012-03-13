@@ -3,7 +3,7 @@
 	about.xml	Meteo home page XML content file
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: about.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+	$Id: about.xml,v 1.2 2004/03/01 10:14:50 afm Exp $
 -->
 
 <page name="about">
@@ -35,13 +35,13 @@ Here are the stations used to develop this package:
 </td>
 <td valign="top">
 <a href="http://meteo.othello.ch/meteo/" target="_new">
-<img src="http://meteo.othello.ch/meteo/Altendorf-temperature-week.png"
+<img src="http://meteo.othello.ch/meteo/Altendorf.temperature-week.png"
 width="250" height="72" border="0" />
 </a>
 </td>
 <td valign="top">
 <a href="http://meteo.othello.ch/meteo/meteobrowser.php" target="_new">
-<img src="http://meteo.othello.ch/meteo/Altendorf-temperature-year.png"
+<img src="http://meteo.othello.ch/meteo/Altendorf.temperature-year.png"
 width="250" height="72" border="0" />
 </a>
 
@@ -54,13 +54,13 @@ currently out of service due to lightning, in repair)
 </td>
 <td valign="top">
 <a href="http://grossalp.othello.ch/meteo/" target="_new">
-<img src="http://grossalp.othello.ch/meteo/Gurin-temperature-week.png"
+<img src="http://grossalp.othello.ch/meteo/Gurin.temperature-week.png"
 width="250" height="72" border="0" />
 </a>
 </td>
 <td valign="top">
 <a href="http://meteo.othello.ch/meteo/meteobrowser.php?station=Gurin" target="_new">
-<img src="http://grossalp.othello.ch/meteo/Gurin-temperature-year.png"
+<img src="http://grossalp.othello.ch/meteo/Gurin.temperature-year.png"
 width="250" height="72" border="0" />
 </a>
 </td>

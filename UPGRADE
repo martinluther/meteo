@@ -1,0 +1,24 @@
+How to upgrade from previous versions
+=====================================
+
+0.9.x to 0.9.{7,8}
+------------------
+
+- The database structure has changed slightly: the station table now has
+  an additional offset column. The configuration of the station offset is
+  no longer in the meteo.xml, but rather in the database. To add this
+  column to an existing database, use the following mysql statements
+
+    mysql> alter table station add column offset int not null<
+    mysql> update station set offset = <our_offset>;
+
+- The averaging has become configurable, thus you need to add an averages
+  element to the station configuration. Check the sample meteo.xml in
+  the distribution for a starting point.
+
+This file is new in release 0.9.8, please look around older documentation
+for hints about upgrading from older releases. Please also check the HTML
+documentation.
+
+--
+$Id$

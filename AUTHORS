@@ -61,7 +61,12 @@ Contributors: in no particular order, email addresses withheld to protect
 	Carsten Guenther	found a bug in ReaderInfo.cc, where all the
 				extra humidity readers had the same name
 	Stephen Huberty		found a bug in QueryProcessor.cc
-	Eric Varasnyi		found important bugs in the offset code
+	Eric Varsanyi		found important bugs in the offset code. He
+				also helped track down a nasty integer overflow
+				bug.
+	Bill Neely		was very helpful in debugging the graphing
+				stuff so that external data (not from a weather
+				station) can be graphed.
 
 --
-$Id: AUTHORS,v 1.13 2004/02/24 23:33:20 afm Exp $
+$Id: AUTHORS,v 1.14 2004/03/01 10:07:06 afm Exp $

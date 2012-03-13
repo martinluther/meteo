@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: MapArea.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: MapArea.cc,v 1.3 2004/03/01 09:44:08 afm Exp $
  */
 #include <MapArea.h>
 #include <mdebug.h>
@@ -15,8 +15,9 @@ namespace meteo {
 std::string	MapArea::getStringForm(const std::string& baseurl) const {
 	std::string	result;
 	char	buffer[1024];
-	snprintf(buffer, sizeof(buffer), "<area coords=\"%d,%d,%d,%d\" ",
-		area.getLeft(), area.getLow(), area.getRight(), area.getHigh());
+	snprintf(buffer, sizeof(buffer), "<area shape=\"rect\" "
+		"coords=\"%d,%d,%d,%d\" ",
+		area.getLeft(), area.getHigh(), area.getRight(), area.getLow());
 	result = std::string(buffer);
 	snprintf(buffer, sizeof(buffer), "alt=\"%s\" ",
 		ti.getString().c_str());

@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Timelabel.cc,v 1.6 2004/02/25 23:48:06 afm Exp $
+ * $Id: Timelabel.cc,v 1.7 2004/03/01 09:44:08 afm Exp $
  */
 #include <Timelabel.h>
 #include <mdebug.h>
@@ -82,6 +82,9 @@ void	Timelabel::parse(const std::string& labelstring) {
 	int		tm_week;
 	tms.tm_isdst = 0;
 
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "parsing label: %s",
+		labelstring.c_str());
+
 	// the level can be derived from the first letter
 	level = Level(labelstring[0]);
 
@@ -94,6 +97,7 @@ void	Timelabel::parse(const std::string& labelstring) {
 	
 	// extract year
 	tms.tm_year = atoi(labelstring.substr(1, 4).c_str()) - 1900;
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "parsed year: %d", tms.tm_year);
 
 	// extract remaining fields, depending on level
 	switch (level.getLevel()) {
@@ -114,6 +118,7 @@ void	Timelabel::parse(const std::string& labelstring) {
 
 	// turn this broken down time structure into a time value
 	midtime = mktime(&tms);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "candidate midtime: %d", midtime);
 
 	// for the week, convert back to broken down time to 
 	if (level.getLevel() == week) {
@@ -128,10 +133,13 @@ void	Timelabel::parse(const std::string& labelstring) {
 }
 
 Timelabel::Timelabel(time_t t, const Level& l) : level(l) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "construct from time %d", t);
 	midtime = normalize(t);
 }
 
 Timelabel::Timelabel(const std::string& datestring, const Level& l) : level(l) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "construct from datestring %s",
+		datestring.c_str());
 	// convert the timestring into struct tm and convert this to
 	// time_t
 	struct tm	tms;
@@ -141,12 +149,17 @@ Timelabel::Timelabel(const std::string& datestring, const Level& l) : level(l) {
 	tms.tm_mday = atoi(datestring.substr(6, 2).c_str()); 
 	tms.tm_mon = atoi(datestring.substr(4, 2).c_str()); 
 	tms.tm_year = atoi(datestring.substr(0, 4).c_str()); 
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%02d/%02d/%04d %02d:%02d:%02d",
+		tms.tm_mday, tms.tm_mon, tms.tm_year,
+		tms.tm_hour, tms.tm_min, tms.tm_sec);
 
 	// normalize the converted time
 	midtime = normalize(mktime(&tms));
 }
 
 Timelabel::Timelabel(const std::string& labelstring) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "construct from labelstring %s",
+		labelstring.c_str());
 	parse(labelstring);
 }
 

@@ -1,3 +1,15 @@
+release 0.9.8:
+	* fixed documentation
+	* added the UPGRADE file
+	* found an integer overflow bug in the computation of the new time
+	  label for the MAP tags of the meteobrowser. This caused the maps
+	  to drop to some time 1936 (which corresponds to negative time_t).
+	* reverse the order of upper and lower point in the MapArea class,
+	  as it seems that the generated AREA tag is invalid, at least for
+	  some browsers.
+	* no entry for winddir in averages configuration necessary, as this
+	  is done by the wind operator.
+
 Release 0.9.7:
 	* checked that 60-seconds interval graphs work, at least partially,
 	  this needs some review
@@ -620,4 +632,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.119 2004/02/27 22:09:04 afm Exp $
+$Id: ChangeLog,v 1.122 2004/03/01 10:14:50 afm Exp $

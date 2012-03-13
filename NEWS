@@ -1,3 +1,8 @@
+0.9.8	fixes a integer overflow bug: to compute the time labels for the
+	maps, GraphWindow.cc used the formular (start + end)/2, but since
+	about the middle of january, this causes an overflow, so that the
+	target ends up in february 1936. Replace that by start/2 + end/2.
+	
 0.9.7	some bug fixes
 	removal of offset configuration variable
 	added averages configuration in XML file, so the user now gets full
@@ -22,4 +27,4 @@
 	Aron Spike (voluntered to test GroWeather).
 
 --
-$Id: NEWS,v 1.24 2004/02/27 22:09:04 afm Exp $
+$Id: NEWS,v 1.25 2004/03/01 09:49:45 afm Exp $
