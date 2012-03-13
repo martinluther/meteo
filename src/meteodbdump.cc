@@ -18,6 +18,7 @@
 #include <vector>
 #include <errno.h>
 #include <strings.h>
+#include <unistd.h>
 
 static int	averages = 0;
 static int	stationdata = 0;

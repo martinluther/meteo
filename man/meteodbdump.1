@@ -1,0 +1,118 @@
+.TH METEODBDUMP "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteodbdump \- dump contents of meteo database
+.SH SYNOPSIS
+meteodbdump [
+.B \-d
+] [
+.BI \-l logurl
+] [
+.BI \-h host
+] [
+.BI \-u user
+] [
+.BI \-p password
+] [
+.BI \-b database
+] [
+.BI \-c chunksize
+] [
+.BI \-f filebase
+]
+.BI \-s station
+.SH DESCRIPTION
+The 
+.BR meteodbdump (1)
+programm dumps the contens of the meteo database to text files.
+In contrast to ordinary mysqldump, it usually reads the records of
+a day at a time, so that the table does not stay locked for extended
+time intervals.
+
+The program is designed to be compilable stand alone, without the
+rest of the meteo package, so that it can be run locally on a
+database server even if the meteo package is not installed there.
+
+.BR meteodbdump (1)
+connects to the database
+.I database
+on host
+.I host
+as the user
+.I user
+with password
+.IR password .
+It then starts reading data for the station
+.I station
+and writes SQL insert statements to the files
+.IB filebase stationdata
+and
+.IB filebase averages.
+Data is read in chunks of at most 
+.I chunksize
+records from the stationdata, and written  to the stationdata file,
+then the averages present in the averages table for the same period
+is also read and written to the averages file.
+
+The SQL insert statements do not rely on a certain order of the fields
+in the table definition, and they contain comments to make it easier
+to identify the data.
+
+.SH OPTIONS
+.TP
+.B \-d
+increase the debug level by one. Debug messages are written to standard
+error.
+.TP
+.BI \-l logurl
+send log messages to the destination described by the
+.IR logurl . See
+.BR meteo (1)
+for a description of the possible formats for log URLs.
+.TP
+.BI \-f filebase
+write the data to files named
+.IB filebase stationdata
+and
+.IB filebase averages.
+.I filebase
+does not need to be an existing directory, a path like /var/tmp/Altendorf-
+is ok, it will case the data to be written to
+/var/tmp/Altendorf-stationdata and /var/tmp/Altendorf-averages.
+.TP
+.BI \-h host
+connect to a MySQL server on host
+.IR host .
+.TP
+.BI \-b database
+connect to database named
+.IR database .
+.TP
+.BI \-u user
+connect to the database a user
+.IR user .
+.TP
+.BI \-p password
+use password
+.I password
+to authenticate to the dabase.
+.TP
+.BI \-s station
+name of the station to dump. This option can be given several times,
+.BR meteodbdump (1)
+will dump the data for each of the stations in turn. Data for all stations
+will be written to the same files.
+.TP
+.BI \-c chunksize
+read at most 
+.I chunksize 
+records from the database at one time. By default, 1440 records are
+read in a single query. This reduces 
+.BR metedbdump (1)'s
+impact on concurrency. Larger values for the chunksize cause the dump to
+use more memory, and usually hurt concurrency noticably.
+
+.SH "SEE ALSO"
+.BR meteo (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

@@ -6,12 +6,12 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.10 2003/07/26 22:39:43 afm Exp $
+ $Id: meteo.xml,v 1.11 2003/07/29 10:47:36 afm Exp $
 
   -->
 <meteo>
   <database>
-    <hostname>desdemona</hostname>
+    <hostname>localhost</hostname>
     <dbname>meteo</dbname>
     <user>meteo</user>
     <password>public</password>

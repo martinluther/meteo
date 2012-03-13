@@ -1,3 +1,9 @@
+Release 0.8.1:
+	* fix missing border="0" statements in meteobrowser.php
+	* fix missing includes in meteolabel.cc and meteodbdump.cc, so that
+	  it compiles on SuSE Linux 7.3
+	* add a manual page for meteodbdump
+
 Release 0.8.0:
 	* improve info about prerequisite packages and how to make the package
 	  work with gd1.
@@ -308,4 +314,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.65 2003/07/26 22:39:43 afm Exp $
+$Id: ChangeLog,v 1.67 2003/07/27 13:31:09 afm Exp $

@@ -7,6 +7,7 @@
 #include <Timelabel.h>
 #include <MeteoException.h>
 #include <iostream>
+#include <unistd.h>
 
 int	main(int argc, char *argv[]) {
 	int	c;

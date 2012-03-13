@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.17 2003/07/26 22:39:43 afm Exp $
+//   $Id: meteobrowser.php,v 1.18 2003/07/27 13:07:21 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -153,8 +153,9 @@ if ($starttime > $stationstart[$station]) {
 		" previous");
 	$url = $baseurl . "&label=".$previouslabel;
 ?>
-<a href="<? echo $url ?>"><img src="previous.png" alt="previous <?echo $HTTP_GET_VARS[label]?>"
-border="0" /></a>
+<a href="<? echo $url ?>"><img src="previous.png"
+	alt="previous <?echo $HTTP_GET_VARS[label]?>"
+	border="0" /></a>
 <?php
 }
 ?>
@@ -170,7 +171,9 @@ if ($level == 0) {
 	$uplabel = shell_exec($meteolabel." ".$HTTP_GET_VARS[label]." up");
 	$url = $baseurl."&label=".$uplabel;
 ?>
-<a href="<? echo $url ?>"><img src="<? echo $hops ?>.png"><img src="week.png"><img src="<? echo $hops ?>.png"></a>
+<a href="<? echo $url ?>"><img src="<? echo $hops ?>.png"
+	border="0" /><img src="week.png" border="0" /><img
+	src="<? echo $hops ?>.png" border="0" /></a>
 <?php
 	$hops = $hops."up";
 }
@@ -195,7 +198,9 @@ if (($level == 0) || ($level == 1)) {
 	// compute higher level URL
 	$url = $baseurl."&label=".$uplabel;
 ?>
-<a href="<? echo $url ?>"><img src="<? echo $hops ?>.png" /><img src="month.png" /><img src="<? echo $hops ?>.png" /></a>
+<a href="<? echo $url ?>"><img src="<? echo $hops ?>.png"
+	border="0" /><img src="month.png" border="0" /><img
+	src="<? echo $hops ?>.png" border="0" /></a>
 <?php
 	$hops = $hops."up";
 }
@@ -224,7 +229,9 @@ if (($level == 0) || ($level == 1) || ($level == 2)) {
 	// compute higher level URL
 	$url = $baseurl."&label=".$uplabel;
 ?>
-<a href="<? echo $url ?>"><img src="<? echo $hops ?>.png"><img src="year.png"><img src="<? echo $hops ?>.png"></a>
+<a href="<? echo $url ?>"><img src="<? echo $hops ?>.png"
+	border="0" /><img src="year.png" border="0" /><img
+	src="<? echo $hops ?>.png" border="0" /></a>
 <?php
 	$hops = $hops."up";
 }
@@ -237,8 +244,9 @@ if ($endtime < time()) {
 	$nextlabel = shell_exec("/usr/local/bin/meteolabel $HTTP_GET_VARS[label] next");
 $url = $baseurl . "&label=".$nextlabel;
 ?>
-<a href="<? echo $url ?>"><img src="next.png" alt="next <?echo $HTTP_GET_VARS[label]?>"
-border="0" /></a>
+<a href="<? echo $url ?>"><img src="next.png"
+	alt="next <?echo $HTTP_GET_VARS[label]?>"
+	border="0" /></a>
 <?php
 }
 ?>
