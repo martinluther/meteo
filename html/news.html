@@ -11,6 +11,14 @@
 </div>
 <div id="content">
 <h1>News</h1>
+<p>Release 0.9.12 fixes a <font color="#ff0000">security problem</font>:
+the <code>system()</code> call in meteobrowser.php did not
+properly escape its arguments, and thus allowed arbitrary command
+execution. Please upgrade or wrap the argument of each instance of
+system in an <code>escapeshellcmd</code> call.
+</p>
+<p>Release 0.9.11 fixes some more problems with the GroWeather
+station.</p>
 <p>
 Release 0.9.10 adds the attribute <i>crc</i> to the station type
 element. This attribute directs <code>meteopoll</code> to send a
@@ -52,7 +60,7 @@ I would like to thank the University for their generous support,
 and all the people involved for their continued help and encouragment.
 </p>
 <p>
-The current release (version 0.9.11) was published on april 03, 2004.
+The current release (version 0.9.12) was published on april 27, 2004.
 See the <a href="NEWS">NEWS</a> file for the most important changes
 in this release.
 For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.

@@ -3,7 +3,7 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.21 2004/03/19 21:58:03 afm Exp $
+-- $Id: meteo.sql,v 1.22 2004/04/28 19:35:15 afm Exp $
 --
 create table if not exists station (
 	name		varchar(60) not null,
@@ -100,7 +100,7 @@ insert into mfield(name, id, unit, class)
 insert into mfield(name, id, unit, class)
 	values('wind',		60, 'm/s', 'Wind');
 insert into mfield(name, id, unit)
-	values('winddir',	61, 'deg', 'winddir');
+	values('winddir',	61, 'deg');
 insert into mfield(name, id, unit, class)
 	values('windgust',	62, 'm/s', 'WindSpeed');
 insert into mfield(name, id, unit)

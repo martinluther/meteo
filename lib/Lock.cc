@@ -3,13 +3,14 @@
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-// $Id: Lock.cc,v 1.4 2004/03/20 08:45:06 afm Exp $
+// $Id: Lock.cc,v 1.5 2004/04/28 19:35:15 afm Exp $
 //
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 #include <Lock.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <string>
 #include <mdebug.h>
 #include <errno.h>

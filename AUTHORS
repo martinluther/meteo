@@ -56,6 +56,8 @@ Contributors: in no particular order, email addresses withheld to protect
 				necessary)
 	Aaron Spike		pointed out that the GroWeather needs CRC
 				on all commands, unless turned off with CRC0
+				he also allowed me direct access to his
+				GroWeather which simplified debugging enormously
 	Carmen Mueller		(http://carmen.othello.ch) contributed the
 				new meteo web site design
 	Carsten Guenther	found a bug in ReaderInfo.cc, where all the
@@ -67,6 +69,10 @@ Contributors: in no particular order, email addresses withheld to protect
 	Bill Neely		was very helpful in debugging the graphing
 				stuff so that external data (not from a weather
 				station) can be graphed.
+	Mark Trettin		pointed out a bug in meteo.sql (missing class
+				for winddir)
+	Kirk Meyer		pointed out a remote code execution problem
+				in meteobrowser.php
 
 --
-$Id: AUTHORS,v 1.15 2004/04/02 16:00:02 afm Exp $
+$Id: AUTHORS,v 1.16 2004/04/28 19:35:15 afm Exp $

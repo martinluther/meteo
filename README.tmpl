@@ -98,10 +98,17 @@ libxml2	libxml2 is the XML parser of the Gnome project. It's main advantage
 
 	(SuSE 8.2: add libxml2-devel)
 
+libxslt	(optional) if you want to rebuild the HTML pages, you will need
+	libxslt, since the HTML pages are transformed from XML sources
+
+	(SuSE 9.0: add libxslt) 
+
 If you plan to use the weather underground interface scripts contributed
 by Walter Poxon, you will need additional packages: perl and some perl
 modules related to database access. Read Walter Poxons howto in 
-meteo-install.html for details.
+meteo-install.html for details. These scripts are currently not up to date,
+but work by some meteo mailing list members is underway to get them
+working for the current meteo release.
 
 
 Weather Station URLs
@@ -201,4 +208,4 @@ extensive changes make for very large patches, that are difficult to read.
 If there is no other way, please contact me first, so that we can team up.
 
 --
-$Id: README.tmpl,v 1.16 2004/04/02 16:00:02 afm Exp $
+$Id: README.tmpl,v 1.17 2004/04/28 19:35:15 afm Exp $

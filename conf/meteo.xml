@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.30 2004/03/19 21:58:02 afm Exp $
+ $Id: meteo.xml,v 1.31 2004/04/28 19:35:15 afm Exp $
 
   -->
 <meteo>
@@ -112,7 +112,6 @@
         <field>humidity</field>
         <field>barometer</field>
         <field>battery</field>
-        <field>transmitter</field>
         <field>sunrise</field>
         <field>sunset</field>
       </sensor>
@@ -123,6 +122,7 @@
         <field>wind</field>
         <field>solar</field>
         <field>uv</field>
+        <field>transmitter</field>
       </sensor>
     </sensors>
     <averages>
@@ -148,7 +148,6 @@
 	<average name="humidity_min" base="humidity" operator="min"/>
 	<average name="humidity_max" base="humidity" operator="max"/>
 	<average name="wind" base="wind" operator="wind"/>
-	<average name="winddir" base="wind" operator="winddir"/>
 	<average name="windgust" base="windgust" operator="max"/>
 	<average name="solar" base="solar" operator="avg"/>
 	<average name="uv" base="uv" operator="avg"/>
@@ -206,7 +205,6 @@
 	<average name="humidity_min" base="humidity" operator="min"/>
 	<average name="humidity_max" base="humidity" operator="max"/>
 	<average name="wind" base="wind" operator="wind"/>
-	<average name="winddir" base="wind" operator="winddir"/>
 	<average name="windgust" base="windgust" operator="max"/>
 	<average name="solar" base="solar" operator="avg"/>
 	<average name="uv" base="uv" operator="avg"/>

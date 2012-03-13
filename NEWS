@@ -1,3 +1,8 @@
+0.9.12	some minor fixes, plus a security fix: remote code execution in
+	meteobrowser.php because of missing escapeshellcmd
+
+0.9.11	some bug fixes for GroWeather
+
 0.9.10	turn of CRC0 for GroWeather and possibly other type E weatherlinks.
 
 0.9.9	A hack to protect from IE reading the complete meteobrowser.php
@@ -31,4 +36,4 @@
 	contributions: Jeff Wabik (new derived value computations).
 
 --
-$Id: NEWS,v 1.26 2004/04/02 16:00:02 afm Exp $
+$Id: NEWS,v 1.27 2004/04/28 19:35:15 afm Exp $
