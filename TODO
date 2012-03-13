@@ -1,7 +1,7 @@
 TODO
 ----
 
-* meteodbdump starts dump too early
+* add legend attribute to channel tag, which includes a legend in the graph
 
 * fix the wrong alignment (vertical) of the ImageMap
 
@@ -20,4 +20,4 @@ Bugs
   in the XML file)
 
 --
-$Id: TODO,v 1.42 2003/11/02 13:29:37 afm Exp $
+$Id: TODO,v 1.43 2003/11/19 12:47:03 afm Exp $

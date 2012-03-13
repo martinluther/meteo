@@ -8,6 +8,7 @@
 #include <MeteoException.h>
 #include <iostream>
 #include <unistd.h>
+#include <stdio.h>
 
 static int	meteolabel(int argc, char *argv[]) {
 	int	c;
