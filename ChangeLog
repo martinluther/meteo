@@ -1,3 +1,18 @@
+Release 0.2.2:
+	* made sure navigation is not possible into the future and before
+	  the first data point (to prevent robots from creating havoc)
+	* added --with-browser-dir configuration for automated installation
+	  of the meteo browser
+	* converted HTML comments in meteobrowser.php to PHP comments so that
+	  the resulting page is smaller and thus (hopefully) faster
+	* removed the stationlist.inc, and replaced it by a meteobrowser.inc
+	  containing all the configuration data
+	* improve the time information in the title of the meteobrowser
+	* created really meaningful ALT tags for the graphs (there were
+	  month names and weekday names in 0.2.1 in the week and year
+	  graphs, but now a uniq tag including date or date range is
+	  supplied in all graphs (except day, of course).
+
 Release 0.2.1:
 	* fix meteobrowser.php to rebuild only as few graphs as possible,
 	  but all the necessary ones.
@@ -112,4 +127,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.23 2002/01/16 00:31:53 afm Exp $
+$Id: ChangeLog,v 1.25 2002/01/16 10:04:35 afm Exp $

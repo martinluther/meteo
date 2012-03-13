@@ -183,6 +183,18 @@ operates.
 
 `configure' also accepts some other, not widely useful, options.
 
+Configuration options specific to the meteo package
+===================================================
+
+   The configure script supports the following options specific to
+the meteo package:
+
+	--with-browser-dir=DIR
+		set the directory where the meteobrowser php script
+		should be installed. If this option is not specified,
+		the script is not installed.
+
+
 Special issues
 ==============
 
@@ -221,3 +233,5 @@ Linux:
     freetype library, usually by adding -lfreetype to the LDFLAGS environment
     variable during configure and/or compile.
 
+--
+$Id: INSTALL,v 1.7 2002/01/16 10:04:35 afm Exp $

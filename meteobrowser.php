@@ -1,62 +1,30 @@
-<!--
-
-   meteobrowser.php -- php script implementing a browser function for meteo
-                       data, as stored in the database by the meteo programs
-
-   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
-
-   $Id: meteobrowser.php,v 1.3 2002/01/15 23:44:36 afm Exp $
-
-   This scripts generates overview pages for meteorological data containing
-   client side image maps (so that a lynx browser can also profit from these
-   pages). Clicking on an image should bring up a new page with the next
-   level of detail. There are also a few buttons that allow direct navigation
-   to the next or previous time interval (day, week, month, year).
-
-   The position is controlled by the following variables:
-
-	$level		"day", "week", "month", "year"
-	$midtime	unix time for the middle of the current interval
-	$station	station name
-
--->
 <?php
-// include the following only if your PHP installation lacks gettext support
-// not really a problem right now, as the i18n has not been done yet.
-// include("dummygettext.inc");
+//
+//   meteobrowser.php -- php script implementing a browser function for meteo
+//                       data, as stored in the database by the meteo programs
+//
+//   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
+//
+//   $Id: meteobrowser.php,v 1.6 2002/01/16 10:45:51 afm Exp $
+//
+//   This scripts generates overview pages for meteorological data containing
+//   client side image maps (so that a lynx browser can also profit from these
+//   pages). Clicking on an image should bring up a new page with the next
+//   level of detail. There are also a few buttons that allow direct navigation
+//   to the next or previous time interval (day, week, month, year).
+//
+//   The position is controlled by the following variables:
+//
+//	$level		"day", "week", "month", "year"
+//	$midtime	unix time for the middle of the current interval
+//	$station	station name
+//
 
-// the stationlist contains a colon separated list of graphs to be drawn 
-// for each station that can be browsed through the current instance of
-// the script, see the sample file for instructions.
-include("stationlist.inc");
+$graphlist = array();
+$stationstart = array();
 
-// the path the the meteograph binary, could be derived from the configure
-// run, but as quite a few things have to be configured in the script anyway,
-// doing it manually isn't really more complicated.
-$meteograph = "/usr/local/bin/meteograph";
-
-// the directory containing the configuration files, which must have names
-// of the form $confpath/meteo-$stationname.conf
-$confpath = "/home/afm/Projects/meteo";
-
-// a directory writable by the webserver just below the installation location
-// of this script, or at least so that a browser sees it just besides 
-// meteobrowser.php
-$cachedir = "/home/afm/Projects/meteo/cache";
-
-// the interval after after which a graph must be recomputed, even if it
-// is unlikely that new data has arrived.
-$rintval = 86400;	// recompute graphs older than a day
-
-// defaults for the script, used to display something useful to the user
-// if called without any parameters (so that it can be used as an index
-// page)
-$level_default = "year";
-$midtime_default = time();	// not a particularly good value, but the
-				// normalization below will fix that
-$station_default = "Altendorf";	// could use the environment variables to
-				// find out which station to display so that
-				// the script could be used with virtual hosts
+// include the configuration file
+include("meteobrowser.inc");
 
 //-------------------------------------------------------------------------
 // No configurable code below this line
@@ -125,26 +93,40 @@ switch ($level) {
 		$nextmidtime = $midtime + 86400;
 		$iconmonth = "upup.png";
 		$iconyear = "upupup.png";
+		$title = date("D, d M Y", $midtime);
+		$beginintervaltime = $midtime - 86400/2;
+		$endintervaltime = $midtime + 86400/2;
 		break;
 	case "week":
 		$previousmidtime = $midtime - 7 * 86400;
 		$nextmidtime = $midtime + 7 * 86400;
 		$iconmonth = "up.png";
 		$iconyear = "upup.png";
+		$title = sprintf("week from %s to %s",
+			date("d M Y", $midtime - 144 * $interval),
+			date("d M Y", $midtime + 144 * $interval));
+		$beginintervaltime = $midtime - 3.5 * 86400;
+		$endintervaltime = $midtime + 3.5 * 86400;
 		break;
 	case "month":
 		$previousmidtime = $midtime - 30 * 86400;
 		$nextmidtime = $midtime + 30 * 86400;
 		$iconyear = "up.png";
+		$title = date("M Y", $midtime);
+		$beginintervaltime = $midtime - 15.5 * 86400;
+		$endintervaltime = $midtime + 16.5 * 86400;
 		break;
 	case "year":
 		$previousmidtime = $midtime - 365 * 86400;
 		$nextmidtime = $midtime + 365 * 86400;
+		$title = sprintf("year %s", date("Y", $midtime));
+		$beginintervaltime = $midtime - 183 * 86400;
+		$endintervaltime = $midtime + 183 * 86400;
 		break;
 }
 
 // compute the parameters for the new images
-$graphs = split(":", $stationlist[$station]);
+$graphs = split(":", $graphlist[$station]);
 
 // compute the names of images for the images
 $cmd = $meteograph." -f $confpath/meteo-$station.conf -c $cachedir -a -t ";
@@ -174,46 +156,68 @@ if ($computegraphs) {
 <html>
 <head>
 <link href="meteo.css" type="text/css" rel="stylesheet">
-<title><?echo $station?> <?echo gettext("weather overview")?></title>
+<title><?echo $station ." ". gettext("weather overview of") ." ". $title?></title>
 </head>
 <body bgcolor="#ffffff">
-<map name="yearmap">
-	<?php
-		$basicurl
-		= "meteobrowser.php?station=$station&level=month&midtime=";
-	?>
-
-	<area coords="0,0,73,142" alt="Dec"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 - 6 * 2592000?>">
-	<area coords="74,0,104,142" alt="Jan"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 - 5 * 2592000?>">
-	<area coords="105,0,133,142" alt="Feb"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 - 4 * 2592000?>">
-	<area coords="134,0,164,142" alt="Mar"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 - 3 * 2592000?>">
-	<area coords="165,0,194,142" alt="Apr"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 - 2 * 2592000?>">
-	<area coords="195,0,225,142" alt="May"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 - 1 * 2592000?>">
-	<area coords="226,0,255,142" alt="Jun"
-	href="<?echo $basicurl?><?echo $midtime - 1296000?>">
-	<area coords="256,0,286,142" alt="Jul"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 1 * 2592000?>">
-	<area coords="287,0,317,142" alt="Aug"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 2 * 2592000?>">
-	<area coords="318,0,347,142" alt="Sep"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 3 * 2592000?>">
-	<area coords="348,0,378,142" alt="Oct"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 4 * 2592000?>">
-	<area coords="379,0,408,142" alt="Nov"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 5 * 2592000?>">
-	<area coords="409,0,439,142" alt="Dec"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 6 * 2592000?>">
-	<area coords="440,0,499,142" alt="Jan"
-	href="<?echo $basicurl?><?echo $midtime - 1296000 + 7 * 2592000?>">
-</map>
-<map name="monthmap">
 <?php
+if ($level == "year") {
+	printf("<map name=\"yearmap\">\n");
+	$basicurl
+	= "meteobrowser.php?station=$station&level=month&midtime=";
+	$monthcoords = array();
+	$monthcoords[-6] ="0,0,73,142";
+	$monthcoords[-5] ="74,0,104,142";
+	$monthcoords[-4] ="105,0,133,142";
+	$monthcoords[-3] ="134,0,164,142";
+	$monthcoords[-2] ="165,0,194,142";
+	$monthcoords[-1] ="195,0,225,142";
+	$monthcoords[0] ="226,0,255,142";
+	$monthcoords[1] ="256,0,286,142";
+	$monthcoords[2] ="287,0,317,142";
+	$monthcoords[3] ="318,0,347,142";
+	$monthcoords[4] ="348,0,378,142";
+	$monthcoords[5] ="379,0,408,142";
+	$monthcoords[6] ="409,0,439,142";
+	$monthcoords[7] ="440,0,499,142";
+	function montharea($i) {
+		global	$basicurl, $midtime, $station, $stationstart,
+			$monthcoords;
+		$monthtime = $midtime - 1296000 + $i * 2592000;
+		$monthstart = $monthtime - 15.5 * 86400;
+		$monthend = $monthtime + 16.5 * 86400;
+		if (($monthend < $stationstart[$station]) ||
+			($monthstart > time())) {
+			return;
+		}
+		printf("<area coords=\"%s\"\n", $monthcoords[$i]);
+		printf("alt=\"%s\"\n", date("M Y", $monthtime));
+		printf("href=\"%s%d\">\n", $basicurl, $monthtime);
+	}
+	for ($i = -6; $i <= 7; $i++) {
+		montharea($i);
+	}
+	printf("</map>\n");
+}
+if ($level == "month") {
+	printf("<map name=\"monthmap\">\n");
+	function weekarea($i) {
+		global	$basicurl, $midweek, $weeks, $midtime, $count,
+			$station, $stationstart;
+		$weektime = $midtime + ($i - $midweek) * 604800;
+		$weekstart = $weektime - 3 * 48 * 1800;
+		$weekend = $weektime + 3 * 48 * 1800;
+		if (($weekend < $stationstart[$station]) ||
+			($weekstart > time())) {
+			return;
+		}
+		printf("<area coords=\"%d,0,%d,142\"\n",
+			($i == 0) ? 0 : (255 + $weeks[$i - 1]),
+			($i == $count) ? 499 : (255 + $weeks[$i]));
+		printf("alt=\"week from %s to %s\"\n",
+			date("d M Y", $weekstart),
+			date("d M Y", $weekend));
+		printf("href=\"%s%d\">\n", $basicurl, $weektime);
+	}
 	$basicurl = "meteobrowser.php?station=$station&level=week&midtime=";
 	$weeks = array();
 	$lt = localtime($midtime - 200 * 7200, 1);
@@ -231,116 +235,124 @@ if ($computegraphs) {
 		}
 		$week = $week2;
 	}
-?>
-	<area coords="0,0,<?= 255 + $weeks[0]?>,142"
-	href="<?echo $basicurl?><?= $midtime - $midweek * 604800?>">
-<?php
-	for ($i = 1; $i < $count; $i++) {
-		printf("<area coords=\"%d,0,%d,142\"\n",
-			255 + $weeks[$i - 1], 255 + $weeks[$i]);
-		printf("href=\"%s%d\">\n", $basicurl, 
-			$midtime + ($i - $midweek) * 604800);
+	for ($i = 1; $i <= $count; $i++) {
+		weekarea($i);
 	}
+	printf("</map>\n");
+}
+if ($level == "week") {
+	printf("<map name=\"weekmap\">\n");
+	$basicurl
+	= "meteobrowser.php?station=$station&level=day&midtime=";
+	$daycoords = array();
+	$daycoords[-4] = "0,0,86,142";
+	$daycoords[-3] = "87,0,134,142";
+	$daycoords[-2] = "135,0,182,142";
+	$daycoords[-1] = "183,0,230,142";
+	$daycoords[0] = "231,0,278,142";
+	$daycoords[1] = "279,0,326,142";
+	$daycoords[2] = "327,0,374,142";
+	$daycoords[3] = "374,0,422,142";
+	$daycoords[4] = "423,0,499,142";
+	function dayarea($i) {
+		global	$daycoords, $midtime, $basicurl, $stationstart,
+			$station;
+		$daytime = $midtime + $i * 86400;
+		$daystart = $daytime - 86500/2;
+		$dayend = $daytime + 86500/2;
+		if (($dayend < $stationstart[$station]) ||
+			($daystart > time())) {
+			return;
+		}
+		printf("<area coords=\"%s\"\n", $daycoords[$i]);
+		printf("alt=\"%s\"\n",
+			date("D d M Y", $daytime));
+		printf("href=\"%s%s\">\n", $basicurl, $daytime);
+	}
+	for ($i = -4; $i <= 4; $i++) {
+		dayarea($i);
+	}
+	printf("</map>\n");
+}
 ?>
-	<area coords="<?= 255 + $weeks[$count - 1]?>,0,499,142"
-	href="<?= $basicurl?><?= $midtime + ($count - $midweek) * 604800?>">
-</map>
-<map name="weekmap">
-	<?php
-		$basicurl
-		= "meteobrowser.php?station=$station&level=day&midtime=";
-	?>
+<h1><?echo $station ." ". gettext("weather overview of") ." ". $title?></h1>
 
-	<area coords="0,0,86,142" alt="Sat"
-		href="<?= $basicurl?><?= $midtime - 4 * 86400?>">
-	<area coords="87,0,134,142" alt="Sun"
-		href="<?= $basicurl?><?= $midtime - 3 * 86400?>">
-	<area coords="135,0,182,142" alt="Mon"
-		href="<?= $basicurl?><?= $midtime - 2 * 86400?>">
-	<area coords="183,0,230,142" alt="Tue"
-		href="<?= $basicurl?><?= $midtime - 1 * 86400?>">
-	<area coords="231,0,278,142" alt="Wed"
-		href="<?= $basicurl?><?= $midtime?>">
-	<area coords="279,0,326,142" alt="Thu"
-		href="<?= $basicurl?><?= $midtime + 1 * 86400?>">
-	<area coords="327,0,374,142" alt="Fri"
-		href="<?= $basicurl?><?= $midtime + 2 * 86400?>">
-	<area coords="374,0,422,142" alt="Sat"
-		href="<?= $basicurl?><?= $midtime + 3 * 86400?>">
-	<area coords="423,0,499,142" alt="Sun"
-		href="<?= $basicurl?><?= $midtime + 4 * 86400?>">
-</map>
-<h1><?echo $station?> <?echo gettext("weather overview")?></h1>
-<p>
-Overview for
-<b><?echo $level?></b>
- from
-<b><?echo date("r", $midtime - 200 * $interval)?></b>
- to
-<b><?echo date("r", $midtime + 200 * $interval)?></b>
-</p>
-<p>
+<table width="505" cellpadding="0" cellspacing="0" border="0">
+
+<tr>
+<td colspan="5">
 To see more details, click into the region you like inside the graphs
 below, to zoom out or move forward or backward in time, use the navigation
 bar.
-</p>
-<table width="100%">
+</td>
+</tr>
+
 <tr>
 
-<td align="left">
+<td align="left" width="96">
+<?php
+if ($beginintervaltime >= $stationstart[$station]) {
+?>
 <a href="meteobrowser.php?station=<?= $station?>&level=<?= $level?>&midtime=<?= $previousmidtime?>"><img src="previous.png"
 alt="previous <?= $level?>" border="0" /></a>
+<?php
+}
+?>
 </td>
 
+<td align="center" width="96">
 <?php
 if ($interval < 1800) {
 ?>
-<td align="center">
 <a href="meteobrowser.php?station=<?= $station?>&level=week&midtime=<?= $midtime?>"><img src="up.png"
 border="0" /><img src="week.png" alt="week" border="0" /><img src="up.png"
 border="0" /></a>
-</td>
+<?php } else { ?>
+	&nbsp;
 <?php
 }
 ?>
+</td>
 
+<td align="center" width="96">
 <?php
 if ($interval < 7200) {
 ?>
-<td align="center">
 <a href="meteobrowser.php?station=<?= $station?>&level=month&midtime=<?= $midtime?>"><img src="<?echo $iconmonth?>" border="0" /><img src="month.png"
 alt="month" border="0" /><img src="<?echo $iconmonth?>" border="0" /></a>
-</td>
 <?php
 }
 ?>
+</td>
 
+<td align="center" width="96">
 <?php
 if ($interval < 86400) {
 ?>
-<td align="center">
 <a href="meteobrowser.php?station=<?echo $station?>&level=year&midtime=<?echo $midtime?>"><img src="<?echo $iconyear?>" border="0" /><img src="year.png"
 alt="year" border="0" /><img src="<?echo $iconyear?>" border="0" /></a>
-</td>
 <?php
 }
 ?>
-
-<td align="right">
-<a href="meteobrowser.php?station=<?echo $station?>&level=<?echo $level?>&midtime=<?echo $nextmidtime?>"><img src="next.png" alt="next <?echo $level?>"
-border="0" /></a>
 </td>
 
+<td align="right" width="96">
+<?php
+if ($endintervaltime <= time()) {
+?>
+<a href="meteobrowser.php?station=<?echo $station?>&level=<?echo $level?>&midtime=<?echo $nextmidtime?>"><img src="next.png" alt="next <?echo $level?>"
+border="0" /></a>
+<?php
+}
+?>
+</td>
 
 </tr>
-</table>
-</p>
 
-<table>
 <?php
 foreach ($graphs as $graph) {
 	printf("<tr>\n");
-	printf("<td><img src=\"cache/%s-%s-%s-%s.png\" border=\"0\" ".
+	printf("<td colspan=\"5\"><img src=\"cache/%s-%s-%s-%s.png\" border=\"0\" ".
 		"usemap=\"#%smap\"></td>\n",
 		$station, $graph, $level, $endtimestamp, $level);
 	printf("</tr>\n");

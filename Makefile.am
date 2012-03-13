@@ -3,8 +3,18 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.31 2002/01/15 23:44:36 afm Exp $
+# $Id: Makefile.am,v 1.34 2002/01/16 12:10:05 afm Exp $
 #
+BROWSERFILES = meteobrowser.php meteo.css				\
+	up.png upup.png upupup.png week.png month.png year.png 		\
+	next.png previous.png						\
+	dummygettext.inc
+BROWSERDIR = @BROWSERDIR@
+HTMLFILES = meteo.html meteodata.html README README.browser INSTALL	\
+	ChangeLog NEWS AUTHORS
+HTMLDIR = @HTMLDIR@
+
+
 lib_LTLIBRARIES = libmeteo.la
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
 	meteo.conf.5
@@ -13,10 +23,7 @@ EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 	\
 	meteo.conf $(noinst_DATA)					\
 	meteo.1.in meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
 	meteo.conf.5 							\
-	README.browser meteobrowser.php meteo.css			\
-	up.png upup.png upupup.png week.png month.png year.png 		\
-	next.png previous.png						\
-	stationlist.inc dummygettext.inc
+	README.browser meteobrowser.inc $(BROWSERFILES)
 METEOCONFFILE = \"@METEOCONFFILE@\"
 CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
 
@@ -77,6 +84,22 @@ meteowatch_LDADD = libmeteo.la
 
 install-exec-local:
 	cp meteojob meteooverview $(bindir)
+
+install-data-local:
+	@if [ ! -z "$(BROWSERDIR)" ];					\
+	then								\
+		echo "installing meteobrowser files in $(BROWSERDIR)";	\
+		cp $(BROWSERFILES) "$(BROWSERDIR)";			\
+	else								\
+		echo "warning: meteobrowser not installed, use --with-browser-dir"; \
+	fi
+	@if [ ! -z "$(HTMLDIR)" ];					\
+	then								\
+		echo "installing the HTML documentation in $(HTMLDIR)";	\
+		cp $(HTMLFILES) "$(HTMLDIR)";				\
+	else								\
+		echo "info: HTML docs not installed, used --with-html-dir"; \
+	fi
 
 test:	meteotest
 	./meteotest -d -a file:///dev/cua/1

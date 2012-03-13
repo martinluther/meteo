@@ -16,19 +16,14 @@ true for the `sideways' navigation.
 Installation
 ------------
 
-The browser uses only a single PHP script: meteobrowser.php. Put this
-script wherever you want in your web server hierarchy. The directory
-containing the script must also contain a directory named cache
-writable by the web server, so that it can write images to this directory.
-Also copy the PNG images and the style sheet meteo.css to this directory.
+The browser uses only a single PHP script: meteobrowser.php. This script
+and the suppporting PNG graphics are placed into the directory specified
+with the --with-browser-dir configuration directive.
 
-Also put the two  auxiliary files stationlist.inc and dummygettext.inc
-into the same directory as meteobrowser.php, the latter only if your
-PHP lacks gettext support (in which case you should uncomment the 
-instructions to include it in meteobrowser.php, this file is there as
-a preparation for later i18n usin gettext). The stationlist.inc
-contains the definition of the meteo stations available, together with
-a list of graphs that can be produced for these stations.
+In addition, the meteograph.inc file (a sample is included with the
+distribution) must be placed in the same location as the browser script,
+and edited to fit the local situation. This file is not installed
+automatically, as this would destroy the local configuration.
 
 Make sure that for each station there is also a configuration file
 /usr/local/etc/meteo-stationname.conf, as the meteobrowser.php script
@@ -58,4 +53,4 @@ Reiser fs, but even with a standard UFS, performance will usually suffer
 much more from network latency than file system latency.
 
 --
-$Id: README.browser,v 1.5 2002/01/16 00:31:53 afm Exp $
+$Id: README.browser,v 1.6 2002/01/16 10:04:35 afm Exp $

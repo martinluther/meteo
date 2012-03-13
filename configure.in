@@ -4,7 +4,7 @@ AC_REVISION([1.0])dnl
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(meteo.h)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(meteo, 0.2.1)
+AM_INIT_AUTOMAKE(meteo, 0.2.2)
 AM_CONFIG_HEADER(config.h)
 
 dnl add support for libtool
@@ -49,5 +49,19 @@ AC_CHECK_FUNCS(strerror)
 dnl default configuration directory
 METEOCONFFILE=${sysconfdir}/meteo.conf
 AC_SUBST(METEOCONFFILE)
+
+dnl set the directory for the installation of the browser
+BROWSERDIR=""
+AC_ARG_WITH(browser-dir,
+	[  --with-browser-dir      directory to install the meteo browser])
+BROWSERDIR="${with_browser_dir}"
+AC_SUBST(BROWSERDIR)
+
+dnl set the directory for the installation of the HTML pages
+HTMLDIR=""
+AC_ARG_WITH(html-dir,
+	[  --with-html-dir         directory to install the HTML pages])
+HTMLDIR="${with_html_dir}"
+AC_SUBST(HTMLDIR)
 
 AC_OUTPUT(Makefile meteo.1)
