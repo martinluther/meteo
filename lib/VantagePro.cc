@@ -29,6 +29,10 @@ VantagePro::VantagePro(const std::string& n) : DavisStation(n, 99) {
 	// add all readers
 	addAllReaders(ReaderInfo::getReaders("VantagePro"));
 
+        // wakeup in order to flush remaining LOOP packets from the
+        // line so that they will not be interpreted as calibration data
+        wakeup(3);
+
 	// read rain collector type, and other calibration numbers
 	int	raincoll = (0x30 & eeprom(0x2b, 1)[0]) >> 4;
 	switch (raincoll) {
