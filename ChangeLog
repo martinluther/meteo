@@ -1,3 +1,9 @@
+Release 0.9.11:
+	* fixed some bugs in the NibblePacketReader class
+	* fixed a wrong class bug in RecorderFactory.cc pointed out by
+	  Eric Varsanyi
+	* some CSS and HTML changes by Aaron Spike
+
 Release 0.9.10:
 	* added CRC0 hack to be able to support type E weather links
 	* added info about USB serial interfaces on Linux
@@ -641,4 +647,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.126 2004/04/02 16:06:40 afm Exp $
+$Id: ChangeLog,v 1.127 2004/04/03 19:15:35 afm Exp $

@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: RecorderFactory.cc,v 1.9 2004/02/26 14:00:19 afm Exp $
+ * $Id: RecorderFactory.cc,v 1.10 2004/04/03 19:15:35 afm Exp $
  */
 #include <RecorderFactory.h>
 #include <Field.h>
@@ -60,7 +60,7 @@ Recorder	RecorderFactory::getRecorder(const std::string& mfieldname) {
 		br = new RainRecorder(unit);	// delete by ~Recorder
 	}
 	if (classname == "RainRate") {
-		br = new RainRecorder(unit);	// delete by ~Recorder
+		br = new RainRateRecorder(unit);	// delete by ~Recorder
 	}
 	if (classname == "Wind") {
 		br = new WindRecorder(unit);	// delete by ~Recorder

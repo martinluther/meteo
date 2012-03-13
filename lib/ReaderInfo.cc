@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: ReaderInfo.cc,v 1.8 2004/02/26 23:43:12 afm Exp $
+ * $Id: ReaderInfo.cc,v 1.9 2004/04/03 19:15:35 afm Exp $
  */
 #include <ReaderInfo.h>
 #include <mdebug.h>
@@ -73,8 +73,7 @@ static stationreaders_t	groweatherreaders[9] = {
 	{ "soil.temperature", "OldTemperatureReader", 4, 2, "F" },
 	{ "outside.temperature", "OldTemperatureReader", 6, 2, "F" },
 	{ "outside.wind", "OldWindReader", 8, 3, "mph" },
-	{ "inside.barometer", "UnsignedLittleEndianShortPacketReader",
-		11, 2, "inHg" },
+	{ "inside.barometer", "BarometerReader", 11, 2, "inHg" },
 	{ "outside.rainrate", "RainRateReader", 13, 1, "in/h" },
 	{ "outside.humidity", "SignedBytePacketReader", 14, 2, "%" },
 	{ "outside.rain", "RainReader", 15, 2, "in" },
@@ -86,8 +85,7 @@ static stationreaders_t	energyreaders[9] = {
 	{ "inside.temperature", "TemperatureReader", 4, 2, "F" },
 	{ "outside.temperature", "TemperatureReader", 6, 2, "F" },
 	{ "outside.wind", "OldWindReader", 8, 3, "mph" },
-	{ "inside.barometer", "UnsignedLittleEndianShortPacketReader",
-		11, 2, "inHg" },
+	{ "inside.barometer", "BarometerReader", 11, 2, "inHg" },
 	{ "outside.rainrate", "RainRateReader", 13, 1, "in/h" },
 	{ "outside.humidity", "SignedBytePacketReader", 14, 1, "%" },
 	{ "outside.rain", "RainReader", 15, 2, "in" },
@@ -99,8 +97,7 @@ static stationreaders_t	healthreaders[11] = {
 	{ "inside.temperature", "OldTemperatureReader", 4, 2, "F" },
 	{ "outside.temperature", "OldTemperatureReader", 6, 2, "F" },
 	{ "outside.wind", "OldWindReader", 8, 2, "mph" },
-	{ "inside.barometer", "UnsignedLittleEndianShortPacketReader",
-		11, 2, "inHg" },
+	{ "inside.barometer", "BarometerReader", 11, 2, "inHg" },
 	{ "outside.rainrate", "RainRateReader", 13, 1, "in/h" },
 	{ "outside.rain", "RainReader", 14, 2, "in" },
 	{ "outside.solar", "SignedLittleEndianShortPacketReader", 16, 2, "W/m2" },

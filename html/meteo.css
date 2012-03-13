@@ -2,7 +2,7 @@
  * meteo.css -- style sheet for the meteo website
  *
  * (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
- * $Id: meteo.css,v 1.4 2004/02/25 23:37:57 afm Exp $
+ * $Id: meteo.css,v 1.5 2004/04/03 19:15:35 afm Exp $
  */
 div#titel {
 	background: url(meteo.jpg);
@@ -39,12 +39,14 @@ div.menuitemselected {
 	background-color: #eeeeff;
 }
 
-div.menuitem:hover {
+a:hover div.menuitem {
 	background-color: #ddddff;
+	cursor: pointer;
 }
 
-div.menuitemselected:hover {
+a:hover div.menuitemselected {
 	background-color: #ddddff;
+	cursor: default;
 }
 
 div#content {

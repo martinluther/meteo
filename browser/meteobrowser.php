@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.26 2004/03/01 09:44:08 afm Exp $
+//   $Id: meteobrowser.php,v 1.27 2004/04/03 19:15:35 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -127,6 +127,7 @@ $fulltitle = $station." ".strftime($title, $timestamp);
 ?>
 
 <title><?echo $fulltitle?></title>
+<meta name="robots" content="index,nofollow">
 </head>
 <body bgcolor="#ffffff">
 

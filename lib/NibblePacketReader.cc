@@ -6,7 +6,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: NibblePacketReader.cc,v 1.3 2004/02/25 23:48:05 afm Exp $
+ * $Id: NibblePacketReader.cc,v 1.4 2004/04/03 19:15:35 afm Exp $
  */
 #include <NibblePacketReader.h>
 #include <mdebug.h>
@@ -25,10 +25,11 @@ NibblePacketReader::~NibblePacketReader(void) {
 // retrieve a nibble: the index of the nibble starts at the least significant
 //                    nibble, i.e. the low nibble of the byte pointed to by
 //                    the offset.
+// if 4 bytes are in the packet, the nibbles are numbered thus: 10 32 54 76
 unsigned int	NibblePacketReader::getNibble(int i,
 			const std::string& packet) const {
 	// retrieve the right byte from the packet
-	unsigned char	b = packet[i / 2];
+	unsigned char	b = packet[offset + (i / 2)];
 	if (i % 2) {
 		// odd nibble index, most significant nibble within a byte
 		return b >> 4;
@@ -40,8 +41,8 @@ unsigned int	NibblePacketReader::getNibble(int i,
 
 // convert the sequence of nibbles into a unsigned int
 unsigned int	NibblePacketReader::rawvalue(const std::string& packet) const {
-	unsigned int	result;
-	for (int i = 0; i < nibbles; i++) {
+	unsigned int	result = 0;
+	for (int i = nibbles - 1; i >= 0; i--) {
 		result = (result << 4) + getNibble(i, packet);
 	}
 	return result;
