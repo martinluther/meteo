@@ -1,6 +1,10 @@
 TODO
 ----
 
+* support i18n in the meteobrowser
+
+* add images for navigation in the meteo browser
+
 * modify tables so that the group number can also be indexed
 
 * create indexes to speed up search
@@ -14,4 +18,4 @@ TODO
 * use web colors in the graphs to avoid dither and false colors
 
 --
-$Id: TODO,v 1.6 2002/01/05 19:56:53 afm Exp $
+$Id: TODO,v 1.7 2002/01/14 23:33:13 afm Exp $

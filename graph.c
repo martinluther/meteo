@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.9 2002/01/11 19:35:19 afm Exp $
+ * $Id: graph.c,v 1.10 2002/01/14 23:33:13 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -164,12 +164,13 @@ void	graph_add_channel(graph_t *g, int flags, int color,
  *			to graph_add_data
  */
 static void	graph_channel(graph_t *g, int channel) {
-	int		flags, color, twidth, previousx = -1, previousy = -1,
+	int		flags = 0, color, twidth,
+			previousx = -1, previousy = -1,
 			tmpx, tmpy, t, i;
 	channelformat_t	*cf;
 	int		x1, y1, x2, y2;
 	time_t		when;
-	double		offset, scale, max, value;
+	double		offset = 0., scale = 0., max = 0., value = 0.;
 	int		donodata = 0;
 #define	px(x)	(tmpx = (previousx < 0) ? x : previousx, 	\
 		previousx = x, tmpx)
@@ -181,12 +182,14 @@ static void	graph_channel(graph_t *g, int channel) {
 		donodata = 1;
 
 	/* get graph parameters						*/
-	cf = &g->channelfmt[channel];
-	flags = cf->flags;
-	color = cf->color;
-	offset = cf->offset;
-	scale = cf->scale;
-	max = cf->max;
+	if (channel >= 0) {
+		cf = &g->channelfmt[channel];
+		flags = cf->flags;
+		color = cf->color;
+		offset = cf->offset;
+		scale = cf->scale;
+		max = cf->max;
+	}
 	if (debug)
 		fprintf(stderr, "%s:%d: graphing channel %d, flags = %0x, "
 			" color = %d, offset = %f, scale = %f\n", __FILE__,

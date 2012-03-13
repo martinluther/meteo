@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.2 2002/01/11 19:35:19 afm Exp $
+ * $Id: dograph.c,v 1.3 2002/01/14 23:33:13 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -20,6 +20,23 @@
 #include <time.h>
 #include <timestamp.h>
 #include <dograph.h>
+
+static void	create_filename(char *filename, int length,
+		const dograph_t *dgp, char *parameter) {
+	/* compute the file name differently with/without timestamps	*/
+	if (dgp->withtimestamps) {
+		snprintf(filename, length,
+			"%s-%s-%s-%s.png",
+			dgp->prefix, parameter, dgp->suffix, dgp->timestamp);
+	} else {
+		snprintf(filename, length,
+			"%s-%s-%s.png",
+			dgp->prefix, parameter, dgp->suffix);
+	}
+	if (debug)
+		fprintf(stderr, "%s:%d: filename: %s\n", __FILE__, __LINE__,
+			filename);
+}
 
 #define	stampformat	"%Y%m%d%H%M%S"
 graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
@@ -206,8 +223,10 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 		0);
 
 	/* compute the filename for the graph				*/
-	snprintf(filename, sizeof(filename), "%s-barometer-%s.png", dgp->prefix,
-		dgp->suffix);
+	create_filename(filename, sizeof(filename), dgp, "barometer");
+	if (debug)
+		fprintf(stderr, "%s:%d: pressure filename = %s\n",
+			__FILE__, __LINE__, filename);
 	graph_write_png(g, filename);
 	if (debug)
 		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
@@ -376,10 +395,12 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 		0);
 
 	/* compute the filename for the graph				*/
-	snprintf(filename, sizeof(filename),
-		(inside)	? "%s-temperature_inside-%s.png"
-				: "%s-temperature-%s.png",
-		dgp->prefix, dgp->suffix);
+	create_filename(filename, sizeof(filename), dgp,
+		(inside)	? "temperature_inside"
+				: "temperature");
+	if (debug)
+		fprintf(stderr, "%s:%d: temperature filename = %s\n",
+			__FILE__, __LINE__, filename);
 	graph_write_png(g, filename);
 	if (debug)
 		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
@@ -486,8 +507,10 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 		0);
 
 	/* compute the filename for the graph				*/
-	snprintf(filename, sizeof(filename), "%s-rain-%s.png",
-		dgp->prefix, dgp->suffix);
+	create_filename(filename, sizeof(filename), dgp, "rain");
+	if (debug)
+		fprintf(stderr, "%s:%d: rain filename = %s\n",
+			__FILE__, __LINE__, filename);
 	graph_write_png(g, filename);
 	if (debug)
 		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
@@ -612,8 +635,10 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 		1);
 
 	/* compute the filename for the graph				*/
-	snprintf(filename, sizeof(filename), "%s-wind-%s.png", dgp->prefix,
-		dgp->suffix);
+	create_filename(filename, sizeof(filename), dgp, "wind");
+	if (debug)
+		fprintf(stderr, "%s:%d: wind filename = %s\n",
+			__FILE__, __LINE__, filename);
 	graph_write_png(g, filename);
 	if (debug)
 		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,
@@ -722,8 +747,10 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 		1);
 
 	/* compute the filename for the graph				*/
-	snprintf(filename, sizeof(filename), "%s-radiation-%s.png",
-		dgp->prefix, dgp->suffix);
+	create_filename(filename, sizeof(filename), dgp, "radiation");
+	if (debug)
+		fprintf(stderr, "%s:%d: radiation filename = %s\n",
+			__FILE__, __LINE__, filename);
 	graph_write_png(g, filename);
 	if (debug)
 		fprintf(stderr, "%s:%d: image written to %s\n", __FILE__,

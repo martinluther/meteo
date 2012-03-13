@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.h,v 1.2 2002/01/11 19:35:19 afm Exp $
+ * $Id: dograph.h,v 1.3 2002/01/14 23:33:13 afm Exp $
  */
 #ifndef _DOGRAPH_H
 #define _DOGRAPH_H
@@ -35,9 +35,11 @@ typedef struct dograph_s {
 	MYSQL		*mysql;
 	const char	*prefix;
 	const char	*suffix;
+	const char	*timestamp;
 	time_t		end;
 	int		useaverages;
 	int		requestedgraphs;
+	int		withtimestamps;
 } dograph_t;
 
 extern graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,

@@ -15,7 +15,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.27 2002/01/11 19:35:19 afm Exp $
+# $Id: Makefile.am,v 1.30 2002/01/14 23:41:09 afm Exp $
 #
 
 
@@ -93,7 +93,7 @@ lib_LTLIBRARIES = libmeteo.la
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1		meteo.conf.5
 
 noinst_DATA = meteo.html meteodata.html rc.meteo
-EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 		meteo.conf $(noinst_DATA)						meteo.1.in meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1		meteo.conf.5
+EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 		meteo.conf $(noinst_DATA)						meteo.1.in meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1		meteo.conf.5 								README.browser meteobrowser.php stationlist.inc dummygettext.inc
 
 METEOCONFFILE = \"@METEOCONFFILE@\"
 CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)

@@ -1,0 +1,47 @@
+How to set up the meteo browser
+===============================
+
+Description
+-----------
+
+Starting with release 0.2.0, the meteo package includes a PHP script
+that can be used as a browser to the meteo database. It allows to
+view every day, week, month or year for which there is data in the
+database (and for all the others as well, but that's less interesting).
+
+Navigation is very simple: zooming in is accomplished by clicking
+into the graphs, to zoom one uses the navigation bar, the same is
+true for the `sideways' navigation.
+
+Installation
+------------
+
+The browser uses only a single PHP script: meteobrowser.php. Put this
+script wherever you want in your web server hierarchy. The directory
+containing the script must also contain a directory named cache
+writable by the web server, so that it can write images to this directory.
+
+Also put the two  auxiliary files stationlist.inc and dummygettext.inc
+into the same directory as meteobrowser.php, the latter only if your
+PHP lacks gettext support (in which case you should uncomment the 
+instructions to include it in meteobrowser.php, this file is there as
+a preparation for later i18n usin gettext). The stationlist.inc
+contains the definition of the meteo stations available, together with
+a list of graphs that can be produced for these stations.
+
+Make sure that for each station there is also a configuration file
+/usr/local/etc/meteo-stationname.conf, as the meteobrowser.php script
+calls meteograph with this configuration file for the station named
+stationname. Set the $confpath variable at the beginning of the script 
+to the directory containing the configuration files. Also configure 
+the absolute path to the cache directory in $cachedir, and the full
+path to the meteograph binary in $meteograph.
+
+Maintenance
+-----------
+
+The cache directory should be cleaned out regularly. In principle,
+all files older than a few hours can be removed from the directory.
+
+--
+$Id: README.browser,v 1.3 2002/01/14 23:41:09 afm Exp $

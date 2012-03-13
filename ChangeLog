@@ -1,3 +1,10 @@
+Release 0.2.0:
+	* added the meteobrowser.php script, which allows to graphically
+	  browse the complete database, this is currently only a first
+	  approximation.
+	* add option -t to meteograph to include timestamps in file names
+	  generated
+
 Release 0.1.9:
 	* optionally color the background in graphs if no data available
 
@@ -96,4 +103,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.21 2002/01/11 19:35:19 afm Exp $
+$Id: ChangeLog,v 1.22 2002/01/14 23:33:12 afm Exp $

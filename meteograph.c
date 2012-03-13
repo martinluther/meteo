@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteograph.c,v 1.13 2002/01/09 23:36:07 afm Exp $
+ * $Id: meteograph.c,v 1.14 2002/01/14 23:33:13 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -47,14 +47,19 @@ int	main(int argc, char *argv[]) {
 	char		*conffilename = METEOCONFFILE;
 	int		c, interval, i, G = 0;
 	dograph_t	dg;
+	time_t		t;
+	struct tm	*tp;
+	char		timestamp[64];
 
 	/* initialize defaults						*/
 	time(&dg.end);
 	dg.useaverages = 0;
 	dg.requestedgraphs = 0;
+	dg.withtimestamps = 0;
+	dg.timestamp = NULL;
 	
 	/* parse command line						*/
-	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:G:")))
+	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:G:t")))
 		switch (c) {
 		case 'c':
 			if (chdir(optarg) < 0) {
@@ -68,10 +73,15 @@ int	main(int argc, char *argv[]) {
 			break;
 		case 'e':
 			/* convert a timestamp into a time_t		*/
+			dg.timestamp = optarg;
 			dg.end = string2time(optarg);
 			if (debug)
 				printf("%s:%d: timestamp %d\n", __FILE__,
 					__LINE__, (int)dg.end);
+			break;
+		case 't':
+			/* include time stamp in generated file		*/
+			dg.withtimestamps = 1;
 			break;
 		case 'f':
 			conffilename = optarg;
@@ -134,6 +144,15 @@ int	main(int argc, char *argv[]) {
 		fprintf(stderr, "%s:%d: prefix not set in configuration file\n",
 			__FILE__, __LINE__);
 		exit(EXIT_FAILURE);
+	}
+
+	/* if the timestamp is not set, we take the current time for 	*/
+	/* timestamp							*/
+	if (NULL == dg.timestamp) {
+		time(&t);
+		tp = localtime(&t);
+		strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", tp);
+		dg.timestamp = timestamp;
 	}
 
 	for (; optind < argc; optind++) {
