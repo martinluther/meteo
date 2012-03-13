@@ -1,3 +1,7 @@
+Release 0.8.3:
+	* fixed a portability problem with BSD (pointed out by Walter Poxon)
+	* removed the gmtime2time function which is no longer necessary
+
 Release 0.8.2:
 	* implemented an idea suggested by Jeff Wabik: accumulation function
 	* implemented transparency (to make graphs visible behind nodata gray,
@@ -325,4 +329,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.69 2003/08/01 00:01:52 afm Exp $
+$Id: ChangeLog,v 1.70 2003/08/01 08:30:17 afm Exp $

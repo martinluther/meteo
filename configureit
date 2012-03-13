@@ -1,7 +1,8 @@
+#! /bin/sh
 #
 # sample configure call
 #
-# $Id: configureit,v 1.15 2003/06/27 00:11:01 afm Exp $
+# $Id: configureit,v 1.16 2003/08/01 08:30:17 afm Exp $
 #
 
 CFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
@@ -11,6 +12,7 @@ export CXXFLAGS CFLAGS
 
 case `uname` in
 	Linux)
+		# defaults I use on SuSE 8.2
 		./configure						\
 			--with-html-dir=/srv/www/htdocs/meteo		\
 			--with-browser-dir=/srv/www/htdocs/browser
@@ -22,6 +24,12 @@ case `uname` in
 		./configure						\
 			--with-html-dir=/usr/local/apache2/htdocs/meteo	\
 			--with-browser-dir=/usr/local/apache2/htdocs/browser
+		;;
+	BSD/OS)
+		# defaults proposed by Walter Poxon for BSD/OS 4.2
+		limit datasize unlimited
+		./configure						\
+			--with-browser-dir=/usr/local/apache/cgi-bin
 		;;
 esac
 

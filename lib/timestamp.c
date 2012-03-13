@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: timestamp.c,v 1.4 2003/06/12 23:29:46 afm Exp $
+ * $Id: timestamp.c,v 1.5 2003/08/01 08:30:17 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -61,28 +61,3 @@ time_t	localtime2time(const char *ts) {
 	return mktime(&tt);
 }
 
-time_t	gmtime2time(const char *ts) {
-	struct tm	tt;
-	char		*localtimezone;
-	char		tzenv[128];
-	time_t		result;
-
-	/* break up time						*/
-	if (breakup_time(&tt, ts) < 0)
-		return -1;
-
-	/* find the current timezone					*/
-	tzset();
-	localtimezone = strdup((tzname[0]) ? tzname[0] : "GMT");
-	snprintf(tzenv, sizeof(tzenv), "TZ=GMT");
-	putenv(tzenv);
-
-	/* make time from that						*/
-	result = mktime(&tt);
-
-	/* reset the time zone we had previously			*/
-	snprintf(tzenv, sizeof(tzenv), "TZ=%s", localtimezone);
-	free(localtimezone);
-
-	return result;
-}

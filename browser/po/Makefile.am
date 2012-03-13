@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.4 2003/07/26 07:42:44 afm Exp $
+# $Id: Makefile.am,v 1.5 2003/08/01 08:30:17 afm Exp $
 #
 BROWSERDIR = @BROWSERDIR@
 LOCDIR = $(BROWSERDIR)/locale
@@ -11,14 +11,15 @@ LOCDIR = $(BROWSERDIR)/locale
 EXTRA_DIST = meteobrowser.pot de.po en.po pt_BR.po
 MOFILES = de.mo en.mo pt_BR.mo
 
+# apparently some makes don't understand $< and $@, so we try to be explicit
 de.mo:	de.po
-	msgfmt -o $@ $<
+	msgfmt -o de.mo de.po
 
 en.mo:	en.po
-	msgfmt -o $@ $<
+	msgfmt -o en.mo en.po
 
 pt_BR.mo:	pt_BR.po
-	msgfmt -o $@ $<
+	msgfmt -o pt_BR.mo pt_BR.po
 
 all-local:	de.mo en.mo pt_BR.mo
 
