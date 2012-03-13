@@ -99,8 +99,22 @@ msgstr ""
 "M&uuml;ller</a>, <a href=\"http://www.othello.ch/\">Beratung und "
 "Entwicklung</a>"
 
+msgid "The <font color=\"#b40000\">red</font> curve shows inside "
+"temperature, the <font color=\"#ffb4b4\">light red</font> "
+"area shows the range between maximum and minimum temperature "
+"during the sampling interval."
+msgstr "The <font color=\"#b40000\">red</font> curve shows inside "
+"temperature, the <font color=\"#ffb4b4\">light red</font> "
+"area shows the range between maximum and minimum temperature "
+"during the sampling interval."
 
+msgid "The <font color=\"#7f7fff\">blue</font> graph shows "
+"relative humidity."
+msgstr "The <font color=\"#7f7fff\">blue</font> graph shows "
+"relative humidity."
 
-
-
+msgid "The <font color=\"#7f7fff\">blue</font> graph shows "
+"inside relative humidity."
+msgstr "The <font color=\"#7f7fff\">blue</font> graph shows "
+"inside relative humidity."
 

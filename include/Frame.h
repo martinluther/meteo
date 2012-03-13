@@ -7,103 +7,12 @@
 #ifndef _Frame_h 
 #define _Frame_h
 
-#include <Configuration.h>
-#include <string>
-#include <time.h>
+#include <Dimension.h>
+#include <Rectangle.h>
+#include <Color.h>
+#include <Label.h>
 
 namespace meteo {
-
-// Points use the coordinate system of the inner frame (so the dont remember
-// the lower left point where the inner frame is attached).
-class Point {
-	int	x, y;
-public:
-	Point(void) { x = 0; y = 0; }
-	Point(int xx, int yy) { x = xx; y = yy; }
-	int	getX(void) const { return x; }
-	int	getY(void) const { return y; }
-	~Point(void) { }
-};
-
-class Dimension {
-	int	width, height;
-public:
-	Dimension(int w, int h) { width = w; height = h; }
-	Dimension(const Configuration& conf, const std::string& xpath);
-	~Dimension(void) { }
-	int	getWidth(void) const { return width; }
-	int	getHeight(void) const { return height; }
-	bool	containsPoint(const Point& p) {
-		return ((p.getX() >= 0) && (p.getX() < width)
-			&& (p.getY() >= 0) && (p.getY() < height));
-	}
-};
-
-class Rectangle {
-	Point	lowerleft;
-	Point	upperright;
-public:
-	Rectangle(void) : lowerleft(0, 0), upperright(0, 0) { }
-	Rectangle(const Point& ll, const Point& ur)
-		: lowerleft(ll), upperright(ur) {
-	}
-	Rectangle(const Configuration& conf, const std::string& xpath);
-	~Rectangle(void) { }
-	int	getWidth(void) const {
-		return upperright.getX() - lowerleft.getX();
-	}
-	int	getHeight(void) const {
-		return upperright.getY() - lowerleft.getY();
-	}
-	const Point&	getLowerLeft(void) const { return lowerleft; }
-	const Point&	getUpperRight(void) const { return upperright; }
-	int	getLow(void) const { return lowerleft.getY(); }
-	int	getHigh(void) const { return upperright.getY(); }
-	int	getLeft(void) const { return lowerleft.getX(); }
-	int	getRight(void) const { return upperright.getX(); }
-	bool	containsPoint(const Point& p) {
-		return ((lowerleft.getX() <= p.getX()) &&
-			(p.getX() < upperright.getX()) &&
-			(lowerleft.getY() <= p.getY()) &&
-			(p.getY() < upperright.getY()));
-	}
-};
-
-class Color {
-	int	red, green, blue, alpha;
-public:
-	Color(void) { red = 255; green = 255; blue = 255; alpha = 0; } // default white
-	Color(const std::string& hexcolorspec);
-	Color(int r, int g, int b) { red = r; green = g; blue = b; }
-	Color(int r, int g, int b, int a) {
-		red = r; green = g; blue = b; alpha = a;
-	}
-	int	getRed(void) const { return red; }
-	int	getGreen(void) const { return green; }
-	int	getBlue(void) const { return blue; }
-	int	getAlpha(void) const { return alpha; }
-	int	getValue(void) const;
-	std::string	getHex(void) const;
-	~Color(void) { }
-	bool	operator<(const Color& c) const {
-		return (getValue() < c.getValue());
-	}
-};
-
-typedef enum labelalign_e {
-	top, center, bottom
-} 	labelalign_t;
-
-class Label {
-	std::string	text;
-	labelalign_t	align;
-public:
-	Label(const std::string& t, labelalign_t a) : text(t), align(a) { }
-	Label(const Configuration& conf, const std::string& xpath);
-	~Label(void) { }
-	const std::string&	getText(void) const { return text; }
-	const labelalign_t	getAlign(void) const { return align; }
-};
 
 class	frame_internals;
 

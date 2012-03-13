@@ -430,7 +430,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="include/meteo.h"
+ac_unique_file="include/crc.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -1801,7 +1801,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=meteo
- VERSION=0.8.6
+ VERSION=0.9.0
 
 
 cat >>confdefs.h <<_ACEOF
@@ -10573,9 +10573,10 @@ fi
 
 
 
+
 for ac_header in argz.h arpa/inet.h fcntl.h malloc.h memory.h netdb.h \
 netinet/in.h stdio.h stdlib.h string.h strings.h sys/socket.h sys/time.h \
-syslog.h signal.h termios.h unistd.h sys/msg.h sys/ipc.h alloca.h
+syslog.h signal.h termios.h unistd.h sys/msg.h sys/ipc.h alloca.h errno.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
@@ -12561,8 +12562,11 @@ done
 
 
 
+
+
+
 for ac_func in alarm gethostbyname gettimeofday memmove memset putenv select \
-socket sqrt strcasecmp strchr strdup strerror strrchr tzset
+socket sqrt strcasecmp strchr strdup strerror strrchr tzset floor pow strtol
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -12693,7 +12697,7 @@ HTMLDIR="${with_html_dir}"
 CONFIGDATE=`date +"%B %d, %Y" | tr 'A-Z' 'a-z'`
 
 
-                                                                                                                                                      ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile browser/Makefile browser/po/Makefile db/Makefile man/Makefile man/meteo.1 html/meteo.html"
+                                                                                                                                                      ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile browser/Makefile browser/po/Makefile db/Makefile man/Makefile man/meteo.1 html/news.html"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -13271,7 +13275,7 @@ do
   "db/Makefile" ) CONFIG_FILES="$CONFIG_FILES db/Makefile" ;;
   "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
   "man/meteo.1" ) CONFIG_FILES="$CONFIG_FILES man/meteo.1" ;;
-  "html/meteo.html" ) CONFIG_FILES="$CONFIG_FILES html/meteo.html" ;;
+  "html/news.html" ) CONFIG_FILES="$CONFIG_FILES html/news.html" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "include/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

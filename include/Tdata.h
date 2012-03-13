@@ -60,6 +60,8 @@ public:
 	friend Tdata	azi(const Tdata& x, const Tdata& y);
 	friend Tdata	hypot(const Tdata& a, const Tdata& b);
 	friend Tdata	dewpoint(const Tdata& hum, const Tdata& temp);
+	friend Tdata	heatindex(const Tdata& hum, const Tdata& temp);
+	friend Tdata	windchill(const Tdata& speed, const Tdata& temp);
 	friend Tdata	max(const Tdata& a, const Tdata& b);
 	friend Tdata	min(const Tdata& a, const Tdata& b);
 

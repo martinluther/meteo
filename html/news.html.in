@@ -1,0 +1,66 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
+<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
+</head>
+<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
+<img src="normband.jpg" width="841" height="150" border="0">
+<p><h1>News</h1>
+<p>
+Development of release 0.9.0 was sponsored by the University
+<a href="http://www.univates.br/" target="_new">Univates</a> in
+<a href="http://www.lajeado.com.br" target="_new">Lajeado</a> in Southern Brazil
+(State Rio Grande do Sul).
+I would like to thank the University for their generous support,
+and all the people involved for their continued help and encouragment.
+</p>
+<p>
+The current release (version @VERSION@) was published on @CONFIGDATE@.
+See the <a href="NEWS">NEWS</a> file for the most important changes
+in this release.
+For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.
+</p>
+<p>
+Version 0.9.0 is a major rewrite of many aspects of meteo. 
+<ul>
+<li>New database structure: the wide tables used in previous releases
+have proved too inflexible when adding new fields. Dealing with a
+fully equipped VantagePro station would need a much wider table,
+a simple Weather Monitor would hardly produce anything but NULL values
+in such a table. The database now uses a very narrow table with a
+single value per row. See the README file in the db directory of
+the distribution.</li>
+<li>Configurable set of sensors: The configuration file now specifies
+the set of sensors a station is equipped with.</li>
+<li>Calibration: station data now is corrected with all the
+available calibration numbers.</li>
+<li>Extensible design: The software is now much better structured
+and adding new sensors or weather stations should be easier now.</li>
+</ul>
+Without the support of <a href="http://www.univates.br/" target="_new">Univates</a>,
+such radical changes would not have been possible.
+</p>
+
+<p>Here are some highlights of the recent release history:
+Release 0.7.0 comes with a rewrite of the backend, and deals much
+better with missing data (NULLs in the database instead of special
+values, that loose their special meaning when averagin).
+Release 0.8.0 introduces a new graphing backend which is much
+more flexible than in previous releases.
+</p>
+<p>
+Walter Poxon has contributed an
+<a href="meteo-install.html" target="_top">Installation Howto</a>
+(thanks Walter!),
+which goes into some more detail. He also wrote some scripts to upload
+weather data to the
+<a href="http://www.weatherunderground.com/" target="_new">Weather Underground</a>
+(these scripts no longer work with the new database, hopefully they
+will be updated in a future release).
+His work was for for a previous release, and some things have changed
+slightly, but it is still helpful as a guide through the installation.
+</p>
+</body>
+</html>

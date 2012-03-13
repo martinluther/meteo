@@ -13,7 +13,6 @@
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
-#include <meteo.h>
 #include <mdebug.h>
 
 static unsigned short crc_table [256] = {

@@ -7,28 +7,37 @@
 #define _Query_h
 
 #include <string>
-#include <Configuration.h>
-#include <MeteoValue.h>
-#include <vector>
+#include <list>
 #include <Tdata.h>
 #include <Datarecord.h>
+#include <FQField.h>
 
 namespace meteo {
 
 typedef	std::map<std::string, std::string>	smap_t;
+typedef std::map<fieldid, std::string>		imap_t;
 
 // The Query class encapsulates queries for a set of data fields and a given
 // interval. It thus represents a vertical section through the table. This
 // class is not very useful to access all data in a row, the QueryProcessor
 // class is capable of retrieving entire records
 class	Query {
+	// the smap_t select maps symbolic names to field names in the old
+	// structure of the database. In the new structure, these field
+	// names no longer exist, so the query object now converts the
+	// fully qualified field names to field ids and sensor ids
 	smap_t	select;
+	// the imap_t idmap maps field ids to the symbolic name of the field
+	// in select, so that the query processor can map ids retrieved
+	// from the database to the right dataset
+	imap_t	idmap;
 	time_t	start, end;
 	int	interval;
+	int	offset;
 public:
-	Query(void) { }
+	Query(void) { offset = 0; }
 	Query(int i, time_t s, time_t e) {
-		interval = i; start = s - s%i; end = e - e%i;
+		interval = i; start = s - s % i; end = e - e % i; offset = 0;
 	}
 	~Query(void) { }
 
@@ -39,53 +48,18 @@ public:
 	time_t	getStart(void) const { return start; }
 	void	setEnd(time_t e) { end = e; }
 	time_t	getEnd(void) const { return end; }
-	void	addSelect(const std::string& n, const std::string& s) {
-		select[n] = s;
-	}
+	void	addSelect(const std::string& n, const std::string& fqfieldname);
 	int	getSelectCount(void) const { return select.size(); }
+	void	setOffset(int o) { offset = o; }
+	int	getOffset(void) const { return offset; }
+	std::string	getNameById(const fieldid& id) const;
 
 	// more complex accessors 
-	std::string	getSelectClause(void) const;
-	std::string	getWhereClause(void) const;
 	std::string	getQuery(void) const;
 
 	// the QueryProcessor is a friend class so that it can access
 	// the internal fields
 	friend class QueryProcessor_internal;
-};
-
-class	QueryResult {
-	dmap_t	data;
-public:
-	QueryResult(void) { }
-	~QueryResult(void) { }
-	void	addTdata(const std::string& n, const Tdata& d) { data[n] = d; }
-	bool	existsItem(const std::string& dataname, time_t timekey) const;
-	double	fetchItem(const std::string& dataname, time_t timekey) const;
-	const dmap_t&	getData(void) const { return data; }
-	// allow the QueryProcessor to directly work with the data fields
-	// to save copying
-	friend class QueryProcessor_internal;
-};
-
-// the QueryProcessor_internal class hides the fact that a MySQL database
-// is used, to simplify porting to some other database (code that depends
-// on QueryProcessor does not depend on the type of database)
-class	QueryProcessor_internal;
-
-// the QueryProcessor either executes a Query-object and returns a QueryResult
-// or it can be used to retrieve a certain DataRecord directly
-class 	QueryProcessor {
-	std::string		stationname;
-	const Configuration&	configuration;
-	QueryProcessor_internal	*internal;
-public:
-	QueryProcessor(const Configuration& conf, const std::string& name);
-	~QueryProcessor(void) { }
-
-	void	perform(const Query& query, QueryResult& result);
-	Datarecord	lastRecord(const time_t notafter, int window = 3600);
-	Datarecord	firstRecord(const time_t notbefore, int window = 3600);
 };
 
 } /* namespace meteo */

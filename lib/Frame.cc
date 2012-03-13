@@ -9,103 +9,12 @@
 #include <Configuration.h>
 #include <gd.h>
 #include <gdfonts.h>
-#include <map>
 #include <mdebug.h>
 #include <errno.h>
 #include <string.h>
 #include <algo.h>
 
 namespace meteo {
-
-//////////////////////////////////////////////////////////////////////
-// Dimension class methods
-Dimension::Dimension(const Configuration& conf, const std::string& xpath) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "constructing Dimension from %s",
-		xpath.c_str());
-	height = conf.getInt(xpath + "/@height", 144);
-	width = conf.getInt(xpath + "/@width", 500);
-}
-
-//////////////////////////////////////////////////////////////////////
-// Rectangle class methods
-Rectangle::Rectangle(const Configuration& conf, const std::string& xpath) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "constructing rectangle from %s",
-		xpath.c_str());
-	int	x, y;
-	x = conf.getInt(xpath + "/@llx", 45);
-	y = conf.getInt(xpath + "/@lly", 19);
-	lowerleft = Point(x, y);
-	x = conf.getInt(xpath + "/@urx", 445);
-	y = conf.getInt(xpath + "/@ury", 139);
-	upperright = Point(x, y);
-}
-
-//////////////////////////////////////////////////////////////////////
-// Color class methods
-
-Color::Color(const std::string& hexcolorspec) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "construct color %s",
-		hexcolorspec.c_str());
-	std::string	cs = hexcolorspec;
-	// remove leading hash character if present
-	if (hexcolorspec[0] == '#') {
-		cs = hexcolorspec.substr(1);
-	}
-	// check that the length is ok, throw exception otherwise
-	if ((cs.length() != 6) && (cs.length() != 8)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "illegal web color "
-			"specification: [%s]", hexcolorspec.c_str());
-		throw MeteoException("illegal color specification",
-			"[" + hexcolorspec + "]");
-	}
-
-	// split the color specification into three strings, and convert
-	// every piece from hex to decimal
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "converting %s to rgb", cs.c_str());
-	red = strtol(cs.substr(0, 2).c_str(), NULL, 16);
-	green = strtol(cs.substr(2, 2).c_str(), NULL, 16);
-	blue = strtol(cs.substr(4, 2).c_str(), NULL, 16);
-
-	// retrieve the alpha channel if present
-	if (cs.length() == 8) {
-		alpha = strtol(cs.substr(6, 2).c_str(), NULL, 16);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d/%d/%d/%d",
-			hexcolorspec.c_str(), red, green, blue, alpha);
-	} else {
-		alpha = 0;
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d/%d/%d",
-			hexcolorspec.c_str(), red, green, blue);
-	}
-}
-
-int	Color::getValue(void) const {
-	return gdTrueColorAlpha(red, green, blue, alpha);
-}
-
-std::string	Color::getHex(void) const {
-	char	buffer[80];
-	snprintf(buffer, sizeof(buffer), "#%02x%02x%02x", red, green, blue);
-	if (alpha > 0) {
-		snprintf(buffer + 7, sizeof(buffer) - 7, "%02x", alpha);
-	}
-	return std::string(buffer);
-}
-
-//////////////////////////////////////////////////////////////////////
-// Label class methods
-Label::Label(const Configuration& conf, const std::string& xpath) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "constructing label from %s",
-		xpath.c_str());
-	std::string	alignment = conf.getString(xpath + "/@align", "center");
-	if ("center" == alignment)
-		align = center;
-	if ("top" == alignment)
-		align = top;
-	if ("bottom" == alignment)
-		align = bottom;
-	text = conf.getString(xpath, "label");
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "label text: %s", text.c_str());
-}
 
 //////////////////////////////////////////////////////////////////////
 // Frame internal class and methods
@@ -314,7 +223,7 @@ void	frame_internals::toFile(const std::string& filename) const {
 		mdebug(LOG_ERR, MDEBUG_LOG, 0,
 			"cannot open output file '%s': %s (%d)",
 			filename.c_str(), strerror(errno), errno);
-		throw MeteoException(std::string("cannot open output file")
+		throw MeteoException(std::string("cannot open output file ")
 			+ filename, strerror(errno));
 	}
 	gdImagePng(gd, file);
@@ -338,7 +247,7 @@ Frame::Frame(const Frame& other) : outer(other.outer) {
 }
 
 Frame::~Frame(void) {
-	if (!fi->refcount--) {
+	if (!--fi->refcount) {
 		delete fi;
 		fi = NULL;
 	}

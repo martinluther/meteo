@@ -7,31 +7,11 @@
 #ifndef _Timelabel_h
 #define _Timelabel_h
 
+#include <Level.h>
 #include <string>
 #include <time.h>
 
 namespace meteo {
-
-typedef enum level_e {
-	hour = 0, day = 1, week = 2, month = 3, year = 4
-}	level_t;
-
-class	Level {
-	level_t	level;
-public:
-	Level(void) { level = day; }
-	Level(level_t l) : level(l) { }
-	Level(int interval);
-	Level(const std::string& levelname);
-	Level(const char c);
-	~Level(void) { }
-	level_t	getLevel(void) const { return level; }
-	std::string	getLevelString(void) const;
-	int	getInterval(void) const;
-	int	getDuration(void) const;
-	Level	up(void) const;
-	Level	down(void) const;
-};
 
 class	Timelabel {
 	time_t		midtime;

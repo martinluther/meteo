@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.23 2003/08/24 14:46:40 afm Exp $
+# $Id: Makefile.am,v 1.35 2003/10/25 13:17:48 afm Exp $
 #
 
 srcdir = @srcdir@
@@ -158,18 +158,62 @@ VERSION_FILE = ../include/meteo_vers.h
 libmeteo_la_LDFLAGS = -version-info `../shtool version -d libtool $(VERSION_FILE)`
 
 libmeteo_la_SOURCES = \
-	MeteoException.cc MeteoValue.cc Vector.cc Wind.cc Rain.cc	\
-	Converter.cc Channel.cc Timeval.cc Station.cc Configuration.cc	\
-	Datasink.cc Pidfile.cc Dataset.cc Timelabel.cc Dewpoint.cc	\
-	Tdata.cc Query.cc Frame.cc GraphWindow.cc Graphics.cc		\
+	MeteoException.cc Vector.cc					\
+	BasicValue.cc Value.cc VoltageValue.cc TransmitterStatus.cc	\
+	TemperatureValue.cc HumidityValue.cc PressureValue.cc		\
+	SolarValue.cc UVValue.cc MoistureValue.cc LeafwetnessValue.cc	\
+	LevelValue.cc WindSpeed.cc Wind.cc Rain.cc RainRate.cc		\
+	BasicValueFactory.cc ValueFactory.cc				\
+	BasicRecorder.cc Recorder.cc MinmaxRecorder.cc 			\
+	TemperatureRecorder.cc HumidityRecorder.cc PressureRecorder.cc	\
+	SolarRecorder.cc UVRecorder.cc MoistureRecorder.cc 		\
+	LeafwetnessRecorder.cc LevelRecorder.cc VoltageRecorder.cc	\
+	WindRecorder.cc RainRecorder.cc RainRateRecorder.cc		\
+	RecorderFactory.cc TransmitterRecorder.cc			\
+	DataRecorder.cc							\
+	Converter.cc BasicConverter.cc ConverterFactory.cc		\
+	TemperatureConverter.cc HumidityConverter.cc 			\
+	PressureConverter.cc SolarConverter.cc UVConverter.cc		\
+	RainConverter.cc RainRateConverter.cc 				\
+	MoistureConverter.cc LeafwetnessConverter.cc LevelConverter.cc	\
+	WindConverter.cc VoltageConverter.cc TransmitterConverter.cc	\
+	Configuration.cc Field_internals.cc Field.cc StationInfo.cc	\
+	FQField.cc FQField_internals.cc					\
+	Timeval.cc 							\
+	Channel.cc SerialChannel.cc TcpChannel.cc FileChannel.cc	\
+	ChannelFactory.cc						\
+	SensorStationInfo.cc SensorStation.cc				\
+	Station.cc DavisStation.cc OldDavisStation.cc WMII.cc 		\
+	GroWeather.cc Energy.cc	Health.cc VantagePro.cc			\
+	ReaderInfo.cc StationFactory.cc					\
+	Calibrator.cc							\
+	PacketReader.cc BasicPacketReader.cc				\
+	BytePacketReader.cc ShortPacketReader.cc NibblePacketReader.cc	\
+	TemperatureReader.cc OldTemperatureReader.cc			\
+	ExtraTemperatureReader.cc BarometerReader.cc UVReader.cc	\
+	WMIIWindReader.cc VantageProWindReader.cc OldWindReader.cc	\
+	RainReader.cc RainRateReader.cc TimeReader.cc VoltageReader.cc	\
+	PacketReaderFactory.cc						\
+	Level.cc Timelabel.cc 						\
+	Datasink.cc Pidfile.cc Dataset.cc				\
+	Derivedvalue.cc Dewpoint.cc Heatindex.cc Windchill.cc		\
+	Query.cc QueryResult.cc QueryProcessor.cc			\
+	Tdata.cc 							\
+	Point.cc Dimension.cc Rectangle.cc Color.cc Label.cc Frame.cc	\
+	Scale.cc Axis.cc GraphPoint.cc MapArea.cc ImageMap.cc 		\
+	GraphWindow.cc 							\
+	Graphics.cc							\
 	Datarecord.cc							\
+	Averager.cc							\
+	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\
+	Timestamp.cc							\
 	crc.c 								\
-	meteo.c 			 				\
-	msgque.c xmlconf.c 						\
-	average.c database.c timestamp.c 				\
-	daemon.c printver.c						\
-	pdebug.c mdebug.c  
+	Daemon.cc							\
+	printver.c							\
+	mdebug.c  
 
+
+EXTRA_DIST = README
 subdir = lib
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
@@ -177,37 +221,157 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
 libmeteo_la_LIBADD =
-am_libmeteo_la_OBJECTS = MeteoException.lo MeteoValue.lo Vector.lo \
-	Wind.lo Rain.lo Converter.lo Channel.lo Timeval.lo Station.lo \
-	Configuration.lo Datasink.lo Pidfile.lo Dataset.lo Timelabel.lo \
-	Dewpoint.lo Tdata.lo Query.lo Frame.lo GraphWindow.lo \
-	Graphics.lo Datarecord.lo crc.lo meteo.lo msgque.lo xmlconf.lo \
-	average.lo database.lo timestamp.lo daemon.lo printver.lo \
-	pdebug.lo mdebug.lo
+am_libmeteo_la_OBJECTS = MeteoException.lo Vector.lo BasicValue.lo \
+	Value.lo VoltageValue.lo TransmitterStatus.lo \
+	TemperatureValue.lo HumidityValue.lo PressureValue.lo \
+	SolarValue.lo UVValue.lo MoistureValue.lo LeafwetnessValue.lo \
+	LevelValue.lo WindSpeed.lo Wind.lo Rain.lo RainRate.lo \
+	BasicValueFactory.lo ValueFactory.lo BasicRecorder.lo \
+	Recorder.lo MinmaxRecorder.lo TemperatureRecorder.lo \
+	HumidityRecorder.lo PressureRecorder.lo SolarRecorder.lo \
+	UVRecorder.lo MoistureRecorder.lo LeafwetnessRecorder.lo \
+	LevelRecorder.lo VoltageRecorder.lo WindRecorder.lo \
+	RainRecorder.lo RainRateRecorder.lo RecorderFactory.lo \
+	TransmitterRecorder.lo DataRecorder.lo Converter.lo \
+	BasicConverter.lo ConverterFactory.lo TemperatureConverter.lo \
+	HumidityConverter.lo PressureConverter.lo SolarConverter.lo \
+	UVConverter.lo RainConverter.lo RainRateConverter.lo \
+	MoistureConverter.lo LeafwetnessConverter.lo LevelConverter.lo \
+	WindConverter.lo VoltageConverter.lo TransmitterConverter.lo \
+	Configuration.lo Field_internals.lo Field.lo StationInfo.lo \
+	FQField.lo FQField_internals.lo Timeval.lo Channel.lo \
+	SerialChannel.lo TcpChannel.lo FileChannel.lo ChannelFactory.lo \
+	SensorStationInfo.lo SensorStation.lo Station.lo \
+	DavisStation.lo OldDavisStation.lo WMII.lo GroWeather.lo \
+	Energy.lo Health.lo VantagePro.lo ReaderInfo.lo \
+	StationFactory.lo Calibrator.lo PacketReader.lo \
+	BasicPacketReader.lo BytePacketReader.lo ShortPacketReader.lo \
+	NibblePacketReader.lo TemperatureReader.lo \
+	OldTemperatureReader.lo ExtraTemperatureReader.lo \
+	BarometerReader.lo UVReader.lo WMIIWindReader.lo \
+	VantageProWindReader.lo OldWindReader.lo RainReader.lo \
+	RainRateReader.lo TimeReader.lo VoltageReader.lo \
+	PacketReaderFactory.lo Level.lo Timelabel.lo Datasink.lo \
+	Pidfile.lo Dataset.lo Derivedvalue.lo Dewpoint.lo Heatindex.lo \
+	Windchill.lo Query.lo QueryResult.lo QueryProcessor.lo Tdata.lo \
+	Point.lo Dimension.lo Rectangle.lo Color.lo Label.lo Frame.lo \
+	Scale.lo Axis.lo GraphPoint.lo MapArea.lo ImageMap.lo \
+	GraphWindow.lo Graphics.lo Datarecord.lo Averager.lo \
+	MsgCommon.lo MsgQueuer.lo MsgDequeuer.lo Timestamp.lo crc.lo \
+	Daemon.lo printver.lo mdebug.lo
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Channel.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Configuration.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Averager.Plo ./$(DEPDIR)/Axis.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BarometerReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BasicConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BasicPacketReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BasicRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BasicValue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BasicValueFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/BytePacketReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Calibrator.Plo ./$(DEPDIR)/Channel.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ChannelFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Color.Plo ./$(DEPDIR)/Configuration.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Converter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ConverterFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Daemon.Plo ./$(DEPDIR)/DataRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Datarecord.Plo ./$(DEPDIR)/Dataset.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Datasink.Plo ./$(DEPDIR)/Dewpoint.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Frame.Plo ./$(DEPDIR)/GraphWindow.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Graphics.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Datasink.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/DavisStation.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Derivedvalue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Dewpoint.Plo ./$(DEPDIR)/Dimension.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Energy.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ExtraTemperatureReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/FQField.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/FQField_internals.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Field.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Field_internals.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/FileChannel.Plo ./$(DEPDIR)/Frame.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/GraphPoint.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/GraphWindow.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Graphics.Plo ./$(DEPDIR)/GroWeather.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Health.Plo ./$(DEPDIR)/Heatindex.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/HumidityConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/HumidityRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/HumidityValue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ImageMap.Plo ./$(DEPDIR)/Label.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LeafwetnessConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LeafwetnessRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LeafwetnessValue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Level.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LevelConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LevelRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/LevelValue.Plo ./$(DEPDIR)/MapArea.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/MeteoException.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/MeteoValue.Plo ./$(DEPDIR)/Pidfile.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Query.Plo ./$(DEPDIR)/Rain.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Station.Plo ./$(DEPDIR)/Tdata.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Timelabel.Plo ./$(DEPDIR)/Timeval.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Vector.Plo ./$(DEPDIR)/Wind.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/average.Plo ./$(DEPDIR)/crc.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/daemon.Plo ./$(DEPDIR)/database.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mdebug.Plo ./$(DEPDIR)/meteo.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/msgque.Plo ./$(DEPDIR)/pdebug.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/printver.Plo ./$(DEPDIR)/timestamp.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/xmlconf.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/MinmaxRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MoistureConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MoistureRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MoistureValue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MsgCommon.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MsgDequeuer.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MsgQueuer.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/NibblePacketReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/OldDavisStation.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/OldTemperatureReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/OldWindReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PacketReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PacketReaderFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Pidfile.Plo ./$(DEPDIR)/Point.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PressureConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PressureRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/PressureValue.Plo ./$(DEPDIR)/Query.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/QueryProcessor.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/QueryResult.Plo ./$(DEPDIR)/Rain.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainRate.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainRateConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainRateReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainRateRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RainRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ReaderInfo.Plo ./$(DEPDIR)/Recorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/RecorderFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Rectangle.Plo ./$(DEPDIR)/Scale.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SensorStation.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SensorStationInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SerialChannel.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ShortPacketReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SolarConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SolarRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/SolarValue.Plo ./$(DEPDIR)/Station.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/StationFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/StationInfo.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TcpChannel.Plo ./$(DEPDIR)/Tdata.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TemperatureConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TemperatureReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TemperatureRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TemperatureValue.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TimeReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Timelabel.Plo ./$(DEPDIR)/Timestamp.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Timeval.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TransmitterConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TransmitterRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/TransmitterStatus.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/UVConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/UVReader.Plo ./$(DEPDIR)/UVRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/UVValue.Plo ./$(DEPDIR)/Value.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ValueFactory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/VantagePro.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/VantageProWindReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Vector.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/VoltageConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/VoltageReader.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/VoltageRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/VoltageValue.Plo ./$(DEPDIR)/WMII.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/WMIIWindReader.Plo ./$(DEPDIR)/Wind.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/WindConverter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/WindRecorder.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/WindSpeed.Plo ./$(DEPDIR)/Windchill.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/crc.Plo ./$(DEPDIR)/mdebug.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/printver.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -224,7 +388,7 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(libmeteo_la_SOURCES)
-DIST_COMMON = Makefile.am Makefile.in
+DIST_COMMON = README Makefile.am Makefile.in
 SOURCES = $(libmeteo_la_SOURCES)
 
 all: all-am
@@ -273,38 +437,139 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Averager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Axis.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BarometerReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasicConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasicPacketReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasicRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasicValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasicValueFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BytePacketReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Calibrator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Channel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChannelFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Color.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Converter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConverterFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Daemon.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataRecorder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Datarecord.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Dataset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Datasink.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DavisStation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Derivedvalue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Dewpoint.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Dimension.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Energy.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExtraTemperatureReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FQField.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FQField_internals.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Field.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Field_internals.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileChannel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Frame.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GraphPoint.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GraphWindow.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Graphics.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GroWeather.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Health.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Heatindex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HumidityConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HumidityRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HumidityValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ImageMap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Label.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeafwetnessConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeafwetnessRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeafwetnessValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Level.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LevelConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LevelRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LevelValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapArea.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeteoException.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeteoValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MinmaxRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MoistureConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MoistureRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MoistureValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MsgCommon.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MsgDequeuer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MsgQueuer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NibblePacketReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OldDavisStation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OldTemperatureReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OldWindReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PacketReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PacketReaderFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Pidfile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Point.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Query.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryProcessor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rain.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainRate.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainRateConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainRateReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainRateRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RainRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReaderInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Recorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RecorderFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rectangle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Scale.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SensorStation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SensorStationInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SerialChannel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShortPacketReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SolarConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SolarRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SolarValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Station.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StationFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StationInfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TcpChannel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Tdata.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TemperatureValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeReader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timelabel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timestamp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timeval.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TransmitterConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TransmitterRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TransmitterStatus.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UVConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UVReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UVRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UVValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Value.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ValueFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VantagePro.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VantageProWindReader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Vector.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VoltageConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VoltageReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VoltageRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VoltageValue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WMII.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WMIIWindReader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Wind.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/average.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindConverter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindRecorder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindSpeed.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Windchill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daemon.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/database.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mdebug.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteo.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msgque.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pdebug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printver.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timestamp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmlconf.Plo@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

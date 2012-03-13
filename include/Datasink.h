@@ -7,12 +7,11 @@
 #ifndef _Datasink_h
 #define _Datasink_h
 
-#include <Configuration.h>
-#include <string>
+#include <MeteoTypes.h>
 #include <fstream>
 #include <iostream>
-#include <mysql.h>
-#include <msgque.h>
+#include <QueryProcessor.h>
+#include <MsgQueuer.h>
 
 namespace meteo {
 
@@ -21,6 +20,7 @@ public:
 	Datasink(void) { }
 	virtual	~Datasink(void) { }
 	virtual void	receive(const std::string& query);
+	virtual void	receive(const stringlist queries);
 };
 
 class	FileDatasink : public Datasink {
@@ -34,15 +34,15 @@ public:
 };
 
 class	MysqlDatasink : public Datasink {
-	MYSQL	mysql;
+	QueryProcessor	qp;
 public:
-	MysqlDatasink(const Configuration& conf);
+	MysqlDatasink(void);
 	virtual ~MysqlDatasink(void);
 	virtual void	receive(const std::string& query);
 };
 
 class	QueueDatasink : public Datasink {
-	msgque_t	*mq;
+	MsgQueuer	mq;
 public:
 	QueueDatasink(const std::string& queuename);
 	virtual	~QueueDatasink(void);
@@ -55,14 +55,10 @@ class	DatasinkFactory {
 static dsf	*d;
 public:
 	DatasinkFactory(void);
-	DatasinkFactory(const Configuration& conf);
-	DatasinkFactory(const Configuration& conf,
-		const std::vector<std::string>& prefs);
+	DatasinkFactory(const stringlist& prefs);
 	virtual ~DatasinkFactory(void);
-	void	setConfiguration(const Configuration& conf);
-	const Configuration&	getConfiguration(void) const;
-	void	setPreferences(const std::vector<std::string>& prefs);
-	const std::vector<std::string>&	getPreferences(void) const;
+	void	setPreferences(const stringlist& prefs);
+	const stringlist&	getPreferences(void) const;
 	Datasink	*newDatasink(const std::string& name) const;
 };
 

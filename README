@@ -1,12 +1,15 @@
-                _                    ___   ___   __   
- _ __ ___   ___| |_ ___  ___        / _ \ ( _ ) / /_  
-| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | |/ _ \| '_ \ 
-| | | | | |  __/ ||  __/ (_) |_____| |_| | (_) | (_) |
-|_| |_| |_|\___|\__\___|\___/       \___(_)___(_)___/ 
+                _                    ___   ___   ___  
+ _ __ ___   ___| |_ ___  ___        / _ \ / _ \ / _ \ 
+| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | | (_) | | | |
+| | | | | |  __/ ||  __/ (_) |_____| |_| |\__, | |_| |
+|_| |_| |_|\___|\__\___|\___/       \___(_) /_(_)___/ 
                                                       
-
 What's this?
 ------------
+
+Disclaimer: this is a prerelease version, tested only for the
+WeatherMonitor II. Please report your experiences with other stations
+to afm@othello.ch or to the meteo@lists.othello.ch.
 
 This directory contains interface programs to retrieve data from a
 Davis Instruments weather station. The architecture is sufficiently
@@ -42,9 +45,10 @@ doc/uds10
 Prerequisites
 -------------
 
-Meteo compiles and works with gcc 2.95.3 and gcc 3.x, I've not tested
-any other compilers. But since the code is usually quite straight forward,
-and does not use any real GNUisms, it may also work with other compilers.
+Meteo compiles and works with gcc 2.95.3 and gcc 3.x, but I've only tested
+some gcc 3.x versions, and no non-GNU compilers. Since the code is usually
+quite straight forward, and does not use any real GNUisms, it may also work
+with other compilers.
 
 Meteo requires quite a few packages that still do not come with all the
 modern operating systems it is known to run on. Linux users have a
@@ -140,7 +144,9 @@ meteoavg	compute averages over longer intervals than one minute.
 		again improves reliablity.
 
 To produce the graphs, the separate programm meteodraw is called, usually
-from a cron job, or from within the meteobrowser PHP script.
+from a cron job, or from within the meteobrowser PHP script. More architectural
+detail can be found in the doc/architecture file.
+
 
 Installation
 ------------
@@ -156,6 +162,7 @@ MySQL tables.
 Special installation instructions for the meteo browser (meteobrowser.php)
 can be found in the file README.browser.
 
+
 Thanks
 ------
 
@@ -164,6 +171,23 @@ pointing out deficiencies in code and/or documentation), providing bug
 reports or fixes. I hope I've recorded all of them in the AUTHORS file.
 Thanks to all those who have helped.
 
+The most substantial contribution came from the university Univates
+(http://www.univates.br) in Lajeado, Rio Grande do Sul, Brazil. The
+university has sponsored the development of the 0.9.0 release. I would
+like to express my gratitude towards Univates for their generous help.
+
+
+Directions for Contributors
+---------------------------
+
+If possible, please send diffs against the most recent version of meteo.
+This can save me a lot of time and improves the probability that Your
+contribution gets included in the release. If you add something completely
+new, it may be more convenient to put it in a separate file. In this case
+send all new files, and diffs for the files that have changed. In any
+event, try to change as little as possible of the existing code, since
+extensive changes make for very large patches, that are difficult to read.
+If there is no other way, please contact me first, so that we can team up.
 
 --
-$Id: README.tmpl,v 1.8 2003/07/31 22:20:42 afm Exp $
+$Id: README.tmpl,v 1.12 2003/10/31 21:15:51 afm Exp $

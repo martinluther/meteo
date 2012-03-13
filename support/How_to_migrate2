@@ -1,0 +1,69 @@
+Database Migration to from pre 0.9.0 databases
+==============================================
+
+The database schema has changed completely in 0.9.0. The reasons for this
+change are explained elsewhere. Since there aren't any common tables between
+versions prior to 0.9.0 and 0.9.0, upgrading is relatively simple. It is
+even possible to do a testmigration of the database while version 0.8.0
+of meteo is still running. Here is how to proceed:
+
+1. Compile meteo 0.9.0: the only things needed to perform the upgrade
+   are the new database schema in db/meteo.sql and the meteodbmigrate
+   program in the src directory
+
+2. Configure: adapt the meteo.xml on the conf directory to your needs.
+   in particular, define your database connection and your stations.
+   If you want to use the new offset feature, make sure you define the
+   offset before stop xxx below.
+
+3. Install the new database tables using the db/meteo.sql file. Note
+   that this file installs definitions for the stations Altendorf,
+   Gurin and Lajeado, which will probably not be useful. Add an entry
+   to the station table for your station, and entries for all the sensor
+   stations of your station. Read meteo.sql(5) for details.
+
+4. Run the meteodbmigrate utility, read the manual page for correct
+   parameters. If you have more than one station, you will have to
+   run it once for each station.
+
+5. Although the meteodbmigrate utility also migrates the averages table
+   to the new avg table, You'll probably want to run meteoavg to
+   recompute all averages. This step is required if you are using the
+   offset feature, because the offset modifies the timekey for an average
+   value.
+
+At the end of this process you will have completely populated tables for
+the new database schema. It should be possible to test your new
+configuration files and the graphing configuration with this database.
+
+At some point you will need to decide to switch to meteo 0.9.0. This
+is done as follows:
+
+6. Install 0.9.0 (you have already compiled and tested it above)
+
+7. Copy the configuration files you prepared in step 2 above to the
+   configuration directory (usually /usr/local/etc)
+
+8. Start the meteo processes, i.e. meteopoll, meteodequeue and meteoavg.
+   meteopoll should now again collect data from the station and store it
+   in the new sdata andheader tables in database, meteoavg should compute
+   averages and store them in the new avg table. You now have some data
+   only in the old tables (until just before you started the new meteopoll),
+   and some data in the new tables. To get everything in the new tables,
+   you have to run meteodbmigrate and possibly meteoavg again.
+
+9. Until meteodbmigrate and meteoavg in step 8 are complete, your displays
+   may be incomplete, but at least the most recent data will be shown
+   and no data will be lost.
+
+Of course, you can skip 4 and 5, which saves you a meteodbmigrate
+run (which can take days on a slow machine and a large database).
+The only drawback is that if something goes wrong, you cannot go back
+to your previous installation so easily.
+
+After you have successfully migrated to 0.9.0, you can drop the tables
+stationdata and averages, they are no longer needed. It may be a good
+idea to create a backup using meteodbdump and burn it on a CD.
+
+--
+$Id: How_to_migrate2,v 1.1 2003/10/24 16:15:17 afm Exp $

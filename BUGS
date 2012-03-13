@@ -1,0 +1,23 @@
+BUGS
+----
+
+- There is a known problem with gcc 3.3 (from sunfreeware.com) on Solaris 9:
+  when an invalid humidity value is read, somewhere inside the code an
+  exception is thrown, which is not caught by a matching catch statement.
+  The same code works perfectly OK on Linux and Mac OS X, so it is quite
+  obviously a platfrom related issue. Since I'm using a sunfreeware.com
+  compiler, which is configured to use the Sun linker and assembler, it
+  looks quite likely that they are to blame (note that mico has a similar
+  problem: it will not work if built using Sun tools, due to bugs in 
+  those tools).
+
+- There are some problems with Mac OS X, the distribution tarball generated
+  on my SuSE Linux 8.2 development system compiles but does not link on
+  Mac OS X Jaguar. A distribution tarball generated on Mac OS X however
+  works OK.
+
+- The old Davis stations are not tested at all right now, so they probably
+  don't work.
+
+--
+$Id: BUGS,v 1.1 2003/10/31 21:15:51 afm Exp $

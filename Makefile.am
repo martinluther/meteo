@@ -3,13 +3,13 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.40 2003/06/08 22:50:00 afm Exp $
+# $Id: Makefile.am,v 1.41 2003/10/31 21:15:51 afm Exp $
 #
 VERSION = @VERSION@
 
 SUBDIRS = include lib src conf html browser db doc man support wunderground
 BUILTSOURCES = README
-EXTRA_DIST = shtool README.tmpl SETUP configureit
+EXTRA_DIST = shtool README.tmpl SETUP configureit BUGS
 
 README: 	README.tmpl
 	(figlet meteo-$(VERSION); cat README.tmpl) > README

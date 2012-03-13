@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mdebug.c,v 1.6 2003/06/12 23:29:46 afm Exp $
+ * $Id: mdebug.c,v 1.7 2003/10/25 13:17:48 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -125,7 +125,7 @@ void	vmdebug(int loglevel, const char *file, int line, int flags,
 			snprintf(prefix, sizeof(prefix), "%s %s[%d]:",
 				tstp, logident, getpid());
 		else
-			snprintf(prefix, sizeof(prefix), "%s %s[%d] %s:%d:",
+			snprintf(prefix, sizeof(prefix), "%s %s[%d] %s:%03d:",
 				tstp, logident, getpid(), file, line);
 
 		/* write the message to the logfile			*/
@@ -135,7 +135,7 @@ void	vmdebug(int loglevel, const char *file, int line, int flags,
 		if (MDEBUG_NOFILELINE & flags)
 			syslog(loglevel, "%s", msgbuffer);
 		else
-			syslog(loglevel, "%s:%d: %s", file, line, msgbuffer);
+			syslog(loglevel, "%s:%03d: %s", file, line, msgbuffer);
 	}
 }
 

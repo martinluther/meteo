@@ -1,0 +1,7 @@
+This directory contains implementations for all the classes of the
+meteo project. Note that the shared library will be installed, but
+no headers, so these classes are not normally useful outside the
+meteo package.
+
+--
+$Id: README,v 1.1 2003/10/24 16:15:17 afm Exp $

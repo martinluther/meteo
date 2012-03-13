@@ -66,3 +66,17 @@ msgid "Graphs produced by the <a href=\"http://meteo.othello.ch/\">meteo</a> "
 "M&uuml;ller</a>, <a href=\"http://www.othello.ch/\">Beratung und "
 "Entwicklung</a>"
 msgstr ""
+
+msgid "The <font color=\"#b40000\">red</font> curve shows inside "
+"temperature, the <font color=\"#ffb4b4\">light red</font> "
+"area shows the range between maximum and minimum temperature "
+"during the sampling interval."
+msgstr ""
+
+msgid "The <font color=\"#7f7fff\">blue</font> graph shows "
+"relative humidity."
+msgstr ""
+
+msgid "The <font color=\"#7f7fff\">blue</font> graph shows "
+"inside relative humidity."
+msgstr ""

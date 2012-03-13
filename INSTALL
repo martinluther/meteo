@@ -303,6 +303,13 @@ Mac OS X:
 	When using the meteobrowser on Mac OS X, you will have to modify
     the meteobrowser.php script to set the DYLD_BIND_AT_LAUNCH environment
     variable to 1.
+
+        In some cases, meteo seems not to link at all. After some experiments,
+    I blame the build tools (automake/autoconf/libtool) for this, apparently
+    a tarball generated with the versions on my SuSE Linux 8.2 development
+    machine does not link, while the tarball generated on the Mac OS X
+    Jaguar does. For this reason, a separate distribution tarball is provided
+    for Mac OS X.
     
 
 Frequently asked questions
@@ -342,10 +349,10 @@ Frequently asked questions
    The most common problem with the dequeuer is that it expects the
    message queue file to exist. The message queue id is derived from
    a file name in the file system, which you must create manually.
-   Sometimes IPC resources don't get cleaned up properly, so the must
+   Sometimes IPC resources don't get cleaned up properly, so they must
    be removed manually (this is a known deficiency of System V IPC,
    for details read section 14.6 of `Advanced Programming in the Unix
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.20 2003/08/24 20:54:24 afm Exp $
+$Id: INSTALL,v 1.22 2003/10/31 21:15:51 afm Exp $

@@ -10,8 +10,9 @@
 <p>
 Thanks to Walter Poxon and colleagues who provided these instructions
 for <b>meteo</b> versions before 0.8.0. Some things have changed
-in 0.8.0, most notably the replacement of the <code>meteograph</code> program by
-<code>meteodraw</code>.
+in 0.8.0, most notably the replacement of the <code>meteograph</code>
+program by <code>meteodraw</code>. (Update 0.9.0: while the requirements
+have not changed, some of the details for running have, see below.)
 </p>
 <h2>Davis trivia for the day</h2>
 <p>The Davis Vantage Pro unit spits out wind direction in 1/100ths of a degree
@@ -117,6 +118,12 @@ Here's what the davis_collect_data script looks like:</p>
     # echo &quot;meteopoll already running&quot;
     fi
 </pre>
+(Update 0.8.0: add the option <code>-b msgqueue</code>, or meteopoll will
+use the default destination for database updates, which is standard output.
+Also it is best to run meteopoll without -d -F in production, since the
+debug flag causes lots of debug messages to be generated, which takes
+quite some time. Also -F stops meteopoll from forking, which also
+disables meteopoll's ability to recover from a crash of the connection.)
 <li>Set up meteo user:
   this is for running the meteograph program which
   reads
@@ -141,7 +148,10 @@ Note the -a options to the graph program, it ensures that the precomputed
 averages in the meteoaverage table are used, which is essential
 for performance. While during the first few weeks you can easily live
 without the -a option, after about half a year you will start to wonder
-why your database server behaves so sluggish.
+why your database server behaves so sluggish. (Update 0.8.0: the -a flag
+is no longer necessary, meteograph is no longer capable of reading from
+the stationdata table, it always uses the averages table. This also means
+that you must run meteoavg.)
 </ol>
 
 <h2>Stuff for uploading data to Weather Underground</h2>

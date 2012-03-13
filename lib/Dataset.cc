@@ -5,6 +5,7 @@
  */
 #include <Dataset.h>
 #include <vector>
+#include <Configuration.h>
 #include <MeteoException.h>
 #include <mdebug.h>
 #include <libxml/parser.h>
@@ -177,6 +178,16 @@ static const Tdata	processNode(Dataset *dset, xmlNodePtr cur) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "computing dewpoint");
 			return dewpoint(arg1, arg2);
 		}
+		if ((!xmlStrcmp(name, (const xmlChar *)"heatindex"))) {
+			xmlFree(name);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "computing dewpoint");
+			return heatindex(arg1, arg2);
+		}
+		if ((!xmlStrcmp(name, (const xmlChar *)"windchill"))) {
+			xmlFree(name);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "computing windchill");
+			return windchill(arg1, arg2);
+		}
 		if ((!xmlStrcmp(name, (const xmlChar *)"max"))) {
 			xmlFree(name);
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "computing max");
@@ -240,7 +251,8 @@ static const Tdata	processNode(Dataset *dset, xmlNodePtr cur) {
 		(const char *)cur->name);
 }
 
-void	Dataset::addData(const Configuration& conf, const std::string& xpath) {
+void	Dataset::addData(const std::string& xpath) {
+	Configuration	conf;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "processing expression xpath %s",
 		xpath.c_str());
 
@@ -260,13 +272,14 @@ void	Dataset::addData(const Configuration& conf, const std::string& xpath) {
 	xmlFree(name);
 }
 
-void	Dataset::addAlldata(const Configuration& conf, const std::string& xpath) {
+void	Dataset::addAlldata(const std::string& xpath) {
+	Configuration	conf;
 	// retrieve a list of names
-	std::vector<std::string>	datanames = conf.getStringVector(xpath
-					+ "/data/@name");
+	stringlist	datanames = conf.getStringList(xpath + "/data/@name");
 	// for each of the data names, do an addData
-	for (int i = 0; i < (int)datanames.size(); i++) {
-		addData(conf, xpath + "/data[@name='" + datanames[i] + "']");
+	stringlist::iterator i;
+	for (i = datanames.begin(); i != datanames.end(); i++) {
+		addData(xpath + "/data[@name='" + *i + "']");
 	}
 }
 

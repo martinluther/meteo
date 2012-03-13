@@ -7,20 +7,20 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <meteo.h>
-#include <mysql.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
+#include <unistd.h>
 #include <string>
 #include <list>
 #include <mdebug.h>
 #include <printver.h>
 #include <Configuration.h>
 #include <Query.h>
+#include <QueryProcessor.h>
 #include <iostream>
 
 void	usage(const char *progname) {
@@ -30,7 +30,6 @@ int	main(int argc, char *argv[]) {
 	std::string	conffilename(METEOCONFFILE);
 	std::string	stationname("undefined");
 	std::string	logurl("file:///-");
-	bool		englishUnits = false;
 	bool		xmloutput = false;
 	bool		searchbackwards = true;
 	bool		addxmlheader = false;
@@ -47,16 +46,10 @@ int	main(int argc, char *argv[]) {
 	timekey = time(NULL);
 
 	// parse command line
-	while (EOF != (c = getopt(argc, argv, "l:EMdf:Vh?t:+w:xH")))
+	while (EOF != (c = getopt(argc, argv, "l:df:Vh?t:+w:xH")))
 		switch (c) {
 		case 'l':
 			logurl = optarg;
-			break;
-		case 'E':
-			englishUnits = true;
-			break;
-		case 'M':
-			englishUnits = false;
 			break;
 		case 'H':
 			addxmlheader = true;
@@ -105,27 +98,25 @@ int	main(int argc, char *argv[]) {
 			i->c_str());
 
 		// create a QueryProcessor
-		meteo::QueryProcessor	qp(conf, *i);
+		meteo::QueryProcessor	qp(false);
 
 		// retrieve a record for this station
 		meteo::Datarecord	r;
 		if (searchbackwards)
-			r = qp.lastRecord(timekey, window);
+			r = qp.lastRecord(timekey, *i, window);
 		else
-			r = qp.firstRecord(timekey, window);
-
-		// convert units if necessary
+			r = qp.firstRecord(timekey, *i, window);
 
 		// display in the right format
 		if (xmloutput) {
 			if (addxmlheader)
 				std::cout << "<?xml version=\"1.0\"?>\n"
 					<< "<meteolist>\n";
-			std::cout << r.xml() ;
+			std::cout << r.xml(*i) ;
 			if (addxmlheader)
 				std::cout << "</meteolist>\n";
 		} else {
-			std::cout << r.plain();
+			std::cout << r.plain(*i);
 		}
 	}
 

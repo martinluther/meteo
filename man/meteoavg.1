@@ -18,9 +18,10 @@ meteoavg [
 .BI \-r repeats
 ] [
 .B \-n
+] [
+.BI \-f conffile
 ]
 .BI \-s station
-.BI \-f conffile
 [ 
 .I from
 [
@@ -70,7 +71,7 @@ Use
 .I conffile
 to read the configuration, see 
 .BR meteo.xml (5)
-for the configuration syntax. This argument is mandatory.
+for the configuration syntax.
 .TP
 .B \-F
 stay in foreground even when running in daemon mode. Useful during

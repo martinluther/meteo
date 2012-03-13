@@ -5,28 +5,9 @@
  */
 #include <Dewpoint.h>
 #include <math.h>
+#include <QueryProcessor.h>
 
 namespace meteo {
-
-temperature_unit_t	Dewpoint::fromConfiguration(const Configuration& conf) {
-	std::string	t;
-	// here is a limitation: since we don't know what station we are
-	// working with when we are called, we just take the first
-	// station description found in the XML file. This may be wrong
-	// if different stations use different units.
-	t = conf.getString("/meteo/station/unit/temperature", "");
-	if ((t == "C") || (t == "degC") || (t == "Celsius") || (t == ""))
-		return temperature_unit_celsius;
-	return temperature_unit_fahrenheit;
-}
-
-Dewpoint::Dewpoint(const Configuration& conf) {
-	tu = fromConfiguration(conf);
-}
-
-Dewpoint::Dewpoint(void) {
-	tu = fromConfiguration(Configuration());
-}
 
 double	Dewpoint::operator()(double humidity, double temp) const {
 	double	tempC, resultC;

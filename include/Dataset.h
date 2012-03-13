@@ -7,9 +7,8 @@
 #ifndef _Dataset_h
 #define _Dataset_h
 
-#include <Configuration.h>
 #include <Tdata.h>
-#include <Query.h>
+#include <QueryResult.h>
 
 namespace meteo {
 
@@ -24,8 +23,8 @@ public:
 	~Dataset(void) { }
 
 	// add a data channel based on the information inside an XML node
-	void	addData(const Configuration& conf, const std::string& xpath);
-	void	addAlldata(const Configuration& conf, const std::string& xpath);
+	void	addData(const std::string& xpath);
+	void	addAlldata(const std::string& xpath);
 
 	// access to data channels
 	const Tdata&	getData(std::string& name) const;

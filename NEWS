@@ -1,3 +1,8 @@
+0.9.0	Major rewrite of many aspects of meteo sponsored by the University
+	Univates in Lajeado in Rio Grande do Sul, Southern Brazil. Further
+	contributions: Jeff Wabik (new derived value computations) and
+	Aron Spike (voluntered to test GroWeather).
+
 0.8.6	Attention: the configuration file syntax has changed slightly:
 	the unit tag inside the station is no longer supported, use the
 	units tag just inside the meteo tag.
@@ -11,4 +16,4 @@
 	few items left that cannot be specified in the XML file.
 
 --
-$Id: NEWS,v 1.17 2003/08/24 20:26:40 afm Exp $
+$Id: NEWS,v 1.20 2003/10/24 13:15:29 afm Exp $

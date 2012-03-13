@@ -30,6 +30,7 @@ public:
 	struct timeval	timeval(void) const { return t; }
 	void	wait(void);
 	int	getMinute(void) { return t.tv_sec / 60; }
+	time_t	getTimekey(void) const;
 
 	// conversion
 	double	getValue(void) const;

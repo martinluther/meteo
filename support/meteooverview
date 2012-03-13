@@ -7,11 +7,14 @@
 #   meteooverview stationname meteoparm1 meteoparm2 ...
 #
 # the first argument is the name of the station, the following arguments
-# are the names of the parameters this station measures.
+# are the names of the parameters this station measures. Valid parameter
+# values are:
+#
+#	temperature temperature_inside barometer rain wind radiation
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: meteooverview,v 1.1 2002/01/30 10:41:31 afm Exp $
+# $Id: meteooverview,v 1.2 2003/10/22 21:30:46 afm Exp $
 #
 name=${1}
 shift
@@ -42,6 +45,10 @@ average barometric pressure, the range between minimum and maximum
 pressure during the sampling interval is shown in
 <font color="#d2d2ff">light blue</font>.
 EOF
+}
+
+text_pressure () {
+	text_barometer
 }
 
 text_wind () {
@@ -99,11 +106,11 @@ EOF
 line_temperature () {
 cat <<EOF
 <tr>
-<td><a href="${name}-temperature.html">Temperature</a></td>
-<td><img src="${name}-temperature-day.png" width="125" height="36"></td>
-<td><img src="${name}-temperature-week.png" width="125" height="36"></td>
-<td><img src="${name}-temperature-month.png" width="125" height="36"></td>
-<td><img src="${name}-temperature-year.png" width="125" height="36"></td>
+<td><a href="${name}.temperature.html">Temperature</a></td>
+<td><img src="${name}.temperature-day.png" width="125" height="36"></td>
+<td><img src="${name}.temperature-week.png" width="125" height="36"></td>
+<td><img src="${name}.temperature-month.png" width="125" height="36"></td>
+<td><img src="${name}.temperature-year.png" width="125" height="36"></td>
 </tr>
 EOF
 }
@@ -111,23 +118,26 @@ EOF
 line_barometer () {
 cat <<EOF
 <tr>
-<td><a href="${name}-barometer.html">Pressure</a></td>
-<td><img src="${name}-barometer-day.png" width="125" height="36"></td>
-<td><img src="${name}-barometer-week.png" width="125" height="36"></td>
-<td><img src="${name}-barometer-month.png" width="125" height="36"></td>
-<td><img src="${name}-barometer-year.png" width="125" height="36"></td>
+<td><a href="${name}.barometer.html">Pressure</a></td>
+<td><img src="${name}.barometer-day.png" width="125" height="36"></td>
+<td><img src="${name}.barometer-week.png" width="125" height="36"></td>
+<td><img src="${name}.barometer-month.png" width="125" height="36"></td>
+<td><img src="${name}.barometer-year.png" width="125" height="36"></td>
 </tr>
 EOF
+}
+line_pressure () {
+	line_barometer
 }
 
 line_wind () {
 cat <<EOF
 <tr>
-<td><a href="${name}-wind.html">Wind</a></td>
-<td><img src="${name}-wind-day.png" width="125" height="36"></td>
-<td><img src="${name}-wind-week.png" width="125" height="36"></td>
-<td><img src="${name}-wind-month.png" width="125" height="36"></td>
-<td><img src="${name}-wind-year.png" width="125" height="36"></td>
+<td><a href="${name}.wind.html">Wind</a></td>
+<td><img src="${name}.wind-day.png" width="125" height="36"></td>
+<td><img src="${name}.wind-week.png" width="125" height="36"></td>
+<td><img src="${name}.wind-month.png" width="125" height="36"></td>
+<td><img src="${name}.wind-year.png" width="125" height="36"></td>
 </tr>
 EOF
 }
@@ -135,11 +145,11 @@ EOF
 line_radiation () {
 cat <<EOF
 <tr>
-<td><a href="${name}-radiation.html">Radiation</a></td>
-<td><img src="${name}-radiation-day.png" width="125" height="36"></td>
-<td><img src="${name}-radiation-week.png" width="125" height="36"></td>
-<td><img src="${name}-radiation-month.png" width="125" height="36"></td>
-<td><img src="${name}-radiation-year.png" width="125" height="36"></td>
+<td><a href="${name}.radiation.html">Radiation</a></td>
+<td><img src="${name}.radiation-day.png" width="125" height="36"></td>
+<td><img src="${name}.radiation-week.png" width="125" height="36"></td>
+<td><img src="${name}.radiation-month.png" width="125" height="36"></td>
+<td><img src="${name}.radiation-year.png" width="125" height="36"></td>
 </tr>
 EOF
 }
@@ -147,18 +157,18 @@ EOF
 line_rain () {
 cat <<EOF
 <tr>
-<td><a href="${name}-rain.html">Precipitation</a></td>
-<td><img src="${name}-rain-day.png" width="125" height="36"></td>
-<td><img src="${name}-rain-week.png" width="125" height="36"></td>
-<td><img src="${name}-rain-month.png" width="125" height="36"></td>
-<td><img src="${name}-rain-year.png" width="125" height="36"></td>
+<td><a href="${name}.rain.html">Precipitation</a></td>
+<td><img src="${name}.rain-day.png" width="125" height="36"></td>
+<td><img src="${name}.rain-week.png" width="125" height="36"></td>
+<td><img src="${name}.rain-month.png" width="125" height="36"></td>
+<td><img src="${name}.rain-year.png" width="125" height="36"></td>
 </tr>
 EOF
 }
 
 for g in ${graphs}
 do
-	eval line_${g} >>${overviewpage}
+	line_${g} >>${overviewpage}
 done
 
 cat >> ${overviewpage} <<EOF
@@ -170,7 +180,7 @@ EOF
 vertical_temperature () {
 cat <<EOF
 <tr>
-<td><img src="${name}-temperature-${key}.png"></td>
+<td><img src="${name}.temperature-${key}.png"></td>
 <td valign="top">
 EOF
 text_temperature 
@@ -183,7 +193,7 @@ EOF
 vertical_temperature_inside () {
 cat <<EOF
 <tr>
-<td><img src="${name}-temperature_inside-${key}.png"></td>
+<td><img src="${name}.temperature_inside-${key}.png"></td>
 <td valign="top">
 EOF
 text_temperature_inside
@@ -196,7 +206,7 @@ EOF
 vertical_barometer () {
 cat <<EOF
 <tr>
-<td><img src="${name}-barometer-${key}.png"></td>
+<td><img src="${name}.barometer-${key}.png"></td>
 <td valign="top">
 EOF
 text_barometer
@@ -206,10 +216,14 @@ cat <<EOF
 EOF
 }
 
+vertical_pressure () {
+	vertical_barometer
+}
+
 vertical_wind () {
 cat <<EOF
 <tr>
-<td><img src="${name}-wind-${key}.png"></td>
+<td><img src="${name}.wind-${key}.png"></td>
 <td valign="top">
 EOF
 text_wind
@@ -222,7 +236,7 @@ EOF
 vertical_radiation () {
 cat <<EOF
 <tr>
-<td><img src="${name}-radiation-${key}.png"></td>
+<td><img src="${name}.radiation-${key}.png"></td>
 <td valign="top">
 EOF
 text_radiation
@@ -235,7 +249,7 @@ EOF
 vertical_rain () {
 cat <<EOF
 <tr>
-<td><img src="${name}-rain-${key}.png"></td>
+<td><img src="${name}.rain-${key}.png"></td>
 <td valign="top">
 EOF
 text_rain
@@ -264,7 +278,7 @@ EOF
 
 for g in ${graphs}
 do
-	eval vertical_${g} >>${vpage}
+	vertical_${g} >>${vpage}
 done
 
 cat >>${vpage} <<EOF
@@ -285,7 +299,7 @@ key=${2}
 case ${key} in
 temperature)		value="Temperature"		;;
 temeprature_inside)	value="Temperature inside"	;;
-barometer)		value="Pressure"		;;
+barometer|pressure)	value="Pressure"		;;
 radiation)		value="Radiation"		;;
 wind)			value="Wind"			;;
 rain)			value="Precipitation"		;;
@@ -298,13 +312,13 @@ cat <<EOF
 <body bgcolor="#ffffff">
 <h1>${name} Weather: ${value}</h1>
 <table>
-<tr><td><img src="${name}-${key}-day.png"></td></tr>
-<tr><td><img src="${name}-${key}-week.png"></td></tr>
-<tr><td><img src="${name}-${key}-month.png"></td></tr>
-<tr><td><img src="${name}-${key}-year.png"></td></tr>
+<tr><td><img src="${name}.${key}-day.png"></td></tr>
+<tr><td><img src="${name}.${key}-week.png"></td></tr>
+<tr><td><img src="${name}.${key}-month.png"></td></tr>
+<tr><td><img src="${name}.${key}-year.png"></td></tr>
 <tr><td>
 EOF
-eval text_${key}
+text_${key}
 cat <<EOF
 </td></tr>
 </table>
@@ -316,7 +330,7 @@ EOF
 
 for g in ${graphs}
 do
-	hpage=${name}-${g}.html
+	hpage=${name}.${g}.html
 	echo createing ${hpage}...
 	horizontal ${name} ${g} > ${hpage}
 done

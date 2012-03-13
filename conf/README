@@ -1,0 +1,13 @@
+Sample configuration files
+
+This directory contains sample configuration files for meteo, see the
+man page meteo.xml(5) for details. The DTD file meteo.dtd can be used
+to verify the syntax of the configuration file. With libxml2 one can
+use the command
+
+	xmllint --dtdvalid file://`pwd`/meteo.dtd meteo.xml
+
+the verify meteo.xml against meteo.dtd.
+
+--
+$Id: README,v 1.1 2003/10/24 13:12:49 afm Exp $

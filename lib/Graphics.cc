@@ -4,10 +4,12 @@
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
 #include <Graphics.h>
+#include <Configuration.h>
 #include <mdebug.h>
-#include <Query.h>
+#include <QueryProcessor.h>
 #include <Dataset.h>
 #include <MeteoException.h>
+#include <libxml/tree.h>
 
 namespace meteo {
 
@@ -130,25 +132,23 @@ static void	drawChannel(xmlNodePtr x, GraphWindow *gw, const Dataset *ds) {
 	throw MeteoException("illegal channel type", type);
 }
 
-void	Graphics::drawChannels(const Configuration& conf,
-		const std::string& xpath, const Dataset *ds) {
+void	Graphics::drawChannels(const std::string& xpath, const Dataset *ds) {
+	Configuration	conf;
 	// retrieve pointers to all nodes matching an xpath
-	std::vector<xmlNodePtr>	pnodes = conf.getNodeVector(xpath);
+	std::list<xmlNodePtr>	pnodes = conf.getNodeList(xpath);
 
-	// go through the vector of node pointers and draw each channel
-	std::vector<xmlNodePtr>::const_iterator	i;
+	// go through the list of node pointers and draw each channel
+	std::list<xmlNodePtr>::const_iterator	i;
 	for (i = pnodes.begin(); i != pnodes.end(); i++) {
 		drawChannel(*i, gw, ds);
 	}
 }
 
-typedef std::vector<std::string>	stringvector;
-
-Graphics::Graphics(const Configuration& conf, const std::string& s,
-	int interval, time_t end, bool aligncenter,
-	const std::string& graphname, bool withdata) : station(s) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "constructing Graphics for station %s,"
-		" interval %d, ending at %d, graph name %s", station.c_str(),
+Graphics::Graphics(int interval, time_t end, bool aligncenter,
+	const std::string& graphname, bool withdata) {
+	Configuration	conf;
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "constructing Graphics for "
+		" interval %d, ending at %d, graph name %s",
 		interval, end, graphname.c_str());
 
 	// make sure pointers are properly initialized to 0
@@ -162,7 +162,7 @@ Graphics::Graphics(const Configuration& conf, const std::string& s,
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "base path is %s", basepath.c_str());
 
 	// retrieve Frame parameters from configuration, and create Frame
-	Dimension	d(conf, basepath);
+	Dimension	d(basepath);
 	f = new Frame(d);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "frame is at %p", f);
 
@@ -171,7 +171,7 @@ Graphics::Graphics(const Configuration& conf, const std::string& s,
 	f->setBackground(conf.getString(basepath + "/@bgcolor", "#ffffff"));
 
 	// retrieve GraphWindow parameters and create graphwindow
-	Rectangle	r(conf, basepath + "/graphwindow");
+	Rectangle	r(basepath + "/graphwindow");
 	gw = new GraphWindow(*f, r);
 	if (aligncenter)
 		gw->setEndTime(end + interval * (r.getWidth() / 2), interval);
@@ -182,24 +182,31 @@ Graphics::Graphics(const Configuration& conf, const std::string& s,
 		gw->getStartTime(), interval, gw->getEndTime());
 
 	if (withdata) {
-		// create query from graph description
+		// create query from graph description, this requires that
+		// fully qualified field names are inside the <select> tags
 		Query	q(interval, gw->getStartTime(), gw->getEndTime());
-		stringvector	vs = conf.getStringVector(basepath
-					+ "/channels/query/select");
-		stringvector	vn = conf.getStringVector(basepath
+		stringlist	vn = conf.getStringList(basepath
 					+ "/channels/query/select/@name");
-		for (int i = 0; i < (int)vn.size(); i++) {
-			q.addSelect(vn[i], vs[i]);
+		stringlist::iterator	i;
+		for (i = vn.begin(); i != vn.end(); i++) {
+			q.addSelect(*i, conf.getString(basepath
+				+ "/channels/query/select[@name='"
+				+ *i + "']", ""));
 		}
 
+		// retrieve the offset from the configuration
+		int	offset = conf.getInt(basepath + "/@offset", 0);
+		q.setOffset(offset);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "offset set to %d", offset);
+
 		// retrieve data from database
-		QueryProcessor	qp(conf, station);
+		QueryProcessor	qp(false);
 		QueryResult	qr;
 		qp.perform(q, qr);
 
 		// compute dependent time series
 		Dataset	ds(qr);
-		ds.addAlldata(conf, basepath + "/channels/query");
+		ds.addAlldata(basepath + "/channels/query");
 
 		// get scale and axis definitions
 		char	axisbuffer[1024];
@@ -210,8 +217,8 @@ Graphics::Graphics(const Configuration& conf, const std::string& s,
 		if (!conf.xpathExists(axispath)) {
 			axispath = basepath + "/leftaxis";
 		}
-		gw->setLeftScale(Scale(conf, axispath, ds));
-		gw->setLeftAxis(Axis(conf, axispath, gw->getLeftScale()));
+		gw->setLeftScale(Scale(axispath, ds));
+		gw->setLeftAxis(Axis(axispath, gw->getLeftScale()));
 		snprintf(axisbuffer, sizeof(axisbuffer),
 			"%s/rightaxis[@interval='%d']", basepath.c_str(),
 			interval);
@@ -219,19 +226,19 @@ Graphics::Graphics(const Configuration& conf, const std::string& s,
 		if (!conf.xpathExists(axispath)) {
 			axispath = basepath + "/rightaxis";
 		}
-		gw->setRightScale(Scale(conf, axispath, ds));
-		gw->setRightAxis(Axis(conf, axispath, gw->getRightScale()));
+		gw->setRightScale(Scale(axispath, ds));
+		gw->setRightAxis(Axis(axispath, gw->getRightScale()));
 
 		// draw graphs
-		drawChannels(conf, basepath + "/channels/channel", &ds);
+		drawChannels(basepath + "/channels/channel", &ds);
 	}
 
 	// draw labels
 	if (conf.xpathExists(basepath + "/leftlabel")) {
-		f->drawLabel(Label(conf, basepath + "/leftlabel"), true);
+		f->drawLabel(Label(basepath + "/leftlabel"), true);
 	}
 	if (conf.xpathExists(basepath + "/rightlabel")) {
-		f->drawLabel(Label(conf, basepath + "/rightlabel"), false);
+		f->drawLabel(Label(basepath + "/rightlabel"), false);
 	}
 
 	// draw time axes and grid
@@ -257,7 +264,8 @@ void	Graphics::toFile(const std::string& filename) {
 	f->toFile(filename);
 }
 
-std::string	Graphics::mapString(const std::string& url) const {
+std::string	Graphics::mapString(const std::string& url,
+			const std::string& station) const {
 	return gw->mapString(url + "&station=" + station);
 }
 

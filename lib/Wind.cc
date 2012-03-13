@@ -4,105 +4,94 @@
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  */
 #include <Wind.h>
-#include <Converter.h>
+#include <WindConverter.h>
 #include <mdebug.h>
 #include <MeteoException.h>
 
 namespace meteo {
 
-void	Wind::reset(void) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "resetting duration timer for wind");
-	start.now();
-	hasvalue = false;
+// constructors
+Wind::Wind(void) : WindSpeed("m/s") {
+	azi = 0.;
+}
+Wind::Wind(const Vector& v0) : WindSpeed("m/s") {
+	WindSpeed::setValue(v0.getAbs());
+	azi = v0.getAzi();
+}
+Wind::Wind(const Vector& v0, const std::string& u) : WindSpeed(u) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating Wind from Vector");
+	azi = v0.getAzi();
+	WindSpeed::setValue(v0.getAbs());
+}
+Wind::Wind(const std::string& u) : WindSpeed(u) {
 }
 
-void	Wind::setUnit(const std::string& u) {
-	if (hasvalue) {
-		WindConverter	wc(u);
-		v = Vector(wc.convert(v.getX(), unit),
-			wc.convert(v.getY(), unit));
-		max = Vector(wc.convert(max.getX(), unit),
-			wc.convert(max.getY(), unit));
+Wind::~Wind(void) { }
+
+// setting values from various types
+void	Wind::setValue(const Vector& v) {
+	azi = v.getAzi();
+	WindSpeed::setValue(v.getAbs());
+}
+
+void	Wind::setUnit(const std::string& targetunit) {
+	if (hasValue()) {
+		WindConverter(targetunit).convert(this);
 	}
-	unit = u;
 }
 
-void	Wind::update(const Vector& v0) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-		"Wind udpate (start = %.f, last = %.f) with (%.1f, %.1f)",
-		start.getValue(), lastupdate.getValue(), v0.getX(), v0.getY());
-	// handle the case where don't have anyhting yet (except a start
-	// time)
-	if (!hasvalue) {
-		v = v0; max = v0; lastupdate.now(); hasvalue = true;
-		return;
-	}
-	double	t1 = getDuration();
-	Timeval	n; n.now();
-	double	t2 = (n - lastupdate).getValue();
-
-	// update the vector
-	double	duration = t1 + t2;
-	if (duration > 0) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wind update: "
-			"(%.1f * (%.1f, %.1f) + %.1f * (%.1f, %.1f))/%.1f)",
-			t1, v.getX(), v.getY(), t2, v0.getX(), v0.getY(),
-			duration);
-		v = (1/duration) * (t1 * v + t2 * v0);
-	} else
-		v = v0;
-
-	// update maximum values
-	double m = v0.getAbs();
-	if (m > getMax()) {
-		max = v0;
-	}
-
-	// remember this update
-	lastupdate.now();
+// retrieve values in different types
+double	Wind::getAzideg(void) const {
+	return 180. * getAzi() / PI;
+}
+double	Wind::getX(void) const {
+	if (!hasValue())
+		throw MeteoException("cannot retrieve getX without value", "");
+	return sin(azi) * getValue();
 }
 
-void	Wind::update(const Wind& w) {
-	update(WindConverter(getUnit())(w).getValue());
+double	Wind::getY(void) const {
+	if (!hasValue())
+		throw MeteoException("cannot retrieve getY without value", "");
+	return cos(azi) * getValue();
 }
 
-double	Wind::getDuration(void) const {
-	if (hasvalue) {
-		double	dur = (lastupdate - start).getValue();
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "duration: %.1f", dur);
-		return dur;
-	} else
-		throw MeteoException("Wind does not have value", "");
+Vector	Wind::getVectorValue(void) const {
+	if (!hasValue())
+		throw MeteoException("cannot retrieve Vector without value",
+			"");
+	return Vector(getValue(), getAzideg(), true);
 }
 
+// get string forms for display purposes
 std::string	Wind::getSpeedString(void) const {
 	char	sb[100];
-	if (hasvalue) {
-		snprintf(sb, sizeof(sb), "%.1f", v.getAbs());
+	if (hasValue()) {
+		snprintf(sb, sizeof(sb), "%.1f", getValue());
 		return std::string(sb);
 	} else
 		return "NULL";
 }
 std::string	Wind::getXString(void) const {
 	char	sb[100];
-	if (hasvalue) {
-		snprintf(sb, sizeof(sb), "%.1f", v.getX());
+	if (hasValue()) {
+		snprintf(sb, sizeof(sb), "%.1f", getX());
 		return std::string(sb);
 	} else
 		return "NULL";
 }
 std::string	Wind::getYString(void) const {
 	char	sb[100];
-	if (hasvalue) {
-		snprintf(sb, sizeof(sb), "%.1f", v.getY());
+	if (hasValue()) {
+		snprintf(sb, sizeof(sb), "%.1f", getY());
 		return std::string(sb);
 	} else
 		return "NULL";
 }
 std::string	Wind::getAziString(void) const {
 	char	sb[100];
-	if (hasvalue) {
-		snprintf(sb, sizeof(sb), "%.1f", v.getAzi());
+	if (hasValue()) {
+		snprintf(sb, sizeof(sb), "%.1f", getAzideg());
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wind azi: %s", sb);
 		return std::string(sb);
 	} else {
@@ -110,21 +99,22 @@ std::string	Wind::getAziString(void) const {
 		return "NULL";
 	}
 }
-std::string	Wind::getMaxString(void) const {
-	char	sb[100];
-	if (hasvalue) {
-		snprintf(sb, sizeof(sb), "%.1f", max.getAbs());
-		return std::string(sb);
-	} else
-		return "NULL";
+
+// output methods
+std::string	Wind::plain(const std::string& name) const {
+	char	result[1024];
+	snprintf(result, sizeof(result),
+		"%s.speed %5.1f %s\n%s.azi %.0f",
+		name.c_str(), getValue(), getUnit().c_str(), name.c_str(),
+		getAzideg());
+	return result;
 }
-std::string	Wind::getDurationString(void) const {
-	char	sb[100];
-	if (hasvalue) {
-		snprintf(sb, sizeof(sb), "%.1f", getDuration());
-		return std::string(sb);
-	} else
-		return "NULL";
+
+std::string	Wind::xml(const std::string& name) const {
+	return "<value name=\"" + name + ".speed\" unit=\"" + getUnit() + "\">"
+		+ getSpeedString()
+		+ "</value>\n  <value name=\"" + name + ".dir\">"
+		+ getAziString() + "</value>";
 }
 
 } /* namespace meteo */

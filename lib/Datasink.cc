@@ -4,8 +4,10 @@
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
 #include <Datasink.h>
+#include <Configuration.h>
 #include <mdebug.h>
 #include <MeteoException.h>
+#include <MsgQueuer.h>
 
 namespace meteo {
 
@@ -16,6 +18,17 @@ void	Datasink::receive(const std::string& query) {
 	mdebug(LOG_INFO, MDEBUG_LOG, 0, "update query: %s", query.c_str());
 }
 
+void	Datasink::receive(stringlist queries) {
+	stringlist::const_iterator	i;
+	for (i = queries.begin(); i != queries.end(); i++) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sending query '%s' to db",
+			i->c_str());
+		// use the receive method, make sure virual methods get
+		// called!
+		this->receive(*i);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////
 // FileDatasink (no additional methods)
 //////////////////////////////////////////////////////////////////////
@@ -23,117 +36,77 @@ void	Datasink::receive(const std::string& query) {
 //////////////////////////////////////////////////////////////////////
 // MysqlDatasink
 //////////////////////////////////////////////////////////////////////
-MysqlDatasink::MysqlDatasink(const Configuration& conf) {
-	mysql_init(&mysql);
-	// connect and authenticate
-	std::string	host = conf.getDBHostname();
-	std::string	dbname = conf.getDBName();
-	std::string	user = conf.getDBUser();
-	std::string	pw = conf.getDBPassword();
-	if (NULL == mysql_real_connect(&mysql, host.c_str(), user.c_str(),
-		pw.c_str(), dbname.c_str(), 0, NULL, 0)) {
-		throw MeteoException("cannot create database",
-			mysql_error(&mysql));
-	}
+MysqlDatasink::MysqlDatasink(void) : qp(true) {
 }
 
 MysqlDatasink::~MysqlDatasink(void) {
-	mysql_close(&mysql);
 }
 
 void	MysqlDatasink::receive(const std::string& query) {
-	int	res = mysql_query(&mysql, query.c_str());
-	if (res) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "mysql query failed: %s",
-			mysql_error(&mysql));
-		throw MeteoException("mysql query failed", mysql_error(&mysql));
-	}
+	qp(query);
 }
 
 //////////////////////////////////////////////////////////////////////
 // QueueDatasink
 //////////////////////////////////////////////////////////////////////
-QueueDatasink::QueueDatasink(const std::string& queuename) {
-	mq = msgque_setup(queuename.c_str());
-	if (NULL == mq) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot setup msg queue");
-		throw MeteoException("cannot setup msg queue", "");
-	}
+QueueDatasink::QueueDatasink(const std::string& queuename)
+	: mq(queuename) {
 }
 QueueDatasink::~QueueDatasink(void) {
-	msgque_cleanup(mq);
 }
 void	QueueDatasink::receive(const std::string& query) {
-	msgque_sendquery(mq, query.c_str(), query.length() + 1);
+	mq(query);
 }
 
 //////////////////////////////////////////////////////////////////////
 // DatasinkFactory
 //////////////////////////////////////////////////////////////////////
 class dsf {
-	Configuration			configuration;
-	std::vector<std::string>	preferences;
+	stringlist	preferences;
 public:
-	dsf(const Configuration& conf, const std::vector<std::string>& pref) {
-		configuration = conf;
-		preferences = pref;
-	}
+	dsf(const stringlist& pref) : preferences(pref) { }
 	~dsf(void) { }
-	void	setConfiguration(const Configuration& conf) {
-		configuration = conf;
-	}
-	void	setPreferences(const std::vector<std::string>& pref) {
+	void	setPreferences(const stringlist& pref) {
 		preferences = pref;
 	}
-	const Configuration& getConfiguration(void) {
-		return configuration;
-	}
-	const std::vector<std::string>& getPreferences(void) {
+	const stringlist& getPreferences(void) {
 		return preferences;
 	}
 };
 dsf	*DatasinkFactory::d = NULL;
 DatasinkFactory::DatasinkFactory(void) {
-	if (NULL == d) {
-		throw MeteoException(
-			"Datasink Factory not correctly initialized", "");
-	}
-}
-DatasinkFactory::DatasinkFactory(const Configuration& conf) {
-	std::vector<std::string>	defprefs;
+	if (NULL != d) return;
+	stringlist	defprefs;
 	defprefs.push_back("msgqueue");
 	defprefs.push_back("mysql");
 	defprefs.push_back("file");
 	defprefs.push_back("debug");
-	d = new dsf(conf, std::vector<std::string>());
+	d = new dsf(stringlist());  // delete ~DatasinkFactory
 }
-DatasinkFactory::DatasinkFactory(const Configuration& conf,
-	const std::vector<std::string>& prefs) {
-	d = new dsf(conf, prefs);
+DatasinkFactory::DatasinkFactory(const stringlist& prefs) {
+	d = new dsf(prefs);	// delete ~DatasinkFactory
 }
 DatasinkFactory::~DatasinkFactory(void) {
+	delete d; d = NULL;
 }
-const Configuration&	DatasinkFactory::getConfiguration(void) const {
-	return d->getConfiguration();
-}
-const std::vector<std::string>&	DatasinkFactory::getPreferences(void) const {
+const stringlist&	DatasinkFactory::getPreferences(void) const {
 	return d->getPreferences();
 }
 
 Datasink	*DatasinkFactory::newDatasink(const std::string& name) const {
+	Configuration	conf;
 	// make sure we do have some preferences
-	const std::vector<std::string>	preferences = getPreferences();
+	const stringlist	preferences = getPreferences();
 	if (0 == preferences.size()) {
 		throw MeteoException("no Datasink preferences set", "");
 	}
 
-	// go through the preferences vector
-	std::vector<std::string>::const_iterator	i;
+	// go through the preferences list
+	stringlist::const_iterator	i;
 	for (i = preferences.begin(); i != preferences.end(); i++) {
 		// create a message queue datasink
 		if ("msgqueue" == *i) {
-			std::string	msgqueue = getConfiguration()
-							.getDBMsgqueue();
+			std::string	msgqueue = conf.getDBMsgqueue();
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"trying msg queue");
@@ -148,16 +121,15 @@ Datasink	*DatasinkFactory::newDatasink(const std::string& name) const {
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"trying mysql database");
-				return new MysqlDatasink(getConfiguration());
-			} catch (MeteoException e) {
+				return new MysqlDatasink();
+			} catch (MeteoException& e) {
 				mdebug(LOG_ERR, MDEBUG_LOG, 0,
 					"cannot connect to database");
 			}
 		}
 		// create a file datasink
 		if ("file" == *i) {
-			std::string	filename = getConfiguration()
-							.getDBUpdatefile();
+			std::string	filename = conf.getDBUpdatefile();
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "trying file");
 				return new FileDatasink(filename);

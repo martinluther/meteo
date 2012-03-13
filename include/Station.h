@@ -8,83 +8,73 @@
 
 #include <Channel.h>
 #include <Vector.h>
+#include <list>
 #include <string>
-#include <MeteoValue.h>
+#include <map>
 #include <Rain.h>
 #include <Wind.h>
-#include <Configuration.h>
-#include <Datarecord.h>
+#include <DataRecorder.h>
+#include <PacketReader.h>
+#include <SensorStation.h>
+#include <ReaderInfo.h>
 
 namespace meteo {
 
+typedef	std::map<std::string, PacketReader>	readermap_t;
+typedef	std::map<std::string, SensorStation>	sensormap_t;
+
 class Station {
-	Datarecord	r;
 	Channel		*channel;
-	std::string	name;
+	std::string	name;	// station name
+	int		stationid;
+	int		offset;
 	int		packets;
+	sensormap_t	sensors;
+protected:
+	// the readers map contains all the readers, and allows the station
+	// to read data symbolically. Since real stations may redefine the
+	// the protocol, the derived classes need access to the readers
+	readermap_t	readers;
+	void	addReader(const std::string& readername,
+			const std::string& readerclass, int byteoffset,
+			int length, const std::string& unit);
+	int	addAllReaders(const stationreaders_t *sr);
+	bool	hasReader(const std::string& readername) const;
+	void	calibrateReader(const std::string& readername,
+			const Calibrator& cal);
+
+	// the Datarecord accumulates the data known to the station
+	DataRecorder	r;
 public:
-	// construction
-	Station(const std::string& n) : name(n) {
-		r.setStationname(n);
-	}
+	// construction, also retrieves the stationid
+	Station(const std::string& n);
 	virtual	~Station(void);
 
+	// some accessors
+	const std::string&	getName(void) const { return name; }
+	int	getId(void) const { return stationid; }
+	const int	getOffset(void) { return offset; }
+
+	// read values from packets
+	Value	readValue(const std::string& readername,
+		const std::string& packet) const;
+
 	// accumulate data
-	virtual void	update(const std::string &);
-	void	reset(void) { r.reset(); }
-	std::string	updatequery() {
-		return r.updatequery();
-	}
+	void	update(const std::string &packet);
+	void	reset(void);
+	stringlist	updatequery(time_t timekey) const;
 
 	// the station reads a packet from the channel	
 	Channel	*getChannel(void) { return channel; }
 	void	setChannel(Channel *ch) { channel = ch; }
-	std::string	getPacket(void) { packets--;
-		return this->readPacket();
+	std::string	getPacket(void) {
+		packets--; return this->readPacket();
 	}
 	virtual std::string	readPacket(void) = 0;
 
-	// read bytes from the packet and convert to 
-	bool	validByte(const std::string& s, int offset) const;
-	int	getSignedByte(const std::string& s, int offset) const;
-	int	getUnsignedByte(const std::string& s, int offset) const;
-	bool	validShort(const std::string& s, int offset) const;
-	int	getSignedShort(const std::string& s, int offset) const;
-	int	getUnsignedShort(const std::string& s, int offset) const;
-
-	// set units we want to use after it has been read from the station
-	void	setTemperatureUnit(const std::string& u) {
-		r.setTemperatureUnit(u);
-	}
-	void	setHumidityUnit(const std::string& u) {
-		r.setHumidityUnit(u);
-	}
-	void	setPressureUnit(const std::string& u) {
-		r.setPressureUnit(u);
-	}
-	void	setRainUnit(const std::string& u) {
-		r.setRainUnit(u);
-	}
-	void	setWindUnit(const std::string& u) {
-		r.setWindUnit(u);
-	}
-	void	setSolarUnit(const std::string& u) {
-		r.setSolarUnit(u);
-	}
-	void	setUVUnit(const std::string& u) {
-		r.setUVUnit(u);
-	}
-
-	// access the data in the packet
-	virtual TemperatureValue	getInsideTemperature(const std::string&) const = 0;
-	virtual TemperatureValue	getOutsideTemperature(const std::string&) const = 0;
-	virtual HumidityValue	getInsideHumidity(const std::string&) const = 0;
-	virtual HumidityValue	getOutsideHumidity(const std::string&) const = 0;
-	virtual PressureValue	getBarometer(const std::string&) const = 0;
-	virtual SolarValue	getSolar(const std::string&) const = 0;
-	virtual UVValue		getUV(const std::string&) const = 0;
-	virtual Wind		getWind(const std::string&) const = 0;
-	virtual Rain		getRain(const std::string&) const = 0;
+	// read data value by name
+	double	read(const std::string& packet, const std::string& name) const;
+	bool	valid(const std::string& packet, const std::string& name) const;
 
 	// controlling the packet loop
 	virtual void	startLoop(int p);
@@ -93,61 +83,6 @@ public:
 
 	// the station factory may change private things
 	friend class StationFactory;
-};
-
-class	WMII : public Station {
-	int	raincal;
-	int	pressurecal;
-public:
-	WMII(const std::string& n);
-	virtual	~WMII(void);
-
-	// read a packet from the station
-	virtual std::string	readPacket(void);
-
-	// accessors
-	virtual TemperatureValue	getInsideTemperature(const std::string&) const;
-	virtual TemperatureValue	getOutsideTemperature(const std::string&) const;
-	virtual HumidityValue	getInsideHumidity(const std::string&) const;
-	virtual HumidityValue	getOutsideHumidity(const std::string&) const;
-	virtual PressureValue	getBarometer(const std::string&) const;
-	virtual SolarValue	getSolar(const std::string&) const;
-	virtual UVValue		getUV(const std::string&) const;
-	virtual Wind		getWind(const std::string&) const;
-	virtual Rain		getRain(const std::string&) const;
-
-	// loop control
-	virtual void	startLoop(int p);
-};
-
-class	VantagePro : public Station {
-public:
-	VantagePro(const std::string& n) : Station(n) { }
-	virtual	~VantagePro(void);
-
-	// read a packet from the station
-	virtual std::string	readPacket(void);
-
-	// accessors
-	virtual TemperatureValue	getInsideTemperature(const std::string&) const;
-	virtual TemperatureValue	getOutsideTemperature(const std::string&) const;
-	virtual HumidityValue	getInsideHumidity(const std::string&) const;
-	virtual HumidityValue	getOutsideHumidity(const std::string&) const;
-	virtual PressureValue	getBarometer(const std::string&) const;
-	virtual SolarValue	getSolar(const std::string&) const;
-	virtual UVValue		getUV(const std::string&) const;
-	virtual Wind		getWind(const std::string&) const;
-	virtual Rain		getRain(const std::string&) const;
-
-	// loop control
-	virtual void	startLoop(int p);
-};
-
-class	StationFactory {
-	const Configuration&	conf;
-public:
-	StationFactory(const Configuration& c) : conf(c) { }
-	Station	*newStation(const std::string& name) const;  // connected station
 };
 
 } /* namespace meteo */

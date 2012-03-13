@@ -1,0 +1,53 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
+<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
+</head>
+<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
+<img src="normband.jpg" width="841" height="150" border="0">
+<p><h1>Configuring the software</h1>
+<p>
+After the software has been installed, it must be configured.
+Follow the steps below for a successful configuration:
+<ol>
+<li>
+Most configuration happens inside the 
+<b>meteo.xml</b>(5) configuration file. A sample file is include
+with the distribution. To find out what sensor names are known for
+a particular station type, use the <b>meteosensors</b>(1) utility.
+</li>
+<li>
+A minimal installation will run one instance of <b>meteopoll</b>(1)
+to collect data from the weather station and write it to the database
+(with the <b>-b mysql</b> option to directly write the data to the
+database).
+It will also use
+
+<b>meteoavg</b>(1) to compute averages and store them in the
+averages table.
+Furthermore, it will run a cron job using
+<b>meteodraw</b>(1) to update the graphs for the web page, a sample
+cron job script is included in the distribution.
+</li>
+<li>
+More sophisticated installations will make use of the decoupling
+of weather station and database through a message queue, which involves
+running the <b>meteopoll</b>(1) program with the <b>-b msgqueue</b> option,
+and in addition running an instance of the dequeuer process
+<b>meteodequeue</b>(1).
+</li>
+<li>
+To top off the installation, configure the meteo browser to allow
+graphical browsing of the meteo database.
+See the <a href="http://meteo.othello.ch/README.browser">README.browser</a> for details.
+
+</li>
+</ol>
+<p>
+For details of the configuration of all these programs, please consult
+the manual pages installed with the distribution.
+</p>
+</body>
+</html>

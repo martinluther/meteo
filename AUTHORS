@@ -54,6 +54,10 @@ Contributors: in no particular order, email addresses withheld to protect
 				combine temperature and humidity, where hum.
 				shines through the temperature range graph where
 				necessary)
+	Aaron Spike		volunteered to test early releases of meteo
+				0.9.0 on a GrowWeather
+	Carmen Mueller		(http://carmen.othello.ch) contributed the
+				new meteo web site design
 
 --
-$Id: AUTHORS,v 1.8 2003/07/31 22:03:46 afm Exp $
+$Id: AUTHORS,v 1.10 2003/11/01 18:00:30 afm Exp $

@@ -7,75 +7,46 @@
 #define _Wind_h
 
 #include <Vector.h>
+#include <WindSpeed.h>
 #include <Timeval.h>
 #include <string>
 
 namespace meteo {
 
-class	Wind {
-	Timeval		start;
-	Timeval		lastupdate;
-	std::string	unit;
-	bool		hasvalue;
-
-	// current/average value
-	Vector		v;
-
-	// maximum value
-	Vector		max;
-
+class	Wind : public WindSpeed {
+	double	azi;	// this is always in radians, so that trigonometric
+			// computations are easier
 public:
 	// construction and destruction
-	Wind(void) {
-		start.now();
-		hasvalue = false;
-	}
-	Wind(const Vector& v0) {
-		start.now();
-		hasvalue = true;
-		v = v0;
-		max = v0;
-		lastupdate.now();
-		unit = "mps";
-	}
-	Wind(const Vector& v0, const std::string& u) {
-		start.now();
-		hasvalue = true;
-		v = v0;
-		max = v0;
-		lastupdate.now();
-		unit = u;
-	}
-	Wind(const std::string& u) {
-		start.now();
-		hasvalue = false;
-		unit = u;
-	}
-	~Wind(void) { }
-
-	// updaters
-	void	reset(void);
-	void	update(const Vector& v);
-	void	update(const Wind& w);
+	Wind(void);
+	Wind(const Vector& v0);
+	Wind(const Vector& v0, const std::string& u);
+	Wind(const std::string& u);
+	~Wind(void);
 
 	// accessors
-	const Vector&	getValue(void) const { return v; }
-	double		getMax(void) const { return max.getAbs(); }
-	double		getMaxAzimut(void) const { return max.getArg(); }
-	const std::string&	getUnit(void) const { return unit; }
-	void		setUnit(const std::string& u);
-	bool		hasValue(void) const { return hasvalue; }
-	double		getDuration(void) const;
-	void		setValue(const Vector& vv) { v = vv; hasvalue = true; }
-	void		setMax(const Vector& vv) { max = vv; }
+	virtual void	setUnit(const std::string& u);
+	void		setValue(const Vector& vv);
+	Vector	getVectorValue(void) const;
+	std::string	getClass(void) const { return "Wind"; }
+
+	// additional accessors
+	double	getX(void) const;
+	double	getY(void) const;
+	double	getAzi(void) const { return azi; }
+	double	getAzideg(void) const;	// degrees
 
 	// string representation
 	std::string	getSpeedString(void) const;
 	std::string	getXString(void) const;
 	std::string	getYString(void) const;
-	std::string	getAziString(void) const;
-	std::string	getMaxString(void) const;
-	std::string	getDurationString(void) const;
+	std::string	getAziString(void) const; // degrees, since this is
+			// only used for display purposes, or database updates
+			// where we want to store degree angles
+
+	// output
+	virtual std::string	plain(const std::string& name) const;
+	virtual std::string	xml(const std::string& name) const;
 
 	// friends
 	friend class	WindConverter;

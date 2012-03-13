@@ -13,7 +13,7 @@
 #include <Configuration.h>
 #include <Graphics.h>
 #include <mdebug.h>
-#include <timestamp.h>
+#include <Timestamp.h>
 #include <printver.h>
 #include <errno.h>
 #include <iostream>
@@ -23,12 +23,23 @@
 #include <unistd.h>
 #include <MeteoException.h>
 
-#define	NGRAPHNAMES	8
-char	*graphname[NGRAPHNAMES] = {
-	"temperature", "temperature_inside", "humidity", "humidity_inside",
-	"pressure", "radiation", "rain", "wind"
-};
 
+// some type definitions that will be handy
+typedef	std::list<meteo::Timelabel>	timelabellist_t;
+typedef std::set<std::string>	stringset_t;
+typedef	std::vector<int>	intvector_t;
+
+// some global flags, should rather wrap them into an object
+static bool	withtimestamps = false;
+static bool	imagemap = false;
+static bool	images = true;
+static bool	imagetag = false;
+time_t		end;
+std::string	stationname("undefined");
+std::string	prefix;
+std::string	url;
+
+// format a time_t as a string
 static std::string	timestamp(time_t t) {
 	char		tsbuffer[32];
 	struct tm	*lt = localtime(&t);
@@ -36,6 +47,8 @@ static std::string	timestamp(time_t t) {
 	return std::string(tsbuffer);
 }
 
+// test whether an image file is old, compared to the interval. It is old
+// if new data could have arrived in the meantime
 static bool	imageIsOld(const std::string& filename, int interval) {
 	struct stat	sb;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "checking age of %s",
@@ -54,9 +67,57 @@ static bool	imageIsOld(const std::string& filename, int interval) {
 	return ((now - sb.st_ctime) > interval);
 }
 
+// readintervals goes through the command line to read the intervals for which
+// graphs should be produced, and adds them to the intervals set
+static void	readintervals(int argc, char *argv[],
+			intvector_t& intervals, bool havelabeled) {
+	// read all the remaining arguments, they should be valid interval
+	// numbers (check this)
+	if (optind == argc) {
+		// when optind is argc, there are no arguments left. This means
+		// that there aren't any intervals specified. Unless we have
+		// some labels set, we need to dd all intervals to the intervals
+		// set
+		if (!havelabeled) {
+			// the 60 seconds interval is not pushed by default
+			// because it behaves rather differently: There are
+			// no maximum/minimum values in this interval, so
+			// in most cases a separate configuration file will
+			// be needed. We don't want to have to exclude 60 secs
+			// interval manually (would be an incompatible change)
+			intervals.push_back(300);
+			intervals.push_back(1800);
+			intervals.push_back(7200);
+			intervals.push_back(86400);
+		}
+	} else {
+		// this is the case where we have read the required intervals
+		// from the command line
+		for (; optind < argc; optind++) {
+			switch (int interval = atoi(argv[optind])) {
+			case 60:
+			case 300:
+			case 1800:
+			case 7200:
+			case 86400:
+				intervals.push_back(interval);
+				break;
+			default:
+				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+					"illegal interval %s", argv[optind]);
+				exit(EXIT_FAILURE);
+				break;
+			}
+		}
+	}
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "read all remaining arguments");
+}
+
+// usage displays a usage message on stdout when an error is found or the
+// help option is invoked
 static void	usage(void) {
 	printf(
-"usage: meteograph [ -dtVmI ] [ -l logurl ] [ -c dir ] [ -G graph ] \n"
+"usage: meteodraw [ -dtVmI ] [ -l logurl ] [ -c dir ] [ -G graph ] \n"
 "    [ -s station ] [ -p prefix ] [ -g graph ] [ -f config ] [ -u url ] \n"
 "    [ -e endtime ] [ -L label ] [ interval ... ]\n"
 "	-d		increase debug level\n"
@@ -78,45 +139,117 @@ static void	usage(void) {
 "	-e endtime	specify end time of graph\n");
 }
 
+// draw a graph based on a timelabel
+void	drawlabeled(const std::string& currentgraph, const meteo::Timelabel& ti) {
+	// write the graph to a file
+	std::string	outfilename = prefix + currentgraph + "-"
+		+ ti.getString() + ".png";
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "outfilename %s", outfilename.c_str());
+
+	// check age of the graph
+	bool	imgold = imageIsOld(outfilename, ti.getInterval());
+
+	// make sure we catch any problems that happen during
+	// a call graph generation
+	try {
+		// compute the graph
+		meteo::Graphics	graph(ti.getInterval(), ti.getTime(), true,
+			currentgraph, (images || imgold));
+
+		if (images || imgold)
+			graph.toFile(outfilename);
+
+		// output image map if available
+		if (imagemap)
+			std::cout << graph.mapString(url, stationname);
+
+		// output the image tag if asked to do so
+		if (imagetag)
+			std::cout << graph.imageTagString( outfilename);
+	}
+	catch (meteo::MeteoException& ex) {
+		// report the problem
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "MeteoException caught: %s, %s",
+			ex.getReason().c_str(), ex.getAddinfo().c_str());
+	}
+}
+
+// get the file name suffix based on the interval
+std::string	getsuffix(const int interval) {
+	switch (interval) {
+		case 60:	return std::string("-hour"); break;
+		case 300:	return std::string("-day"); break;
+		case 1800:	return std::string("-week"); break;
+		case 7200:	return std::string("-month"); break;
+		case 86400:	return std::string("-year"); break;
+	}
+	throw meteo::MeteoException("illegal interval found", "");
+}
+
+// draw a graph based on the interval
+static void	drawinterval(const std::string& currentgraph, int interval) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "processing graph %s, interval %d",
+		currentgraph.c_str(), interval);
+	// construct the file name
+	std::string	outfilename = prefix + currentgraph
+		+ getsuffix(interval);
+
+	// add a timestamp if requested
+	if (withtimestamps) {
+		outfilename += "-" + timestamp(end);
+	}
+
+	// add the png extension, we only do png, so we don't have to worry
+	// about possible other formats
+	outfilename += ".png";
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "outfilename %s", outfilename.c_str());
+
+	// find out whether the image exists, and is less than the interval old
+	bool	imgold = imageIsOld(outfilename, interval);
+
+	// again, catch all errors during graph generation
+	try {
+		// compute the graph
+		meteo::Graphics	graph(interval, end, false, currentgraph,
+			(images || imgold));
+
+		if (images || imgold)
+			graph.toFile(outfilename);
+	}
+	catch (meteo::MeteoException& ex) {
+		// report the problem
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "MeteoException caught: %s, %s",
+			ex.getReason().c_str(), ex.getAddinfo().c_str());
+	}
+}
+
+// the main program, it does the following
+// - check the command line arguments, and set various variables according
+//   the flags found
+// - set up logging
+// - open the Configuration
+// - check which intervals should be drawn
 int	main(int argc, char *argv[]) {
 	int		c;
-	bool		withtimestamps = false;
 	std::string	conffilename(METEOCONFFILE);
-	std::string	stationname("undefined");
 	std::string	logurl("file:///-");
-	std::string	url;
-	std::string	prefix;
-	time_t		end;
-	std::set<std::string>	requested;
-	std::set<std::string>	notrejected;
-	std::vector<int>	intervals;
-	std::list<meteo::Timelabel>	labeled;
-	bool		imagemap = false;
-	bool		images = true;
-	bool		imagetag = false;
+	stringset_t	requested;
+	intvector_t	intervals;
+	timelabellist_t	labeled;
 	meteo::Timelabel	tl;
 
 	// remember current time
 	time(&end);
 
-	// add all known graphs to the list of graphs
-	for (int k = 0; k < NGRAPHNAMES; k++) {
-		notrejected.insert(std::string(graphname[k]));
-	}
-
 	// parse the command line
-	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:iIl:L:mG:p:ts:V?u:")))
+	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:iIl:L:mp:ts:V?u:")))
 		switch (c) {
 		case '?':
 			usage();
 			exit(EXIT_SUCCESS);
 			break;
 		case 'l':
-			if (mdebug_setup("meteodraw", optarg) < 0) {
-				fprintf(stderr, "%s: cannot init log to %s\n",
-					argv[0], optarg);
-				exit(EXIT_FAILURE);
-			}
+			logurl = std::string(optarg);
 			break;
 		case 'c':
 			if (chdir(optarg) < 0) {
@@ -130,7 +263,7 @@ int	main(int argc, char *argv[]) {
 			debug++;
 			break;
 		case 'e':
-			end = localtime2time(optarg);
+			end = meteo::Timestamp(optarg).getTime();
 			if (debug)
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"end timestamp: %d", end);
@@ -143,10 +276,6 @@ int	main(int argc, char *argv[]) {
 			break;
 		case 'g':
 			requested.insert(std::string(optarg));
-			break;
-		case 'G':
-			// find the graph name an remove it from the 
-			notrejected.erase(std::string(optarg));
 			break;
 		case 's':
 			stationname = std::string(optarg);
@@ -184,11 +313,11 @@ int	main(int argc, char *argv[]) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "set up logging to %s",
 		logurl.c_str());
 
-	// make sure we have a station name
+	// warn if we have no station name, some things will not work, or
+	// at least will produce strange results
 	if ("undefined" == stationname) {
 		fprintf(stderr, "%s: station name not set\n", argv[0]);
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "station name not specified");
-		exit(EXIT_FAILURE);
+		mdebug(LOG_WARNING, MDEBUG_LOG, 0, "station name not specified");
 	}
 
 	// make sure we have a configuration file, and initialize the config
@@ -197,142 +326,41 @@ int	main(int argc, char *argv[]) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "read configuration %s",
 		conffilename.c_str());
 
-	// read all the remaining arguments, they should be valid interval
-	// numbers (check this)
-	if (optind == argc) {
-		if (labeled.size() == 0) {
-			// the 60 seconds interval is not pushed by default
-			// because it behaves rather differently: There are
-			// no maximum/minimum values in this interval, so
-			// in most cases a separate configuration file will
-			// be needed. We don't want to have to exclude 60 secs
-			// interval manually (would be an incompatible change)
-			intervals.push_back(300);
-			intervals.push_back(1800);
-			intervals.push_back(7200);
-			intervals.push_back(86400);
-		}
-	} else {
-		for (; optind < argc; optind++) {
-			switch (int interval = atoi(argv[optind])) {
-			case 60:
-			case 300:
-			case 1800:
-			case 7200:
-			case 86400:
-				intervals.push_back(interval);
-				break;
-			default:
-				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-					"illegal interval %s", argv[optind]);
-				exit(EXIT_FAILURE);
-				break;
-			}
-		}
-	}
-
-	// compute the set of requested graphs
-	std::set<std::string>	g;
-	set_intersection(requested.begin(), requested.end(),
-		notrejected.begin(), notrejected.end(),
-		std::insert_iterator< std::set<std::string> >(g, g.begin()));
+	// read the intervals from the command line
+	readintervals(argc, argv, intervals, (labeled.size() == 0));
 
 	// do all the labeled graphs
-	std::set<std::string>::iterator	j;
-	std::list<meteo::Timelabel>::const_iterator	ti;
+	timelabellist_t::const_iterator	ti;
 	for (ti = labeled.begin(); ti != labeled.end(); ti++) {
-		for (j = g.begin(); j != g.end(); j++) {
-			std::string	currentgraph = *j;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "working on label %s",
+			ti->getString().c_str());
+		// go through the list of requested graph names
+		stringset_t::iterator	j;
+		for (j = requested.begin(); j != requested.end(); j++) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "processing graph %s",
-				currentgraph.c_str());
-			// write the graph to a file
-			std::string	outfilename = prefix + stationname + "-"
-				+ currentgraph + "-" +ti->getString() + ".png";
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "outfilename %s",
-				outfilename.c_str());
+				j->c_str());
+			// actually draw the timelabeled graph
+			drawlabeled(*j, *ti);
 
-			// check age of the graph
-			bool	imgold = imageIsOld(outfilename,
-						ti->getInterval());
-
-			// make sure we catch any problems that happen during
-			// a call graph generation
-			try {
-				// compute the graph
-				meteo::Graphics	graph(conf, stationname,
-					ti->getInterval(), ti->getTime(), true,
-					currentgraph, (images || imgold));
-
-				if (images || imgold)
-					graph.toFile(outfilename);
-
-				// output image map if available
-				if (imagemap)
-					std::cout << graph.mapString(url);
-
-				// output the image tag if asked to do so
-				if (imagetag)
-					std::cout << graph.imageTagString(
-						outfilename);
-			}
-			catch (meteo::MeteoException& ex) {
-				// report the problem
-				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-					"MeteoException caught: %s, %s",
-					ex.getReason().c_str(),
-					ex.getAddinfo().c_str());
-			}
 		}
 	}
 
-	// draw all the graphs
-	std::vector<int>::iterator	i;
-	for (j = g.begin(); j != g.end(); j++) {
-		std::string	currentgraph = *j;
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "processing graph %s",
-			currentgraph.c_str());
-		for (i = intervals.begin(); i != intervals.end(); i++) {
-			int	interval = *i;
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"processing interval %d", interval);
-			// construct the file name
-			std::string	outfilename = prefix + stationname + "-"
-						+ currentgraph;
-			switch (*i) {
-			case 60:	outfilename += "-hour"; break;
-			case 300:	outfilename += "-day"; break;
-			case 1800:	outfilename += "-week"; break;
-			case 7200:	outfilename += "-month"; break;
-			case 86400:	outfilename += "-year"; break;
-			}
-			if (withtimestamps) {
-				outfilename += "-" + timestamp(end);
-			}
-			outfilename += ".png";
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "outfilename %s",
-				outfilename.c_str());
+	// if we had any labeled graphs, we should stop here
+	if (labeled.size() != 0) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "labeled graphs drawn, "
+			"suppressing any interval graphing, exiting");
+		exit(EXIT_SUCCESS);
+	}
 
-			// find out whether the image exists, and is less
-			// than the interval old
-			bool	imgold = imageIsOld(outfilename, interval);
-
-			// again, catch all errors during graph generation
-			try {
-				// compute the graph
-				meteo::Graphics	graph(conf, stationname,
-					interval, end, false, currentgraph,
-					(images || imgold));
-
-				if (images || imgold)
-					graph.toFile(outfilename);
-			}
-			catch (meteo::MeteoException& ex) {
-				// report the problem
-				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-					"MeteoException caught: %s, %s",
-					ex.getReason().c_str(),
-					ex.getAddinfo().c_str());
-			}
+	// do the same for all intervals
+	intvector_t::iterator	i;
+	for (i = intervals.begin(); i != intervals.end(); i++) {
+		int	interval = *i;
+		stringset_t::iterator	j;
+		for (j = requested.begin(); j != requested.end(); j++) {
+			std::string	currentgraph = *j;
+			// actually draw the graph
+			drawinterval(currentgraph, interval);
 		}
 	}
 

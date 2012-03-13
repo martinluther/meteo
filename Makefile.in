@@ -104,7 +104,7 @@ STRIP = @STRIP@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.40 2003/06/08 22:50:00 afm Exp $
+# $Id: Makefile.am,v 1.41 2003/10/31 21:15:51 afm Exp $
 #
 VERSION = @VERSION@
 ac_ct_CC = @ac_ct_CC@
@@ -151,7 +151,7 @@ target_vendor = @target_vendor@
 
 SUBDIRS = include lib src conf html browser db doc man support wunderground
 BUILTSOURCES = README
-EXTRA_DIST = shtool README.tmpl SETUP configureit
+EXTRA_DIST = shtool README.tmpl SETUP configureit BUGS
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

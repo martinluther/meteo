@@ -1,0 +1,45 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
+<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
+</head>
+<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
+<img src="normband.jpg" width="841" height="150" border="0">
+<p><h1>Utilities</h1>
+<p>
+Some utilities included in the package are not documented in manual
+pages. Here is a short description of these tools:
+<dl>
+<dt><b>meteojob</b></dt>
+<dd>This script can be run from cron to recompute exactly those
+graphs that need updating. The script is not very sophisticated,
+e.g. it does not check whether the graphs have previously been
+generated, but it can be used as a starting point for a more elaborate
+solution.</dd>
+<dt><b>meteooverview</b></dt>
+
+<dd>Run with exactly one argument, the name of the station, this script
+generates HTML pages in the current directory with embedded tags linking
+to the graphs. The pages show overviews of all parameters for either a day,
+a week, a month or a year, or an overview of only one parameter over all
+these periods on one page.
+The pages at <a href="http://grossalp.othello.ch/meteo/" target="_new">http://grossalp.othello.ch/meteo/</a> have been generated with this script.
+Again, the script isn't very intelligent, but helpful as a start.
+</dd>
+<dt><b>meteolast</b></dt>
+<dd>retrieves the last entry from the database and formats it as either
+text or XML.
+</dd>
+<dt><b>meteodbdump</b></dt>
+<dd>Dump the contents of the database to text files. Since the meteo
+tables tend to be extremely large (dozens of millions of rows, hundrets
+of megabytes), mysqldump from the MySQL distribution cannot dump the
+tables. And even if it could, it would interfere with normal operation
+of meteo. <b>meteodbdump</b> allows to dump the database without noticable
+impact on the other meteo programs.</dd>
+</dl>
+</p>
+</body>
+</html>

@@ -6,461 +6,273 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <Datarecord.h>
 #include <Station.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#include <Configuration.h>
+#include <StationInfo.h>
+#include <SensorStationInfo.h>
 #include <MeteoException.h>
+#include <PacketReaderFactory.h>
+#include <QueryProcessor.h>
+#include <FQField.h>
+#include <Field.h>
+#include <ChannelFactory.h>
 #include <mdebug.h>
-#include <crc.h>
 
 namespace meteo {
 
-// concstruction/Destruction of Station
+
+// construction/Destruction of Station
+Station::Station(const std::string& n) : name(n) {
+	// set channel to well defined state, or the destructor may erroneously
+	// try to destroy a nonexisting channel, leading to a segmentation
+	// fault
+	channel = NULL;
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating station %s", name.c_str());
+
+	// retrieve all the field names this station is supposed to know about
+	StationInfo	si(name);
+	stationid = si.getId();
+	offset = si.getOffset();
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "stationid = %d, offset = %d",
+		stationid, offset);
+
+	// retrieve the sensor information
+	stringlist	sensornames = si.getSensornames();
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got %d sensor names",
+		sensornames.size());
+
+	// add all the sensor stations this station is supposed to know about
+	stringlist::iterator	s;
+	for (s = sensornames.begin(); s != sensornames.end(); s++) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding sensor %s",
+			(*s).c_str());
+		SensorStation	sensorstation(*s, this);
+		sensors.insert(sensormap_t::value_type(*s, sensorstation));
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sensorstation %s added",
+			(*s).c_str());
+	}
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "Station::Station(%s) complete",
+		name.c_str());
+
+	// create a channel (using the ChannelFactory)
+	channel = ChannelFactory().newChannel(name);
+}
+
 Station::~Station(void) {
-	if (NULL != channel)
+	if (NULL != channel) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "destroying channel %p",
+			channel);
 		delete channel;
+		channel = NULL;
+	}
 }
 
-// check whether the value at the given offset is valid
-bool	Station::validByte(const std::string& s, int offset) const {
-	unsigned char	c = s[offset];
-	return ((c != 0x7f) && (c != 0xff));
+// add a reader to the reader map, the arguments have the following meaning
+// fieldname	- the  name by which this reader will be referenced, of the
+//		  form sensorid.mfield
+// readerspec	- often a class name, tells the ReaderFactory what kind of 
+//		  reader to create (some readers are differently parametrized
+//		  instances of the same class)
+// byteoffset	- position inside the packet where the reader should start
+//		  reading
+// length	- home many bytes should be read by the reader (most readers
+//		  ignore this)
+// unit		- unit of measurement one can find in the packet. This is
+//		  needed when a Value is to be read: the fieldname specifies
+//		  the Value type that should be created and the unit field
+//		  interprets the value in the packet as the correct physical
+//		  entity
+void	Station::addReader(const std::string& fieldname,
+		const std::string& readerspec, int byteoffset, int length,
+		const std::string& unit) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding reader %s (%s)",
+		fieldname.c_str(), unit.c_str());
+	// first send a warning if there is reader name collision
+	readermap_t::const_iterator	i = readers.find(fieldname);
+	if (i != readers.end()) {
+		mdebug(LOG_WARNING, MDEBUG_LOG, 0, "warning: reader %s already "
+			"defined", fieldname.c_str());
+	}
+
+	// find out the value class and unit for this sensor,
+	fieldid	id = FQField().getFieldid(name + "." + fieldname);
+	std::string	classname = Field().getClass(id.mfieldid);
+
+	// now add a new reader
+	PacketReader	p = PacketReaderFactory::newPacketReader(readerspec,
+				byteoffset, length, classname, unit);
+	readers.insert(readermap_t::value_type(fieldname, p));
 }
 
-bool	Station::validShort(const std::string& s, int offset) const {
-	unsigned char	c = s[offset + 1];
-	return ((c != 0x7f) && (c != 0xff));
+// add all the stations found in the stationspec
+int	Station::addAllReaders(const stationreaders_t *stationspec) {
+	// check that we got something
+	if (NULL == stationspec) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no readers specfied");
+		throw MeteoException("no readers specified", "addAllReaders");
+	}
+
+	// add the readers found in the array
+	int	counter = 0;
+	for (const stationreaders_t *srp = stationspec; srp->readername; srp++) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "add reader (%s)%s [%s] %d-%d",
+			srp->classname, srp->readername, srp->readerunit,
+			srp->param1, srp->param2);
+		try {
+			addReader(srp->readername, srp->classname,
+				srp->param1, srp->param2, srp->readerunit);
+			counter++;
+		} catch (MeteoException& me) {
+			mdebug(LOG_INFO, MDEBUG_LOG, 0, "reader %s not added",
+				srp->readername);
+		}
+	}
+
+	// report the number of readers added
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%d readers added", counter);
+	return counter;
 }
 
-// retrieve bytes
-int	Station::getSignedByte(const std::string& s, int offset) const {
-	char	c = s[offset];
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "signed byte %d", c);
-	return c;
-}
-int	Station::getUnsignedByte(const std::string& s, int offset) const {
-	unsigned char	c = s[offset];
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "unsigned byte %u", c);
-	return c;
+// check for the existence of a reader
+bool	Station::hasReader(const std::string& fieldname) const {
+	// check whether the reader exists in the map
+	readermap_t::const_iterator	i = readers.find(fieldname);
+	return (i != readers.end());
 }
 
-// retrieve short
-int	Station::getSignedShort(const std::string& s, int offset) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "signed short bytes: %02x%02x",
-		(unsigned char)s[offset], (unsigned char)s[offset + 1]);
-	unsigned short	s0, s1;
-	s0 = (unsigned char)s[offset];
-	s1 = (unsigned char)s[offset + 1];
-	unsigned short	ss = ((s1 << 8) | s0);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "singed short retrieved: %hd",
-		*(signed short *)&ss);
-	return	(int)ss;
+// calibrate a reader, the fieldname here must concide with the one
+// give when adding the Reader with addReader
+void	Station::calibrateReader(const std::string& fieldname,
+		const Calibrator& cal) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "calibrating %s with %f/%f",
+		fieldname.c_str(), cal.getSlope(), cal.getY0());
+	// check whether reader exists
+	readermap_t::iterator	i = readers.find(fieldname);
+	if (i == readers.end()) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "reader %s not found",
+			fieldname.c_str());
+		throw MeteoException("reader not found", fieldname);
+	}
+
+	// now calibrate the reader
+	i->second.calibrate(cal);
 }
 
-int	Station::getUnsignedShort(const std::string& s, int offset) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "unsigned short bytes: %02x%02x",
-		(unsigned char)s[offset], (unsigned char)s[offset + 1]);
-	unsigned short	s0, s1;
-	s0 = (unsigned char)s[offset];
-	s1 = (unsigned char)s[offset + 1];
-	unsigned short	ss = ((s1 << 8) | s0);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "unsigned short retrieved: %hu", ss);
-	return	(int)ss;
+// read a Value from the packet
+Value	Station::readValue(const std::string& readername,
+	const std::string& packet) const {
+	readermap_t::const_iterator	j = readers.find(readername);
+	if (j == readers.end()) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no reader for %s",
+			readername.c_str());
+		throw MeteoException("no reader found", readername);
+	}
+
+	return j->second.v(packet);
 }
 
+// read data from the packet
+double	Station::read(const std::string& packet,
+		const std::string& fieldname) const {
+	readermap_t::const_iterator	i = readers.find(fieldname);
+
+	// find the reader associated with this name
+	if (i == readers.end()) {
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot find reader for %s",
+			name.c_str());
+		throw MeteoException("reader not found for name", fieldname);
+	}
+
+	// read the data using the reader
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "reading field %s from %d byte packet",
+		fieldname.c_str(), packet.size());
+	return i->second(packet);
+}
+
+bool	Station::valid(const std::string& packet,
+		const std::string& fieldname) const {
+	readermap_t::const_iterator	i = readers.find(fieldname);
+
+	// find the reader associated with this name
+	if (i == readers.end()) {
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot find reader for %s",
+			fieldname.c_str());
+		throw MeteoException("reader not found for name", fieldname);
+	}
+
+	// read the data using the reader
+	return i->second.valid(packet);
+}
+
+// update method
 void	Station::update(const std::string& packet) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "starting record update");
-	// retrieve data values, convert them to the station unit and
-	// update the existing value
-	r.temperatureinside.update(this->getInsideTemperature(packet));
-	r.temperatureoutside.update(this->getOutsideTemperature(packet));
-	r.humidityinside.update(this->getInsideHumidity(packet));
-	r.humidityoutside.update(this->getOutsideHumidity(packet));
-	r.barometer.update(this->getBarometer(packet));
-	r.rain.update(this->getRain(packet));
-	r.wind.update(this->getWind(packet));
-	// maybe we don't have to do anything... for the following two
-	r.solar.update(this->getSolar(packet));
-	r.uv.update(this->getUV(packet));
-	r.update();
+	// go through the sensormap
+	sensormap_t::iterator	i;
+	for (i = sensors.begin(); i != sensors.end(); i++) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "updating sensor %s",
+			i->first.c_str());
+		// update the current SensorStation from the packet
+		i->second.update(packet);
+	}
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "all data values updated");
 }
 
-#define	ACK	6
-void	Station::startLoop(int p) {
-	// remember the number of packets to read
-	packets = p;
+static bool	timekeyheader(const time_t timekey) {
+	char	query[1024];
+	snprintf(query, sizeof(query),
+		"select count(*) from header where timekey = %ld", timekey);
 
-	// wait for a an ack on the channel
-	char	*expect = "\r\nOK\n\r";
-	unsigned int	idx = 0;
-	bool	ackfound = false;
-	do {
-		char	c = channel->recvChar();
-		if (c < 0)
-			throw MeteoException("failed to read ACK", "");
-		if (c == ACK)
-			ackfound = true;
-		if (c == expect[idx])
-			idx++;
-		if (idx == strlen(expect))
-			ackfound = true;
-	} while (!ackfound);
+	QueryProcessor  qp(false);
+	BasicQueryResult	bqr = qp(query);
+	return (1 == atoi((*bqr.begin())[0].c_str()));
 }
 
-//////////////////////////////////////////////////////////////////////
-// WMII
-//////////////////////////////////////////////////////////////////////
-WMII::WMII(const std::string& stationname) : Station(stationname) {
-	// temporarily open a channel
-	Configuration	conf;
-	Channel	*ch = ChannelFactory(conf).newChannel(stationname);
-
-	// drain the channel
-	ch->drain(10);
-
-	// retrieve the rain calibration number from the station
-	unsigned char	cmd[6];
-	cmd[0] = 'W'; cmd[1] = 'R'; cmd[2] = 'D';
-	cmd[3] = 0x44; cmd[4] = 0xd6; cmd[5] = 0xd;
-	std::string	cmdstr((char *)cmd, 6);
-
-	// send the command through the cannel
-	ch->sendString(cmdstr);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sent WRD command");
-	std::string	reply = ch->recvString(3);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got %d bytes reply to WRD",
-		reply.length());
-
-	// wait for an ACK reply
-	if (ACK != reply[0]) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot read RainCAL number");
-		delete ch;
-		throw MeteoException("cannot read RainCAL number", "");
+// updatequery method, constructs the union of all the queries
+stringlist	Station::updatequery(time_t timekey) const {
+	stringlist	result;
+	// add the query for the header to the result list
+	if (!timekeyheader(timekey)) {
+		char    query[1024];
+		snprintf(query, sizeof(query),
+			"insert into header(timekey, group300, group1800, "
+			"	group7200, group86400) values "
+			"	(%ld, %ld, %ld, %ld, %ld)",
+			timekey,
+			(timekey + offset)/300, (timekey + offset)/1800,
+			(timekey + offset)/7200, (timekey + offset)/86400);
+		result.push_back(query);
 	}
 
-	// read two bytes from the channel and store as an unsigned int
-	raincal = getUnsignedShort(reply, 1);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got raincal %d", raincal);
-
-	// retrieve the pressure calibration number from the station
-	cmd[0] = 'W'; cmd[1] = 'R'; cmd[2] = 'D';
-	cmd[3] = 0x44; cmd[4] = 0x2c; cmd[5] = 0xd;
-	std::string cmdstr1((char *)cmd, 6);
-
-	// send the command through the channel
-	ch->sendString(cmdstr1);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "send WRD command to retrieve "
-		"pressure cal number");
-
-	reply = ch->recvString(3);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got %d bytes reply to WRD",
-		reply.length());
-
-	// wait for an ACK reply
-	if (ACK != reply[0]) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot read PressureCAL "
-			"number");
-		delete ch;
-		throw MeteoException("cannot read PressureCal number", "");
+	// go through the sensor map, and add every element of the sensors
+	// update queries to the result
+	sensormap_t::const_iterator	i;
+	for (i = sensors.begin(); i != sensors.end(); i++) {
+		stringlist	a = i->second.updatequery(timekey);
+		// splice this query at the end of the result list
+		result.splice(result.end(), a);
 	}
 
-	// read two bytes from the channel and store as a signed int
-	pressurecal = (short)getSignedShort(reply, 1);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %d", pressurecal);
-
-	delete ch;
-}
-WMII::~WMII(void) { }
-void	WMII::startLoop(int p) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "requesting %d packets from WMII", p);
-	unsigned short	n = 65536 - p;
-	unsigned char	b1 = n & 0xff;
-	unsigned char	b2 = (n & 0xff00) >> 8;
-	unsigned char	el = 0xd;
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sending command LOOP %02x %02x \\r",
-		b1, b2);
-
-	std::string	cmd = std::string("LOOP")
-				+ std::string((char *)&b1, 1)
-				+ std::string((char *)&b2, 1)
-				+ std::string((char *)&el, 1);
-	
-	// format the command as a hex string for easier debugging
-	if (debug) {
-		std::string	scmd;
-		char		b[8];
-		for (unsigned int i = 0; i < cmd.size(); i++) {
-			snprintf(b, sizeof(b), "%02x ", (unsigned char)cmd[i]);
-			scmd += b;
-		}
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "WMII LOOP command; %s",
-			scmd.c_str());
-	}
-	getChannel()->sendString(cmd);
-	Station::startLoop(p);
-}
-std::string	WMII::readPacket(void) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-		"waiting for WMII packet (18 bytes)");
-	std::string	packet = getChannel()->recvString(18);
-	// verify the header
-	if (packet[0] != 0x01) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"WMII packet does not start with 0x01");
-		throw MeteoException("WMII packet doesn't start wih 0x01", "");
-	}
-	// verify the check sum
-	crc_t	crc = (unsigned char)packet[17] |
-		((unsigned char)packet[16] << 8);
-	if (0 != crc_check(&crc, (unsigned char *)packet.substr(1, 15).c_str(),
-		15)) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wrong CRC on WMII packet");
-		throw MeteoException("wrong CRC on WMII packet", "");
-	}
-
-	// return the packet
-	return packet;
-}
-TemperatureValue	WMII::getInsideTemperature(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get inside temperature");
-	if (validShort(s, 1))
-		return TemperatureValue(getSignedShort(s, 1)/10., "F");
-	else
-		return TemperatureValue("F");
-}
-TemperatureValue	WMII::getOutsideTemperature(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get outside temperature");
-	if (validShort(s, 3))
-		return TemperatureValue(getSignedShort(s, 3)/10., "F");
-	else
-		return TemperatureValue("F");
-}
-HumidityValue	WMII::getInsideHumidity(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get inside humidity");
-	if (validByte(s, 10) && ((unsigned char)s[10] != 0x80))
-
-		return HumidityValue(getUnsignedByte(s, 10), "%");
-	else
-		return HumidityValue();
-}
-HumidityValue	WMII::getOutsideHumidity(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get outside humidity");
-	if (validByte(s, 11) && ((unsigned char)s[11] != 0x80))
-		return HumidityValue(getUnsignedByte(s, 11), "%");
-	else
-		return HumidityValue();
-}
-PressureValue	WMII::getBarometer(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get pressure");
-	if (validShort(s, 8))
-		return PressureValue((getUnsignedShort(s, 8) - pressurecal)/1000., "inHg");
-	else
-		return PressureValue("inHg");
-}
-SolarValue	WMII::getSolar(const std::string& s) const {
-	return SolarValue("W/m2");
-}
-UVValue	WMII::getUV(const std::string& s) const {
-	return UVValue("index");
-}
-Wind	WMII::getWind(const std::string& s) const {
-	if (validShort(s, 6) && validByte(s, 5)) {
-		double	speed = getUnsignedByte(s, 5);
-		double	azideg = getUnsignedShort(s, 6);
-		double	azi = 3.1415926535 * azideg/180.;
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wind azi %.f, speed %.1f",
-			azideg, speed);
-		return Wind(Vector(sin(azi) * speed, cos(azi) * speed), "mph");
-	} else
-		return Wind("mph");
-}
-Rain	WMII::getRain(const std::string& s) const {
-	if (validShort(s, 12)) {
-		Rain	rr(((double)getUnsignedShort(s, 12))/raincal, "in");
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "WMII rain value: %.2f",
-			rr.getValue());
-		return rr;
-	} else
-		return Rain("in");
-}
-
-
-//////////////////////////////////////////////////////////////////////
-// VantagePro
-//////////////////////////////////////////////////////////////////////
-VantagePro::~VantagePro(void) { }
-
-void	VantagePro::startLoop(int p) {
-	// before every loop iteration, the vantage pro needs to be
-	// waked up. This is necessary because the Vantage Pro goes
-	// to sleep after it has executed a LOOP command.
-	// Send \r bytes, read \n\r
-	std::string	response;
-	int	loops = 20;
-	do {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"start Vantage Pro wake up sequence");
-		getChannel()->sendChar('\r');
-		response = getChannel()->recvString(2);
-		if (response != "\n\r") {
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"problem in wake up sequence, trying drain");
-			getChannel()->drain(10);
-		}
-	} while ((response != "\n\r") && (loops-- > 0));
-
-	// send a loop command
-	unsigned char	el = 0xd;
-	if (p > 9)
-		p = 9;
-	unsigned char	b1 = '0' + p;
-
-	std::string	cmd = std::string("LOOP1")
-				+ std::string((char *)&b1, 1)
-				+ std::string((char *)&el, 1);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sending LOOP command: %s",
-		cmd.c_str());
-	getChannel()->sendString(cmd);
-
-	// the startLoop command also reads the ACK from the station
-	Station::startLoop(p);
-}
-
-std::string	VantagePro::readPacket(void) {
-	// read 99 characters from the station (length of a Vantage Pro 
-	// LOOP packet)
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-		"waiting for Vantage Pro packet (99 bytes)");
-	std::string	packet = getChannel()->recvString(99);
-	// verify the header
-	if (packet.substr(0, 3) != "LOO") {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "packet is not a LOOP packet");
-		throw MeteoException("not a loop packet", packet.substr(0, 3));
-	}
-	// verify the check sum
-	crc_t	crc = (unsigned char)packet[98] |
-		((unsigned char)packet[97] << 8);
-	if (0 != crc_check(&crc, (unsigned char *)packet.substr(0, 97).c_str(),
-		97)) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wrong CRC on Vantage packet");
-		throw MeteoException("wrong CRC on Vantage packet", "");
-	}
-	// return the packet
-	return packet;
-}
-TemperatureValue VantagePro::getInsideTemperature(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get inside temperature");
-	if (validShort(s, 9))
-		return TemperatureValue(getSignedShort(s, 9)/10., "F");
-	else
-		return TemperatureValue("F");
-}
-TemperatureValue VantagePro::getOutsideTemperature(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get outside temperature");
-	if (validShort(s, 12))
-		return TemperatureValue(getSignedShort(s, 12)/10., "F");
-	else
-		return TemperatureValue("F");
-}
-HumidityValue	VantagePro::getInsideHumidity(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get inside humitiy");
-	if (validByte(s, 11) && ((unsigned char)s[11] != 0x80))
-		return HumidityValue(getUnsignedByte(s, 11), "%");
-	else
-		return HumidityValue("%");
-}
-HumidityValue	VantagePro::getOutsideHumidity(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get outside humitiy");
-	if (validByte(s, 33))
-		return HumidityValue(getUnsignedByte(s, 33), "%");
-	else
-		return HumidityValue("%");
-}
-PressureValue	VantagePro::getBarometer(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get pressure");
-	if (validShort(s, 7))
-		return PressureValue(getUnsignedShort(s, 7)/1000., "inHg");
-	else
-		return PressureValue("inHg");
-}
-SolarValue	VantagePro::getSolar(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get solar radiation");
-	if (validShort(s, 44))
-		return SolarValue(getUnsignedShort(s, 44), "W/m2");
-	else
-		return SolarValue("W/m2");
-}
-UVValue	VantagePro::getUV(const std::string& s) const {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get uv radiation");
-	if (validByte(s, 43))
-		return UVValue(getUnsignedByte(s, 43)/10., "index");
-	else
-		return UVValue("index");
-	
-}
-Wind	VantagePro::getWind(const std::string& s) const {
-	if (validByte(s, 14) && validShort(s, 16)) {
-		double	speed = getUnsignedByte(s, 14);
-		double	azideg = getUnsignedShort(s, 16);
-		double	azi = 3.1415926535 * azideg/180.;
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wind azi %.f, speed %.1f",
-			azideg, speed);
-		return Wind(Vector(sin(azi) * speed, cos(azi) * speed), "mph");
-	} else
-		return Wind("mph");
-}
-Rain	VantagePro::getRain(const std::string& s) const {
-	if (validShort(s, 50))
-		return Rain(getUnsignedShort(s, 50)/100., "in");
-	else
-		return Rain("in");
-}
-
-
-Station	*StationFactory::newStation(const std::string& name) const {
-	Station	*result;
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "createing new station named %s",
-		name.c_str());
-	// find out what type of station this is
-	std::string	stationxpath = "/meteo/station[@name='"
-				+ name + "']/type";
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "looking for station %s via xpath %s",
-		name.c_str(), stationxpath.c_str());
-	std::string	stationtype = conf.getString(stationxpath, "undefined");
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station type: %s",
-		stationtype.c_str());
-	if (stationtype == "WMII") {
-		result = new WMII(name);
-	} else if (stationtype == "VantagePro") {
-		result = new VantagePro(name);
-	} else {
-		throw MeteoException("unknown station type", stationtype);
-	}
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station %s created", name.c_str());
-
-	// retrieve the unit settings from the configuration file
-	result->setTemperatureUnit(conf.getTemperatureUnit());
-	result->setHumidityUnit(conf.getHumidityUnit());
-	result->setPressureUnit(conf.getPressureUnit());
-	result->setRainUnit(conf.getRainUnit());
-	result->setWindUnit(conf.getWindUnit());
-	result->setSolarUnit(conf.getSolarUnit());
-	result->setUVUnit(conf.getUVUnit());
-
-	// open a channel to the station
-	Channel	*channel = ChannelFactory(conf).newChannel(name);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating new channel to %s",
-		name.c_str());
-	result->setChannel(channel);
-
-	// return the complete station
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating of new station %s complete",
-		name.c_str());
+	// return the accumulated results
 	return result;
 }
 
+
+// reset all recorders
+void	Station::reset(void) {
+	sensormap_t::iterator	i;
+	for (i = sensors.begin(); i != sensors.end(); i++) {
+		i->second.reset();
+	}
+}
+
+void	Station::startLoop(int p) {
+	// remember the number of packets to read
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "starting loop for %d packets", p);
+	packets = p;
+}
 
 } /* namespace meteo */

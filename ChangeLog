@@ -1,3 +1,163 @@
+
+Release 0.9.0:
+	This is the `Lajeado'-release of meteo. The university Univates
+	(http://www.univates.br) has sponsored the drastic changes described
+	below. I would in particular like to mention Cesar Brod (who drove
+	the `Lajeado'-project), Tiago Giovanaz da Silva (who takes care of
+	meteo installation and operating at Univates) and Vilson Gartner
+	(who helped design the new database and object model).
+	In addition, Jeff Wabik (not related to Univates) has contributed
+	many new ideas to this release (for details see below).
+	* new meteo web site design by Carmen Mueller
+	* Some memory observations: On 32bit Solaris 9, the meteo processes
+	  have the following memory requirements (as reported by top):
+		program		size
+		meteopoll	6052k	
+		meteoavg	6008k
+		meteodequeue	6000k
+	  resident size is usually about one third to one half of this.
+	* Some storage space observations: data from 4.25years (2.5years
+	  from a Weather Monitor II and 1.75 years from a VantagePro use
+	  space as follows:
+		table		  MYD	  MYI	 total
+		stationdata	303MB	 50MB	 353MB
+		averages	 73MB	 12MB	  85MB
+		0.8.6 total			 538MB
+		sdata		333MB	348MB	 681MB
+		avg		240MB	484MB	 724MB
+		header		 43MB	 24MB	  67MB
+		0.9.0 total			1472MB
+	  Thus the size of the data increased by a factor 2.6. For a single
+	  VantagePro Plus station over 141 days (200k samples), the following
+	  storage requirements have been observed:
+		table		   MYD	   MYI	  total
+		stationdata	29.2MB	 3.3MB	 32.5MB
+		averages	 7.0MB	 1.1MB	  8.1MB
+		0.8.6 total			 40.6MB
+		sdata		35.6MB	43.0MB	 78.6MB
+		avg		16.9MB	36.6MB	 53.5MB
+		0.9.0 total			132.1MB
+	  i.e. a factor of 3.3, which is not surprising considering that
+	  the VantagePro has many more sensors.
+	* Some preliminary performance observations: on my SPARCstation 20
+	  with two 60MHz processors, the constant load on the system 
+	  has risen from about 22% to 30%. The constantly running processes
+	  use CPU time per day as follows:
+		meteopoll	10 min/day	0.7%
+		meteoavg	10 sec/day	0.01%
+		meteodequeue	20 sec/day	0.02%
+	  Consequently, most of the load comes from the database.
+	* Fix the Averager to use an error-ignoring QueryProcessor, so
+	  a failed insert in the database das not abort the averaging
+	  process
+	* added ignoreerrors flag to QueryProcessor class, catches
+	  MeteoExceptions caused by failed updates to be caught inside
+	  the QueryProcessor
+	* fix bugs in VantagePro implementation, now works for standard
+	  sensors
+	* remove dummygettext.inc kludge
+	* add index avgx1 to the avg table to improve speed of meteodraw
+	  especially for year and month graphs
+	* wind averageing was seriously wrong and incompatible with the
+	  previous release: windx and windy are wind run components (unit [m])
+	  not wind speed components (unit [m/s])
+	* fix naming of graphs in meteodraw (interval graphs had not been
+	  converted to the new stuff yet, the man page was also inconsistent
+	* simplified Query and QueryResult, and improved the descriptions
+	  in the source code
+	* found a memory leak in the XML code in Configuraiton, while
+	  tracking it down, introduced some caches into Configuration, so
+	  is no probably faster.
+	* modified the QueryProcessor class so that it opens at most two
+	  connections, one for read/write access, one for read-only. This
+	  should improve resource consumption and speed
+	* introduced caching in SensorStationInfo
+	* Separated the logic of Field into Field (unqualified) and FQField
+	  fully qualified
+	* updated DTD for new configuration file format
+	* streamlined the logic after the waitpid call in meteopoll.cc
+	* fixed some bugs in the Pidfile class
+	* added a utility program to display the sensors a station knows
+	  about: meteosensors
+	* converted station construction to a more table based approach:
+	  the ReaderInfo class delivers the sensor names that are available
+	  for a station, and the Station class creates all the necessary
+	  readers. This also means that the station class only has to
+	  implement what is special about the class, e.g. the calibration
+	  numbers
+	* fix offsets in meteodraw and in the graph configuration files
+	* fix a segmentation fault caused be insufficient initializiation
+	  (the channel member of Station was not correctly initialized, and
+	  when the constructor threw an exception, the channel destructor
+	  was called on a junk pointer)
+	* adapted the meteobrowser to the new stuff, tested for Lajeado
+	* adapted meteooverview to the new naming conventions
+	o fix a bug that caused image maps to have areas that were not properly
+	  aligned with the graphs (work in progress)
+	* updated meteo.xml.5 and meteo.sql.5 to reflect the current status
+	  of the project (they still talked about 0.8.*)
+	* added sketch of classes in the library
+	* meteolast working in the 3-tier architectur
+	* completed the transition to the 3-tier architectur:
+	  Station-Sensor-Mfield
+	* introduced new naming convention for fields and sensors, and a
+	  concept of fully qualified field name.
+	* introduced the SensorStation class between Station and Field, since
+	  conceptionally all stations are a controlling instance (the console)
+	  and several sets of sensors: one set in the console, but others
+	  external to it, like the ISS on the Vantage Pro, but also the
+	  soil or leaf stations, or the extra temperature/humidity stations.
+	* fix some more bugs in the Wind and Rain classes: now WMII works again,
+	  however, there seems to be a memory leak
+	* fixed a few resource management bugs in the Value and Recorder
+	  classes
+	* all manual pages seem to assume that the conf file is mandatory,
+	  but this is incorrect for quite some time now
+	* fix recursion problem: (Reader)::value may not call operator(),
+	  because as a virtual method it will call the value again.
+	* limit the amount of RAM meteopoll can use, thus protecting from
+	  memory leaks
+	* complete calibration number implementation for GroWeather, Health
+	  and Energy station
+	* add UVmed units to the UV converter
+	* included rain rate as a supported sensor for all stations that
+	  have rain rate in the LOOP packet (feature request by Jeff Wabik)
+	* added windchill as suggested by Jeff Wabik
+	* adding to a map via m[key] = value crashed the programm, so we
+	  converted such occurences to m.insert(make_pair(key, value)),
+	  which does not have this problem.
+	* built an OO wrapper around the msg queue stuff
+	* updated meteodbdump to work with the new database structure
+	* added GroWeather, Energy and Health stations. Since I don't have
+	  such a station, I just copy documentation, so maybe nothing works.
+	  Could please someone with a GroWeather/Energy/Health try it out
+	  or even debug?
+	* updated documentation to reflect changes, probably missed still
+	  quite a few points
+	* added support/meteodbmigrate tool to convert from an old to a
+	  new database
+	* Abstracted the capability to read data from a weather station packet
+	  into a new familiy PacketReader classes. A weather station is now
+	  essentially a map that maps sensor names to PacketReaders and a
+	  DataRecorder. With every data packet read from the station, for each
+	  Recorer in the DataRecorder the matching PacketReader is applied to
+	  the packet, which retrieves a Value. The Value can in turn be used
+	  to update Recorder. Thus a new station is essentially a definition
+	  of PacketReaders for each sensor the station provides.
+	* Separated the logic in Datarecord similar to the Value and Recorder
+	  classes. A Datarecord is now just a map that maps sensor names to
+	  Values. A DataRecorder is a map that maps sensor names to Recorders.
+	* separated the logic of accumulating the minute values from the 
+	  Value logic: Value classes represent just data, Recorders accumulate
+	  Values over intervals. Value classes can be converted to other units,
+	  Recorders have a fixed unit.
+	* new classes MoistureValue, LeafwetnessValue, LevelValue which are
+	  necessary for soil moisture sensors, leaf wetness sensors, and
+	  water level sensors
+	* BasicValue class added as a parent class for all value types
+	* database structure redesigned to use narrow but long tables. This
+	  will allow to accomodate new types of sensors.
+
 Release 0.8.6:
 	* added a DTD for meteo configuration files
 	* moved the unit configuration tags out of the station configuration
@@ -360,4 +520,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.75 2003/08/24 20:26:40 afm Exp $
+$Id: ChangeLog,v 1.98 2003/11/01 18:00:30 afm Exp $

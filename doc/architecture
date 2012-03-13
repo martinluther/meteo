@@ -1,0 +1,277 @@
+Architecture of meteo
+=====================
+
+This file describes the architecture of meteo, and is intended for
+meteo hackers. It describes some of the internals: 
+- the process structure, which is useful for system administrators
+  to understand what processes must be running. 
+- the database schema, so people can build their own display formats
+  based on the database
+- the object model, most importantly the classes that implement the
+  station interface, particularly interesting for people who want to
+  implement interfaces to new types of weather sensors.
+
+Process structure
+-----------------
+
+In a full fledged meteo installation, for processes are running:
+
+1. The primary meteopoll process does nothing but fork a child process
+   and monitor that process. In case it is sent a deadly signal, it
+   passes that signal on to the child and terminates.
+2. The child meteopoll process is responsible for connecting to the
+   weather station and collecting data. If it encounters any problem,
+   it dies, and the parent process will fork a new instance. Meteopoll
+   does not send data directly to the database. It rather uses a message
+   queue. 
+3. The meteodequeue process pulls queries off the message queue and
+   sends them to the database
+4. The meteoavg process computes averages for graph computation. Meteoavg
+   does not use the message queue, as the delivery of its results is not
+   time critical.
+
+Database schema
+---------------
+
+The technical specification of the database is contained in the file
+meteo.sql in the db directory of the distribution.
+
+Object model
+------------
+
+Conceptionally, a weather station consists in one computer interface
+(usually representated by a communications channel [Channel object]
+and a protocol [implemented by Station object and Reader classes]),
+and one or more sensor stations that all use the same computer interface
+to communicate their data to the database. The meteopoll program
+builds the connection to the weather station, and manages the protocol
+between computer and weather station.
+
+The main work in meteopoll is done by instances of the Station class.
+When meteopoll starts, it reads the meteo.xml configuration file and
+calls on the StationFactory to create a Station object matching the
+definition in the configuration file. The most important parts of
+a Station object are
+
+- The PacketReader objects, stored in the readers map. Every Reader
+  is responsible for reading exactly one Value off the data packet
+  received from the weather station. The constructor always creates all
+  the Readers a Station knows about. This wastes some memory, but simplifies
+  the code considerably.
+
+- SensorStation objects, which are essentially collections of data
+  recorders (i.e. DataRecorder objects), each Recorder having a name.
+  The update method of the SensorStation object retrieves the Reader
+  objects for all the Recorder objects within the DataRecorder, gets
+  the matching Reader class, reads the Value off the packet, and updates
+  the Recorder.
+
+The main loop of the meteopoll programm thus sends a request for data
+packets to the station (the startLoop method), and keeps waiting for
+replies, as long as the expectMorePackets promises that more packets
+will be received.
+
+Whenever a packet is received, all the recorders are asked to update
+themselves from the Reader for the same sensor. The DataRecorder update
+method calls iterates through the map of Recorders and retrieves the
+Reader for the sensor. It applies the Reader to the packet (Readers are
+functors), which gives a Value object. The Value is then feed into the
+Recorders update method.
+
+At the end of a minute, the Recorder is asked to produce a list of update
+queries to the database, the updatequery method does this. These queries
+are then all sent to the MsgQueuer object that represents one end of the
+messsage queue.
+
+To integrate a new Station, one has to do the following:
+
+1. derive from Station a new station class. The class must implement
+   the startLoop method, and it must give meaningful answers to the
+   expectMorePackets. Furthermore, the constructor must create Reader
+   objects for all the data that can be read off a packet. The readPacket
+   method should be provided to read reply data.
+
+2. add this new class to the StationFactory, so that it can be generated
+   from the configuration file
+
+3. In special cases, when strange data formats are being used, it might
+   be necessary to create new Reader classes, which should be derived
+   from BasicPacketReader. Note that there also is a PacketReaderFactory
+   class that should be updated.
+
+
+Class Hierarchy
+---------------
+
+Indenting of class names symbolizes derivation in the list below. On the
+right is a short description of what the classes are good for
+
+Timeval		// encapsulation of struct timeval, does arithmetic
+Timelabel	// Timelabels specify level and time interval for the browser
+Timestamp	// operations with YYYYMMDDhhmmss timestamps
+Vector		// vector arithmetic to work with wind
+MeteoException	// common exception class
+
+Averager	// compute averages, mainly used in the meteoavg program
+
+Converter	// wrapper class for resource management for BasicConverter
+ConverterFactory	// create a converter
+BasicConverter	// BasicConverter, all real converters are derived from
+		// this. Converters know about the target unit
+	HumidityConverter
+	LeafwetnessConverter
+	LevelConverter
+	MoistureConverter
+	PressureConverter
+	RainConverter
+	RainRateConverter
+	SolarConverter
+	TemperatureConverter
+	UVConverter
+	WindConverter
+
+PacketReaderFactory	// create a reader based on a specification
+PacketReader		// wrapper for resource mgmt for BasicPacketReader
+BasicPacketReader	// read a value off a packet
+	BarometerReader
+	BytePacketReader
+	ExtraTemperatureReader
+	NibblePacketReader
+	OldTemperatureReader	// used by old Davis stations
+	OldWindReader		// used by old Davis stations
+	RainRateReader
+	RainReader
+	ShortPacketReader
+	TemperatureReader
+	TimeReader
+	UVReader
+	VantageProWindReader
+	WMIIWindReader
+	VoltageReader
+Calibrator	// perform linear transformations (with clipping) on the
+		// results read by a reader
+
+Query		// abstract form of query for a graph
+QueryProcessor	// class that performs queries
+QueryResult	// result of an abstract query
+BasicQueryResult// ordinary queries std::list<std::vector<std::string> >
+Tdata		// arithmetic with results, essentially maps that map
+		// time_t to value
+Dataset		// map of names (as used in XML config file) to Tdata
+Derivedvalue	// common base class for all classes that compute
+		// derived values from several data classes
+	Dewpoint
+	Heatindex
+	Windchill
+
+Recorder	// wrapper recorder class
+RecorderFactory
+BasicRecorder	// basic recorder class
+	MinmaxRecorder	// recorder for values for which we want to track
+			// minimum and maximum
+		HumidityRecorder
+		LeafwetnessRecorder
+		LevelRecorder
+		MoistureRecorder
+		PressureRecorder
+		SolarRecorder
+		RainRateRecorder
+		TemperatureRecorder
+		UVRecorder
+	RainRecorder	// recorder for rain
+	WindRecorder	// recorder for wind, does vector arithmetic
+
+DataRecorder	// a map from names to Recorders, used by the Station object to
+		// accumulate data from the weather station
+
+Value		// Values know about units, and can be converted using
+		// converters, includes rsrc mgmt for included BasicValue
+		// class
+ValueFactory	// create a Value
+BasicValueFactory	// create a BasicValue
+BasicValue	// base class for all Value classes
+	HumidityValue
+	LevelValue
+	LeafwetnessValue
+	MoistureValue
+	PressureValue
+	Rain
+	RainRate
+	SolarValue
+	TemperatureValue
+	UVValue
+	WindSpeed
+	Wind
+
+Datarecord	// a map from names to Values, returned by the nearRecord
+		// method of the QueryProcessor
+
+ChannelFactory
+Channel		// communications channel to weather station
+	FileChannel	// read replies from a file
+	SerialChannel	// use a serial connection to communicate
+	TcpChannel	// use a TCP connection to talk to the station
+
+Configuration	// mediate access to the XML confiugration file
+Daemon		// daemonize the process
+Pidfile		// create a process id file
+
+StationInfo	// get information about station from XML file
+StationFactory	// create a station based on name
+Station		// base class for all Stations
+	DavisStation	// Davis Stations, this class knows the Davis protocol
+		OldDavisStation	// old style stations behave a little different
+			GroWeather
+			Health
+			Energy
+		WMII	// the WMII is a new style station, but does not need
+			// wake up that is need in the VantagePro
+		VantagePro
+
+Field		// access to information about fields
+SensorInfo	// information about a Sensor
+SensorStation
+SensorStationInfo
+
+// the following classes are needed for the graphing stuff
+Color
+Dimension
+Frame
+GraphPoint
+GraphWindow
+Graphics
+ImageMap
+Label
+Level
+MapArea
+Rectangle
+Scale
+Axis
+Point
+
+MsgCommon		// common base class for the Msg Queue stuff
+	MsgQueuer	// sender side of the message queue
+	MsgDequeuer	// receiver side of the message queue
+Datasink		// Datasinks 
+	FileDatasink	// send queries to a file
+	QueueDatasink	// send queries to a Message queue
+	MysqlDatasink	// send queries directly to the Mysql database
+
+Coding style
+------------
+
+Please try to imitated the coding style of the existing meteo code,
+including, but not limited to the following:
+- Lines should not exceed 80 characters.
+- Indentation should only use tabes, tab stops every 8 characters.
+- add enough mdebug statements so that the debug output can be used to
+  trace the execution of the program.
+- Class names should be in mixed case, always beginning with a capital
+  letter.
+- All classes should be in the namespace meteo.
+- Use const wherever possible.
+- Make sure your code does not generate any warnings when compiled with
+  -Wall.
+
+--
+$Id: architecture,v 1.3 2003/10/20 20:13:15 afm Exp $

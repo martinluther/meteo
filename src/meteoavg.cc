@@ -4,14 +4,11 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.cc,v 1.3 2003/06/12 23:29:46 afm Exp $
+ * $Id: meteoavg.cc,v 1.9 2003/10/25 00:52:32 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <meteo.h>
-#include <database.h>
-#include <average.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -19,63 +16,74 @@
 #include <string.h>
 #endif
 #include <errno.h>
-#include <timestamp.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <daemon.h>
+#include <Averager.h>
+#include <Configuration.h>
+#include <StationInfo.h>
+#include <Timestamp.h>
+#include <Daemon.h>
 #include <printver.h>
+#include <string>
 #include <mdebug.h>
 
 extern int	optind;
 extern char	*optarg;
 
-/*
- * the daemon usually waits for the next time stamp that leaves 30 when
- * divided by 300, and computes adds all the averages that are required
- * for that timestamp
- */
-static void	avg_daemon(MYSQL *mysql, const char *station) {
-	time_t		now, next;
+// the daemon usually waits for the next time stamp that leaves 30 when
+// divided by 300, and computes adds all the averages that are required
+// for that timestamp
+static void	avg_daemon(const std::string& station) {
+	meteo::Averager	avg(station);
+	int	offset = avg.getOffset();
+	time_t	now, next;
 
 	while (1) {
+		// we go through the following loop repeatedly because it
+		// can happen that the sleep call is interrupted by a signal
+		// in which case we restart it
 		do {
-			/* determine current time			*/
+			// determine current time
 			time(&now);
 
-			/* find out when will be the next point in time	*/
-			/* to compute averages for			*/
+			// find out when will be the next point in time
+			// to compute averages for. In addition, we wait 30
+			// seconds more, because that gives us the assurance
+			// that the data in the sdata table will be ready
 			next = now - (now % 300) + 330;
 
-			/* wait till this happens			*/
+			// wait till this happens
 			if (debug)
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"next event at %-24.24s, in %d seconds",
 					ctime(&next), (int)(next - now));
 		} while (0 != sleep(next - now));
 
-		/* find the point in to for which to compute the avgs	*/
+		// find the point in the past which to compute the avgs
 		next -= next % 300;
 
-		/* compute all necessary averages			*/
-		add_average(mysql, next, 300, station);
+		// compute all necessary averages. We have to add offset 
+		// to the first argument because the Averager will again
+		// substract the same value. Previously, the timekey was
+		// to indicate the end of the time interval, but now
+		// it points to the beginning, so we have to substract the
+		// interval length to get the same behaviour
+		avg.add(next + offset - 300, 300, false);
 		if (0 == (next % 1800)) {
-			if (debug)
-				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"adding 1/2h avgs necessary");
-			add_average(mysql, next, 1800, station);
+			avg.add(next + offset - 1800, 1800, false);
 		}
 		if (0 == (next % 7200)) {
-			if (debug)
-				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"adding 2h avgs necessary");
-			add_average(mysql, next, 7200, station);
+			avg.add(next + offset - 7200, 7200, false);
 		}
 		if (0 == (next % 86400)) {
-			if (debug)
-				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"adding 1day avgs necessary");
-			add_average(mysql, next, 86400, station);
+			avg.add(next + offset - 86400, 86400, false);
 		}
 	}
 }
@@ -104,16 +112,16 @@ printf(
 }
 
 int	main(int argc, char *argv[]) {
-	char		*conffilename = METEOCONFFILE;
-	char		*station = NULL;
-	int		c, naverages = -1, interval = 0, remainder,
-			daemonmode = 0, all = 0, haveavg, foreground = 0;
+	std::string	conffilename(METEOCONFFILE);
+	std::string	station;
+	int		c, naverages = -1, interval = 0;
+	bool		foreground = false;
+	bool		daemonmode = false;
 	time_t		fromt, tot, t;
-	MYSQL		*mysql;
-	char		*pidfilename = "/var/run/meteoavg-%s.pid";
-	meteoconf_t	*mc;
+	bool		haveavg, average_fake = false, all = false;
+	std::string	pidfileprefix("/var/run/meteoavg-");
 
-	/* parse the command line					*/
+	// parse the command line					
 	while (EOF != (c = getopt(argc, argv, "adf:Fi:l:r:np:Vs:h?")))
 		switch (c) {
 		case 'l':
@@ -124,22 +132,22 @@ int	main(int argc, char *argv[]) {
 			}
 			break;
 		case 's':
-			station = optarg;
+			station = std::string(optarg);
 			break;
 		case 'd':
 			debug++;
 			break;
 		case 'a':
-			all = 1;
+			all = true;
 			if (debug)
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"all averages forced");
 			break;
 		case 'f':
-			conffilename = optarg;
+			conffilename = std::string(optarg);
 			break;
 		case 'F':
-			foreground = 1;
+			foreground = true;
 			break;
 		case 'i':
 			interval = atoi(optarg);
@@ -156,13 +164,13 @@ int	main(int argc, char *argv[]) {
 			}
 			break;
 		case 'p':
-			pidfilename = optarg;
+			pidfileprefix = optarg;
 			break;
 		case 'r':
 			naverages = atoi(optarg);
 			break;
 		case 'n':
-			average_fake = 1;
+			average_fake = true;
 			break;
 		case 'V':
 			fprintver(stdout);
@@ -174,22 +182,21 @@ int	main(int argc, char *argv[]) {
 			exit(EXIT_SUCCESS);
 		}
 
-	/* station name is required					*/
-	if (NULL == station) {
+	// station name is required					
+	if (station.empty()) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "no station specified, use -s");
 		exit(EXIT_FAILURE);
 	}
+	meteo::StationInfo	si(station);
 
-	/* there should be zero to two more arguments: timestamps for	*/
-	/* the range for which we should compute averages		*/
+	// there should be zero to two more arguments: timestamps for	
+	// the range for which we should compute averages		
 	switch (argc - optind) {
-	case 0:	/* no time stamps means that we should run as a daemon	*/
-		/* and update the database automagically with the most	*/
-		/* recent averages					*/
-		daemonmode = 1;
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"running in daemon mode");
+	case 0:	// no time stamps means that we should run as a daemon	
+		// and update the database automagically with the most	
+		// recent averages					
+		daemonmode = true;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "running in daemon mode");
 		break;
 	case 1:
 		if ((naverages < 0) || (interval == 0)) {
@@ -198,108 +205,72 @@ int	main(int argc, char *argv[]) {
 				"interval end given");
 			exit(EXIT_FAILURE);
 		}
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start timestamp: %s",
-				argv[optind]);
-		fromt = localtime2time(argv[optind]);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start timestamp: %s",
+			argv[optind]);
+		fromt = meteo::Timestamp(argv[optind]).getTime();
 		tot = fromt + interval * naverages;
 		break;
 	case 2:
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "interval %s - %s",
-				argv[optind], argv[optind + 1]);
-		fromt = localtime2time(argv[optind]);
-		tot = localtime2time(argv[optind + 1]);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "interval %s - %s",
+			argv[optind], argv[optind + 1]);
+		fromt = meteo::Timestamp(argv[optind]).getTime();
+		tot = meteo::Timestamp(argv[optind + 1]).getTime();
 		break;
 	default:
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "wrong number of arguments");
 		exit(EXIT_FAILURE);
 	}
 
-	/* it is an error not to specify a configuration file		*/
-	if (conffilename == NULL) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
-		exit(EXIT_FAILURE);
-	}
+	// read the configuration file					
+	meteo::Configuration	conf(conffilename);
 
-	/* read the configuration file					*/
-	if (NULL == (mc = xmlconf_new(conffilename, station))) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration invalid");
-		exit(EXIT_FAILURE);
-	}
-
-	/* consistency checks						*/
-	/* interval must be set						*/
+	// consistency checks						
+	// interval must be set						
 	if ((interval <= 0) && (!daemonmode)) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "interval (-i) not specified");
 		exit(EXIT_FAILURE);
 	}
 
-	mysql = mc_opendb(mc, O_RDWR);
-	if (mysql == NULL) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot connect to database");
-		exit(EXIT_FAILURE);
-	}
-
-	/* connect to the database					*/
+	// connect to the database					
 	if (daemonmode) {
-		/* become a daemon					*/
-		if (0 == foreground)
-			switch (daemonize(pidfilename, station)) {
-			case -1:
-				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-					"cannot daemonize");
-				exit(EXIT_FAILURE);
-				break;
-			case 0:
-				/* parent code				*/
-				exit(EXIT_FAILURE);
-				break;
-			default:
-				if (debug)
-					mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-						"new pid = %d", getpid());
-				break;
-			}
+		// become a daemon					
+		meteo::Daemon	daemon(pidfileprefix, station, foreground);
 
-		/* start daemon mode for averages			*/
-		avg_daemon(mysql, station);
-	} else {
-		/* compute first timestamp				*/
-		remainder = fromt % interval;
-		if (remainder)
-			fromt = fromt - (fromt % interval) + interval;
+		// start daemon mode for averages			
+		avg_daemon(station);
 
-		/* compute updates in the range according to the 	*/
-		/* command line parameters				*/
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"start querying for averages between %d and %d",
-				(int)fromt, (int)tot);
-		for (t = fromt; t <= tot; t += interval) {
-			if (debug)
-				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"averages for time %d/%d, station '%s'",
-					(int)t, interval, station);
-			if (!all)
-				haveavg = have_average(mysql, t, interval,
-					station);
-			else
-				haveavg = 0;
-			if (!haveavg) {
-				if (add_average(mysql, t, interval,
-					station) < 0) {
-					mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-						"update at time %d failed",
-						(int)t);
-					exit(EXIT_FAILURE);
-				}
-			}
-		}
+		// if we ever get to this point, we exit
+		exit(EXIT_SUCCESS);
 	}
 
-	/* cleanup							*/
-	mc_closedb(mysql);
+	// compute first timestamp, correcting it for the offset. The average
+	// for timekey t actually uses data from t - offset to
+	// t - offset + interval, so we must add the offset to t to get
+	// the intervals we are interested in
+	fromt += si.getOffset();
+	fromt -= (fromt) % interval;
+
+	// compute updates in the range according to the command line parameters
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		"start querying for averages between %d and %d",
+		(int)fromt, (int)tot);
+	for (t = fromt; t <= tot + si.getOffset(); t += interval) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"averages for time %d/%d, station '%s'",
+			(int)t, interval, station.c_str());
+
+		// create an Averager object
+		meteo::Averager	avg(station);
+		avg.setFake(average_fake);
+
+		// create necessary averages
+		if (!all)
+			haveavg = avg.have(t, interval);
+		else
+			haveavg = false;
+		if (!haveavg)
+			avg.add(t, interval, all);
+	}
 
 	exit(EXIT_SUCCESS);
 }

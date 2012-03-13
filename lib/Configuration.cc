@@ -19,13 +19,39 @@
 #include <mdebug.h>
 #include <errno.h>
 #include <MeteoException.h>
+#include <map>
 
 namespace meteo {
 
+// Originally there was a memory leak in the code below, which caused
+// the processes to slowly (or sometimes amazingly quickly) grow. As
+// a workaround,  I introduced the two caches existscache and resultcache.
+// Since there are only finitely many possible lookups in the configuration
+// file, the possibility of memory exhaustion is removed, however there is 
+// some memory overhead for the caches. The caches can be disabled by
+// undefining the CONFIG_USECACHE symbol
+//
+// However, since the lookup in the cache is much faster than the XML
+// XPath evaluation, the caches improve the performance of the Configuration
+// class at the expense of a little memory. So we leave this feature on.
+// The additional memory requirement is negligible: 8kB.
+
+#define	CONFIG_USECACHE
+
+#ifdef CONFIG_USECACHE
+typedef	std::map<std::string, bool>	existsmap_t;
+typedef std::map<std::string, stringlist>	resultmap_t;
+#endif /* CONFIG_USECACHE */
+
+// config is a payload class that carries the cache (its a singleton)
 class config {
 public:
 	xmlDocPtr	cf;
 	config(const std::string& filename);
+#ifdef CONFIG_USECACHE
+	existsmap_t	existscache;
+	resultmap_t	resultcache;
+#endif /* CONFIG_USECACHE */
 };
 
 config::config(const std::string& filename) {
@@ -46,6 +72,7 @@ config::config(const std::string& filename) {
 	}
 }
 
+
 Configuration::Configuration(const std::string& filename) {
 	if (NULL != l) {
 		delete l;
@@ -56,19 +83,19 @@ Configuration::Configuration(const std::string& filename) {
 config	*Configuration::l = NULL;
 
 double	Configuration::getDouble(const std::string& xpath, double def) const {
-	std::vector<std::string>	r = getStringVector(xpath);
+	stringlist	r = getStringList(xpath);
 	if (0 == r.size()) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s not found, use default %f",
 			xpath.c_str(), def);
 		return def;
 	} else
-		return atof(r[0].c_str());
+		return atof(r.begin()->c_str());
 }
 
-std::vector<double>	Configuration::getDoubleVector(const std::string& xpath) const {
-	std::vector<double>	result;
-	std::vector<std::string>	r = getStringVector(xpath);
-	std::vector<std::string>::const_iterator	i;
+doublelist	Configuration::getDoubleList(const std::string& xpath) const {
+	doublelist	result;
+	stringlist	r = getStringList(xpath);
+	stringlist::const_iterator	i;
 	for (i = r.begin(); i != r.end(); i++) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found %s = %s",
 			xpath.c_str(), i->c_str());
@@ -78,19 +105,19 @@ std::vector<double>	Configuration::getDoubleVector(const std::string& xpath) con
 }
 
 int	Configuration::getInt(const std::string& xpath, int def) const {
-	std::vector<std::string>	r = getStringVector(xpath);
+	stringlist	r = getStringList(xpath);
 	if (0 == r.size()) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s not found, use default %d",
 			xpath.c_str(), def);
 		return def;
 	} else
-		return atoi(r[0].c_str());
+		return atoi(r.begin()->c_str());
 }
 
-std::vector<int>	Configuration::getIntVector(const std::string& xpath) const {
-	std::vector<int>	result;
-	std::vector<std::string>	r = getStringVector(xpath);
-	std::vector<std::string>::const_iterator	i;
+intlist	Configuration::getIntList(const std::string& xpath) const {
+	intlist	result;
+	stringlist	r = getStringList(xpath);
+	stringlist::const_iterator	i;
 	for (i = r.begin(); i != r.end(); i++) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found %s = %s",
 			xpath.c_str(), i->c_str());
@@ -100,33 +127,52 @@ std::vector<int>	Configuration::getIntVector(const std::string& xpath) const {
 }
 
 std::string	Configuration::getString(const std::string& xpath, const std::string& def) const {
-	std::vector<std::string>	r = getStringVector(xpath);
+	stringlist	r = getStringList(xpath);
 	if (0 == r.size())
 		return def;
 	else
-		return r[0];
+		return *r.begin();
 }
-std::vector<std::string> Configuration::getStringVector(const std::string& xpath) const {
-	std::vector<std::string>	result;
-	xmlXPathContextPtr	xpctp = xmlXPathNewContext(l->cf);
+stringlist Configuration::getStringList(const std::string& xpath) const {
+#ifdef CONFIG_USECACHE
+	// check cache
+	if (l->resultcache.find(xpath) != l->resultcache.end()) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cache hit for  %s",
+			xpath.c_str());
+		return l->resultcache.find(xpath)->second;
+	}
+#endif /* CONFIG_USECACHE */
+
+	// declare the pointer we will later need
+	xmlXPathContextPtr	xpctp = NULL;
+	xmlXPathObjectPtr	start = NULL;
+
+	// log
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "getStringList(%s)", xpath.c_str());
+	stringlist	result;
+
+	// create an XPathContextPtr
+	xpctp = xmlXPathNewContext(l->cf);
 	if (NULL == xpctp) {
 		mdebug(LOG_ERR, MDEBUG_LOG, 0, "xmlXPathNewContext failed");
 		throw MeteoException("cannt create XPathContextPtr", "");
 	}
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "request for %s", xpath.c_str());
-	xmlXPathObjectPtr	start = xmlXPathEval((xmlChar *)xpath.c_str(),
-					xpctp);
+
+	// evaluate the xpath
+	start = xmlXPathEval((xmlChar *)xpath.c_str(), xpctp);
 	if (NULL == start) {
 		mdebug(LOG_INFO, MDEBUG_LOG, 0, "cannot find xpath %s",
 			xpath.c_str());
 		xmlXPathFreeContext(xpctp);
 		throw MeteoException("path not found", xpath);
 	}
+
+	// handle various cases for the result type of the search
 	switch (start->type) {
 	case XPATH_NODESET:
 		if (xmlXPathNodeSetIsEmpty(start->nodesetval)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"node set empty, returning empty vector");
+				"node set empty, returning empty list");
 			xmlXPathFreeContext(xpctp);
 			xmlXPathFreeObject(start);
 			return result;
@@ -135,10 +181,16 @@ std::vector<std::string> Configuration::getStringVector(const std::string& xpath
 			i++) {
 			xmlNodePtr	np = xmlXPathNodeSetItem(
 						start->nodesetval, i);
-			std::string	value((char *)xmlNodeGetContent(np));
+			xmlChar	*cont = xmlNodeGetContent(np);
+			std::string	value((char *)cont);
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding item %d: %s",
 				i, value.c_str());
 			result.push_back(value);
+			// this missing xmlFree was causing the memory leak
+			// aluded to in the introduction. Because of the
+			// performance improvement it is still recommended
+			// to use the caches
+			xmlFree(cont);
 		}
 		break;
 	case XPATH_STRING:
@@ -159,7 +211,10 @@ std::vector<std::string> Configuration::getStringVector(const std::string& xpath
 	xmlXPathFreeObject(start);
 	xmlXPathFreeContext(xpctp);
 
-	// return the vector we have built
+	// return the list we have built
+#ifdef CONFIG_USECACHE
+	l->resultcache.insert(resultmap_t::value_type(xpath, result));
+#endif /* CONFIG_USECACHE */
 	return result;
 }
 
@@ -173,33 +228,61 @@ bool	Configuration::getBool(const std::string& xpath, bool def) const {
 	return false;
 }
 
+// the following method checks for the existence of a Xpath in the config
 bool	Configuration::xpathExists(const std::string& xpath) const {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "xpathExists(%s)", xpath.c_str());
+	// the following two variables must carefully be deallocated when
+	// exiting from this function
+	xmlXPathContextPtr	xpctp = NULL;
+	xmlXPathObjectPtr	start = NULL;
+
+	// here we prepare the result
+	bool	result = false;
+
+	// first look in the cache
+#ifdef CONFIG_USECACHE
+	if (l->existscache.find(xpath) != l->existscache.end()) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cache hit for %s",
+			xpath.c_str());
+		return l->existscache.find(xpath)->second;
+	}
+#endif /* CONFIG_USECACHE */
+
+	// now try the configuration file, first create a PathContext
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "checking existence of %s",
 		xpath.c_str());
-	xmlXPathContextPtr	xpctp = xmlXPathNewContext(l->cf);
+	xpctp = xmlXPathNewContext(l->cf);
 	if (NULL == xpctp) {
 		mdebug(LOG_ERR, MDEBUG_LOG, 0, "xmlXPathNewContext failed");
 		throw MeteoException("cannt create XPathContextPtr", "");
 	}
+
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "request for %s", xpath.c_str());
-	xmlXPathObjectPtr	start = xmlXPathEval((xmlChar *)xpath.c_str(),
-					xpctp);
+	start = xmlXPathEval((xmlChar *)xpath.c_str(), xpctp);
 	if (NULL == start) {
 		mdebug(LOG_INFO, MDEBUG_LOG, 0, "cannot find xpath %s",
 			xpath.c_str());
-		xmlXPathFreeContext(xpctp);
-		return false;
+		goto alldone;
 	}
-	xmlXPathFreeContext(xpctp);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "path %s found", xpath.c_str());
 	if (start->type == XPATH_NODESET) {
 		if (xmlXPathNodeSetIsEmpty(start->nodesetval)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "but %s is empty",
 				xpath.c_str());
-			return false;
+			goto alldone;
 		}
 	}
-	return true;
+	result = true;
+alldone:
+	// deallocate that objects that are still allocated
+	if (xpctp) { xmlXPathFreeContext(xpctp); xpctp = NULL; }
+	if (start) { xmlXPathFreeObject(start); start = NULL; }
+
+	// store the result of the lookup in the cache
+#ifdef CONFIG_USECACHE
+	l->existscache.insert(existsmap_t::value_type(xpath, result));
+#endif /* CONFIG_USECACHE */
+	return result;
 }
 
 const xmlNodePtr	Configuration::getNode(const std::string& xpath) const {
@@ -230,7 +313,7 @@ const xmlNodePtr	Configuration::getNode(const std::string& xpath) const {
 	case XPATH_NODESET:
 		if (xmlXPathNodeSetIsEmpty(start->nodesetval)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"node set empty, returning empty vector");
+				"node set empty, returning empty list");
 		} else {
 			result = xmlXPathNodeSetItem(start->nodesetval, 0);
 		}
@@ -250,8 +333,8 @@ const xmlNodePtr	Configuration::getNode(const std::string& xpath) const {
 	return result;
 }
 
-const std::vector<xmlNodePtr>	Configuration::getNodeVector(const std::string& xpath) const {
-	std::vector<xmlNodePtr>	result;
+const std::list<xmlNodePtr>	Configuration::getNodeList(const std::string& xpath) const {
+	std::list<xmlNodePtr>	result;
 
 	// set up an XPath context for searching
 	xmlXPathContextPtr	xpctp = xmlXPathNewContext(l->cf);
@@ -280,7 +363,7 @@ const std::vector<xmlNodePtr>	Configuration::getNodeVector(const std::string& xp
 		ns = start->nodesetval;
 		if (xmlXPathNodeSetIsEmpty(ns)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"node set empty, returning empty vector");
+				"node set empty, returning empty list");
 		} else {
 			for (int i = 0; i < xmlXPathNodeSetGetLength(ns); i++)
 				result.push_back(xmlXPathNodeSetItem(ns, i));
@@ -297,29 +380,6 @@ const std::vector<xmlNodePtr>	Configuration::getNodeVector(const std::string& xp
 	xmlXPathFreeContext(xpctp);
 
 	return result;
-}
-
-// convenience methods for access to units definitions
-std::string	Configuration::getTemperatureUnit(void) const {
-	return getString("/meteo/units/temperatur", std::string("C"));
-}
-std::string	Configuration::getHumidityUnit(void) const {
-	return getString("/meteo/units/humidity", std::string("%"));
-}
-std::string	Configuration::getPressureUnit(void) const {
-	return getString("/meteo/units/pressure", std::string("hPa"));
-}
-std::string	Configuration::getRainUnit(void) const {
-	return getString("/meteo/units/rain", std::string("mm"));
-}
-std::string	Configuration::getWindUnit(void) const {
-	return getString("/meteo/units/wind", std::string("m/s"));
-}
-std::string	Configuration::getSolarUnit(void) const {
-	return getString("/meteo/units/solar", std::string("W/m2"));
-}
-std::string	Configuration::getUVUnit(void) const {
-	return getString("/meteo/units/uv", std::string("index"));
 }
 
 // convenience methods for access to database parameters
@@ -388,5 +448,104 @@ std::string	Configuration::getDBUpdatefile(void) const {
 	}
 	return s;
 }
+
+// xpath concstruction methods
+std::string	Configuration::graphXpath(const std::string& graphname,
+			const std::string& tag, int interval,
+			const std::string& attribute) const {
+	char	ii[10];
+	snprintf(ii, sizeof(ii), "%d", interval);
+	return "/meteo/graphs/graph[@name='" + graphname + "']/"
+		+ tag + "[@interval='" + std::string(ii) + "']/@" + attribute;
+}
+std::string	Configuration::graphXpath(const std::string& graphname,
+			const std::string& tag,
+			const std::string& attribute) const {
+	return "/meteo/graphs/graph[@name='" + graphname + "']/"
+		+ tag + "/@" + attribute;
+}
+
+// graph access convennience functions
+bool	Configuration::hasGraphTag(const std::string& graphname,
+		int interval, const std::string& tag) const {
+	char	ii[10];
+	snprintf(ii, sizeof(ii), "%d", interval);
+	return xpathExists("/meteo/graphs/graph[@name='" + graphname + "']/"
+		+ tag + "[@interval='" + std::string(ii) + "']");
+}
+
+bool	Configuration::hasGraphTag(const std::string& graphname,
+		const std::string tag) const {
+	return xpathExists("/meteo/graphs/graph[@name='" + graphname + "']/"
+		+ tag);
+}
+
+double	Configuration::getGraphDouble(const std::string& graphname,
+	int interval, std::string& tag, const std::string& attribute,
+	double def) const {
+	if (hasGraphTag(graphname, interval, tag)) {
+		return getDouble(graphXpath(graphname, tag, interval,
+			attribute), def);
+	} else {
+		return getDouble(graphXpath(graphname, tag, attribute), def);
+	}
+}
+
+doublelist	Configuration::getGraphDoubleList(const std::string& graphname,
+			int interval, const std::string& tag,
+			const std::string& attribute) const {
+	if (hasGraphTag(graphname, interval, tag)) {
+		return getDoubleList(graphXpath(graphname, tag, interval,
+			attribute));
+	} else {
+		return getDoubleList(graphXpath(graphname, tag, attribute));
+	}
+}
+
+int	Configuration::getGraphInt(const std::string& graphname, int interval,
+		std::string& tag, const std::string& attribute, int def) const {
+	if (hasGraphTag(graphname, interval, tag)) {
+		return getInt(graphXpath(graphname, tag, interval, attribute),
+			def);
+	} else {
+		return getInt(graphXpath(graphname, tag, attribute), def);
+	}
+}
+
+intlist	Configuration::getGraphIntList(const std::string& graphname,
+		int interval, const std::string& tag,
+		const std::string& attribute) const {
+	if (hasGraphTag(graphname, interval, tag)) {
+		return getIntList(graphXpath(graphname, tag, interval,
+			attribute));
+	} else {
+		return getIntList(graphXpath(graphname, tag, attribute));
+	}
+
+}
+
+std::string	Configuration::getGraphString(const std::string& graphname,
+			int interval, std::string& tag,
+			const std::string& attribute, const std::string& def)
+			const {
+	if (hasGraphTag(graphname, interval, tag)) {
+		return getString(graphXpath(graphname, tag, interval,
+			attribute), def);
+	} else {
+		return getString(graphXpath(graphname, tag, attribute), def);
+	}
+}
+
+stringlist	Configuration::getGraphStringList(const std::string& graphname,
+			int interval, const std::string& tag,
+			const std::string& attribute) const {
+	if (hasGraphTag(graphname, interval, tag)) {
+		return getStringList(graphXpath(graphname, tag, interval,
+			attribute));
+	} else {
+		return getStringList(graphXpath(graphname, tag, attribute));
+	}
+}
+
 
 } /* namespace meteo */

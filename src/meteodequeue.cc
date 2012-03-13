@@ -4,14 +4,12 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.cc,v 1.3 2003/06/12 23:29:46 afm Exp $
+ * $Id: meteodequeue.cc,v 1.6 2003/10/14 23:47:46 afm Exp $
  */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <meteo.h>
-#include <database.h>
-#include <msgque.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -21,29 +19,13 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <daemon.h>
+#include <Daemon.h>
 #include <printver.h>
 #include <mdebug.h>
-
-static void	dequeue_one(msgque_t *mq, MYSQL *mysql) {
-	char	buffer[2048];
-	int	r;
-	
-	/* read one message from the message queue			*/
-	if (0 > (r = msgque_rcvquery(mq, buffer, sizeof(buffer)))) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "failed to read a message");
-		return;
-	}
-
-	/* send the query to the database				*/
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"query being sent to database is '%s'", buffer);
-	if (mysql_query(mysql, buffer)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "query '%s' failed: %s", buffer,
-			mysql_error(mysql));
-	}
-}
+#include <Configuration.h>
+#include <QueryProcessor.h>
+#include <MsgDequeuer.h>
+#include <MeteoException.h>
 
 static void	usage(void) {
 printf(
@@ -59,15 +41,11 @@ printf(
 }
 
 int	main(int argc, char *argv[]) {
-	MYSQL		*mysql = NULL;
 	int		c, foreground = 0;
-	msgque_t	*mq = NULL;
-	char		*conffilename = METEOCONFFILE;
-	const char	*queuename = NULL;
-	char		*pidfilename = "/var/run/meteodequeue.pid";
-	meteoconf_t	*mc;
+	std::string	conffilename(METEOCONFFILE);
+	std::string	pidfilename("/var/run/meteodequeue.pid");
 
-	/* parse command line						*/
+	// parse command line						
 	while (EOF != (c = getopt(argc, argv, "l:df:Fp:Vh?")))
 		switch (c) {
 		case 'l':
@@ -81,13 +59,13 @@ int	main(int argc, char *argv[]) {
 			debug++;
 			break;
 		case 'f':
-			conffilename = optarg;
+			conffilename = std::string(optarg);
 			break;
 		case 'F':
 			foreground = 1;
 			break;
 		case 'p':
-			pidfilename = optarg;
+			pidfilename = std::string(optarg);
 			break;
 		case 'h':
 		case '?':
@@ -99,64 +77,44 @@ int	main(int argc, char *argv[]) {
 			break;
 		}
 
-	/* read the configuration file					*/
-	if (NULL == conffilename) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "must specify -f <config>");
-		exit(EXIT_FAILURE);
-	}
-	mc = xmlconf_new(conffilename, "");
-	if (NULL == mc) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "configuration %s invalid",
-			conffilename);
-		exit(EXIT_FAILURE);
-	}
+	// read the configuration file					
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "config file is %s",
+		conffilename.c_str());
+	meteo::Configuration	conf(conffilename);
 
-	/* daemonize							*/
-	if (!foreground) {
-		switch (daemonize(pidfilename, NULL)) {
-		case -1:
-			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "daemonizing failed");
-			exit(EXIT_FAILURE);
-			break;
-		case 0:	/* parent					*/
-			exit(EXIT_SUCCESS);
-			break;
-		default:/* client					*/
-			break;
-		}
-	}
+	// daemonize							
+	meteo::Daemon	d(pidfilename, "", foreground);
 
-	/* make sure we have a suitable message queue			*/
-	queuename = xmlconf_get_abs_string(mc, "/meteo/database/msgqueue",
-		queuename);
-	if (NULL == queuename) {
+	// make sure we have a suitable message queue			
+	std::string	queuename;
+	queuename = conf.getString("/meteo/database/msgqueue", queuename);
+	if (queuename.empty()) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "msg queue name not specified");
 		exit(EXIT_FAILURE);
 	}
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "opening msgqueue '%s'",
-			queuename);
-	if (NULL == (mq = msgque_setup(queuename))) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot open msgqueue");
-		exit(EXIT_FAILURE);
-	}
+			queuename.c_str());
+	meteo::MsgDequeuer	mq(queuename);
 
-	/* open the database						*/
-	mysql = mc_opendb(mc, O_WRONLY);
-	if (NULL == mysql) {
-		mdebug(LOG_CRIT, MDEBUG_LOG, 0,
-			"cannot open database, exiting");
-		exit(EXIT_FAILURE);
-	}
+	// open the database						
+	meteo::QueryProcessor	qp(true);
 
-	/* start the main loop						*/
+	// start the main loop						
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "starting main loop");
 	while (1) {
-		dequeue_one(mq, mysql);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"waiting for data on msgqueue");
+		try {
+			qp.perform(mq());
+		} catch (meteo::MeteoException& me) {
+			mdebug(LOG_ERR, MDEBUG_LOG, 0, "exception: %s, %s",
+				me.getReason().c_str(),
+				me.getAddinfo().c_str());
+		}
 	}
 
-	/* if we ever get to this point, we close the database and	*/
-	/* exit cleanly							*/
-	msgque_cleanup(mq);
-	mc_closedb(mysql);
+	// if we ever get to this point, we close the database and	
+	// exit cleanly							
 	exit(EXIT_SUCCESS);
 }

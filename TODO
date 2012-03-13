@@ -1,24 +1,29 @@
 TODO
 ----
 
+* There seems to be a bug somewhere in gcc 3.3, as/ld on Solaris 9 or
+  even in Solaris nine that causes meteopoll to crash when an illegal
+  humidity value is read from the station. The same code works on Linux
+  and Mac OS X, so it's not an issue with endianness. I'll try to 
+  with a new gcc compiled to use the GNU as and ld, as I have seen
+  many cases in the past where switch from Solaris utilities to GNU
+  utilities solved such problems.
+
+* fix the wrong alignment (vertical) of the ImageMap
+
+* missing classes: TimeConverter, TimeRecorder
+
 * test the new minimum range code in GraphWindow.cc
-
-* convert the Tdata implementation to using functors instead of function
-  pointers (is this possible?)
-
-* modify tables so that the group number can also be indexed
-
-* create indexes to speed up search
-
-* generalize the davis code for other weather stations
 
 * update NEWS file
 
 Bugs
+
+* on a make clean, remove the .mo files in browser/po
 
 * make sure meteodraw does not crash with a segmentation fault when asked
   to draw a curve for data that does not exist (name not specified anywhere
   in the XML file)
 
 --
-$Id: TODO,v 1.30 2003/08/23 23:45:32 afm Exp $
+$Id: TODO,v 1.41 2003/10/31 21:15:51 afm Exp $

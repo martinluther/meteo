@@ -3,8 +3,8 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.1 2002/01/18 23:34:23 afm Exp $
+# $Id: Makefile.am,v 1.2 2003/10/25 00:52:31 afm Exp $
 #
 
 noinst_DATA = meteo.sql
-EXTRA_DIST = $(noinst_DATA)
+EXTRA_DIST = $(noinst_DATA) README

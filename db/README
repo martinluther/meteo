@@ -1,50 +1,237 @@
 Database installation
----------------------
+=====================
 
-The meteo package expects to store the data in a mysql database. This
-allows to keep high resolution data an averages readily available for
-meteograph to easily produce graphs for any time during the measurement
-interval.
+Introduction
+------------
 
-The script meteo.sql creates the necessary tables. Connect as a privileged
-user (normally root) to the MySQL server and create a database:
+The meteo package expects to store the data in a mysql database.
+This allows to keep high resolution data an averages readily
+available for meteograph to easily produce graphs for any time
+during the measurement interval.
+
+With release 0.9, the database structure was changed considerably
+to allow for completely different types of sensors (water level,
+leaf wetness) to be included. The new structure stores a line in
+the sdata table for every value read from the station, so the tables
+are now narrow but much longer. NULL values however no longer take
+up any space, as a matter of fact, all value fields are now delcared
+not null.
+
+Database setup
+--------------
+
+The script meteo.sql creates the necessary tables. Connect as a
+privileged user (normally root) to the MySQL server and create a
+database:
 
 	mysql> create database meteo;
+
+The name of the database is no longer fixed, you can choose any
+name you like, provided you also specify the same name in the meteo
+configuration file meteo.xml(5).
 
 Then run the meteo.sql script against this database:
 
 	$ mysql -u user -p meteo < meteo.sql
 	Enter password: ...
 
-After the database is created, you must grant the meteo users access to
-the tables. You will usually want to have two users: one for meteodequeue
-only to update the tables, the other for meteograph to read off data and
-draw graphs. The commands for the read only user will look like
+After the database is created, you must grant the meteo users access
+to the tables. You will usually want to have two users: one for
+meteodequeue only to update the tables, the other for meteograph
+to read off data and draw graphs. The commands for the read only
+user will look like
 
-	mysql> grant select on stationdata to meteo@localhost 
+	mysql> grant select on meteo.* to meteo@localhost 
 		identified by 'public';
-	mysql> grant select on averages to meteo@localhost;
+	mysql> grant select on meteo.* to meteo@localhost;
 	mysql> flush privileges;
 
 and for the read/write user:
 
-	mysql> grant select, insert on stationdata to mtp@localhost 
+	mysql> grant select, insert on header to mtp@localhost 
 		identified by 'private';
-	mysql> grant select, insert on averages to mtp@localhost;
+	mysql> grant select, insert on sdata to mtp@localhost;
+	mysql> grant select, insert on avg to mtp@localhost;
 	mysql> flush privilges;
+
+If you want to allow that meteoavg can also update averages that
+have been computed previously, you must grant it the delete right
+on the avg table as well.
+
+Note that meteo itself does not update the other tables, in
+particular, the table containing all the field definitions. While
+it would be possible to have this information in the configuration
+file, it is also needed for database joins, so putting it in the
+database is the better solution.
 
 Enter username and password also in your meteo.xml file.
 
-Note that you do not need a Unix user as far as the database is concerned.
-It is, however, good system administration practice to let meteo run as
-a normal user, not as root. In this case, it might be a good idea to
-have two Unix users: one that reads the station and updates the database,
-and one that just retrieves data from the database and draws graphs.
+Note that you do not need a Unix user as far as the database is
+concerned.  It is, however, good system administration practice to
+let meteo run as a normal user, not as root. In this case, it might
+be a good idea to have two Unix users: one that reads the station
+and updates the database, and one that just retrieves data from
+the database and draws graphs.
 
-This would also improve security: if someone is able to turn some of
-the graph files in your web server directory into a symbolic link to
-/etc/passwd, a meteograph process running as root would zap your
-/etc/passwd. Running as a non-privileged user prevents this.
+This would also improve security: if someone is able to turn some
+of the graph files in your web server directory into a symbolic
+link to /etc/passwd, a meteograph process running as root would
+zap your /etc/passwd. Running as a non-privileged user prevents
+this.
+
+Database tables
+---------------
+
+The new database structure distributes the data for a given point
+in time over several rows. The sdata and avg tables contain one
+row for each data item, together with information linking it to
+the station and the field name. This allows to add additional types
+of data items without modifying the table structure. The previous
+table structure required to ALTER a table in this case to add the
+new fields.
+
+In the sdata table, which replaces the previous stationdata table,
+a record is identified by timekey (as before), stationid and fieldid.
+The stationid is a numeric representation of the station name, the
+station table provides the mapping between station name and station
+id. Similarly, the field id is a numeric representation of the
+field name, the mapping of field names and field ids can be found
+in the mfield table. Note that both fields are tinyints, so the
+occupy just 1 byte. The actual value is stored in the value field,
+which is a float, i.e. only requires 4 bytes.  A row in the sdata
+table is thus only 10 bytes wide. Most of the row is also on the
+index, as the triple (timekey, stationid, fieldid) is the primary
+key, all queries for graphing can be done entirely on the index.
+
+The stationdata table also contained information about the averaging
+group, but since this information is rather dependent on the timekey,
+and is some form of denormalization anyway, it was put in the
+separate header table.  Computing averages for the various data
+items now involves more tables, in particular wind is now a four-way
+join of header table and three copies of the sdata table. However,
+since primary keys are properly indexed, these queries are not
+slower then they used to be in previous versions.
+
+The avg table contains the additional intval field, which describes
+the averaging interval for the present data point. The averages
+table in the previous architecture did not contain any data purely
+dependent on the timekey, so there is no for something like the
+header table in this case.
+
+The following diagram illustrates relationships between the different
+tables.
+
+                                         +----------+
+                                         | avg      |
+                  +-----------+          +----------+
+                  | sensor    |          |*timekey  |
++----------+      +-----------+          |*intval   |
+| station  |      |*id        |<----+----|*sensorid |
++----------+      | name      |     |    |*fieldid  |----.
+|*id       |<-----| stationid |     |    | value    |    |
+| name     |      +-----------+     |    +----------+    |
+| offset   |                        |                    |
++----------+                        |                    |    +--------+
+                                    |                    |    | mfield |
+                                    |                    |    +--------+
+                                    |    +----------+    +--->|*id     |
+                                    |    | sdata    |    |    | name   |
+                  +------------+    |    +----------+    |    | unit   |
+                  | header     |    `----|*sensorid |    |    | class  |
+                  +------------+         |*fieldid  |----'    | title  |
+                  |*timekey    |<--------|*timekey  |         +--------+
+                  | group300   |         | value    |
+                  | group1800  |         +----------+
+                  | group7200  |
+                  | group86400 |
+                  +------------+
+
+
+Indexes
+-------
+
+Each table gets the primary key as a unique index, of course, but this
+is not sufficient to guarantee interactive performance for the meteobrowser.
+The reason is that meteodraw retrieves averages essentially by intval
+and a range of timekeys. For the year graphs, only the timekey can be
+evaluated on the index, so all averages of a full year (several million
+rows) must be selected and then filtered for intval, which is inefficient.
+
+If the averages could be selected by intval first, and selected for
+timekey later, the performance should improve. This is what an index
+on the fields intval and timekey achieves: year averages are selected
+for their intval of 86400, and there are only a few thousand of them.
+Furthermore, the combined value (intval,timekey) can be used to
+directly select a range of items, so we expect this to be quite fast.
+
+The other expressions in the where clause use the IN operator, so they
+can hardly applied directly to the index. So this is actually the best
+we can hope for.
+
+
+Database fields
+---------------
+
+Information about available fields is now stored in the mfield table.
+To access i.e. the temperature field, one should first lookup the
+id in the mfield table:
+
+	select id
+	from mfield
+	where name = 'temperature'
+
+which will normally return 0.  Next select the rows from sdata or avg
+with the matching fieldid:
+
+	select a.timekey, a.value
+	from sdata a, sensor b, station c, mfield d
+	where a.fieldid = 0
+	  and a.sensorid = b.id
+	  and b.name = 'iss'
+	  and b.stationid = c.id
+	  and c.name = 'Lajeado'
+
+This will retrieve all temperature values for station Lajeado (which
+is a Davis Vantage Pro), but only from the ISS of that station. If
+the Soil temperature of first soil station connected to the same Vantage
+Pro console should be read, the following query can be used: 
+
+	select a.timekey, a.value
+	from sdata a, sensor b, station c, mfield d
+	where a.fieldid = d.id
+	  and d.name = 'temperature'
+	  and a.sensorid = b.id
+	  and b.name = 'soil1'
+	  and b.stationid = c.id
+	  and c.name = 'Lajeado'
+
+There are some conventions that must be observed when assigning 
+field ids, or maxima and minima are not properly computed:
+
+1. If field x is supposed to have maximum or minimum stored in the
+   avg table, then two fields called x_max and x_min must be defined
+   in the mfield table.
+
+2. If field x has id y, then x_min must have id y+1 and x_max must
+   have y+2.
+
+The meteo.sql script defines most of the fields for which Vantage Pro
+stations can deliver data.
+
+
+Adding fields
+-------------
+
+To add a new field, the following needs to be done:
+
+- add the field definition to the mfield table
+- add code to the station class' update method to teach it how to retrieve
+  the data from the station.
+- add a <sensor> line to the configuration file, so you now that fields
+  to actually retrieve from the station and store in the database
+
+Note that for the VantagePro and WMII, the necessary methods are already
+implemented, so only the last step needs to be added.
 
 --
-$Id: README,v 1.2 2003/06/08 11:40:42 afm Exp $
+$Id: README,v 1.5 2003/10/28 08:48:08 afm Exp $

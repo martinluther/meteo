@@ -1,13 +1,17 @@
-#! /sbin/sh
+#! /bin/sh
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
 # Note: this script assumes the average table has correctly been filled
 #       e.g. using the meteoavg program
 #
-# $Id: meteojob,v 1.5 2003/08/01 00:01:52 afm Exp $
+# $Id: meteojob,v 1.7 2003/10/24 16:15:17 afm Exp $
 #
 station=Altendorf
+
+# this script uses the +%s format option of GNU date, on Solaris we must
+# install GNU date e.g. from Sunfreeware.com, in any event, the date command
+# will not be on the default path. On Linux systems, just use date.
 s=`/usr/local/bin/date +%s`
 s=`expr $s - \( $s % 300 \)`
 
@@ -15,9 +19,15 @@ for interval in 300 1800 7200 86400
 do
 	if [ `expr $s % $interval` -eq 0 ]
 	then
+		# the -g arguments in the meteodraw command must be
+		# graph names defined in the meteo.xml configuration file
 		/usr/local/bin/meteodraw -s ${station}
-			-g temperature -g temperature_inside -g rain	\
-			-g wind -f /usr/local/etc/meteo.xml		\
+			-g ${station}.temperature \
+			-g ${station}.temperature_inside \
+			-g ${station}.pressure \
+			-g ${station}.rain \
+			-g ${station}.wind 
+			-f /usr/local/etc/meteo.xml		\
 			-c /usr/local/apache/htdocs/meteo.othello.ch/meteo \
 			"$@" ${interval}
 	fi

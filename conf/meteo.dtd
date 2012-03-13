@@ -9,7 +9,7 @@
   (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
 
   -->
-<!ELEMENT meteo (database, units, station*, graphs)>
+<!ELEMENT meteo (database, station*, graphs)>
 <!ELEMENT database (hostname, dbname, user, password, writer, writerpassword,
 			msgqueue, updatefile, prefix)>
 <!ELEMENT hostname (#PCDATA)>
@@ -22,20 +22,16 @@
 <!ELEMENT updatefile (#PCDATA)>
 <!ELEMENT prefix (#PCDATA)>
 
-<!ELEMENT units (temperature?, humidity?, pressure?, rain?, wind?, solar?, uv?)>
-<!ELEMENT temperature (#PCDATA)>
-<!ELEMENT humidity (#PCDATA)>
-<!ELEMENT pressure (#PCDATA)>
-<!ELEMENT rain (#PCDATA)>
-<!ELEMENT wind (#PCDATA)>
-<!ELEMENT solar (#PCDATA)>
-<!ELEMENT uv (#PCDATA)>
-
-<!ELEMENT station (url, type, speed?)>
+<!ELEMENT station (url, type, speed?, sensors, offset?)>
 <!ATTLIST station name CDATA #REQUIRED>
 <!ELEMENT url (#PCDATA)>
 <!ELEMENT speed (#PCDATA)>
 <!ELEMENT type (#PCDATA)>
+<!ELEMENT sensors (sensor*)>
+<!ELEMENT sensor (field*)>
+<!ATTLIST sensor name CDATA #REQUIRED>
+<!ELEMENT field (#PCDATA)>
+<!ELEMENT offset (#PCDATA)>
 
 <!ELEMENT graphs (graph+)>
 
@@ -46,6 +42,7 @@
 <!ATTLIST graph width	CDATA #IMPLIED>
 <!ATTLIST graph fgcolor	CDATA #IMPLIED>
 <!ATTLIST graph bgcolor	CDATA #IMPLIED>
+<!ATTLIST graph offset	CDATA #IMPLIED>
 
 <!ELEMENT channels (query, channel+)>
 <!ELEMENT query (select+, data*)>

@@ -1,0 +1,5 @@
+This directory contains include files for the meteo library. Note that
+neither the library nor the include files are installed.
+
+--
+$Id: README,v 1.1 2003/10/24 16:14:58 afm Exp $

@@ -7,15 +7,28 @@ The meteo station tools are described in
 this manual page defines the configuration file format used by all
 the utilities.
 The configuration file users XML syntax. A single file can be shared
-among all the stations that use the same database. Under a mandatory
-top level 
+among all the stations that use the same database.
+
+The file contains all configuration information needed to talk to
+the database (only one database configuration per file) and to
+the station. In addition, it describes all the graphs that can
+be produced from the data. It does not, however, specify how data
+is stored in the database. In particular, id values for stations,
+sensors and data fields, which are needed to build the key to the
+data value, are only defined in the database.
+
+The contains a mandatory top level
 .B <meteo>
-element at least one
+element, and meteo expects at least one
 .B <database>
 element and one or more 
 .B <station>
-elements are expected. Their contents are described in the sections
-below.
+elements within it. For each graph to be produced, a
+.B <graph>
+element should be placed in the
+.B <graphs>
+element.
+Their contents are described in the sections below.
 
 .SH "DATABASE CONFIGURATION"
 The
@@ -51,9 +64,9 @@ The password for the read only user.
 .TP
 .BI <writer> readwrite-user </writer>
 The name of a user granted select, update and insert on the
-.I stationdata
+.I sdata
 and
-.I averages
+.I avg
 tables.  The 
 .BR meteopoll (1)
 and 
@@ -147,42 +160,80 @@ uses UDS-10 device server):
 .in -4
 .fi
 
-Starting with version 0.7.0, different units have become less of a problem.
-The original meteo always stored metric units in the database, now
-you can specify in the configuration file in what units you want meteo
-to store the data.
-For consistence, meteo enforces that all stations that are described in
-a single configuration file use the same units, i.e. units are usually 
-uniform within a database.
-All unit specifications are within the
-.RI /meteo/units
-XPath. The following table shows possible tags and the values:
+The <offset> tag can be used to specify the grouping offset for the
+averages with this station. Please consult
+.BR meteo.sql (5)
+for an explanation of the issue.
+
+.SH SENSORS
+
+Since some stations have optional sensors, meteo must be told which
+sensors to look at. For each available sensor, a sensor tag must be
+included in the station tag. A standard Vantage Pro Plus has the following
+sensors:
+
+.nf
+.in +4
+<station>
+.in +4
+<url>tcp://192.168.7.3:10001</url>
+<type>Vantage</type>
+<sensors>
+.in +4
+<sensor name="iss">
+.in +4
+<field>temperature</sensor>
+<field>humidity</sensor>
+<field>rain</sensor>
+<field>wind</sensor>
+<field>solar</sensor>
+<field>uv</sensor>
+.in -4
+</sensor>
+<sensor name="console">
+.in +4
+<field>temperature</sensor>
+<field>humidity</sensor>
+<field>barometer</sensor>
+.in -4
+</sensor>
+.in -4
+</sensors>
+.in -4
+</station>
+.in -4
+.fi
+
+Please read the file doc/sensors for details about sensors and a
+complete list of sensors known to meteo.
+
+
+.SH UNITS
+
+Starting with version 0.9.0, units are configured in the database.
+The following strings are valid for units:
 
 .TS
 tab(&);
 l l.
-tag&values
+data type&values
 
-<temperature>&degrees Celsius, degC, C,
+temperature&degrees Celsius, degC, C,
 &degrees Fahrenheit F, degF, F, K
-<humidity>&%
-<pressure>&hPa, inHg, mmHg
-<wind>&m/s, mph, kmh
-<rain>&mm, in
-<solar>&W/m2
-<uv>&index
+humidity&%
+pressure&hPa, inHg, mmHg
+wind&m/s, mph, kmh
+rain&mm, in
+solar&W/m2
+uv&index, med
+soil moisture&cb
+leaf wetness&index
+voltage&V
 .TE
 
-To get degrees Fahrenheit in the database, add the following tags to the
-contents of the station tag:
-
-.nf
-    <units>
-      <temperature>degF</temperature>
-    </units>
-.fi
-
-The units tag is also used for dewpoint computations.
+Releases 0.7.0 to 0.8.6 used information in the XML file for unit
+configuration, but as the database should be useful independently of
+configuration file, 0.9.0 moved this information to the database.
 
 .SH "GRAPH CONFIGURATION"
 The graphs produced by
@@ -430,6 +481,8 @@ atan2(y,x)&see atan(2)
 azi(x,y)&azimut angle in degreees
 hypot(x,y)&see hypto(3)
 dewpoint(h,t)&compute dewpoint corresponding to humidity h (@T = t)
+heatindex(h,t)&compute heat index from humidity h and temperature t
+windchill(v,t)&compute windchill from wind speed v and temperature t
 .TE
 
 Note that for the most obvious applications, namely wind graphs, these

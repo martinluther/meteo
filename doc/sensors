@@ -1,0 +1,166 @@
+Sensors on Davis weather stations
+=================================
+
+Naming conventions
+------------------
+
+All Davis weather stations have at least two sensors, representing the
+indoors and outdoors measuring elements. On the Vantage Pro, these are
+the ISS (integrated sensor suite) for outdoor measurements, and the
+console for inside values. In addition, a Vantage Pro station can have
+additional sensors attached to, e.g. soil temperature and soil moisture
+sensors, or temperature/humidity stations. The sensors are identified
+using a simple two component adressing scheme. The components of the
+name specify the sensor and the field, separated by a period.
+
+Examples:
+ - the temperature sensor of a Weather Monitor II:
+
+	outside.temperature
+
+ - the inside humidity on a GroWeather station
+	
+	inside.humidity
+
+ - the barometric pressure on a Energy station
+
+	inside.barometer
+
+ - the soil moisture on the first soil station of a Vantage Pro
+
+	soil1.moisture
+
+ - the anemometer on a Vantage Pro station
+
+	iss.wind
+
+
+Configuration
+-------------
+
+Configuration information about sensors is stored in two different
+places: the database and the configuration file. The database only
+contains the information needed to perform analyses based on the data
+in the database, i.e. all references inside the database must be
+resolvable. Ideally, referential integrity would preserve this property.
+
+The information about possible sensors on a station is coded into the
+classes implementing the station in the form of the Reader objects.
+Since the Station objects handle the communications protocol and therefore
+also the conversion of the raw data from the connection to the device
+into Value classes, the Reader objects belong to the Station class.
+The right Value class is also defined in the Station definition, as well
+as the unit for unit of measurement for all fields. As a consequence,
+all temperatures have to be in the same unit.
+
+The Reader objects are stored in a map that maps names of Reader objects
+to Reader objecst. The names used for this are precisely those explained
+in the previous section. The sections below show complete lists of 
+readers associated with each type of station.
+
+Each Sensor on a station has a name and contains a map that maps names
+of fields to Recorder objects for these fields. To update a Recorder
+from station data, one first constructs the Reader name by forming
+<sensor>.<field>, and looks up the corresponding Reader. The Value object
+returned by the reader is then feed into the update method of the
+Recorder named <field> of the <sensor>.
+
+The configuration file contains the sensor declaration, which lists
+all available sensors and the (active) fields inside the sensors.
+Here is an example of the sensor configuration:
+
+	<sensors>
+		<sensor name="console">
+			<field>temperature</field>
+			<field>barometer</field>
+			<field>humidity</field>
+		</sensor>
+		<sensor name="iss">
+			<field>temperature</field>
+			<field>wind</field>
+			<field>humidity</field>
+			<field>rain</field>
+			<field>solar</field>
+			<field>uv</field>
+		</sensor>
+		<sensor name="soil1">
+			<field>temperature</field>
+			<field>wetness</field>
+		</sensor>
+	</sensors>
+
+The Station object created with this configuration contains three Sensor
+objects named console, iss and soil1. Each Sensor objects contains with
+Recorders for the fields inside the sensor tag, while the Reader map of the
+Station contains the following Readers
+
+	console.temperature
+	console.humidity
+	console.barometer
+	iss.temperature
+	iss.humidity
+	iss.wind
+	iss.solar
+	iss.uv
+	soil1.temperature
+	soil1.wetness
+
+Stations
+--------
+
+Weather Monitor II, Wizard, Perception
+
+	inside	temperature
+		humidity
+		barometer
+
+	outside	temperature
+		humidity
+		wind
+		rain
+
+GroWeather
+
+	inside	humidity
+		barometer
+
+	outside	temperature
+		humidity
+		wind
+		rain
+		solar
+		uv
+
+	soil	temperature
+
+Energy
+
+Health
+
+Vantage Pro
+
+	console	temperature
+		humidity
+		barometer
+
+	iss	temperature
+		humidity
+		wind
+		rain
+		solar
+		uv
+
+	soil1-4	temperature
+		moisture
+
+	leaf1-4	temperature
+		wetness
+
+	th1-7	temperature
+		humidity
+
+
+
+
+--
+$Id: sensors,v 1.2 2003/10/21 22:32:03 afm Exp $

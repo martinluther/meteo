@@ -10,24 +10,23 @@
 
 namespace meteo {
 
+#define PI	3.1415926535
+
 class Vector {
 	double	x, y;
 public:
 	// construction and destruction
-	Vector(double xx, double yy) { x = xx; y = yy; }
-	Vector(double r, unsigned short azi) {
-		double	p = 3.1415926535 * azi/360.;
-		this->x = r * cos(p);
-		this->y = r * sin(p);
-	}
+	Vector(double xx, double yy);
+	Vector(double r, unsigned short azideg, bool azinotarg);
 	Vector(void) { x = 0.; y = 0.; }
 	~Vector(void) { }
 
 	// accessors
 	double	getX(void) const { return x; }
 	double	getY(void) const { return y; }
-	double	getArg(void) const;
-	double	getAzi(void) const;
+	double	getArg(void) const;	// angles always in radians
+	double	getAzi(void) const;	// angles always in radians
+	double	getAzideg(void) const;	// in degrees, for display strings
 	double	getAbs(void) const;
 
 	// += operator

@@ -6,21 +6,13 @@
 #ifndef _Dewpoint_h
 #define _Dewpoint_h
 
-#include <Configuration.h>
+#include <Derivedvalue.h>
 
 namespace meteo {
 
-typedef	enum	temperature_unit_e {
-	temperature_unit_celsius = 0,
-	temperature_unit_fahrenheit = 1
-} temperature_unit_t;
-
-class Dewpoint {
-	temperature_unit_t	tu;
-	temperature_unit_t	fromConfiguration(const Configuration& conf);
+class Dewpoint : public Derivedvalue {
 public:
-	Dewpoint(void);
-	Dewpoint(const Configuration& conf);
+	Dewpoint(void) { }
 	~Dewpoint(void) { }
 	double	operator()(double humidity, double temperature) const;
 };

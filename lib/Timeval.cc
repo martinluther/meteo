@@ -40,6 +40,12 @@ void	Timeval::now(void) {
 	gettimeofday(&t, NULL);
 }
 
+time_t	Timeval::getTimekey(void) const {
+	time_t	result = t.tv_sec;
+	result -= (result % 60);
+	return result;
+}
+
 void	Timeval::wait(void) {
 	struct timeval	local;
 	local = t;

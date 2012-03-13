@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.19 2003/08/01 00:39:46 afm Exp $
+//   $Id: meteobrowser.php,v 1.25 2003/10/30 23:21:24 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -19,6 +19,11 @@
 //				interval type
 //	$HTTP_GET_VARS[station]	station name
 //
+if (!function_exists('gettext')) {
+	function gettext($msgid) { return $msgid; }
+	function bindtextdomain($domain, $path) { return; }
+	function textdomain($domain) { return; }
+}
 ?>
 <html>
 <head>
@@ -126,7 +131,8 @@ $fulltitle = $station." ".strftime($title, $timestamp);
 
 <?php
 // compute the map for the current label
-$cmd = $basecmd." -g temperature -I -m";
+$cmd = $basecmd." -g $station.temperature -I -m";
+//printf("map command: %s", $cmd);
 system($cmd);
 
 ?>
@@ -265,11 +271,22 @@ $explanation[temperature] =
 	"between maximum and minimum temperature during the sampling ".
 	"interval.  The <font color=\"#6464ff\">blue</font> curve shows the ".
 	"dew point, the temperature at which dew begins to form.";
+$explanation[temperature_inside] =
+	"The <font color=\"#b40000\">red</font> curve shows inside ".
+	"temperature, the <font color=\"#ffb4b4\">light red</font> ".
+	"area shows the range between maximum and minimum temperature ".
+	"during the sampling interval.";
 $explanation[pressure] = 
 	"The <font color=\"#7f7fff\">blue</font> graph shows ".
 	"average barometric pressure, the range between minimum ".
 	"and maximum pressure during the sampling interval is shown ".
 	"in <font color=\"#d2d2ff\">light blue</font>.";
+$explanation[humidity] =
+	"The <font color=\"#7f7fff\">blue</font> graph shows ".
+	"relative humidity.";
+$explanation[humidity_inside] =
+	"The <font color=\"#7f7fff\">blue</font> graph shows ".
+	"inside relative humidity.";
 $explanation[rain] = 
 	"The <font color=\"#0000ff\">blue</font> histogram shows ".
 	"the total rain (or moisture content of the ".
@@ -288,7 +305,6 @@ $explanation[radiation] =
 	"the UV index, scale on the right.  </p> <p> Note that after ".
 	"snow fall the readings of both sensors are not reliably, ".
 	"as the sensors are not automatically freed of the snow.";
-$explanation[temperature_inside] = "";
 
 // create the map by running meteodraw once without graph arguments
 
@@ -303,10 +319,11 @@ foreach ($graphs as $graph) {
 	// call the meteodraw program to rebuild the image and spit
 	// out a suitable img link
 	$cmd = $basecmd." -g $graph -I -i";
+// printf("%s\n", $cmd);
 	system($cmd);
 ?>
 	</td>
-	<td valign="top"><? echo gettext($explanation[$graph]) ?></td>
+	<td valign="top"><? echo gettext($explanation[$explanationname[$graph]]) ?></td>
 	</tr>
 <?php
 }

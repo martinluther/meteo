@@ -7,122 +7,12 @@
 #define _GraphWindow_h
 
 #include <Frame.h>
-#include <Tdata.h>
-#include <math.h>
-#include <Configuration.h>
-#include <Dataset.h>
-#include <Timelabel.h>
-#include <list>
+#include <Scale.h>
+#include <Axis.h>
+#include <GraphPoint.h>
+#include <ImageMap.h>
 
 namespace meteo {
-
-// Scale objects are used to convert application domain data into data useful
-// for graphing. After the object has been initialized with the min and max
-// values, it will always return a value between 0 and 1, so that 0 corresponds
-// to the minimum, 1 corresponds to the maximum
-class Scale {
-	double  a, b;
-public:
-	Scale(void) { a = 1.; b = 0.; } // if nothing is specified, use id map
-	Scale(double min, double max) {
-		a = 1/(max - min);
-		b = min;
-	}
-	Scale(const Configuration& conf, const std::string& xpath,
-		const Dataset& ds);
-	~Scale(void) { }
-	double  operator()(double x) const {
-		double	y = a * (x - b);
-		if (y > 1.) return 1.;
-		if (y < 0.) return 0.;
-		return y;
-	}
-	double	getMin(void) const { return b; }
-	double	getMax(void) const { return b + 1/a; }
-	double	range(void) const { return 1/a; }
-};
-
-class	GraphPoint {
-	time_t	t;
-	double	v;
-public:
-	GraphPoint(void) { t = 0; v = 0.; }
-	GraphPoint(time_t tt, double vv) { t = tt; v = vv; }
-	~GraphPoint(void) { }
-	time_t	getTime(void) const { return t; }
-	double	getValue(void) const { return v; }
-};
-
-class Axis {
-	std::string	format;
-	double		first, last, step;
-	bool		gridlines, ticks;
-public:
-	Axis(void) : format("%.0f") {	
-		first = 0.; last = 1.; step = 1.;
-		gridlines = false; ticks = false;
-	}
-	Axis(std::string& f, double fi, double la, double st) : format(f) {
-		first = fi; last = la; step = st;
-	}
-	Axis(const Configuration& cont, const std::string& xpath,
-		const Scale& sc);
-	~Axis(void) { }
-	void	setFirst(double f) { first = f; }
-	void	setLast(double l) { last = l; }
-	void	setStep(double s) { step = s; }
-	void	setFormat(const std::string& f) { format = f; }
-	void	setGridlines(bool g) { gridlines = g; }
-	void	setTicks(bool t) { ticks = t; }
-
-	double	getFirst(void) const { return first; }
-	double	getLast(void) const { return last; }
-	double	getStep(void) const { return step; }
-	const std::string& 	getFormat(void) const { return format; }
-	bool	getGridlines(void) const { return gridlines; }
-	bool	getTicks(void) const { return ticks; }
-};
-
-// MapArea -- describes the area of a month, week or day on year, month
-//            or week graphs. The meteobrowser uses this information when
-//            building the web page
-class	MapArea {
-	Rectangle	area;
-	Timelabel	ti;
-	time_t		starttime;
-public:
-	MapArea(const Rectangle& outline, const Timelabel& tl, time_t start)
-		: area(outline) {
-		ti = tl;
-		starttime = start;
-	}
-	~MapArea(void) { }
-	time_t		getStarttime(void) const { return starttime; }
-	Timelabel	getTimelabel(void) const { return ti; }
-	std::string	getStringForm(const std::string& url) const;
-};
-
-// ImageMap -- describes an image map, including a list of MapArea objects
-class	ImageMap {
-	std::list<MapArea>	areas;
-	Level	level;
-public:
-	ImageMap(void) {
-		level = Level(month);
-	}
-	ImageMap(const Level& l) {
-		level = l;
-	}
-	~ImageMap(void) { }
-	Level	getLevel(void) const { return level; }
-	void	setLevel(const Level& l) { level = l; }
-	void	setLevel(const int interval) { level = Level(interval); }
-	void	addArea(const MapArea& a) {
-		if (a.getStarttime() < time(NULL)) areas.push_back(a);
-	}
-	std::string	getStringForm(const std::string& url) const;
-	std::string	getImageTag(const std::string& filename) const;
-};
 
 class GraphWindow {
 	Frame&		parent;

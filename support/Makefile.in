@@ -146,21 +146,29 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.4 2003/08/03 21:24:38 afm Exp $
+# $Id: Makefile.am,v 1.8 2003/10/24 16:15:17 afm Exp $
 #
 noinst_DATA = rc.meteo
-EXTRA_DIST = meteojob meteooverview How_to_migrate $(noinst_DATA)
+EXTRA_DIST = meteojob meteooverview meteodbmigrate How_to_migrate	\
+	How_to_migrate2 README $(noinst_DATA)
 
-bin_PROGRAMS = meteofixtimestamps
+
+bin_PROGRAMS = meteofixtimestamps meteodbmigrate
 
 meteofixtimestamps_SOURCES = meteofixtimestamps.c
+meteodbmigrate_SOURCES = meteodbmigrate.cc
 subdir = support
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
-bin_PROGRAMS = meteofixtimestamps$(EXEEXT)
+bin_PROGRAMS = meteofixtimestamps$(EXEEXT) meteodbmigrate$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
+am_meteodbmigrate_OBJECTS = meteodbmigrate.$(OBJEXT)
+meteodbmigrate_OBJECTS = $(am_meteodbmigrate_OBJECTS)
+meteodbmigrate_LDADD = $(LDADD)
+meteodbmigrate_DEPENDENCIES =
+meteodbmigrate_LDFLAGS =
 am_meteofixtimestamps_OBJECTS = meteofixtimestamps.$(OBJEXT)
 meteofixtimestamps_OBJECTS = $(am_meteofixtimestamps_OBJECTS)
 meteofixtimestamps_LDADD = $(LDADD)
@@ -170,7 +178,8 @@ meteofixtimestamps_LDFLAGS =
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/meteofixtimestamps.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/meteodbmigrate.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteofixtimestamps.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -178,16 +187,24 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(meteofixtimestamps_SOURCES)
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+DIST_SOURCES = $(meteodbmigrate_SOURCES) $(meteofixtimestamps_SOURCES)
 DATA = $(noinst_DATA)
 
-DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(meteofixtimestamps_SOURCES)
+DIST_COMMON = README Makefile.am Makefile.in
+SOURCES = $(meteodbmigrate_SOURCES) $(meteofixtimestamps_SOURCES)
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .c .cc .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  support/Makefile
@@ -222,6 +239,9 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+meteodbmigrate$(EXEEXT): $(meteodbmigrate_OBJECTS) $(meteodbmigrate_DEPENDENCIES) 
+	@rm -f meteodbmigrate$(EXEEXT)
+	$(CXXLINK) $(meteodbmigrate_LDFLAGS) $(meteodbmigrate_OBJECTS) $(meteodbmigrate_LDADD) $(LIBS)
 meteofixtimestamps$(EXEEXT): $(meteofixtimestamps_OBJECTS) $(meteofixtimestamps_DEPENDENCIES) 
 	@rm -f meteofixtimestamps$(EXEEXT)
 	$(LINK) $(meteofixtimestamps_LDFLAGS) $(meteofixtimestamps_OBJECTS) $(meteofixtimestamps_LDADD) $(LIBS)
@@ -232,6 +252,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodbmigrate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteofixtimestamps.Po@am__quote@
 
 distclean-depend:
@@ -269,6 +290,39 @@ distclean-depend:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
+
+.cc.o:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
+@am__fastdepCXX_TRUE@	then mv "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
+
+.cc.obj:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`; \
+@am__fastdepCXX_TRUE@	then mv "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`
+
+.cc.lo:
+@am__fastdepCXX_TRUE@	if $(LTCXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
+@am__fastdepCXX_TRUE@	then mv "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -459,6 +513,10 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 install-exec-local:
 	cp meteojob $(DESTDIR)$(bindir)/meteojob.default
 	cp meteooverview $(DESTDIR)$(bindir)/meteooverview.default
+
+testmig:	meteodbmigrate
+	./meteodbmigrate -o -10800 -b meteo -u meteoupdate -p m57cwrt \
+		-t VantagePro -s Lajeado
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -3,14 +3,18 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.9 2003/07/26 23:51:18 afm Exp $
+# $Id: Makefile.am,v 1.10 2003/11/01 18:00:30 afm Exp $
 #
-HTMLFILES = meteo.html meteodata.html meteo-install.html meteo.css gallery.html
+HTMLFILES = meteodata.html meteo-install.html meteo.css gallery.html	\
+	about.html ack.html config.html index.html inhalt.html		\
+	news.html requ.html uti.html
+IMAGES = inhaltband.png normband.png
 TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../INSTALL \
 	../COPYING ../SETUP
 HTMLDIR = @HTMLDIR@
-EXTRA_DIST = meteo.html.in meteodata.html meteo-install.html meteo.css	\
-	gallery.html
+EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.html	\
+	about.html ack.html config.html index.html inhalt.html		\
+	news.html.in requ.html uti.html $(IMAGES)
 
 install-data-local:
 	@if [ ! -z "$(HTMLDIR)" ];					\

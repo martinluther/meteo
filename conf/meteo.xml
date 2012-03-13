@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.15 2003/08/24 20:26:40 afm Exp $
+ $Id: meteo.xml,v 1.22 2003/10/24 16:15:17 afm Exp $
 
   -->
 <meteo>
@@ -22,26 +22,78 @@
     <prefix>meteo</prefix>
   </database>
 
-  <units>
-    <temperature>C</temperature>
-  </units>
-
   <station name="Altendorf">
     <!-- <url>file:///dev/ttyS0</url> -->
     <url>tcp://weathermonitor.othello.ch:10001</url>
     <type>WMII</type>
     <speed>2400</speed>
+    <sensors>
+      <sensor name="inside">
+        <field>temperature</field>
+        <field>humidity</field>
+        <field>barometer</field>
+      </sensor>
+      <sensor name="outside">
+        <field>temperature</field>
+        <field>humidity</field>
+        <field>rain</field>
+        <field>wind</field>
+      </sensor>
+    </sensors>
   </station>
 
   <station name="Gurin">
     <url>file:///dev/ttyS0</url>
     <type>VantagePro</type>
-    <speed>2400</speed>
+    <speed>19200</speed>
+    <sensors>
+      <sensor name="console">
+        <field>temperature</field>
+        <field>humidity</field>
+        <field>barometer</field>
+        <field>battery</field>
+      </sensor>
+      <sensor name="iss">
+        <field>temperature</field>
+        <field>humidity</field>
+        <field>rain</field>
+        <field>wind</field>
+        <field>solar</field>
+        <field>uv</field>
+      </sensor>
+    </sensors>
+  </station>
+
+  <station name="Lajeado">
+    <url>file:///dev/ttyS0</url>
+    <type>VantagePro</type>
+    <speed>19200</speed>
+    <sensors>
+      <sensor name="console">
+        <field>temperature</field>
+        <field>humidity</field>
+        <field>barometer</field>
+        <field>battery</field>
+      </sensor>
+      <sensor name="iss">
+        <field>temperature</field>
+        <field>humidity</field>
+        <field>rain</field>
+        <field>wind</field>
+        <field>solar</field>
+        <field>uv</field>
+      </sensor>
+      <sensor name="soil1">
+        <field>temperature</field>
+        <field>moisture</field>
+      </sensor>
+    </sensors>
+    <offset>-10800</offset>
   </station>
 
   <graphs>
-    <graph name="temperature-new" height="300" width="600"  bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.temperature-new" offset="-10800"
+	height="300" width="600" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Temperatur grad C</leftlabel>
       <rightlabel align="center">relative Humidity %</rightlabel>
       <leftaxis type="dynamic" maxname="tt" minname="dd" min="-100" max="100"
@@ -54,12 +106,12 @@
       <channels>
 
 	<query>
-	  <select name="t">temperature</select>
-	  <select name="tmax">temperature_max</select>
-	  <select name="tmin">temperature_min</select>
-	  <select name="h">humidity</select>
-	  <select name="hmax">humidity_max</select>
-	  <select name="hmin">humidity_min</select>
+	  <select name="t">Lajeado.iss.temperature</select>
+	  <select name="tmax">Lajeado.iss.temperature_max</select>
+	  <select name="tmin">Lajeado.iss.temperature_min</select>
+	  <select name="h">Lajeado.iss.humidity</select>
+	  <select name="hmax">Lajeado.iss.humidity_max</select>
+	  <select name="hmin">Lajeado.iss.humidity_min</select>
 	  <data name="tt">
 	    <function name="floor" limit="-50">
 	      <function name="ceil" limit="50">
@@ -104,8 +156,8 @@
     </graph>
 
     <!-- Temperature graph -->
-    <graph name="temperature" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.temperature" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Temperature (deg C)</leftlabel>
       <leftaxis type="static" min="-15" max="35"
 	first="-10" last="30" step="10" format="%.0f"
@@ -113,12 +165,12 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="t">temperature</select>
-	  <select name="tmin">temperature_min</select>
-	  <select name="tmax">temperature_max</select>
-	  <select name="h">humidity</select>
-	  <select name="hmin">humidity_min</select>
-	  <select name="hmax">humidity_max</select>
+	  <select name="t">Lajeado.iss.temperature</select>
+	  <select name="tmin">Lajeado.iss.temperature_min</select>
+	  <select name="tmax">Lajeado.iss.temperature_max</select>
+	  <select name="h">Lajeado.iss.humidity</select>
+	  <select name="hmin">Lajeado.iss.humidity_min</select>
+	  <select name="hmax">Lajeado.iss.humidity_max</select>
 	  <data name="dewpoint">
 	    <function2 name="dewpoint">
 	      <value name="h"/>
@@ -149,8 +201,8 @@
     </graph>
 
     <!-- inside Temperature graph -->
-    <graph name="temperature_inside" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.temperature_inside" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Temperature (deg C)</leftlabel>
       <leftaxis type="static" min="-15" max="35"
 	first="-10" last="30" step="10" format="%.0f"
@@ -158,12 +210,12 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="t">temperature_inside</select>
-	  <select name="tmin">temperature_inside_min</select>
-	  <select name="tmax">temperature_inside_max</select>
-	  <select name="h">humidity_inside</select>
-	  <select name="hmin">humidity_inside_min</select>
-	  <select name="hmax">humidity_inside_max</select>
+	  <select name="t">Lajeado.console.temperature</select>
+	  <select name="tmin">Lajeado.console.temperature_min</select>
+	  <select name="tmax">Lajeado.console.temperature_max</select>
+	  <select name="h">Lajeado.console.humidity</select>
+	  <select name="hmin">Lajeado.console.humidity_min</select>
+	  <select name="hmax">Lajeado.console.humidity_max</select>
 	  <data name="dewpoint">
 	    <function2 name="dewpoint">
 	      <value name="h"/>
@@ -194,8 +246,8 @@
     </graph>
 
     <!-- Pressure -->
-    <graph name="pressure" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.pressure" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Pressure (hPa)</leftlabel>
       <leftaxis type="static" min="930" max="990"
 	first="930" last="990" step="10" format="%.0f"
@@ -203,9 +255,9 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="p">barometer</select>
-	  <select name="pmin">barometer_max</select>
-	  <select name="pmax">barometer_min</select>
+	  <select name="p">Lajeado.console.barometer</select>
+	  <select name="pmin">Lajeado.console.barometer_max</select>
+	  <select name="pmax">Lajeado.console.barometer_min</select>
 	</query>
 	<channel color="#d2d2ff" type="range" scale="left"
 	  nameupper="pmax" namelower="pmin"/>
@@ -215,8 +267,8 @@
     </graph>
 
     <!-- Wind -->
-    <graph name="wind" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.wind" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="bottom">Speed (m/s)</leftlabel>
       <rightlabel align="top">Azimut (deg)</rightlabel>
       <leftaxis type="static" min="0" max="25"
@@ -228,9 +280,9 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="azi">winddir</select>
-	  <select name="v">windspeed</select>
-	  <select name="vmax">windgust</select>
+	  <select name="azi">Lajeado.iss.winddir</select>
+	  <select name="v">Lajeado.iss.wind</select>
+	  <select name="vmax">Lajeado.iss.windgust</select>
 	</query>
 	<!-- note that there are some cultural differences with the wind
 	     letters below. In Switzerland, Nordwind means wind _from_ the
@@ -251,8 +303,8 @@
     </graph>
 
     <!-- Radiation -->
-    <graph name="radiation" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.radiation" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Solar Radiation (M/m2)</leftlabel>
       <rightlabel align="center">UV index</rightlabel>
       <leftaxis type="static" min="0" max="1200"
@@ -270,8 +322,8 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="solar">solar</select>
-	  <select name="uv">uv</select>
+	  <select name="solar">Lajeado.iss.solar</select>
+	  <select name="uv">Lajeado.iss.uv</select>
 	</query>
 	<channel color="#c8b400" type="histogram" scale="left" name="solar"/>
 	<channel color="#6400c8" type="curve" scale="right" name="uv"/>
@@ -280,8 +332,8 @@
     </graph>
 
     <!-- Rain -->
-    <graph name="rain" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.rain" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">Precipitation (mm)</leftlabel>
       <rightlabel align="center">Total rain (mm)</rightlabel>
       <leftaxis interval="300" type="static" min="0" max="6"
@@ -299,7 +351,7 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="rain">rain</select>
+	  <select name="rain">Lajeado.iss.rain</select>
 	  <data name="totalrain">
 	    <function name="accumulate">
 	      <value name="rain"/>
@@ -313,8 +365,8 @@
     </graph>
 
     <!-- humidity graph -->
-    <graph name="humidity" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.humidity" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">relavite Humdity (%)</leftlabel>
       <leftaxis type="static" min="0" max="100"
 	first="0" last="100" step="20" format="%.0f"
@@ -322,9 +374,9 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="h">humidity</select>
-	  <select name="hmin">humidity_max</select>
-	  <select name="hmax">humidity_min</select>
+	  <select name="h">Lajeado.iss.humidity</select>
+	  <select name="hmin">Lajeado.iss.humidity_max</select>
+	  <select name="hmax">Lajeado.iss.humidity_min</select>
 	</query>
 	<channel color="#d2d2ff" type="range" scale="left"
 	  nameupper="hmax" namelower="hmin"/>
@@ -335,8 +387,8 @@
 
 
     <!-- humidity_inside graph -->
-    <graph name="humidity_inside" height="144" width="500" bgcolor="#ffffff"
-	fgcolor="#000000">
+    <graph name="Lajeado.humidity_inside" offset="-10800"
+	height="144" width="500" bgcolor="#ffffff" fgcolor="#000000">
       <leftlabel align="center">relavite Humdity (%)</leftlabel>
       <leftaxis type="static" min="0" max="100"
 	first="0" last="100" step="20" format="%.0f"
@@ -344,9 +396,9 @@
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
-	  <select name="h">humidity_inside</select>
-	  <select name="hmin">humidity_inside_max</select>
-	  <select name="hmax">humidity_inside_min</select>
+	  <select name="h">Lajeado.console.humidity</select>
+	  <select name="hmin">Lajeado.console.humidity_max</select>
+	  <select name="hmax">Lajeado.console.humidity_min</select>
 	</query>
 	<channel color="#d2d2ff" type="range" scale="left"
 	  nameupper="hmax" namelower="hmin"/>

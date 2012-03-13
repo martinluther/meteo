@@ -1,0 +1,39 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
+<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
+</head>
+<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
+<img src="normband.jpg" width="841" height="150" border="0">
+<p><h1>Requirements</h1>
+<p>Generally speaking, <b>meteo</b> is quite lean,
+<p>
+<strong>Disk space:</strong>
+To build meteo on a Linux system, you need at least 150MB of disk space,
+the installed libraries with debug symbols take about 45MB (they become
+considerably smaller if you strip them), the installed programms use
+about 5.5MB.
+</p>
+<p>
+<strong>CPU:</strong> While compiling the software can take some
+time (it takes about an hour on the dual processor SPARCstation 20
+that hosts the meteo website http://meteo.othello.ch/),
+running meteo hardly produces any noticeable load on current hardware.
+On the meteo website server, meteo's activities account for hardly more
+than about 10% of the CPU load. The most important portion of CPU load comes
+from the database, the meteo programs themselves cause less than 1% of
+the CPU load.
+</p>
+<p>
+<strong>Database space:</strong> 
+The most important requirement for meteo is database space. A VantagePro Plus
+station uses about 970kB in the <i>sdata</i>, <i>avg</i> and <i>header</i>
+per day of database space, or about 343MB per year. On october 30th, 2003,
+the database on the meteo website was about 1.4GB in size and contained
+more than 47mio rows an the three large tables, more than 30mio rows
+in the <i>sdata</i> table alone.
+</p>
+</body>
+</html>

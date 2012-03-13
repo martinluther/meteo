@@ -12,6 +12,9 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 #include <signal.h>
 #include <errno.h>
 #include <mdebug.h>
@@ -23,40 +26,90 @@
 namespace meteo {
 
 Pidfile::Pidfile(const std::string& filename) {
-	// check whether this file already exists
-	try {
-		std::ifstream	oldpidfile(filename.c_str());
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "pid file %s already exists",
-			filename.c_str());
+	int	pid = -1;
 
-		// if it does, read the pid from it
-		int	pid;
-		oldpidfile >> pid;
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "old pid file contains pid %d",
-			pid);
-
-		// check whether a process with this pid exists
-		if (kill(pid, 0) < 0) {
-			switch (errno) {
-			case ESRCH:
-				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"process no longer there, fine");
-				break;
-			case EPERM:
-				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"process has different uid");
-				throw MeteoException("permission", "");
-			default:
-				break;
-			}
+	// let's see whether the file exists, we do this using stat
+	struct stat	sb;
+	if (stat(filename.c_str(), &sb) < 0) {
+		switch (errno) {
+		case ENOENT:
+			// ENOENT means that the file does not exist,
+			// so we just forget about it
+			goto forgetoldpid;
+			break;
+		case ENOTDIR:
+		case ELOOP:
+		case EACCES:
+		case ENAMETOOLONG:
+			// any of these errors indicates a serious
+			// problem with the file name
+			throw MeteoException(strerror(errno),
+				filename.c_str());
+			break;
 		}
-	} catch (...) {
-		throw MeteoException("there is a problem with the pidfile",
-			filename);
+	}
+
+	// so we know the file exists, but can we do something with it?
+	{	// the { is only here to create a scope, so that the ifstream
+		// will get destroyed when going out of scope
+		std::ifstream	oldpidfile(filename.c_str());
+		if (!oldpidfile) {
+			// the file was there, but we could not open it, so
+			// we are in serious trouble
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"cannot open pid file %s", filename.c_str());
+			throw MeteoException("cannot open pidfile", filename);
+		}
+
+		// if it does, read the pid from it (note that we have to
+		// clear the oldpidfile stream state first)
+		oldpidfile.clear();
+		oldpidfile >> pid;
+
+		// check the state of the oldpidfile to make sure a number
+		// was read
+		if (oldpidfile.fail()) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"old pid file did not contain a pid");
+			goto forgetoldpid;
+		}
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "pid set to %d", pid);
+	};
+
+	// check whether a process with this pid exists, we can do this since
+	// we have made sure previously that we could read a reasonable pid 
+	// from the file
+	if (kill(pid, 0) < 0) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"cannot kill proccess %d: %s", pid,
+			strerror(errno));
+		switch (errno) {
+		case ESRCH:
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"process gone, proceed");
+			break;
+		case EPERM:
+			// give up if we cannot kill the process in
+			// question
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"process has different uid");
+			throw MeteoException("not allowed to kill old process",
+				"");
+		default:
+			break;
+		}
 	}
 
 	// create a new pid file
+forgetoldpid:
 	std::ofstream	pidfile(filename.c_str());
+	if (!pidfile) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot write pid file %s",
+			filename.c_str());
+		throw MeteoException("cannot write pid", filename);
+	}
+
+	// write pid to the pidfile
 	pidfile << getpid() << std::endl;
 }
 

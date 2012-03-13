@@ -9,6 +9,8 @@
 #include <MeteoException.h>
 #include <mdebug.h>
 #include <Dewpoint.h>
+#include <Heatindex.h>
+#include <Windchill.h>
 #include <algo.h>
 
 namespace meteo {
@@ -144,12 +146,27 @@ static double	operatorazi(double x, double y) {
 }
 static double	operatorhypot(double x, double y) { return ::hypot(x, y); }
 static Dewpoint	*dpp = NULL;
+static Heatindex	*hip = NULL;
+static Windchill	*wchlp = NULL;
 static double	dewpoint(double h, double t) {
 	if (dpp == NULL)
-		dpp = new Dewpoint();
+		dpp = new Dewpoint();	// never deleted, but static
 	return dpp->operator()(h, t);
 }
 static double	operatordewpoint(double h, double t) { return dewpoint(h, t); }
+static double	heatindex(double h, double t) {
+	if (hip == NULL)
+		hip = new Heatindex();	// never deleted, but static
+	return hip->operator()(h, t);
+}
+static double	operatorheatindex(double h, double t) { return heatindex(h, t); }
+static double	windchill(double v, double t) {
+	if (wchlp == NULL)
+		wchlp = new Windchill();	// never deleted, but static
+	return wchlp->operator()(v, t);
+}
+static double	operatorwindchill(double v, double t) { return windchill(v, t); }
+
 
 Tdata	operator+(const Tdata& a, const Tdata& b) {
 	return apply2(operatorplus, a, b);
@@ -181,6 +198,14 @@ Tdata	hypot(const Tdata& x, const Tdata& y) {
 
 Tdata	dewpoint(const Tdata& humidity, const Tdata& temperature) {
 	return apply2(operatordewpoint, humidity, temperature);
+}
+
+Tdata	heatindex(const Tdata& humidity, const Tdata& temperature) {
+	return apply2(operatorheatindex, humidity, temperature);
+}
+
+Tdata	windchill(const Tdata& windspeed, const Tdata& temperature) {
+	return apply2(operatorwindchill, windspeed, temperature);
 }
 
 Tdata	max(const Tdata& a, const Tdata& b) {

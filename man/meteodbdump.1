@@ -1,118 +1,142 @@
-.TH METEODBDUMP "1" "December 2001" "Meteo station tools" Othello
+.TH METEODBDUMP "1" "October 2003" "Meteo station tools" Othello
 .SH NAME
 meteodbdump \- dump contents of meteo database
 .SH SYNOPSIS
 meteodbdump [
-.B \-d
-] [
-.BI \-l logurl
-] [
-.BI \-h host
-] [
-.BI \-u user
-] [
-.BI \-p password
-] [
-.BI \-b database
+.BI \-b basename
 ] [
 .BI \-c chunksize
 ] [
-.BI \-f filebase
+.B \-d
+] [
+.BI \-f conffile
+] [
+.BI \-l logurl
 ]
 .BI \-s station
 .SH DESCRIPTION
 The 
 .BR meteodbdump (1)
-programm dumps the contens of the meteo database to text files.
-In contrast to ordinary mysqldump, it usually reads the records of
-a day at a time, so that the table does not stay locked for extended
+programm dumps the contents of the meteo database (see
+.BR meteo.sql (5))
+to text files.
+In contrast to ordinary
+.BR mysqldump (1),
+it usually reads the records of
+a day at a time, i.e. less than 2000 rows,
+so that the table does not stay locked for extended
 time intervals.
-
-The program is designed to be compilable stand alone, without the
-rest of the meteo package, so that it can be run locally on a
-database server even if the meteo package is not installed there.
+Also the meteo tables tend to be so large that
+.BR mysqldump (1)
+will run out of memory before anything is dumped.
 
 .BR meteodbdump (1)
-connects to the database
-.I database
-on host
-.I host
-as the user
-.I user
-with password
-.IR password .
+connects to the database using the read only connection specified in
+the either the default configuration file or the one specified with
+the 
+.B -f
+option.
 It then starts reading data for the station
 .I station
 and writes SQL insert statements to the files
-.IB filebase stationdata
+.IB basename sdata,
+.IB basename header
 and
-.IB filebase averages.
+.IB basename avg.
 Data is read in chunks of at most 
 .I chunksize
-records from the stationdata, and written  to the stationdata file,
-then the averages present in the averages table for the same period
-is also read and written to the averages file.
+records from the header (default 349), and written  to the header file,
+then the station data in
+.B sdata
+and the averages present in the
+.B avg
+table for the same period
+is also read and written to the avg file.
 
 The SQL insert statements do not rely on a certain order of the fields
-in the table definition, and they contain comments to make it easier
-to identify the data.
+in the table definition. However, the contents of the
+.B station
+table and the
+.B mfield
+table are not dumped. Since stations and fields are completely described
+only with this information, tools like
+.BR mysql_dump (1)
+should be used to backup those tables.
 
 .SH OPTIONS
+.TP
+.BI \-b basename
+The
+.I basename
+string is prepended to the strings
+.IR header ,
+.I sdata 
+and
+.IR avg ,
+which are then used as filenames for the output files. The 
+.I basename
+may contain slashes (/), but 
+.BR meteodbdump (1)
+will not create directories, so they should be created manually
+before
+.BR meteodump (1)
+is run. Example: a
+.I basename
+of 
+.I /var/tmp/Lajeado-
+will let 
+.BR meteodbdump (1)
+dump the data to the files
+.IR /var/tmp/Lajeado-header ,
+.I /var/tmp/Lajeado-sdata
+and
+.IR /var/tmp/Lajeado-avg .
+
+.TP
+.BI \-c chunksize
+read at most 
+.I chunksize 
+records from the database at one time. By default, 349 records are
+read in the leading header query. This reduces 
+.BR metedbdump (1)'s
+impact on concurrency. Larger values for the chunksize cause the dump to
+use more memory, and usually hurt concurrency noticably.
 .TP
 .B \-d
 increase the debug level by one. Debug messages are written to standard
 error.
+
+.TP
+.BI \-f conffile
+use
+.I conffile
+as the meteo configuration file. See 
+.BR meteo.xml (5)
+for the configuration file syntax.
+
 .TP
 .BI \-l logurl
 send log messages to the destination described by the
 .IR logurl . See
 .BR meteo (1)
 for a description of the possible formats for log URLs.
-.TP
-.BI \-f filebase
-write the data to files named
-.IB filebase stationdata
-and
-.IB filebase averages.
-.I filebase
-does not need to be an existing directory, a path like /var/tmp/Altendorf-
-is ok, it will case the data to be written to
-/var/tmp/Altendorf-stationdata and /var/tmp/Altendorf-averages.
-.TP
-.BI \-h host
-connect to a MySQL server on host
-.IR host .
-.TP
-.BI \-b database
-connect to database named
-.IR database .
-.TP
-.BI \-u user
-connect to the database a user
-.IR user .
-.TP
-.BI \-p password
-use password
-.I password
-to authenticate to the dabase.
+
 .TP
 .BI \-s station
 name of the station to dump. This option can be given several times,
 .BR meteodbdump (1)
 will dump the data for each of the stations in turn. Data for all stations
 will be written to the same files.
-.TP
-.BI \-c chunksize
-read at most 
-.I chunksize 
-records from the database at one time. By default, 1440 records are
-read in a single query. This reduces 
-.BR metedbdump (1)'s
-impact on concurrency. Larger values for the chunksize cause the dump to
-use more memory, and usually hurt concurrency noticably.
+
+.SH BUGS
+.BR meteodbdump (1)
+terminates if a single query fails. This makes it impossible to dump
+corrupted databases.
 
 .SH "SEE ALSO"
-.BR meteo (1)
+.BR meteo (1),
+.BR meteo.sql (5),
+.BR meteo.xml (5)
 
 .SH AUTHOR
 Dr. Andreas Mueller <afm@othello.ch>
