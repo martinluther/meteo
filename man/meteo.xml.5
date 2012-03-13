@@ -503,7 +503,11 @@ as values. Furthermore it is possible to specify the
 attribute that contains the wind direction letters to use (in that
 sequence) for winds from south, west, north and east. No letters are
 drawn if this attribute is not present. The value usually used for
-this attribute ist "SWNE".
+this attribute ist "SWNE". Note that these letters correctly denominate
+the wind for swiss users: `Nordwind' means wind from the north, i.e.
+a wind with an azimut of 180deg. Of course, this is a wind blowing to
+the south, so some people may prefer the letter S for this direction,
+or the setting letters="NESW".
 
 .SH EXAMPLES
 The meteo.xml and meteo-60.xml included in the distribution show how these

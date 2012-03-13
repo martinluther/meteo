@@ -200,7 +200,7 @@ WMII::WMII(const std::string& stationname) : Station(stationname) {
 	// drain the channel
 	ch->drain(10);
 
-	// retrieve the calibration number from the station
+	// retrieve the rain calibration number from the station
 	unsigned char	cmd[6];
 	cmd[0] = 'W'; cmd[1] = 'R'; cmd[2] = 'D';
 	cmd[3] = 0x44; cmd[4] = 0xd6; cmd[5] = 0xd;
@@ -223,6 +223,33 @@ WMII::WMII(const std::string& stationname) : Station(stationname) {
 	// read two bytes from the channel and store as an unsigned int
 	raincal = getUnsignedShort(reply, 1);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got raincal %d", raincal);
+
+	// retrieve the pressure calibration number from the station
+	cmd[0] = 'W'; cmd[1] = 'R'; cmd[2] = 'D';
+	cmd[3] = 0x44; cmd[4] = 0x2c; cmd[5] = 0xd;
+	std::string cmdstr1((char *)cmd, 6);
+
+	// send the command through the channel
+	ch->sendString(cmdstr1);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "send WRD command to retrieve "
+		"pressure cal number");
+
+	reply = ch->recvString(3);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got %d bytes reply to WRD",
+		reply.length());
+
+	// wait for an ACK reply
+	if (ACK != reply[0]) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot read PressureCAL "
+			"number");
+		delete ch;
+		throw MeteoException("cannot read PressureCal number", "");
+	}
+
+	// read two bytes from the channel and store as a signed int
+	pressurecal = (int)getSignedShort(reply, 1);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %d", pressurecal);
+
 	delete ch;
 }
 WMII::~WMII(void) { }
@@ -308,7 +335,7 @@ HumidityValue	WMII::getOutsideHumidity(const std::string& s) const {
 PressureValue	WMII::getBarometer(const std::string& s) const {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "get pressure");
 	if (validShort(s, 8))
-		return PressureValue(getUnsignedShort(s, 8)/1000., "inHg");
+		return PressureValue((getUnsignedShort(s, 8) - pressurecal)/1000., "inHg");
 	else
 		return PressureValue("inHg");
 }

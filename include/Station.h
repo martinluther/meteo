@@ -138,6 +138,7 @@ public:
 
 class	WMII : public Station {
 	int	raincal;
+	int	pressurecal;
 public:
 	WMII(const std::string& n);
 	virtual	~WMII(void);

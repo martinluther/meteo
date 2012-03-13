@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.13 2003/08/01 00:39:46 afm Exp $
+ $Id: meteo.xml,v 1.14 2003/08/03 21:24:38 afm Exp $
 
   -->
 <meteo>
@@ -234,6 +234,12 @@
 	  <select name="v">windspeed</select>
 	  <select name="vmax">windgust</select>
 	</query>
+	<!-- note that there are some cultural differences with the wind
+	     letters below. In Switzerland, Nordwind means wind _from_ the
+	     north, which is wind with azimut 180deg. In other places, the
+	     letters may be interpreted just the other way round, so you
+	     will prefer to use letters="NESW" (pointed out by Mark Trettin)
+	  -->
 	<channel type="windbackground" scale="right"
 	  northcolor="#e0e0ff" southcolor="#ffe0e0"
 	  westcolor="#e0ffe0" eastcolor="#ffffc8"
