@@ -7,7 +7,8 @@ Main author and current maintainer:
 	Switzerland
 
 Contributors: in no particular order, email addresses withheld to protect
-	      them from spam
+	      them from spam (please contact afm@othello.ch if you want to
+              contact them directly, or try the mailing list)
 
 	Bruce Hewitson		pointed out a bug in meteodata.c
 	Walter Poxon		contributed wunderground directory
@@ -40,6 +41,19 @@ Contributors: in no particular order, email addresses withheld to protect
 				introduced when meteo started to read the
 				rain calibration number from the station. 
 				It caused rain data to be wildly incorrect.
+	Jeff Wabik		contributed many very good ideas and lots
+				of code: connected and disconnected graphs,
+				(to continue graphs through stretches where
+				there is no data, which was the normal behaviour
+				in very old releases before there was the nodata
+				stuff), the accumulation function, which is very
+				helpful for rain graphs (he had it for rain,
+				I turned it into a generic function), and
+				transparency for the nodata (I turned that into
+				transparency everywhere, one can now more easily
+				combine temperature and humidity, where hum.
+				shines through the temperature range graph where
+				necessary)
 
 --
-$Id: AUTHORS,v 1.7 2003/07/09 22:34:17 afm Exp $
+$Id: AUTHORS,v 1.8 2003/07/31 22:03:46 afm Exp $

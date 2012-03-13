@@ -230,6 +230,25 @@ Tdata	Tdata::ceil(double l) const {
 	return apply(operatorceil);
 }
 
+Tdata	Tdata::accumulate(void) const {
+	double	acc = 0.;
+	Tdata	result(interval, start, finish);
+
+	// add a point for each valid time value
+	for (int t = start; t <= finish; t += interval) {
+		tdata_t::const_iterator	i = data.find(t);
+		if (i != data.end()) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"accumulating value %d -> %f", t, i->second);
+			acc += i->second;
+		}
+		result.data[t] = acc;
+	}
+
+	// return the complete tdata object
+	return result;
+}
+
 // the limiter class is used to remove elements from a Tdata that have 
 // values below a certain limit. This is most useful in the Wind graphs
 // where it does not make sense to display azimut/speed if the wind speed

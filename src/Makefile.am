@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.22 2003/07/24 22:34:24 afm Exp $
+# $Id: Makefile.am,v 1.23 2003/07/31 22:03:46 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
@@ -29,13 +29,13 @@ test:	meteopoll
 #
 # draw standard graph
 #
+#		-f `pwd`/../conf/meteo.xml -I -p ../src/ 
 testdraw:	meteodraw
 	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin -l file:///- -d -d \
-		-f `pwd`/../conf/meteo.xml -I -p ../src/ \
-		-u "/browser/meteobrowser.php?lang=de" -m -I \
-		-L d20030718 -L m200307 -L w200327 -L y2003 \
-		-g temperature -g temperature_inside -g pressure \
-		-g radiation -g rain -g wind -g humidity -g humidity_inside 
+		-f /usr/local/etc/meteo-Gurin.xml -I -p ../src/ \
+		-u "/browser/meteobrowser.php?lang=de" -I \
+		-L m200304 \
+		-g rain 
 #
 # drawing high resolution graphs uses a different configuration file
 #

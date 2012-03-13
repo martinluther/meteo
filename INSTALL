@@ -262,6 +262,10 @@ Solaris:
     meteo code, but come from the string class implementation that comes
     with gcc.
 
+	The problem encountered with Mac OS X (SED not set correctly)
+    described below has also been reported to occur with some versions
+    of Solaris 2.6.
+
 Linux:
 	Some Linux distributions have the gd library compiled with freetype
     support. Consequently, the meteo programs must be linked against the
@@ -344,4 +348,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.18 2003/07/26 23:51:18 afm Exp $
+$Id: INSTALL,v 1.19 2003/07/31 22:03:46 afm Exp $

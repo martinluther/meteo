@@ -117,6 +117,7 @@ Axis::Axis(const Configuration& conf, const std::string& xpath,
 
 	// for the static/default Axis definition, this is all we need
 	if (type == "static") {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "static configuration");
 		return;
 	}
 
@@ -124,6 +125,7 @@ Axis::Axis(const Configuration& conf, const std::string& xpath,
 	double	origin = conf.getDouble(xpath + "/@origin", MINORIGIN);
 	if (origin == MINORIGIN) {
 		origin = first - floor(first/step) * step;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "orgin: %f", origin);
 	}
 
 	// we want at most maxtickcount ticks, but the step should be
@@ -131,19 +133,28 @@ Axis::Axis(const Configuration& conf, const std::string& xpath,
 	if (type == "dynamic") {
 		// compute a suitable step, i.e. the number of ticks should
 		// be as large as possible with the current ticklimit
+
+		// the step is a multiple of step of one of the following
+		// forms 
+		// 	    10^b * step
+		//	2 * 10^b * step
+		//	5 * 10^b * step
 		int	maxtickcount = conf.getInt(xpath + "/@maxtickcount",
 						10);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "maxtickcount = %d",
+			maxtickcount);
 		double	stepbase = pow(10.,
-				floor(log10(sc.range()/(step * maxtickcount))));
-		if ((5 * stepbase) >= (sc.range()/(step * maxtickcount))) {
-			step = 5 * stepbase * step;
+				ceil(log10(sc.range()/(step * maxtickcount))));
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "initial step = %.f, "
+			"stepbase = %f", step, stepbase);
+		step *= stepbase;
+		if ((5 * sc.range() / step) < maxtickcount) {
+			step = step / 5.;
 		}
-		if ((2 * stepbase) >= (sc.range()/(step * maxtickcount))) {
-			step = 2 * stepbase * step;
+		if ((2 * sc.range() / step) < maxtickcount) {
+			step = step / 2.;
 		}
-		if (stepbase >= (sc.range()/(step * maxtickcount))) {
-			step *= stepbase;
-		}
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "final step = %f", step);
 	}
 
 	// compute first and last anew, they must be multiples of the step
@@ -210,9 +221,10 @@ std::string	ImageMap::getImageTag(const std::string& filename) const {
 //////////////////////////////////////////////////////////////////////
 
 // drawLine -- draw a line joining the data points of data in the specified
-//             color. If a datapoint is missing, interrupt the graph
+//             color. If a datapoint is missing, interrupt the graph unless
+//             the connected flag is set
 void	GraphWindow::drawLine(bool useleftscale, const Tdata& data,
-		const Color& color, linestyle style) {
+		const Color& color, linestyle style, bool connected) {
 	GraphPoint	previous;
 	bool		haveprevious = false;
 	tdata_t::const_iterator	j;
@@ -221,7 +233,8 @@ void	GraphWindow::drawLine(bool useleftscale, const Tdata& data,
 		time_t	timeindex = getTimeFromIndex(i);
 		j = data.find(timeindex);
 		if (j == data.end()) {
-			haveprevious = false;
+			if (!connected)
+				haveprevious = false;
 		} else {
 			GraphPoint	current(j->first, j->second);
 			// draw a line if the previous point is set

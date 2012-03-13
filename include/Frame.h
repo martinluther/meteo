@@ -70,17 +70,19 @@ public:
 };
 
 class Color {
-	int	red, green, blue;
+	int	red, green, blue, alpha;
 public:
-	Color(void) { red = 255; green = 255; blue = 255; } // default white
+	Color(void) { red = 255; green = 255; blue = 255; alpha = 0; } // default white
 	Color(const std::string& hexcolorspec);
 	Color(int r, int g, int b) { red = r; green = g; blue = b; }
+	Color(int r, int g, int b, int a) {
+		red = r; green = g; blue = b; alpha = a;
+	}
 	int	getRed(void) const { return red; }
 	int	getGreen(void) const { return green; }
 	int	getBlue(void) const { return blue; }
-	int	getValue(void) const {
-		return (red << 16) + (green << 8) + blue;
-	}
+	int	getAlpha(void) const { return alpha; }
+	int	getValue(void) const;
 	std::string	getHex(void) const;
 	~Color(void) { }
 	bool	operator<(const Color& c) const {

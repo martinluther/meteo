@@ -6,7 +6,7 @@ The meteo station tools are described in
 .BR meteo (1),
 this manual page defines the configuration file format used by all
 the utilities.
-The configuration file uses XML syntax. A single file can be shared
+The configuration file users XML syntax. A single file can be shared
 among all the stations that use the same database. Under a mandatory
 top level 
 .B <meteo>
@@ -16,11 +16,6 @@ element and one or more
 .B <station>
 elements are expected. Their contents are described in the sections
 below.
-Version 0.8.0 introduced the
-.B <graphs>
-element that contains descriptions of the graphs. The new XML syntax allows
-for much more flexibility, only the general layout of the graphs is fixed.
-For details, see the section GRAPH CONFIGURATION below.
 
 .SH "DATABASE CONFIGURATION"
 The
@@ -183,9 +178,6 @@ contents of the station tag:
     </unit>
 .fi
 
-<<<<<<< meteo.xml.5
-.SH "GRAPH CONFIGURATION"
-=======
 The unit tag is also used for dewpoint computations. However, since the
 dewpoint class does not know for which station it has been called, it simply
 takes the first unit definition it can find, and uses that. If different
@@ -247,6 +239,16 @@ and
 .IR center ,
 with obvious meaning.
 
+.SH "COLORS"
+Every color in the graph in the produced images is configurable. The
+syntax accepts normal rgb color specifications in hex like
+#ff0000 for red, #00ff00 for green and #0000ff for blue. In addition,
+every color can carry an alpha value between 0 (opaque) and 127
+(transparent), which can be specified as a fourth byte in the color string.
+E.g. #ff00003f means semi-transparent red, #0000ff00 is opaque blue.
+It is thus possible to let the humidity graph shine through the temperature
+graph, if the are drawn in the same graph window.
+
 .SH "AXES AND SCALES"
 While the scales along the time axes are completely fixed by the interval
 and point in time, the vertical axes need to be specified by the
@@ -254,21 +256,7 @@ configuration file, or the configuration file needs to specify how to
 derive suitable scales from the data. Note that graphs that change scale
 from day to day are difficult to use in visual comparisons, so it
 is often more useful to have graphs with a constant scale.
->>>>>>> 1.5
 
-<<<<<<< meteo.xml.5
-Inside the
-.B <graphs>
-a number of graphs, each delimited by a
-.B <graph>
-tag, can be defined. Each 
-.B <graph>
-tag contains a name attribute that allows to specify the graph to be drawn
-to the
-.BR meteodraw (1)
-program.
-The graph element may have the following attributes:
-=======
 The
 .BR meteodraw (1)
 program understands the <leftaxis> and <rightaxis> tags to specify
@@ -289,30 +277,15 @@ other axis definitions for the same graph.
 There are four possible types of scales, specified by the value of the
 .B type attribute:
 
->>>>>>> 1.5
 .TP
-<<<<<<< meteo.xml.5
-height
-The height of the PNG image produced, defaults to 500.
-=======
 .BI type=" static"
 The scale is fixed, data falling outside of the range is not displayed.
 
->>>>>>> 1.5
 .TP
-<<<<<<< meteo.xml.5
-width
-The width of the PNG image, defaults to 144.
-=======
 .BI type=" dynamic"
 The scale is adjusted dynamically so that all data is displayed.
 
->>>>>>> 1.5
 .TP
-<<<<<<< meteo.xml.5
-bgcolor
-The background color, defaults to white.
-=======
 .BI type=" toprange"
 This scale has a static range, but the maximum is adapted so that the
 maximum value is always visible. If the data does not show a lot of
@@ -320,37 +293,13 @@ variation, and does not use the full range, the maximum and minimum
 values are used to display a constant window to the data, that is moved
 only if data leaves this range.
 
->>>>>>> 1.5
 .TP
-<<<<<<< meteo.xml.5
-fgcolor
-The foreground color, defaults to black. The foreground color is used
-for grid lines and all text.
-=======
 .BI type=" bottomrange"
 As with previous type but for the minimum.
->>>>>>> 1.5
 
-<<<<<<< meteo.xml.5
-Inside the
-.B <graph>
-element, the following elements describe the graph. For details about each
-element see the sections below.
-=======
 .P
 The following attributes can be used to modify the scale
->>>>>>> 1.5
 
-<<<<<<< meteo.xml.5
-.TP
-leftlabel, rightlabel
-Fix the string to be displayed at the left or right of the graph, usually
-indicating the type of data displayed along the vertical axis and the 
-units used.
-.TP
-leftaxis, rightaxis
-These elements specify the scale and how the vertical 
-=======
 .TS
 tab(&);
 l l.
@@ -465,6 +414,7 @@ cos&see cos(3)
 tan&see tan(3)
 ceil&cut off data at maximum value
 floor&cut off data at minimum value
+accumulate&compute sum of all values up to a point in time
 .TE
 
 The last two functions take an additional attribute limit. The ceil
@@ -513,6 +463,15 @@ windbackground&show wind direction colors
 .TE
 
 The
+.I curve
+type has an additional option
+.IR connected ,
+which defaults to no. If set to yes, the curve drawn by
+.BR meteodraw (1)
+interpolates accross time intervals where data is missing.
+The default is to only draw a line where we do have data.
+
+The
 .I range
 type needs two map names to fill the range between them with a color.
 The attributes nameupper and namelower set the name of the map to
@@ -550,7 +509,6 @@ this attribute ist "SWNE".
 The meteo.xml and meteo-60.xml included in the distribution show how these
 elements are used to produce the standard graphs as they can bee seen
 on the home page of the meteo package, http://meteo.othello.ch/.
->>>>>>> 1.5
 
 .SH BUGS
 There is no tool to verify the correctness of the configuration file.

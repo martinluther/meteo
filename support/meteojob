@@ -5,7 +5,7 @@
 # Note: this script assumes the average table has correctly been filled
 #       e.g. using the meteoavg program
 #
-# $Id: meteojob,v 1.4 2003/06/13 00:55:29 afm Exp $
+# $Id: meteojob,v 1.5 2003/08/01 00:01:52 afm Exp $
 #
 station=Altendorf
 s=`/usr/local/bin/date +%s`
@@ -15,7 +15,11 @@ for interval in 300 1800 7200 86400
 do
 	if [ `expr $s % $interval` -eq 0 ]
 	then
-		/usr/local/bin/meteograph -s ${station} -a "$@" ${interval}
+		/usr/local/bin/meteodraw -s ${station}
+			-g temperature -g temperature_inside -g rain	\
+			-g wind -f /usr/local/etc/meteo.xml		\
+			-c /usr/local/apache/htdocs/meteo.othello.ch/meteo \
+			"$@" ${interval}
 	fi
 done
 

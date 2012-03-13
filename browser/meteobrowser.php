@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.18 2003/07/27 13:07:21 afm Exp $
+//   $Id: meteobrowser.php,v 1.19 2003/08/01 00:39:46 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -305,6 +305,7 @@ foreach ($graphs as $graph) {
 	$cmd = $basecmd." -g $graph -I -i";
 	system($cmd);
 ?>
+	</td>
 	<td valign="top"><? echo gettext($explanation[$graph]) ?></td>
 	</tr>
 <?php

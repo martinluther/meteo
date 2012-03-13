@@ -73,6 +73,7 @@ public:
 	Tdata	floor(double limit) const;
 	Tdata	limit(double l) const;
 	Tdata	apply(double (*func)(double)) const;
+	Tdata	accumulate(void) const;
 
 	// generic algorithm: aply a binary function to the data
 	friend Tdata	apply2(double (*func)(double, double), const Tdata& a,

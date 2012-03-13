@@ -52,25 +52,42 @@ Color::Color(const std::string& hexcolorspec) {
 		cs = hexcolorspec.substr(1);
 	}
 	// check that the length is ok, throw exception otherwise
-	if (cs.length() != 6) {
+	if ((cs.length() != 6) && (cs.length() != 8)) {
 		mdebug(LOG_ERR, MDEBUG_LOG, 0, "illegal web color "
 			"specification: [%s]", hexcolorspec.c_str());
 		throw MeteoException("illegal color specification",
 			"[" + hexcolorspec + "]");
 	}
+
 	// split the color specification into three strings, and convert
 	// every piece from hex to decimal
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "converting %s to rgb", cs.c_str());
 	red = strtol(cs.substr(0, 2).c_str(), NULL, 16);
 	green = strtol(cs.substr(2, 2).c_str(), NULL, 16);
 	blue = strtol(cs.substr(4, 2).c_str(), NULL, 16);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d/%d/%d", hexcolorspec.c_str(),
-		red, green, blue);
+
+	// retrieve the alpha channel if present
+	if (cs.length() == 8) {
+		alpha = strtol(cs.substr(6, 2).c_str(), NULL, 16);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d/%d/%d/%d",
+			hexcolorspec.c_str(), red, green, blue, alpha);
+	} else {
+		alpha = 0;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d/%d/%d",
+			hexcolorspec.c_str(), red, green, blue);
+	}
+}
+
+int	Color::getValue(void) const {
+	return gdTrueColorAlpha(red, green, blue, alpha);
 }
 
 std::string	Color::getHex(void) const {
 	char	buffer[80];
 	snprintf(buffer, sizeof(buffer), "#%02x%02x%02x", red, green, blue);
+	if (alpha > 0) {
+		snprintf(buffer + 7, sizeof(buffer) - 7, "%02x", alpha);
+	}
 	return std::string(buffer);
 }
 
@@ -95,7 +112,6 @@ Label::Label(const Configuration& conf, const std::string& xpath) {
 class	frame_internals {
 	Dimension		dimension;
 	gdImagePtr		gd;
-	std::map<Color, int>	colorindexmap;
 	int			ls[6]; 	// linestyle
 	int			refcount;
 public:
@@ -112,7 +128,7 @@ public:
 	// color table access
 	int	getColorIndex(const Color& color);
 	int	addColor(const Color& color);
-	int	replaceColor(int colorindex, const Color& color);
+	int	setBackground(const Color& color);
 
 	// drawing and writing
 	void	setLinestyle(const Color& c, linestyle style);
@@ -133,9 +149,8 @@ public:
 frame_internals::frame_internals(const Dimension& dim) : dimension(dim) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating frame %d/%d",
 		dim.getWidth(), dim.getHeight());
-	gd = gdImageCreate(dimension.getWidth(), dimension.getHeight());
-	addColor(Color(255, 255, 255)); // white
-	addColor(Color(0, 0, 0)); // black
+	gd = gdImageCreateTrueColor(dimension.getWidth(),
+		dimension.getHeight());
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "frame created");
 }
 
@@ -146,113 +161,42 @@ frame_internals::~frame_internals(void) {
 int	frame_internals::getColorIndex(const Color& color) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "finding color index for %s",
 		color.getHex().c_str());
-	// first check whether color is in the colorindex table
-	std::map<Color, int>::const_iterator	p = colorindexmap.find(color);
-	if (colorindexmap.end() == p) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "color not found, adding");
-		return addColor(color);
-	}
-
-	// return the color index
-	return p->second;
+	return color.getValue();
 }
 
 int	frame_internals::addColor(const Color& color) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding color %s",
 		color.getHex().c_str());
-	// first check whether the color already exists in the table
-	std::map<Color, int>::const_iterator	i = colorindexmap.find(color);
-	if (colorindexmap.end() != i) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "color %s already in table",
-			color.getHex().c_str());
-		return i->second;
-	}
-
-	// add the color to the gd object
-	int	colorindex = gdImageColorAllocate(gd, color.getRed(),
-			color.getGreen(), color.getBlue());
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding color %s -> %d",
-		color.getHex().c_str(), colorindex);
-	return colorindexmap[color] = colorindex;
+	return color.getValue();
 }
 
-// predicate class to support searching for a given image (color index)
-// in the colorindexmap (search for find_if in the replaceColor method below)
-class	has_image {
-	int	img;
-public:
-	has_image(int i) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting up search for %d", i);
-		img = i;
-	}
-	bool	operator()(const std::pair<Color,int>& p) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "comparing (%s,%d) with %d",
-			p.first.getHex().c_str(), p.second, img);
-		return img == p.second;
-	}
-};
-
-int	frame_internals::replaceColor(int colorindex, const Color& color) {
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "replacing color %d -> %s", colorindex,
-		color.getHex().c_str());
-	// find the index in the colorindexmap
-	std::map<Color, int>::iterator i;
-	for (i = colorindexmap.begin(); i != colorindexmap.end(); i++) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d",
-			i->first.getHex().c_str(), i->second);
-	}
-	i = find_if(colorindexmap.begin(), colorindexmap.end(),
-		has_image(colorindex));
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "find_if complete");
-	if (i != colorindexmap.end()) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "color index found, color %s",
-			i->first.getHex().c_str());
-		colorindexmap.erase(i);
-	} else {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "colorindex %d does not exist",
-			colorindex);
-		throw MeteoException("colorindex does not exist", "");
-	}
-
-	// deallocate the color and reallocate a new color
-	gdImageColorDeallocate(gd, colorindex);
-	colorindex = gdImageColorAllocate(gd, color.getRed(), color.getGreen(),
-		color.getBlue());
-	colorindexmap[color] = colorindex;
-
-	// display the new color map
-	for (i = colorindexmap.begin(); i != colorindexmap.end(); i++) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s -> %d",
-			i->first.getHex().c_str(), i->second);
-	}
-	return colorindex;
+int	frame_internals::setBackground(const Color& color) {
+	int	ci = getColorIndex(color);
+	gdImageFilledRectangle(gd, 0, 0,
+		dimension.getWidth() - 1, dimension.getHeight() - 1, ci);
+	return ci;
 }
 
 void	frame_internals::setLinestyle(const Color& color, linestyle style) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting linestyle %d with color %s",
 		style, color.getHex().c_str());
+
 	// first retrieve the color
-	std::map<Color, int>::const_iterator	i = colorindexmap.find(color);
-	if (i == colorindexmap.end()) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "undefined color");
-		throw MeteoException("undefined color", color.getHex());
-	}
+	int	ci = color.getValue();
 
 	// the prepare the line style array
 	switch (style) {
 	case solid:
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "solid color %d", i->second);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "solid color %d", ci);
 		break;
 	case dotted:
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting dotted color %d",
-			i->second);
-		ls[0] = i->second; ls[1] = ls[2] = gdTransparent;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting dotted color %d", ci);
+		ls[0] = ci; ls[1] = ls[2] = gdTransparent;
 		gdImageSetStyle(gd, ls, 3);
 		break;
 	case dashed:
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting dashed color %d",
-			i->second);
-		ls[0] = ls[1] = ls[2] = ls[3] = i->second;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting dashed color %d", ci);
+		ls[0] = ls[1] = ls[2] = ls[3] = ci;
 		ls[4] = ls[5] = gdTransparent;
 		gdImageSetStyle(gd, ls, 6);
 		break;
@@ -419,7 +363,6 @@ void	Frame::setupInternals(void) {
 }
 
 void	Frame::setForeground(const Color& c) {
-	fi->replaceColor(1, c);
 	foreground = c;
 }
 
@@ -429,7 +372,7 @@ void	Frame::setForeground(const std::string& c) {
 }
 
 void	Frame::setBackground(const Color& c) {
-	fi->replaceColor(0, c);
+	fi->setBackground(c);
 	background = c;
 }
 

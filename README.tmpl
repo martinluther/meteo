@@ -52,11 +52,8 @@ GD	To compile this package, you will need a complete installation of
 	GD already installed may also need the freetype libraries, as GD
 	may be built with freetype support.
 
-	If you absolutely cannot work with GD2, you can trick the configure
-	script into thinking it has found GD2 by providing a replacement
-	for gdlib-config. It should return reasonable values for the options
-	--version, --libs, --ldflags and --cflags. The version is not
-	checked by the configure script.
+	Starting with 0.8.2 it is no longer possible to use gd1, as the
+	alpha support only present in gd2 is no used.
 
 	(SuSE 8.2: add gdlib-devel)
 
@@ -163,4 +160,4 @@ Thanks to all those who have helped.
 
 
 --
-$Id: README.tmpl,v 1.7 2003/07/24 22:34:24 afm Exp $
+$Id: README.tmpl,v 1.8 2003/07/31 22:20:42 afm Exp $

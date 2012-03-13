@@ -1,3 +1,9 @@
+                _                    ___   ___   ____  
+ _ __ ___   ___| |_ ___  ___        / _ \ ( _ ) |___ \ 
+| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | |/ _ \   __) |
+| | | | | |  __/ ||  __/ (_) |_____| |_| | (_) | / __/ 
+|_| |_| |_|\___|\__\___|\___/       \___(_)___(_)_____|
+                                                       
 
 What's this?
 ------------
@@ -52,11 +58,8 @@ GD	To compile this package, you will need a complete installation of
 	GD already installed may also need the freetype libraries, as GD
 	may be built with freetype support.
 
-	If you absolutely cannot work with GD2, you can trick the configure
-	script into thinking it has found GD2 by providing a replacement
-	for gdlib-config. It should return reasonable values for the options
-	--version, --libs, --ldflags and --cflags. The version is not
-	checked by the configure script.
+	Starting with 0.8.2 it is no longer possible to use gd1, as the
+	alpha support only present in gd2 is no used.
 
 	(SuSE 8.2: add gdlib-devel)
 
@@ -163,4 +166,4 @@ Thanks to all those who have helped.
 
 
 --
-$Id: README,v 1.32 2003/07/26 23:51:18 afm Exp $
+$Id: README,v 1.34 2003/08/01 00:01:52 afm Exp $

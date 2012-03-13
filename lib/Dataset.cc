@@ -133,6 +133,10 @@ static const Tdata	processNode(Dataset *dset, xmlNodePtr cur) {
 			xmlFree(limitname);
 			return d.floor(limit);
 		}
+		if ((!xmlStrcmp(name, (const xmlChar *)"accumulate"))) {
+			xmlFree(name);
+			return d.accumulate();
+		}
 	}
 
 	// binary function node: there must be exactly two children, the

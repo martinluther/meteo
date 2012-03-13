@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.11 2003/07/29 10:47:36 afm Exp $
+ $Id: meteo.xml,v 1.13 2003/08/01 00:39:46 afm Exp $
 
   -->
 <meteo>
@@ -279,6 +279,7 @@
     <graph name="rain" height="144" width="500" bgcolor="#ffffff"
 	fgcolor="#000000">
       <leftlabel align="center">Precipitation (mm)</leftlabel>
+      <rightlabel align="center">Total rain (mm)</rightlabel>
       <leftaxis interval="300" type="static" min="0" max="6"
 	first="0" last="6" step="1" format="%.0f"
 	ticks="yes" gridlines="yes"/>
@@ -288,13 +289,22 @@
       <leftaxis type="static" min="0" max="30"
 	first="0" last="30" step="10" format="%.0f"
 	ticks="yes" gridlines="yes"/>
+      <rightaxis type="dynamic" minname="totalrain" maxname="totalrain"
+	origin="0" maxtickcount="10" step="10" ticks="yes" gridlines="no"
+	format="%3.0f" />
       <graphwindow llx="55" lly="19" urx="455" ury="139"/>
       <channels>
 	<query>
 	  <select name="rain">rain</select>
+	  <data name="totalrain">
+	    <function name="accumulate">
+	      <value name="rain"/>
+	    </function>
+	  </data>
 	</query>
 	<channel color="#0000ff" type="histogram" scale="left" name="rain"/>
-	<channel color="#e6e6e6" type="nodata" name="rain"/>
+	<channel color="#00ffff3f" type="curve" scale="right" name="totalrain"/>
+	<channel color="#f3f3f33f" type="nodata" name="rain"/>
       </channels>
     </graph>
 

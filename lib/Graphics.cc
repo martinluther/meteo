@@ -61,9 +61,12 @@ static void	drawChannel(xmlNodePtr x, GraphWindow *gw, const Dataset *ds) {
 	if (type == "curve") {
 		// draw a continuous curve for this parameter
 		std::string	name = xmlGetAttrString(x, "name");
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing curve for %s",
+		std::string	connected = xmlGetAttrString(x, "connected");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing %s curve for %s",
+			(connected == "yes") ? "connected" : "disconnected",
 			name.c_str());
-		gw->drawLine(useleftscale, ds->getData(name), color, solid);
+		gw->drawLine(useleftscale, ds->getData(name), color, solid,
+			(connected == "yes"));
 		return;
 	}
 	if (type == "histogram") {

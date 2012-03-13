@@ -1,3 +1,14 @@
+Release 0.8.2:
+	* implemented an idea suggested by Jeff Wabik: accumulation function
+	* implemented transparency (to make graphs visible behind nodata gray,
+	  also somewhat suggested by Jeff Wabik)
+	* implemented connected graphs, optionally graphs can be continued
+	  accross gaps
+	* fix an important bug in the code that dynamically determines the
+	  tick step size from the maxtickcount value
+	* fix meteojob an prevent it from overwriting an active meteojob
+	  script
+
 Release 0.8.1:
 	* fix missing border="0" statements in meteobrowser.php
 	* fix missing includes in meteolabel.cc and meteodbdump.cc, so that
@@ -314,4 +325,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.67 2003/07/27 13:31:09 afm Exp $
+$Id: ChangeLog,v 1.69 2003/08/01 00:01:52 afm Exp $

@@ -240,7 +240,7 @@ public:
 
 	// handle graphing for complete time series, i.e. maps time_t -> double
 	void	drawLine(bool useleftscale, const Tdata&, const Color&,
-			linestyle style);
+			linestyle style, bool connected);
 	void	drawHistogram(bool useleftscale, const Tdata&, const Color&);
 	void	drawRange(bool useleftscale, const Tdata& lower,
 			const Tdata& upper, const Color&);
