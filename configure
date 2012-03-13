@@ -1885,7 +1885,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=meteo
- VERSION=0.9.12
+ VERSION=0.9.13
 
 
 cat >>confdefs.h <<_ACEOF
@@ -24472,7 +24472,7 @@ HTMLDIR="${with_html_dir}"
 CONFIGDATE=`date +"%B %d, %Y" | tr 'A-Z' 'a-z'`
 
 
-                                                                                                                                                                ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile browser/Makefile browser/po/Makefile db/Makefile man/Makefile man/meteo.1 html/news.xml html/install.xml"
+                                                                                                                                                                          ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile wunderground/Makefile browser/Makefile browser/po/Makefile db/Makefile man/Makefile gallery/Makefile man/meteo.1 html/news.xml html/install.xml"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -25057,6 +25057,7 @@ do
   "browser/po/Makefile" ) CONFIG_FILES="$CONFIG_FILES browser/po/Makefile" ;;
   "db/Makefile" ) CONFIG_FILES="$CONFIG_FILES db/Makefile" ;;
   "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
+  "gallery/Makefile" ) CONFIG_FILES="$CONFIG_FILES gallery/Makefile" ;;
   "man/meteo.1" ) CONFIG_FILES="$CONFIG_FILES man/meteo.1" ;;
   "html/news.xml" ) CONFIG_FILES="$CONFIG_FILES html/news.xml" ;;
   "html/install.xml" ) CONFIG_FILES="$CONFIG_FILES html/install.xml" ;;

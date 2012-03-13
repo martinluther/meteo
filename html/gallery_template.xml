@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!--
+
+  gallery_template.xml	XML template for registration of your meteo installation
+			in the gallery
+
+  (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+  $Id: gallery_template.xml,v 1.1 2004/04/30 13:25:13 afm Exp $
+
+  -->
+
+<meteo-registration>
+  <!-- the name of your station, usually the name you also use in your
+       meteo.xml -->
+  <name></name>
+  <location>
+    <!-- (closes) town or village for your station (I know that some
+         stations are almost in the wilderness, this item is meant to
+	 help someone find your station on a map -->
+    <city></city>
+    <!-- state/province/canton if applicable -->
+    <state></state>
+    <!-- country (are there any stations in international waters? :-) -->
+    <country></country>
+    <!-- longitute of your station as a decimal number, positive for
+         locations east of Grenwich, negative for the western hemisphere -->
+    <longitude></longitude>
+    <!-- latitude of your station, positive for northern hemisphere,
+	 negative for southern hemisphere -->
+    <latitude></latitude>
+  </location>
+  <!-- contact information if you want to enable people to contact you.
+       note that any email addresses you enter here will show up on the
+       gallery page unchanged. If you want to protect yourself from
+       spam, use some kind of obfuscation to confuse email address
+       collectors -->
+  <contact></contact>
+  <!-- comments you have on your station or on meteo -->
+  <comments></comments>
+  <technical-info>
+    <!-- the station type is the string you use in the type element in
+	 meteo.xml -->
+    <station-type></station-type>
+    <!-- the connection method you are using, serial, maybe with more info
+         about the serial hardware connected to your computer, or via a
+         terminal or device server -->
+    <connection></connection>
+    <!-- special sensors that are not included with the base version of
+	 the station, e.g. additional temp/hum sensors, soil moisture and
+	 temperature, solar/uv sensors that turn a VantagePro int VantagePro
+	 Plus -->
+    <additional-sensors></additional-sensors>
+  </technical-info>
+  <urls>
+    <!-- Use the url tag to point to a page displaying data collected or
+         graphed by meteo -->
+    <url></url>
+    <!-- if you make the browser publicly available, please enter the
+	 entry page for the browser here -->
+    <browser-url></browser-url>
+    <!-- if you would like to provide additional information about your meteo
+	 installation, like a page describing your special setup, or the
+	 special sensors you have attached, or the strange communication
+	 restrictions you have to deal with, please specify a link to it
+	 using the info-url tag -->
+    <info-url></info-url>
+  </urls>
+</meteo-registration>
+<!-- sample registrations: -->
+<!--
+<meteo-registration>
+  <name>Altendorf</name>
+  <location>
+    <city>Altendorf</city>
+    <state>SZ</state>
+    <country>Switzerland</country>
+    <longitude></longitude>
+    <latitude></latitude>
+  </location>
+  <contact>Dr. Andreas M&uuml;ller, http://www.othello.ch</contact>
+  <comment>This was the prototype station that started it all</comment>
+  <technical-info>
+    <station-type>WMII</station-type>
+    <connection>via UDS-10 device server</connection>
+  </technical-info>
+  <urls>
+    <url>http://meteo.othello.ch/</url>
+    <browser-url>http://meteo.othello.ch/meteo/meteobrowser.php</browser-url>
+    <info-url>http://meteo.othello.ch/</info-url>
+  </urls>
+</meteo-registration>
+<meteo-registration>
+  <name>Gurin</name>
+  <location>
+    <city>Bosco/Gurin</city>
+    <state>TI</state>
+    <country>Switzerland</country>
+    <longitude></longitude>
+    <latitude></latitude>
+  </location>
+  <contact>Dr. Andreas M&uuml;ller, http://www.othello.ch</contact>
+  <comment>Altendorf was built as a prototype for the station in Bosco/Gurin,
+    which as originally intended for tourist information. However, the
+    temperature graphs were considered to sophisticated by the marketing types,
+    and are no longer shown on the tourist information page of Bosco/Gurin.
+  </comment>
+  <technical-info>
+    <station-type>VantagePro</station-type>
+    <connection>via UDS-10 device server</connection>
+    <additional-sensors>solar, uv</additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://meteo.othello.ch/</url>
+    <browser-url>http://meteo.othello.ch/meteo/meteobrowser.php</browser-url>
+    <info-url>http://meteo.othello.ch/</info-url>
+  </urls>
+</meteo-registration>
+-->

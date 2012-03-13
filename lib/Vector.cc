@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Vector.cc,v 1.11 2004/02/25 23:48:06 afm Exp $
+ * $Id: Vector.cc,v 1.12 2004/04/30 13:25:13 afm Exp $
  */
 #include <Vector.h>
 #include <math.h>
@@ -18,9 +18,9 @@ Vector::Vector(double xx, double yy) {
 	x = xx; y = yy;
 }
 
-Vector::Vector(double r, unsigned short azideg, bool azinotarg) {
+Vector::Vector(double r, double azideg, bool azinotarg) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating Vector from r = %f, "
-		"azideg =%f", r, azideg);
+		"azideg = %f", r, azideg);
 	double  p = PI * azideg/180.;
 	if (azinotarg) {
 		y = r * cos(p);

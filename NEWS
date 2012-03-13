@@ -1,3 +1,6 @@
+0.9.13	minor bug in meteobrowser.php
+	gallery pages
+
 0.9.12	some minor fixes, plus a security fix: remote code execution in
 	meteobrowser.php because of missing escapeshellcmd
 
@@ -36,4 +39,4 @@
 	contributions: Jeff Wabik (new derived value computations).
 
 --
-$Id: NEWS,v 1.27 2004/04/28 19:35:15 afm Exp $
+$Id: NEWS,v 1.28 2004/04/30 13:25:13 afm Exp $

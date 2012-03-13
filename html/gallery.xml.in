@@ -66,62 +66,6 @@ included in the list below. You can simplify my taks if you fill in the
 it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
 </p>
 
-<table>
-
-  <tr><td><strong>Name:</strong></td><td><strong>Altendorf</strong></td></tr>
-  <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
-    Altendorf,
-
-    SZ,
-
-    Switzerland,
-
-    NaN,
-
-    NaN
-  </td></tr>
-  <tr><td><strong>Contact:</strong></td><td>Dr. Andreas M&#xFC;ller, http://www.othello.ch</td></tr>
-  <tr><td><strong>Comments:</strong></td><td>This was the prototype station that started it all</td></tr>
-  
-    <tr><td><strong>Station type:</strong></td><td>WMII</td></tr>
-    <tr><td><strong>Connection:</strong></td><td>via UDS-10 device server</td></tr>
-  
-  
-    <tr><td><strong>Web:</strong></td><td>http://meteo.othello.ch/</td></tr>
-    <tr><td><strong>Browser:</strong></td><td><a href="http://meteo.othello.ch/meteo/meteobrowser.php">http://meteo.othello.ch/meteo/meteobrowser.php</a></td></tr>
-    <tr><td><strong>Additional info:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
-  
-<tr colspan="2"><td>&#xA0;</td></tr>
-
-  <tr><td><strong>Name:</strong></td><td><strong>Gurin</strong></td></tr>
-  <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
-    Bosco/Gurin,
-
-    TI,
-
-    Switzerland,
-
-    8.5E,
-
-    46.3N
-  </td></tr>
-  <tr><td><strong>Contact:</strong></td><td>Dr. Andreas M&#xFC;ller, http://www.othello.ch</td></tr>
-  <tr><td><strong>Comments:</strong></td><td>Altendorf was built as a prototype for the station in Bosco/Gurin,
-    which was originally intended for tourist information. However, the
-    temperature graphs were considered too sophisticated by the marketing types,
-    and are no longer shown on the tourist information page of Bosco/Gurin.
-  </td></tr>
-  
-    <tr><td><strong>Station type:</strong></td><td>VantagePro</td></tr>
-    <tr><td><strong>Connection:</strong></td><td>via UDS-10 device server</td></tr>
-    <tr><td><strong>Additional sensors:</strong></td><td>solar, uv</td></tr>
-  
-  
-    <tr><td><strong>Web:</strong></td><td>http://meteo.othello.ch/</td></tr>
-    <tr><td><strong>Browser:</strong></td><td><a href="http://meteo.othello.ch/meteo/meteobrowser.php">http://meteo.othello.ch/meteo/meteobrowser.php</a></td></tr>
-    <tr><td><strong>Additional info:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
-  
-
-</table>
+GALLERY
 
 </page>

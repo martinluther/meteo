@@ -3,11 +3,12 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.42 2004/03/01 10:07:06 afm Exp $
+# $Id: Makefile.am,v 1.43 2004/04/30 13:25:13 afm Exp $
 #
 VERSION = @VERSION@
 
-SUBDIRS = include lib src conf html browser db doc man support wunderground
+SUBDIRS = include lib src conf html browser db doc man support \
+	wunderground gallery
 BUILTSOURCES = README
 EXTRA_DIST = shtool README.tmpl SETUP configureit BUGS UPGRADE
 

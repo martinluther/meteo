@@ -1,0 +1,26 @@
+<meteo-registration>
+  <name>Gurin</name>
+  <location>
+    <city>Bosco/Gurin</city>
+    <state>TI</state>
+    <country>Switzerland</country>
+    <longitude>8.5</longitude>
+    <latitude>46.3</latitude>
+  </location>
+  <contact>Dr. Andreas M&#xFC;ller, http://www.othello.ch</contact>
+  <comment>Altendorf was built as a prototype for the station in Bosco/Gurin,
+    which was originally intended for tourist information. However, the
+    temperature graphs were considered too sophisticated by the marketing types,
+    and are no longer shown on the tourist information page of Bosco/Gurin.
+  </comment>
+  <technical-info>
+    <station-type>VantagePro</station-type>
+    <connection>via UDS-10 device server</connection>
+    <additional-sensors>solar, uv</additional-sensors>
+  </technical-info>
+  <urls>
+    <url>http://meteo.othello.ch/</url>
+    <browser-url>http://meteo.othello.ch/meteo/meteobrowser.php</browser-url>
+    <info-url>http://meteo.othello.ch/</info-url>
+  </urls>
+</meteo-registration>

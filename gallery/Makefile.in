@@ -34,16 +34,15 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-subdir = html
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/install.xml.in $(srcdir)/news.xml.in
+subdir = gallery
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = news.xml install.xml
+CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -165,21 +164,9 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.16 2004/04/30 13:25:13 afm Exp $
+# $Id: Makefile.am,v 1.1 2004/04/30 13:25:13 afm Exp $
 #
-HTML = ack.html gallery.html prereq.html install.html util.html 	\
-	news.html about.html config.html gallery.html
-
-HTMLFILES = meteodata.html meteo-install.html meteo.css $(HTML)
-IMAGES = meteo.jpg
-TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../INSTALL \
-	../COPYING ../SETUP
-
-EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.xml	\
-	about.xml ack.xml config.xml news.xml.in prereq.xml util.xml 	\
-	$(IMAGES) meteo.xsl $(HTML) gallery_template.xml 		\
-	gallery.xml.in buildgallery.sh
-
+EXTRA_DIST = Altendorf.xml Gurin.xml
 all: all-am
 
 .SUFFIXES:
@@ -192,9 +179,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  html/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  gallery/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  html/Makefile
+	  $(AUTOMAKE) --gnu  gallery/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -212,10 +199,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-news.xml: $(top_builddir)/config.status $(srcdir)/news.xml.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-install.xml: $(top_builddir)/config.status $(srcdir)/install.xml.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -300,11 +283,13 @@ dvi: dvi-am
 
 dvi-am:
 
+html: html-am
+
 info: info-am
 
 info-am:
 
-install-data-am: install-data-local
+install-data-am:
 
 install-exec-am:
 
@@ -335,30 +320,13 @@ uninstall-am: uninstall-info-am
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-data-local install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	uninstall uninstall-am uninstall-info-am
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-info-am
 
-
-install-data-local:	html
-	@if [ ! -z "$(HTMLDIR)" ];					\
-	then								\
-		echo "installing the HTML documentation in $(HTMLDIR)";	\
-		mkdir -p "$(HTMLDIR)";					\
-		cp $(HTMLFILES) $(TEXTFILES) $(IMAGES) "$(HTMLDIR)";	\
-	else								\
-		echo "info: HTML docs not installed, used --with-html-dir"; \
-	fi
-
-%.html : %.xml ; xsltproc meteo.xsl $< > $@
-
-html:	$(HTML)
-
-gallery.xml:	gallery.xml.in gallery.xsl
-	./buildgallery.sh
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

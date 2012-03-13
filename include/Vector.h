@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Vector.h,v 1.9 2004/02/25 23:52:35 afm Exp $
+ * $Id: Vector.h,v 1.10 2004/04/30 13:25:13 afm Exp $
  */
 #ifndef _Vector_h
 #define _Vector_h
@@ -19,7 +19,7 @@ class Vector {
 public:
 	// construction and destruction
 	Vector(double xx, double yy);
-	Vector(double r, unsigned short azideg, bool azinotarg);
+	Vector(double r, double azideg, bool azinotarg);
 	Vector(void) { x = 0.; y = 0.; }
 	~Vector(void) { }
 

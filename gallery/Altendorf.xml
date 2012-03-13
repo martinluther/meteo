@@ -1,0 +1,21 @@
+<meteo-registration>
+  <name>Altendorf</name>
+  <location>
+    <city>Altendorf</city>
+    <state>SZ</state>
+    <country>Switzerland</country>
+    <longitude></longitude>
+    <latitude></latitude>
+  </location>
+  <contact>Dr. Andreas M&#xFC;ller, http://www.othello.ch</contact>
+  <comment>This was the prototype station that started it all</comment>
+  <technical-info>
+    <station-type>WMII</station-type>
+    <connection>via UDS-10 device server</connection>
+  </technical-info>
+  <urls>
+    <url>http://meteo.othello.ch/</url>
+    <browser-url>http://meteo.othello.ch/meteo/meteobrowser.php</browser-url>
+    <info-url>http://meteo.othello.ch/</info-url>
+  </urls>
+</meteo-registration>
