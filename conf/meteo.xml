@@ -5,7 +5,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id$
+ $Id: meteo.xml,v 1.1 2003/05/29 20:42:09 afm Exp $
 
   -->
 <meteo>
@@ -17,6 +17,7 @@
     <writer>meteoupdate</writer>
     <writerpassword>m57cwrt</writerpassword>
     <msgqueue>/tmp/meteodb-queue</msgqueue>
+    <updatefile>/var/log/meteoupdate.log</updatefile>
     <prefix>meteo</prefix>
   </database>
 

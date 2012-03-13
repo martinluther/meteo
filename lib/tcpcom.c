@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: tcpcom.c,v 1.3 2002/11/24 23:16:48 afm Exp $
+ * $Id: tcpcom.c,v 1.4 2003/05/29 20:42:09 afm Exp $
  */
 #include <config.h>
 #include <tcpcom.h>
@@ -14,6 +14,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <netdb.h>
 #include <meteo.h>
 #include <mdebug.h>

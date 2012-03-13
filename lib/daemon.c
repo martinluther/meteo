@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: daemon.c,v 1.2 2002/01/27 21:01:42 afm Exp $
+ * $Id: daemon.c,v 1.4 2003/05/29 20:42:09 afm Exp $
  */
 #include <daemon.h>
 #include <meteo.h>
@@ -12,6 +12,9 @@
 #include <mdebug.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif /* HAVE_ALLOCA_H */
 
 int	daemonize(const char *pidfilenamepattern, const char *station) {
 	char	*pidfilename;

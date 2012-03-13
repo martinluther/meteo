@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id$
+ * $Id: colors.h,v 1.1 2003/05/29 19:03:45 afm Exp $
  */
 #ifndef _COLORS_H
 #define _COLORS_H

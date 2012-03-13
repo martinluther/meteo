@@ -14,9 +14,11 @@ meteoloop [
 .BI \-l logurl
 ] [
 .BI \-p pidfile
-] [
+] {
 .B \-q
-] [
+|
+.B \-o
+} [
 .BI \-r repeats
 ] [
 .B \-n
@@ -37,11 +39,16 @@ for all the parameters it finds over a period of one minute, and constructs
 an SQL update query to write the information into the database.
 Depending on the 
 .B \-q
-option, the query is either sent directly to the database (as specified
-in the configuration file), or to a message queue, where it will later
-be picked up by the
+and 
+.B \-o
+optionw, the query is either sent directly to the database (as specified
+in the configuration file), or to a message queue
+.RB ( \-q ),
+where it will later be picked up by the
 .BR meteodequeue (1)
-program.
+program, or appended to the file specified in the
+.I <updatefile>
+tag.
 .SH OPTIONS
 .TP
 .B \-m

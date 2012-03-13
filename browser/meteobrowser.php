@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.10 2002/11/24 22:31:06 afm Exp $
+//   $Id: meteobrowser.php,v 1.11 2003/05/04 16:31:58 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -160,6 +160,7 @@ $graphs = split(":", $graphlist[$HTTP_GET_VARS[station]]);
 // compute the names of images for the images
 $cmd = $meteograph." -s $HTTP_GET_VARS[station] -f $confpath/meteo.xml ".
 		"-c $cachedir -a -t ";
+//printf("<pre>%s</pre>\n", $cmd);
 $computegraphs = FALSE;
 foreach ($graphs as $graph) {
 	// compute the file name

@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoloop.c,v 1.9 2002/11/24 23:16:48 afm Exp $
+ * $Id: meteoloop.c,v 1.11 2003/05/29 20:42:09 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,8 +38,9 @@ extern char	*optarg;
 typedef struct loopdata_s {
 	const char	*station;
 	const char	*url;
-	const char	*queuename;
+	const char	*outname;
 	int		usequeue;
+	int		usefile;
 	int		n;
 	meteoconf_t	*mc;
 } loopdata_t;
@@ -227,10 +228,19 @@ static void	slaveloop(loopdata_t *ld) {
 	ddp = dest_new();
 	if (ld->usequeue) {
 		ddp->type = DEST_MSGQUE;
-		ddp->name = strdup(ld->queuename);
-		ddp->destdata.msgque = msgque_setup(ld->queuename);
+		ddp->name = strdup(ld->outname);
+		ddp->destdata.msgque = msgque_setup(ld->outname);
 		if (ddp->destdata.msgque < 0) {
 			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot open msg queue");
+			exit(EXIT_FAILURE);
+		}
+	} else if (ld->usefile) {
+		ddp->type = DEST_FILE;
+		ddp->name = strdup(ld->outname);
+		ddp->destdata.file = open(ld->outname,
+			O_CREAT|O_WRONLY|O_APPEND);
+		if (ddp->destdata.file < 0) {
+			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot open out file");
 			exit(EXIT_FAILURE);
 		}
 	} else {
@@ -360,7 +370,7 @@ static void	masterloop(loopdata_t *l) {
 int	main(int argc, char *argv[]) {
 	const char	*url = NULL,
 			*station = NULL,
-			*queuename = NULL;
+			*outname = NULL;
 	char		*conffilename = METEOCONFFILE;
 	loopdata_t	ld;
 	int		c, foreground = 0, usemaster = 0;
@@ -372,7 +382,7 @@ int	main(int argc, char *argv[]) {
 	ld.n = 1;
 
 	/* parse command line arguments					*/
-	while (EOF != (c = getopt(argc, argv, "dn:Ff:l:p:qw:Vms:")))
+	while (EOF != (c = getopt(argc, argv, "dn:oFf:l:p:qw:Vms:")))
 		switch (c) {
 		case 'l':
 			if (mdebug_setup("meteoloop", optarg) < 0) {
@@ -380,6 +390,13 @@ int	main(int argc, char *argv[]) {
 					argv[0]);
 				exit(EXIT_FAILURE);
 			}
+			break;
+		case 'o':
+			ld.usefile = 1;
+			if (debug)
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"sending updates to a file");
+			break;
 			break;
 		case 'd':
 			debug++;
@@ -453,8 +470,16 @@ int	main(int argc, char *argv[]) {
 
 	/* extract the information from the configuration data		*/
 	ld.url = xmlconf_get_string(ld.mc, "", "url", NULL, 0, url);
-	ld.queuename = xmlconf_get_abs_string(ld.mc, "/meteo/database/msgqueue",
-		queuename);
+	if (NULL == ld.url) {
+		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "<url> missing in config");
+		exit(EXIT_FAILURE);
+	}
+	if (ld.usequeue)
+		ld.outname = xmlconf_get_abs_string(ld.mc,
+			"/meteo/database/msgqueue", outname);
+	if (ld.usefile)
+		ld.outname = xmlconf_get_abs_string(ld.mc,
+			"/meteo/database/updatefile", outname);
 
 	/* become a daemon						*/
 	if (!foreground) {

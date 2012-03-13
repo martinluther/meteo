@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodata.h,v 1.2 2002/08/24 14:56:21 afm Exp $
+ * $Id: meteodata.h,v 1.3 2003/05/04 16:31:58 afm Exp $
  */
 #ifndef _METEODATA_H
 #define _METEODATA_H
@@ -37,7 +37,11 @@ typedef struct meteovalue {
 	time_t	mintime;
 	int	flags;
 	double	run;
+	int	valid;
 } meteovalue_t;
+extern void	meteovalue_init(meteovalue_t *);
+extern void	meteovalue_update(meteovalue_t *, meteovalue_t *);
+extern void	meteovalue_set(meteovalue_t *m, double value);
 
 typedef	struct wind {
 	double	direction;
@@ -49,14 +53,22 @@ typedef	struct wind {
 	double	x;
 	double	y;
 	int	directions[16];
+	int	valid;
 } wind_t;
+extern void	wind_init(wind_t *);
+extern void	wind_update(wind_t *, wind_t *);
+extern void	wind_set(wind_t *m, double speed, double direction);
 
 typedef struct rain {
 	int	unit;
 	double	rain;
 	double	raintotal;
 	int	flags;
+	int	valid;
 } rain_t;
+extern void	rain_init(rain_t *);
+extern void	rain_set(rain_t *r, double value);
+extern void	rain_update(rain_t *, rain_t *);
 
 #define	BAROTREND_UNKNOWN		-1
 #define BAROTREND_FALLING_RAPIDLY	0
@@ -107,17 +119,14 @@ typedef struct meteoaccess {
 #define get_data(m)			(m->get_data(m))
 #define get_update(m)			(m->get_update(m))
 
-extern void	meteovalue_set(meteovalue_t *m, double value);
-extern void	meteowind_set(wind_t *m, double speed, double direction);
-extern void	meteorain_set(rain_t *r, double value);
 extern meteodata_t	*meteodata_new(void);
 extern void	meteodata_free(meteodata_t *a);
 extern void	meteodata_update(meteodata_t *a,
-		double temperature, double temperature_inside,
-		double humidity, double humidity_inside,
-		double barometer, int barotrend,
-		double speed, double direction, double rain, double solar,
-		double uv);
+		meteovalue_t *temperature, meteovalue_t *temperature_inside,
+		meteovalue_t *humidity, meteovalue_t *humidity_inside,
+		meteovalue_t *barometer, int barotrend,
+		wind_t *wind, rain_t *rain, meteovalue_t *solar,
+		meteovalue_t *uv);
 extern void	meteodata_start(meteodata_t *a);
 extern void	meteodata_display(FILE *o, meteodata_t *a);
 

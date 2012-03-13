@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.c,v 1.4 2002/11/24 19:48:02 afm Exp $
+ * $Id: meteodequeue.c,v 1.5 2003/05/29 20:42:09 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -16,7 +16,7 @@
 #include <printver.h>
 #include <mdebug.h>
 
-static void	dequeue_one(int mq, MYSQL *mysql) {
+static void	dequeue_one(msgque_t *mq, MYSQL *mysql) {
 	char	buffer[2048];
 	int	r;
 	
@@ -38,7 +38,8 @@ static void	dequeue_one(int mq, MYSQL *mysql) {
 
 int	main(int argc, char *argv[]) {
 	MYSQL		*mysql = NULL;
-	int		c, mq, foreground = 0;
+	int		c, foreground = 0;
+	msgque_t	*mq = NULL;
 	char		*conffilename = METEOCONFFILE;
 	const char	*queuename = NULL;
 	char		*pidfilename = "/var/run/meteodequeue.pid";
@@ -109,7 +110,7 @@ int	main(int argc, char *argv[]) {
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "opening msgqueue '%s'",
 			queuename);
-	if (0 > (mq = msgque_setup(queuename))) {
+	if (NULL == (mq = msgque_setup(queuename))) {
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot open msgqueue");
 		exit(EXIT_FAILURE);
 	}

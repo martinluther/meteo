@@ -3,11 +3,12 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodata.c,v 1.4 2002/08/24 14:56:21 afm Exp $
+ * $Id: meteodata.c,v 1.5 2003/05/04 16:31:58 afm Exp $
  */
 #include <meteodata.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <meteo.h>
 #include <mdebug.h>
@@ -19,6 +20,12 @@ static double	weighted_average(double valuenow, double valuelast) {
 		(nowinterval + lastinterval);
 }
 
+/*
+ * meteovalue methods
+ */
+void	meteovalue_init(meteovalue_t *m) {
+	memset(m, 0, sizeof(meteovalue_t));
+}
 void	meteovalue_set(meteovalue_t *m, double value) {
 	m->value = weighted_average(value, m->value);
 	if (value < m->min) {
@@ -29,13 +36,34 @@ void	meteovalue_set(meteovalue_t *m, double value) {
 		m->max = value;
 		time(&m->maxtime);
 	}
+	m->valid = 1;
+}
+
+void	meteovalue_update(meteovalue_t *m, meteovalue_t *x) {
+	/* don't update if we don't have a valid value			*/
+	if (!x->valid)
+		return;
+	meteovalue_set(m, x->value);
+}
+
+/*
+ * wind methods
+ */
+void	wind_init(wind_t *m) {
+	memset(m, 0, sizeof(wind_t));
+}
+
+void	wind_update(wind_t *w, wind_t *x) {
+	if (!x->valid)
+		return;
+	wind_set(w, x->speed, x->direction);
 }
 
 #define	PI	3.1415926535
-void	meteowind_set(wind_t *m, double speed /* MPS */, double direction) {
+void	wind_set(wind_t *m, double speed /* MPS */, double direction) {
 	int	dirindex;
 	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "meteowind_set(speed = %.1f, "
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "wind_set(speed = %.1f, "
 			"direction = %.1f", speed, direction);
 	if (speed > m->speedmax) {
 		m->speedmax = speed;
@@ -55,12 +83,27 @@ void	meteowind_set(wind_t *m, double speed /* MPS */, double direction) {
 	if (dirindex < 0) dirindex = 0;
 	if (dirindex >= 16) dirindex = 0;
 	m->directions[dirindex]++;
+	m->valid = 1;
 }
 
-void	meteorain_set(rain_t *r, double value) {
+/*
+ * rain methods
+ */
+void	rain_init(rain_t *m) {
+	memset(m, 0, sizeof(rain_t));
+}
+
+void	rain_update(rain_t *r, rain_t *x) {
+	if (!x->valid)
+		return;
+	rain_set(r, r->rain);
+}
+
+void	rain_set(rain_t *r, double value) {
 	if (r->raintotal != value)
 		r->rain += (value - r->raintotal);
 	r->raintotal = value;
+	r->valid = 1;
 }
 
 meteodata_t	*meteodata_new(void) {
@@ -99,11 +142,11 @@ void	meteodata_free(meteodata_t *a) {
 }
 
 void	meteodata_update(meteodata_t *a,
-	double temperature, double temperature_inside, /* FAHRENHEIT */
-	double humidity, double humidity_inside, /* % HUMIDITY */
-	double barometer, /* IN HG */ int barotrend,
-	double speed /* MPH */, double direction /* DEGREE */,
-	double rain /* MM */, double solar /* WM2 */, double uv /* INDEX */) {
+	meteovalue_t *temperature, meteovalue_t *temperature_inside,
+	meteovalue_t *humidity, meteovalue_t *humidity_inside,
+	meteovalue_t *barometer, int barotrend,
+	wind_t *wind,
+	rain_t *rain, meteovalue_t * solar, meteovalue_t *uv) {
 	struct timeval	now;
 
 	/* get the current time to compute the time interval since the	*/
@@ -115,20 +158,21 @@ void	meteodata_update(meteodata_t *a,
 		+ (a->last.tv_usec - a->start.tv_usec)/1000000.;
 
 	/* update the rain total					*/
-	if (a->rain->raintotal < 0)
-		a->rain->raintotal = rain;
+	rain_update(a->rain, rain);
+	/*if (a->rain->raintotal < 0)
+		a->rain->raintotal = rain->raintotal;*/
 
 	/* update all the values in the meteodata_t structure		*/
-	meteovalue_set(a->temperature, temperature);
-	meteovalue_set(a->temperature_inside, temperature_inside);
-	meteovalue_set(a->humidity, humidity);
-	meteovalue_set(a->humidity_inside, humidity_inside);
-	meteovalue_set(a->barometer, barometer);
+	meteovalue_update(a->temperature, temperature);
+	meteovalue_update(a->temperature_inside, temperature_inside);
+	meteovalue_update(a->humidity, humidity);
+	meteovalue_update(a->humidity_inside, humidity_inside);
+	meteovalue_update(a->barometer, barometer);
 	a->barotrend = barotrend;
-	meteowind_set(a->wind, speed, direction);
-	meteorain_set(a->rain, rain);
-	meteovalue_set(a->solar, solar);
-	meteovalue_set(a->uv, uv);
+	wind_update(a->wind, wind);
+	rain_update(a->rain, rain);
+	meteovalue_update(a->solar, solar);
+	meteovalue_update(a->uv, uv);
 
 	/* update sample count and time of last update			*/
 	a->samples++;
@@ -151,6 +195,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->temperature->max = -10000.;
 	a->temperature->min = 10000.;
 	a->temperature->unit = UNIT_FAHRENHEIT;
+	a->temperature->valid = 0;
 
 	if (a->temperature_inside == NULL) {
 		a->temperature_inside = (meteovalue_t *)malloc(
@@ -164,6 +209,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->temperature_inside->max = -10000.;
 	a->temperature_inside->min = 10000.;
 	a->temperature_inside->unit = UNIT_FAHRENHEIT;
+	a->temperature_inside->valid = 0;
 
 	if (a->humidity == NULL) {
 		a->humidity = (meteovalue_t *)malloc(sizeof(meteovalue_t));
@@ -176,6 +222,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->humidity->max = 0.;
 	a->humidity->min = 100.;
 	a->humidity->unit = UNIT_NONE;
+	a->humidity->valid = 0;
 
 	if (a->humidity_inside == NULL) {
 		a->humidity_inside = (meteovalue_t *)malloc(
@@ -189,6 +236,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->humidity_inside->max = 0.;
 	a->humidity_inside->min = 100.;
 	a->humidity_inside->unit = UNIT_NONE;
+	a->humidity_inside->valid = 0;
 
 	if (a->barometer == NULL) {
 		a->barometer = (meteovalue_t *)malloc(sizeof(meteovalue_t));
@@ -201,6 +249,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->barometer->max = 0.;
 	a->barometer->min = 10000.;
 	a->barometer->unit = UNIT_INHG;
+	a->barometer->valid = 0;
 	a->barotrend = BAROTREND_UNKNOWN;
 
 	if (a->wind == NULL) {
@@ -216,6 +265,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->wind->unit = UNIT_MPS;
 	a->wind->x = 0.;
 	a->wind->y = 0.;
+	a->wind->valid = 0;
 
 	if (a->rain == NULL) {
 		a->rain = (rain_t *)malloc(sizeof(rain_t));
@@ -227,6 +277,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->rain->rain = 0.;
 	a->rain->raintotal = -1.;
 	a->rain->unit = UNIT_MM;
+	a->rain->valid = 0;
 
 	if (a->solar == NULL) {
 		a->solar = (meteovalue_t *)malloc(sizeof(meteovalue_t));
@@ -239,6 +290,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->solar->max = 0.;
 	a->solar->min = 65535.;
 	a->solar->unit = UNIT_WM2;
+	a->solar->valid = 0;
 
 	if (a->uv == NULL) {
 		a->uv = (meteovalue_t *)malloc(sizeof(meteovalue_t));
@@ -251,6 +303,7 @@ void	meteodata_start(meteodata_t *a) {
 	a->uv->max = 0.;
 	a->uv->min = 256.;
 	a->uv->unit = UNIT_UVINDEX;
+	a->uv->valid = 0;
 }
 
 #define	maxvalue(a, u) unitconvert(a->unit, u, a->max)
@@ -260,22 +313,26 @@ void	meteodata_start(meteodata_t *a) {
 void	meteodata_display(FILE *o, meteodata_t *a) {
 	char	*trendstring = "?";
 	fprintf(o, "parameter          value    min    max\n");
-	fprintf(o, "temperature out    %5.1f  %5.1f  %5.1f deg C\n",
+	fprintf(o, "temperature out    %5.1f  %5.1f  %5.1f deg C %s\n",
 		value(a->temperature, UNIT_CELSIUS),
 		minvalue(a->temperature, UNIT_CELSIUS),
-		maxvalue(a->temperature, UNIT_CELSIUS));
-	fprintf(o, "temperature in     %5.1f  %5.1f  %5.1f deg C\n",
+		maxvalue(a->temperature, UNIT_CELSIUS),
+		(a->temperature->valid) ? "" : "(?)");
+	fprintf(o, "temperature in     %5.1f  %5.1f  %5.1f deg C %s\n",
 		value(a->temperature_inside, UNIT_CELSIUS),
 		minvalue(a->temperature_inside, UNIT_CELSIUS),
-		maxvalue(a->temperature_inside, UNIT_CELSIUS));
-	fprintf(o, "humidity out       %5.1f  %5.1f  %5.1f %%\n",
+		maxvalue(a->temperature_inside, UNIT_CELSIUS),
+		(a->temperature_inside->valid) ? "" : "(?)");
+	fprintf(o, "humidity out       %5.1f  %5.1f  %5.1f %% %s\n",
 		value(a->humidity, UNIT_NONE),
 		minvalue(a->humidity, UNIT_NONE),
-		maxvalue(a->humidity, UNIT_NONE));
-	fprintf(o, "humidity in        %5.1f  %5.1f  %5.1f %%\n",
+		maxvalue(a->humidity, UNIT_NONE),
+		(a->humidity->valid) ? "" : "(?)");
+	fprintf(o, "humidity in        %5.1f  %5.1f  %5.1f %% %s\n",
 		value(a->humidity_inside, UNIT_NONE),
 		minvalue(a->humidity_inside, UNIT_NONE),
-		maxvalue(a->humidity_inside, UNIT_NONE));
+		maxvalue(a->humidity_inside, UNIT_NONE),
+		(a->humidity_inside->valid) ? "" : "(?)");
 	switch (a->barotrend) {
 		case BAROTREND_FALLING_RAPIDLY: trendstring = "vv"; break;
 		case BAROTREND_FALLING_SLOWLY: trendstring = "v"; break;
@@ -283,26 +340,33 @@ void	meteodata_display(FILE *o, meteodata_t *a) {
 		case BAROTREND_RISING_SLOWLY: trendstring = "^"; break;
 		case BAROTREND_RISING_RAPIDLY: trendstring = "^^"; break;
 	}
-	fprintf(o, "barometer         %6.1f %6.1f %6.1f hPa trend: %s\n",
+	fprintf(o, "barometer         %6.1f %6.1f %6.1f hPa %s trend: %s\n",
 		value(a->barometer, UNIT_HPA),
 		minvalue(a->barometer, UNIT_HPA),
-		maxvalue(a->barometer, UNIT_HPA), trendstring);
-	fprintf(o, "solar radiation   %6.1f %6.1f %6.1f W/m2\n",
+		maxvalue(a->barometer, UNIT_HPA),
+		(a->barometer->valid) ? "" : "(?)",
+		trendstring);
+	fprintf(o, "solar radiation   %6.1f %6.1f %6.1f W/m2 %s\n",
 		value(a->solar, UNIT_WM2),
 		minvalue(a->solar, UNIT_WM2),
-		maxvalue(a->solar, UNIT_WM2));
-	fprintf(o, "uv radiation       %5.1f  %5.1f  %5.1f index\n",
+		maxvalue(a->solar, UNIT_WM2),
+		(a->solar->valid) ? " " : "(?)");
+	fprintf(o, "uv radiation       %5.1f  %5.1f  %5.1f index %s\n",
 		value(a->uv, UNIT_UVINDEX),
 		minvalue(a->uv, UNIT_UVINDEX),
-		maxvalue(a->uv, UNIT_UVINDEX));
-	fprintf(o, "wind               %5.1f         %5.1f m/s\n",
+		maxvalue(a->uv, UNIT_UVINDEX),
+		(a->uv->valid) ? "" : "(?)");
+	fprintf(o, "wind               %5.1f         %5.1f m/s %s\n",
 		unitconvert(a->wind->unit, UNIT_MPS, a->wind->speed),
-		unitconvert(a->wind->unit, UNIT_MPS, a->wind->speedmax));
-	fprintf(o, "wind direction     %5.1f\n", a->wind->direction);
+		unitconvert(a->wind->unit, UNIT_MPS, a->wind->speedmax),
+		(a->wind->valid) ? "" : "(?)");
+	fprintf(o, "wind direction     %5.1f %s\n", a->wind->direction,
+		(a->wind->valid) ? "" : "(?)");
 	fprintf(o, "                   total    day\n");
-	fprintf(o, "rain               %5.1f  %5.1f mm\n",
+	fprintf(o, "rain               %5.1f  %5.1f mm %s\n",
 		unitconvert(a->rain->unit, UNIT_MM, a->rain->rain),
-		unitconvert(a->rain->unit, UNIT_MM, a->rain->raintotal));
+		unitconvert(a->rain->unit, UNIT_MM, a->rain->raintotal),
+		(a->rain->valid) ? "" : "(?)");
 	fprintf(o, "interval:          %10.6f\n",
 		(a->last.tv_sec - a->start.tv_sec)
 		+ (a->last.tv_usec - a->start.tv_usec)/1000000.);

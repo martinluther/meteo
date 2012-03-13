@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: dbupdate.h,v 1.2 2002/11/18 02:36:42 afm Exp $
+ * $Id: dbupdate.h,v 1.4 2003/05/29 20:42:09 afm Exp $
  */
 #ifndef _DBUPDATE_H
 #define _DBUPDATE_H
@@ -11,16 +11,19 @@
 #include <meteo.h>
 #include <meteodata.h>
 #include <mysql/mysql.h>
+#include <msgque.h>
 
 #define DEST_NONE	0
 #define	DEST_MYSQL	1
 #define	DEST_MSGQUE	2
+#define	DEST_FILE	3
 typedef struct	dest_s {
 	int	type;
 	char	*name;
 	union {
-		MYSQL	*mysql;
-		int	msgque;
+		MYSQL		*mysql;
+		msgque_t	*msgque;
+		int		file;
 	} destdata;
 } dest_t;
 

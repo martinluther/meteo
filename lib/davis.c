@@ -3,13 +3,14 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: davis.c,v 1.4 2002/08/24 14:56:21 afm Exp $
+ * $Id: davis.c,v 1.5 2003/05/04 16:31:58 afm Exp $
  */
 #include <meteodata.h>
 #include <davis.h>
 #include <stdlib.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <meteo.h>
 #include <mdebug.h>
 

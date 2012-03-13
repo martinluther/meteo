@@ -41,14 +41,6 @@ create table meteo.stationdata (
 	primary key (timekey, station)
 );
 
-create table meteo.windhistogram (
-	timekey 	integer not null,
-	direction	tinyint not null,
-	count		int not null,
-	speedavg	double not null,
-	primary key (timekey, direction)
-);
-
 create table meteo.averages (
 	-- identification
 	timekey			integer not null,

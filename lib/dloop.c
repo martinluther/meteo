@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dloop.c,v 1.3 2002/08/24 14:56:21 afm Exp $
+ * $Id: dloop.c,v 1.4 2003/05/04 16:31:58 afm Exp $
  */
 #include <config.h>
 #include <dloop.h>
@@ -42,9 +42,11 @@ static void	imagedump(unsigned char *image, int length) {
 static int	get_monitor_image(loop_t *l, meteodata_t *m) {
 	unsigned char	image[32];
 	unsigned char	a;
-	double		temperature, temperature_inside, humidity,
-			humidity_inside, barometer, speed, direction,
-			rain;
+	meteovalue_t	temperature, temperature_inside, humidity,
+			humidity_inside, barometer, solar, uv;
+	wind_t		wind;
+	rain_t		rain;
+	
 
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start reading sensor image");
@@ -63,20 +65,48 @@ static int	get_monitor_image(loop_t *l, meteodata_t *m) {
 	if (debug > 1)
 		imagedump(image, MONITOR_LOOP_SIZE);
 
+	/* initialize the value types					*/
+	meteovalue_init(&temperature);
+	meteovalue_init(&temperature_inside);
+	meteovalue_init(&humidity);
+	meteovalue_init(&humidity_inside);
+	meteovalue_init(&barometer);
+	meteovalue_init(&solar);
+	meteovalue_init(&uv);
+	wind_init(&wind);
+	rain_init(&rain);
+
 	/* convert 17 bytes to data					*/
-	temperature_inside = (256. * image[1] + image[0])/10.;
-	temperature = (256. * image[3] + image[2])/10.;
-	speed = unitconvert(UNIT_MPH, UNIT_MPS, (double)image[4]);
-	direction = 256. * image[6] + image[5];
-	barometer = (256. * image[8] + image[7])/1000.;
-	humidity_inside = (double)image[9];
-	humidity = (double)image[10];
-	rain = (double)image[11]/5.;
+	if (image[1] != 0xff) {
+		meteovalue_set(&temperature_inside,
+			(256. * image[1] + image[0])/10.);
+	}
+	if (image[3] != 0xff) {
+		meteovalue_set(&temperature,
+			(256. * image[3] + image[2])/10.);
+	}
+	if (image[4] != 0xff) {
+		wind_set(&wind, 
+			unitconvert(UNIT_MPH, UNIT_MPS, (double)image[4]),
+			256. * image[6] + image[5]);
+	}
+	if (image[8] != 0xff) {
+		meteovalue_set(&barometer, (256. * image[8] + image[7])/1000.);
+	}
+	if (image[9] != 0xff) {
+		meteovalue_set(&humidity_inside, (double)image[9]);
+	}
+	if (image[10] != 0xff) {
+		meteovalue_set(&humidity, (double)image[10]);
+	}
+	if (image[11] != 0xff) {
+		rain_set(&rain, (double)image[11]/5.);
+	}
 
 	/* update the meteodata record					*/
-	meteodata_update(m, temperature, temperature_inside,
-		humidity, humidity_inside, barometer, BAROTREND_UNKNOWN,
-		speed, direction, rain, 0., 0.);
+	meteodata_update(m, &temperature, &temperature_inside,
+		&humidity, &humidity_inside, &barometer, BAROTREND_UNKNOWN,
+		&wind, &rain, &solar, &uv);
 
 	/* return the filled in sensor image				*/
 	return 0;
@@ -85,9 +115,10 @@ static int	get_monitor_image(loop_t *l, meteodata_t *m) {
 #define	VANTAGE_LOOP_SIZE	99
 static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 	unsigned char	image[VANTAGE_LOOP_SIZE];
-	double		temperature, temperature_inside, humidity,
-			humidity_inside, barometer, speed, direction,
-			rain, uv, solar;
+	meteovalue_t	temperature, temperature_inside, humidity,
+			humidity_inside, barometer, solar, uv;
+	wind_t		wind;
+	rain_t		rain;
 	int		i, barotrend = BAROTREND_UNKNOWN;
 
 	if (debug)
@@ -116,21 +147,52 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 		return -1;
 	}
 
+	/* initialize the values					*/
+	meteovalue_init(&temperature);
+	meteovalue_init(&temperature_inside);
+	meteovalue_init(&humidity);
+	meteovalue_init(&humidity_inside);
+	meteovalue_init(&barometer);
+	meteovalue_init(&solar);
+	meteovalue_init(&uv);
+	wind_init(&wind);
+	rain_init(&rain);
+
 	/* convert data to double values				*/
-	barometer = (image[8] * 256. + image[7])/1000.;
-	temperature_inside = (image[10] * 256. + image[9])/10.;
-	humidity_inside = (double)image[11];
-	temperature = (image[13] * 256. + image[12])/10.;
-	speed = unitconvert(UNIT_MPH, UNIT_MPS, (double)image[14]);
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "speed value: %.1f m/s",
-			speed);
-	direction = image[17] * 256. + image[16];
-	humidity = (double)image[33];
-	rain = unitconvert(UNIT_IN, UNIT_MM,
-		(image[51] * 256. + image[50])/10.);
-	uv = (double)image[43]/10.;
-	solar = (image[45] * 256. + image[44]);
+	/* here we assume that 0xff values for any of the bytes mean	*/
+	/* invalid data, but we cannot rely on this			*/
+	if (image[8] != 0xff) {
+		meteovalue_set(&barometer, (image[8] * 256. + image[7])/1000.);
+	}
+	if (image[10] != 0xff) {
+		meteovalue_set(&temperature_inside,
+			(image[10] * 256. + image[9])/10.);
+	}
+	if (image[11] != 0xff) {
+		meteovalue_set(&humidity_inside, (double)image[11]);
+	}
+	if (image[13] != 0xff) {
+		meteovalue_set(&temperature,
+			(image[13] * 256. + image[12])/10.);
+	}
+	if (image[17] != 0xff) {
+		wind_set(&wind,
+			unitconvert(UNIT_MPH, UNIT_MPS, (double)image[14]),
+			image[17] * 256. + image[16]);
+	}
+	if (image[33] != 0xff) {
+		meteovalue_set(&humidity, (double)image[33]);
+	}
+	if (image[51] != 0xff) {
+		rain_set(&rain, unitconvert(UNIT_IN, UNIT_MM,
+			(image[51] * 256. + image[50])/10.));
+	}
+	if (image[43] != 0xff) {
+		meteovalue_set(&uv, (double)image[43]/10.);
+	}
+	if (image[45] != 0xff) {
+		meteovalue_set(&solar, (image[45] * 256. + image[44]));
+	}
 
 	/* decode the baro trend value, if available			*/
 	switch ((signed char)image[3]) {
@@ -142,9 +204,9 @@ static int	get_vantage_image(loop_t *l, meteodata_t *m) {
 	}
 
 	/* update the meteodata record					*/
-	meteodata_update(m, temperature, temperature_inside,
-		humidity, humidity_inside, barometer, barotrend,
-		speed, direction, rain, solar, uv);
+	meteodata_update(m, &temperature, &temperature_inside,
+		&humidity, &humidity_inside, &barometer, barotrend,
+		&wind, &rain, &solar, &uv);
 
 	/* return the filled in sensor image				*/
 	return 0;

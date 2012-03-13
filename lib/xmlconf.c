@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: xmlconf.c,v 1.2 2002/11/25 00:17:45 afm Exp $
+ * $Id: xmlconf.c,v 1.3 2003/05/04 16:31:58 afm Exp $
  */
 #include <xmlconf.h>
 #include <sys/stat.h>
@@ -261,12 +261,14 @@ static xmlNodePtr	xmlconf_get(xmlXPathContextPtr xpc,
 	/* retrieve a node from the object pointer, must have a node	*/
 	/* set								*/
 	if (XPATH_NODESET != start->type) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "initial node has wrong type");
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "initial node %s has wrong type",
+			path);
 		xmlXPathFreeObject(start);
 		return NULL;
 	}
 	if (xmlXPathNodeSetIsEmpty(start->nodesetval)) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "initial node set is emtpy");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"initial node set for %s is emtpy", path);
 		xmlXPathFreeObject(start);
 		return NULL;
 	}
@@ -284,7 +286,6 @@ static xmlNodePtr	xmlconf_getnode(const meteoconf_t *mc,
 	int interval) {
 	xmlNodePtr		startnode = NULL, resnode;
 	xmlXPathContextPtr	xpctp;
-	const char		*elementname = element;
 	const char		*realname = name;
 
 	/* create an xmlXPathContext					*/

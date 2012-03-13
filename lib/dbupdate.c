@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: dbupdate.c,v 1.5 2002/11/24 19:48:01 afm Exp $
+ * $Id: dbupdate.c,v 1.6 2003/05/04 16:31:58 afm Exp $
  */
 #include <dbupdate.h>
 #include <database.h>
@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <msgque.h>
 #include <mdebug.h>
+#include <unistd.h>
 
 dest_t	*dest_new(void) {
 	dest_t	*result;
@@ -31,6 +32,9 @@ void	dest_free(dest_t *d) {
 		mc_closedb(d->destdata.mysql);
 		break;
 	case DEST_MSGQUE:
+		break;
+	case DEST_FILE:
+		close(d->destdata.file);
 		break;
 	default:
 		break;
@@ -68,9 +72,23 @@ static int	dbquery(dest_t *ddp, const char *query) {
 		return msgque_sendquery(ddp->destdata.msgque, query,
 			strlen(query) + 1);
 		break;
+	case DEST_FILE:
+		if (debug)
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"sending query to file %s/%d "
+				"(length = %d)", ddp->name,
+				ddp->destdata.file, strlen(query) + 1);
+		write(ddp->destdata.file, query, strlen(query));
+		write(ddp->destdata.file, ";\n", 2);
+		break;
 	}
 	return -1;
 }
+
+#define	value_string(outbuffer, isvalid, fmtstring, value)		\
+	(outbuffer = (char *)alloca(32),				\
+	((isvalid) ? sprintf(outbuffer, fmtstring, value)		\
+	: sprintf(outbuffer, "NULL")), outbuffer)
 
 /*
  * the dbupdate function takes the meteodata record and sends it to the
@@ -82,6 +100,12 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 	time_t		now;
 	struct tm	*nt;
 	double		humidity, humidity_inside;
+	char		*temperature_string, *temperature_inside_string,
+			*barometer_string,
+			*humidity_string, *humidity_inside_string,
+			*rain_string, *raintotal_string,
+			*windspeed_string, *windgust_string,
+			*windx_string, *windy_string, *solar_string, *uv_string;
 
 	/* compute a time stamp						*/
 	time(&now);
@@ -110,9 +134,9 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 		"values(%d, '%s', "
 		"	%d, %d, %d, "
 		"	%d, %d, "
-		"	%.2f, %.2f, %.2f, %.0f, %.0f, %.1f, %.1f, "
-		"	%.2f, %.0f, %.1f, %.4f, %.4f, "
-		"	%.1f, %.1f, "
+		"	%s, %s, %s, %s, %s, %s, %s, "
+		"	%s, %.0f, %s, %s, %s, "
+		"	%s, %s, "
 		"	%.6f, %d, "
 		"	%ld, %ld, %ld, %ld)",
 		(int)now, station,
@@ -121,24 +145,42 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 
 		nt->tm_hour, nt->tm_min,
 
-		unitconvert(md->temperature->unit, UNIT_CELSIUS,
-			md->temperature->value),
-		unitconvert(md->temperature_inside->unit, UNIT_CELSIUS,
-			md->temperature_inside->value),
-		unitconvert(md->barometer->unit, UNIT_HPA,
-			md->barometer->value),
-		humidity, humidity_inside,
-		unitconvert(md->rain->unit, UNIT_MM, md->rain->rain),
-		unitconvert(md->rain->unit, UNIT_MM, md->rain->raintotal),
+		value_string(temperature_string, md->temperature->valid, "%.2f",
+			unitconvert(md->temperature->unit, UNIT_CELSIUS,
+				md->temperature->value)),
+		value_string(temperature_inside_string,
+			md->temperature_inside->valid, "%.2f",
+			unitconvert(md->temperature_inside->unit, UNIT_CELSIUS,
+				md->temperature_inside->value)),
+		value_string(barometer_string, md->barometer->valid, "%.2f",
+			unitconvert(md->barometer->unit, UNIT_HPA,
+				md->barometer->value)),
+		value_string(humidity_string, md->humidity->valid, "%.0f",
+			humidity),
+		value_string(humidity_inside_string, md->humidity_inside->valid,
+			"%.0f", humidity),
+		value_string(rain_string, md->rain->valid, "%.1f",
+			unitconvert(md->rain->unit, UNIT_MM, md->rain->rain)),
+		value_string(raintotal_string, md->rain->valid, "%.1f",
+			unitconvert(md->rain->unit, UNIT_MM,
+				md->rain->raintotal)),
 
-		unitconvert(md->wind->unit, UNIT_MPS, md->wind->speed),
+		value_string(windspeed_string, md->wind->valid, "%.2f",
+			unitconvert(md->wind->unit, UNIT_MPS, md->wind->speed)),
 		md->wind->direction,
-		unitconvert(md->wind->unit, UNIT_MPS, md->wind->speedmax),
-		unitconvert(md->wind->unit, UNIT_MPS, md->wind->x),
-		unitconvert(md->wind->unit, UNIT_MPS, md->wind->y),
+		value_string(windgust_string, md->wind->valid, "%.1f",
+			unitconvert(md->wind->unit, UNIT_MPS,
+			md->wind->speedmax)),
+		value_string(windx_string, md->wind->valid, "%.4f",
+			unitconvert(md->wind->unit, UNIT_MPS, md->wind->x)),
+		value_string(windy_string, md->wind->valid, "%.4f",
+			unitconvert(md->wind->unit, UNIT_MPS, md->wind->y)),
 
-		unitconvert(md->solar->unit, UNIT_WM2, md->solar->value),
-		unitconvert(md->uv->unit, UNIT_UVINDEX, md->uv->value),
+		value_string(solar_string, md->solar->valid, "%.0f",
+			unitconvert(md->solar->unit, UNIT_WM2,
+				md->solar->value)),
+		value_string(uv_string, md->uv->valid, "%.0f",
+			unitconvert(md->uv->unit, UNIT_UVINDEX, md->uv->value)),
 
 		(md->last.tv_sec - md->start.tv_sec)
 			+ (md->last.tv_usec - md->start.tv_usec)/1000000.,

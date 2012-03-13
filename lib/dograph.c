@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.8 2002/11/24 19:48:01 afm Exp $
+ * $Id: dograph.c,v 1.9 2003/05/04 16:31:58 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -63,21 +63,33 @@ static void	create_filename(char *filename, int length,
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "filename: %s", filename);
 }
 
-#define	stampformat	"%Y%m%d%H%M%S"
-graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
-	int interval, time_t *start, char *data, char *avgdata) {
-	graph_t	*g;
-	time_t	end;
+#if 0
+char	*setup_query(const dograph_t *dgp, char *query, int querylen,
+		char **attributes, int interval) {
+	char	*selectlist = NULL, *notnull = NULL;
+	char	**attr;
+	int	l;
+	for (attr = attributes; attr; attr++) {
+		l = strlen(attr);
+		if (selectlist) {
+			selectlist = realloc(selectlist,
+				strlen(selectlist) + l + 10);
+			strcat(selectlist, ", ");
+			strcat(selectlist, *attr);
+		} else {
+			selectlist = (char *)malloc(l + 1);
+			strcpy(selectlist, *attr);
+		}
+		if (notnull) {
+			notnull = realloc(notnull,
+				strlen(notnull) + l + 10);
+			sprintf(notnull, " and not isnull(%s)", *attr);
+		} else {
+			notnull = (char *)malloc(l + 1);
+			sprintf(notnull, "not isnull(%s)", *attr);
+		}
+	}
 
-	/* set up the graph geometrically				*/
-	g = graph_new(dgp->prefix, METEO_WIDTH, METEO_HEIGHT);
-	graph_set_dimensions(g, METEO_LLX, METEO_LLY, METEO_URX, METEO_URY);
-
-	/* set up the time margins for the graph			*/
-	end = *start -= *start % interval;
-	*start -= 400 * interval;
-
-	/* formulate the query						*/
 	if (dgp->useaverages)
 		snprintf(query, querylen,
 			"select timekey - %d, %s "
@@ -99,6 +111,51 @@ graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
 			"limit 400",
 			interval, interval, data, (int)*start, (int)end,
 			dgp->prefix, interval);
+	return query;
+}
+#endif
+
+#define	stampformat	"%Y%m%d%H%M%S"
+graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
+	int interval, time_t *start, char *data, char *avgdata,
+	char *nullclause) {
+	graph_t	*g;
+	time_t	end;
+
+	/* set up the graph geometrically				*/
+	g = graph_new(dgp->prefix, METEO_WIDTH, METEO_HEIGHT);
+	graph_set_dimensions(g, METEO_LLX, METEO_LLY, METEO_URX, METEO_URY);
+
+	/* set up the time margins for the graph			*/
+	end = *start -= *start % interval;
+	*start -= 400 * interval;
+
+	/* formulate the query						*/
+	if (dgp->useaverages)
+		snprintf(query, querylen,
+			"select timekey - %d, %s "
+			"from averages "
+			"where timekey between %d and %d "
+			"  and station = '%-8.8s' "
+			"  and intval = %d "
+			"  and %s "
+			"limit 400",
+			interval, avgdata, (int)*start, (int)end,
+			dgp->prefix, interval,
+			(nullclause) ? nullclause : "0 = 0");
+	else
+		snprintf(query, querylen,
+			"select group%d * %d, %s "
+			"from stationdata "
+			"where timekey between %d and %d "
+			"  and station = '%-8.8s' "
+			"  and %s "
+			"group by group%d "
+			"order by 1 "
+			"limit 400",
+			interval, interval, data, (int)*start, (int)end,
+			dgp->prefix, (nullclause) ? nullclause : nullclause,
+			interval);
 
 	return g;
 }
@@ -180,7 +237,8 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"max(barometer), min(barometer), avg(barometer)",
-		"barometer_max, barometer_min, barometer");
+		"barometer_max, barometer_min, barometer",
+		"barometer is not null");
 	set_colors(g, DOGRAPH_BAROMETER, dgp->mc);
 	graph_label(g, xmlconf_get_string(dgp->mc,
 		"channel[@name='pressure']", "label", NULL,
@@ -270,8 +328,8 @@ void	baro_graphs(dograph_t *dgp, int interval) {
  */
 
 #define	HUMIDITYSTRING	(inside) ? "humidity_inside" : "humidity"
-#define	HUMIDITYSTRING1(a)	(inside) ? ("humidity_inside" ## a)	\
-					 : ("humidity" ## a)
+#define	HUMIDITYSTRING1(a)	(inside) ? ("humidity_inside" a)	\
+					 : ("humidity" a)
 
 static channelscale_t	humidity_default_channelscale = { 0., 100. };
 static gridscale_t	humidity_default_gridscale = { 20., 0., 100. };
@@ -297,7 +355,9 @@ static void	humidity_graphs_both(dograph_t *dgp, int interval, int inside) {
 		         : "max(humidity), min(humidity), avg(humidity)",
 		(inside) ? "humidity_inside_max, humidity_inside_min, "
 			   "humidity_inside"
-			 : "humidity_max, humidity_min, humidity");
+			 : "humidity_max, humidity_min, humidity",
+		(inside) ? "humidity_inside is not null"
+			 : "humidity is not null");
 	set_colors(g, (inside) ? DOGRAPH_HUMIDITY_INSIDE : DOGRAPH_HUMIDITY,
 		dgp->mc);
 	snprintf(xpath, sizeof(xpath), "channel[@name='%s']",
@@ -393,8 +453,8 @@ void	humidity_graphs_inside(dograph_t *dgp, int interval) {
  * temperature graphs
  */
 #define	TEMPERATURESTRING	(inside) ? "temperature_inside" : "temperature"
-#define	TEMPERATURESTRING1(a)	(inside) ? ("temperature_inside" ## a) \
-					 : ("temperature" ## a)
+#define	TEMPERATURESTRING1(a)	(inside) ? ("temperature_inside" a) \
+					 : ("temperature" a)
 
 static channelscale_t	temperature_default_channelscale = { -10., .5 };
 static gridscale_t	temperature_default_gridscale = { 10., -10., 30. };
@@ -425,7 +485,9 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 			"temperature_inside_min, "
 			"temperature_inside_max, "
 			"temperature_inside, "
-			"humidity_inside");
+			"humidity_inside",
+			"temperature_inside is not null and "
+				"humidity_inside is not null");
 		set_colors(g, DOGRAPH_TEMPERATURE_INSIDE, dgp->mc);
 	} else {
 		g = setup_graph(dgp, query, sizeof(query), interval,
@@ -437,7 +499,8 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 			"temperature_min, "
 			"temperature_max, "
 			"temperature, "
-			"humidity");
+			"humidity",
+			"temperature is not null and humidity is not null");
 		set_colors(g, DOGRAPH_TEMPERATURE, dgp->mc);
 	}
 	
@@ -561,7 +624,7 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	/* set up the rain query					*/
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
-		"sum(rain)", "rain");
+		"sum(rain)", "rain", "rain is not null");
 	set_colors(g, DOGRAPH_RAIN, dgp->mc);
 	graph_label(g,
 		xmlconf_get_string(dgp->mc, "channel[@name='rain']",
@@ -703,7 +766,8 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"sum(windx), sum(windy), sum(duration), "
 		"max(windgust)",
-		"windgust, windspeed, winddir");
+		"windgust, windspeed, winddir",
+		"windspeed is not null");
 	set_colors(g, DOGRAPH_WIND, dgp->mc);
 	graph_label(g, xmlconf_get_string(dgp->mc,
 		"channel[@name='wind']/left", "label", NULL,
@@ -784,7 +848,7 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 		interval, windspeed_default_gridscale);
 	graph_add_grid(g, 0, gss);
 	gsd = get_gridscale(dgp->mc, "channel[@name='wind']/right",
-		interval, windspeed_default_gridscale);
+		interval, winddir_default_gridscale);
 	graph_add_grid(g, 2, gsd);
 	tl.gs = gss;
 	tl.format = "%.0f";
@@ -827,7 +891,7 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"avg(solar), avg(uv)",
-		"solar, uv");
+		"solar, uv", "solar is not null and uv is not null");
 	set_colors(g, DOGRAPH_RADIATION, dgp->mc);
 	graph_label(g, xmlconf_get_string(dgp->mc,
 		"channel[@name='radiation']/left", "label", NULL,

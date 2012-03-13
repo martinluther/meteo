@@ -1,6 +1,12 @@
 TODO
 ----
 
+-- CVS fixes:
+	src/meteolast.c
+	meteo/conf/meteo.xml
+	meteo.xml
+	man/meteo.xml.5
+
 * find cause of frequent crashes of meteoloop and make it more robust,
   complete work on the watchdog
 
@@ -16,4 +22,4 @@ TODO
 * include conversion functions to scientific units: K, mb, m/s etc
 
 --
-$Id: TODO,v 1.15 2002/11/24 22:31:05 afm Exp $
+$Id: TODO,v 1.16 2003/05/29 20:42:09 afm Exp $

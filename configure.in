@@ -5,7 +5,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT
 AC_CONFIG_SRCDIR([include/meteo.h])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(meteo, 0.5.0)
+AM_INIT_AUTOMAKE(meteo, 0.6.0)
 AM_CONFIG_HEADER(include/config.h)
 
 dnl add support for libtool
@@ -21,6 +21,8 @@ dnl AC_CHECK_LIB(dl, dlopen)
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_ARG_VAR(MSGFMT, [name of msgfmt program from gettext package])
+AC_CHECK_PROG(MSGFMT, msgfmt, msgfmt)
 
 dnl Checks for libraries.
 AC_CHECK_LIB(nsl, gethostbyname)
@@ -46,7 +48,7 @@ AC_CHECK_LIB(png, png_read_image, ,
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h unistd.h mysql/mysql.h)
+AC_CHECK_HEADERS(fcntl.h unistd.h mysql/mysql.h sys/msg.h alloca.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 

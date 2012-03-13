@@ -1,3 +1,26 @@
+Release 0.6.0:
+	* compiles on Mac OS X, and is partially tested
+	* added Unix domain socket code so that platforms that don't have
+	  message queues can still somewhat decouple the station from
+	  the database. note that msg queues are used if they are present,
+	  they allow for messages to be stored even if the server has gone
+	  away or is not ready yet, and it is trivial to have several
+	  listeners (dequeuers) on the queue that can process messages
+	  in parallel.
+
+Release 0.5.1:
+	* first release also built with gcc 3
+	* add a new target to send the updates to: an ordinary file (we'll
+	  use this to build a highly available solution. This is also
+	  the reason why only meteoloop has that feature, and not
+	  meteoaverage: It is intended for situations where no database
+	  is available).
+	* add a valid flag to all data types, so that we can always decide
+	  whether the data we have is OK (we probably should rewrite part
+	  of meteo in C++ with intelligent datatypes that can have value
+	  `NIL' and built in formatting for SQL).
+	* make sure the graphs retrieve only valid data from the database
+
 Release 0.5.0:
 	* convert configuration file format to XML, and try to make the
 	  documentation about the configuration file more precise
@@ -207,4 +230,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.42 2002/11/24 23:03:04 afm Exp $
+$Id: ChangeLog,v 1.43 2003/05/04 16:31:58 afm Exp $

@@ -6,7 +6,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoupdate.c,v 1.3 2002/06/22 15:57:40 afm Exp $
+ * $Id: meteoupdate.c,v 1.4 2003/05/29 20:42:09 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,7 +36,8 @@ int	main(int argc, char *argv[]) {
 			*database = "meteo",
 			*keyfile = NULL;
 	MYSQL		mysql;
-	int		c, mq, l;
+	int		c, l;
+	msgque_t	*mq;
 
 	/* parse command line arguments					*/
 	while (EOF != (c = getopt(argc, argv, "db:h:p:u:k:V")))
@@ -72,7 +73,7 @@ int	main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	mq = msgque_setup(keyfile);
-	if (mq < 0) {
+	if (NULL == mq) {
 		fprintf(stderr, "%s:%d: no msg found\n", __FILE__, __LINE__);
 		exit(EXIT_FAILURE);
 	}

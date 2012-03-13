@@ -3,7 +3,9 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: meteo.c,v 1.3 2002/11/24 19:48:02 afm Exp $
+ * $Id: meteo.c,v 1.4 2003/05/04 16:31:58 afm Exp $
  */
 #include <meteo.h>
 
+/* keep compiler happy */
+#define	THIS_FILE_IS_EMPTY

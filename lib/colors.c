@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id$
+ * $Id: colors.c,v 1.1 2003/05/29 19:26:48 afm Exp $
  */
 #include <colors.h>
 
