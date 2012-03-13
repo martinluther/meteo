@@ -3,16 +3,25 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.6 2003/06/09 07:33:21 afm Exp $
+ * $Id: graph.c,v 1.7 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
 #include <graph.h>
 #include <gdfonts.h>
 #include <meteo.h>
 #include <time.h>
 #include <mdebug.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 /*
  * graph_new	create a new graph structure

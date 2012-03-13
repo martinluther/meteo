@@ -4,16 +4,25 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.cc,v 1.2 2003/06/08 22:32:10 afm Exp $
+ * $Id: meteoavg.cc,v 1.3 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <meteo.h>
 #include <database.h>
 #include <average.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <errno.h>
 #include <timestamp.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <daemon.h>
 #include <printver.h>
 #include <mdebug.h>

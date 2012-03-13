@@ -3,9 +3,16 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <crc.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
 #include <meteo.h>
 #include <mdebug.h>
 

@@ -3,13 +3,17 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: msgque.c,v 1.7 2003/06/09 07:33:21 afm Exp $
+ * $Id: msgque.c,v 1.8 2003/06/12 23:29:46 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
 #include <msgque.h>
 #ifdef HAVE_SYS_MSG_H
 #include <sys/msg.h>
@@ -17,14 +21,22 @@
 #ifdef HAVE_SYS_IPC_H
 #include <sys/ipc.h>
 #endif /* HAVE_SYS_IPC_H */
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
 #include <sys/un.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <meteo.h>
 #include <time.h>
 #include <mdebug.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 #define QUERYMSG_SIZE	4096
 

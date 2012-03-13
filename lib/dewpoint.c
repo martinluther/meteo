@@ -3,12 +3,19 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dewpoint.c,v 1.4 2003/06/11 19:51:35 afm Exp $
+ * $Id: dewpoint.c,v 1.6 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <dewpoint.h>
 #include <math.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <mdebug.h>
 
 #define	UNIT_UNKNOWN	0
@@ -25,6 +32,10 @@ void	find_tempunit(const meteoconf_t *mc, const char *stationname) {
 	snprintf(xpath, sizeof(xpath),
 		"/meteo/station[@name='%s']/unit/temperature", stationname);
 	unitstr = xmlconf_get_abs_string(mc, xpath, "C");
+	if (NULL == unitstr) {
+		tempunit = UNIT_CELSIUS;
+		return;
+	}
 	if ((0 == strcmp(unitstr, "F")) ||
 		(0 == strcmp(unitstr, "degF")) ||
 		(0 == strcmp(unitstr, "degrees Fahrenheit"))) {

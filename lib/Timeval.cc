@@ -3,10 +3,17 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <Timeval.h>
 #include <math.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 #include <mdebug.h>
 
 namespace meteo {

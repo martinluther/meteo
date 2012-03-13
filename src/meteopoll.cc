@@ -5,11 +5,24 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
 #include <Station.h>
 #include <Configuration.h>
 #include <MeteoException.h>
@@ -17,13 +30,39 @@
 #include <Pidfile.h>
 #include <mdebug.h>
 #include <errno.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <fstream>
 #include <iostream>
 #include <printver.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
 
 #define	ALARMTIMEOUT	30
+
+pid_t	clpid;
+
+// signal handler to kill child when parent is sent a signal
+void	kill_child(int cause) {
+	switch (cause) {
+	case SIGTERM:
+	case SIGINT:
+		kill(clpid, cause);
+		mdebug(LOG_INFO, MDEBUG_LOG, 0, "caught signal, exiting");
+		exit(EXIT_SUCCESS);
+		break;
+	case SIGHUP:
+		mdebug(LOG_INFO, MDEBUG_LOG, 0, "caught SIGHUP, killing child");
+		kill(clpid, SIGTERM);
+		break;
+	}
+	return;
+}
 
 static void	loop(const meteo::Configuration& conf, const std::string& name) {
 	// create a new station object (this always returns something
@@ -191,21 +230,33 @@ int	main(int argc, char *argv[]) {
 	}
 	meteo::DatasinkFactory	dsf(conf, preferences);
 
+	// install signal handlers
+	signal(SIGTERM, kill_child);
+	signal(SIGINT, kill_child);
+	signal(SIGHUP, kill_child);
+
 	// loop: fork a process and wait for it to die, exit if the child
 	// exits naturally
 	int	status;
 	do {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start loop");
-		int	pid = fork();
+		clpid = fork();
 		// if the fork is not possible, we have some serious problem
-		if (pid < 0) {
+		if (clpid < 0) {
 			mdebug(LOG_CRIT, MDEBUG_LOG, MDEBUG_ERRNO,
 				"fork failed: %s", strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 		// the child simply starts the loop
-		if (pid == 0) {
+		if (clpid == 0) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "starting new child");
+			// reset signal dispositions so that child can easily
+			// be killed
+			signal(SIGHUP, SIG_DFL);
+			signal(SIGTERM, SIG_DFL);
+			signal(SIGINT, SIG_DFL);
+
+			// start looping
 			try {
 				loop(conf, name);
 			} catch (meteo::MeteoException& e) {
@@ -217,7 +268,7 @@ int	main(int argc, char *argv[]) {
 			}
 			exit(EXIT_SUCCESS);
 		}
-		if (waitpid(pid, &status, 0) < 0) {
+		if (waitpid(clpid, &status, 0) < 0) {
 			mdebug(LOG_CRIT, MDEBUG_LOG, MDEBUG_ERRNO,
 				"child process died: ");
 		}

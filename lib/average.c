@@ -4,12 +4,21 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: average.c,v 1.6 2003/06/09 07:33:21 afm Exp $
+ * $Id: average.c,v 1.7 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <average.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <meteo.h>
 #include <math.h>
 #include <mdebug.h>

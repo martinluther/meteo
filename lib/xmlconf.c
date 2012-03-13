@@ -4,15 +4,22 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: xmlconf.c,v 1.4 2003/06/09 07:33:21 afm Exp $
+ * $Id: xmlconf.c,v 1.5 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <xmlconf.h>
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <mdebug.h>
 #include <errno.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 /*
  * parse the configuration file

@@ -8,6 +8,7 @@
 
 #include <string>
 #include <Timeval.h>
+#include <mdebug.h>
 
 namespace meteo {
 
@@ -24,11 +25,15 @@ public:
 		value = svalue = v; start.now(); hasvalue = true;
 		lastupdate.now();
 		unit = "mm";
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "initialized rain from %.2fmm",
+			v);
 	}
 	Rain(double v, const std::string& u) {
 		value = svalue = v; start.now(); hasvalue = true;
 		lastupdate.now();
 		unit = u;
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "initialized rain from %.2f%s",
+			v, u.c_str());
 	}
 	Rain(const std::string& u) {
 		start.now(); hasvalue = false;

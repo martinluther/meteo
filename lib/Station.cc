@@ -3,8 +3,13 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <Station.h>
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
 #include <MeteoException.h>
 #include <mdebug.h>
 #include <crc.h>
@@ -187,6 +192,39 @@ void	Station::startLoop(int p) {
 //////////////////////////////////////////////////////////////////////
 // WMII
 //////////////////////////////////////////////////////////////////////
+WMII::WMII(const std::string& stationname) : Station(stationname) {
+	// temporarily open a channel
+	Configuration	conf;
+	Channel	*ch = ChannelFactory(conf).newChannel(stationname);
+
+	// drain the channel
+	ch->drain(10);
+
+	// retrieve the calibration number from the station
+	unsigned char	cmd[6];
+	cmd[0] = 'W'; cmd[1] = 'R'; cmd[2] = 'D';
+	cmd[3] = 0x44; cmd[4] = 0xd6; cmd[5] = 0xd;
+	std::string	cmdstr((char *)cmd, 6);
+
+	// send the command through the cannel
+	ch->sendString(cmdstr);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "sent WRD command");
+	std::string	reply = ch->recvString(3);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got %d bytes reply to WRD",
+		reply.length());
+
+	// wait for an ACK reply
+	if (ACK != reply[0]) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot read RainCAL number");
+		delete ch;
+		throw MeteoException("cannot read RainCAL number", "");
+	}
+
+	// read two bytes from the channel and store as an unsigned int
+	raincal = getUnsignedShort(reply, 1);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got raincal %d", raincal);
+	delete ch;
+}
 WMII::~WMII(void) { }
 void	WMII::startLoop(int p) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "requesting %d packets from WMII", p);
@@ -292,9 +330,12 @@ Wind	WMII::getWind(const std::string& s) const {
 		return Wind("mph");
 }
 Rain	WMII::getRain(const std::string& s) const {
-	if (validByte(s, 12))
-		return Rain(getUnsignedByte(s, 12)/5., "in");
-	else
+	if (validShort(s, 12)) {
+		Rain	rr(getUnsignedShort(s, 12)/raincal, "in");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "WMII rain value: %.2f",
+			rr.getValue());
+		return rr;
+	} else
 		return Rain("in");
 }
 
@@ -425,7 +466,7 @@ Wind	VantagePro::getWind(const std::string& s) const {
 }
 Rain	VantagePro::getRain(const std::string& s) const {
 	if (validShort(s, 50))
-		return Rain(getUnsignedByte(s, 50)/100., "in");
+		return Rain(getUnsignedShort(s, 50)/100., "in");
 	else
 		return Rain("in");
 }

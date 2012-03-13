@@ -3,14 +3,21 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <Pidfile.h>
 #include <fstream>
 #include <iostream>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 #include <signal.h>
 #include <errno.h>
 #include <mdebug.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <MeteoException.h>
 
 namespace meteo {

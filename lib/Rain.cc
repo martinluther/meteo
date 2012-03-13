@@ -54,7 +54,7 @@ std::string	Rain::getValueString(void) const {
 	if (!hasvalue)
 		return std::string("NULL");
 	char	buffer[32];
-	snprintf(buffer, sizeof(buffer), "%.2f", getValue());
+	snprintf(buffer, sizeof(buffer), "%.3f", getValue());
 	return std::string(buffer);
 }
 
@@ -62,7 +62,7 @@ std::string	Rain::getTotalString(void) const {
 	if (!hasvalue)
 		return std::string("NULL");
 	char	buffer[32];
-	snprintf(buffer, sizeof(buffer), "%.2f", getTotal());
+	snprintf(buffer, sizeof(buffer), "%.3f", getTotal());
 	return std::string(buffer);
 }
 

@@ -3,17 +3,34 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <Channel.h>
 #include <strings.h>
 #include <errno.h>
 #include <MeteoException.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
 #include <Timeval.h>
 #include <mdebug.h>
 
@@ -46,7 +63,7 @@ void	Channel::sendString(const std::string& s) {
 	}
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "writing %d char string '%s'",
 		s.length(), s.c_str());
-	if (s.length() != write(f, s.c_str(), s.length())) {
+	if (s.length() != (size_t)write(f, s.c_str(), s.length())) {
 		throw MeteoException("cannot send complete string",
 			strerror(errno));
 	}

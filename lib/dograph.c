@@ -3,17 +3,28 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.11 2003/06/12 00:45:15 afm Exp $
+ * $Id: dograph.c,v 1.12 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <meteo.h>
 #include <meteograph.h>
 #include <graph.h>
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <math.h>
 #include <dewpoint.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <time.h>
 #include <timestamp.h>
 #include <dograph.h>

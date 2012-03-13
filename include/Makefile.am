@@ -3,13 +3,14 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.14 2003/06/08 22:50:00 afm Exp $
+# $Id: Makefile.am,v 1.15 2003/06/12 20:29:33 afm Exp $
 #
 
 noinst_HEADERS =							\
 	MeteoException.h MeteoValue.h Vector.h Wind.h Rain.h		\
 	Channel.h Timeval.h Station.h Configuration.h			\
 	Datasink.h Pidfile.h Converter.h				\
+	Frame.h								\
 	crc.h meteo.h 							\
 	graph.h dewpoint.h msgque.h					\
 	meteograph.h xmlconf.h						\

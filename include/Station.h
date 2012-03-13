@@ -137,8 +137,9 @@ public:
 };
 
 class	WMII : public Station {
+	int	raincal;
 public:
-	WMII(const std::string& n) : Station(n) { }
+	WMII(const std::string& n);
 	virtual	~WMII(void);
 
 	// read a packet from the station

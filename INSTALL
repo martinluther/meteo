@@ -290,19 +290,12 @@ Frequently asked questions
 1. I've MySQL installed on my system, but the configure script does not
    find it.
 
-   The configure script does not try to be smart, if the mysql headers and
-   libraries are not in one of the locations the compiler usually looks, it
-   will not find it. However, the environment variables CPPFLAGS and LDFLAGS
-   are precisely what is needed to help the compiler find the libraries. If
-   you have the MySQL headers in /usr/local/mysql/include, set
+   Starting with 0.7.3, the configure script uses mysql_config to find
+   the right compiler and linker flags. For this to work you must make
+   sure mysql_config ist found on your PATH.
 
-	CPPFLAGS="-I/usr/local/mysql/include"; export CPPFLAGS
-
-   and if your MySQL libraries are in /usr/local/lib/mysql, try
-
-	LDFLAGS="-L/usr/local/lib/mysql"; export LDFLAGS
-
-   Your compiler should now find headers and libraries during configure.
+   Detecting GD2 now works the same way, using gdlib-config, which is
+   often in /usr/local/bin.
 
 2. I've tried various settings of CPPFLAGS and LDFLAGS, but configure
    still does not find the headers or libraries.
@@ -325,4 +318,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.13 2003/06/12 00:45:15 afm Exp $
+$Id: INSTALL,v 1.14 2003/06/12 20:29:33 afm Exp $

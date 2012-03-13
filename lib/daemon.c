@@ -3,16 +3,29 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: daemon.c,v 1.5 2003/06/11 19:51:35 afm Exp $
+ * $Id: daemon.c,v 1.6 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <daemon.h>
 #include <meteo.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h> /* some systems have alloca defined in stdlib.h */
+#endif
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <mdebug.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif /* HAVE_ALLOCA_H */

@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.14 2003/06/08 23:34:45 afm Exp $
+# $Id: Makefile.am,v 1.15 2003/06/12 20:29:33 afm Exp $
 #
 
 srcdir = @srcdir@
@@ -45,6 +45,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 ACLOCAL = @ACLOCAL@
+ALLOCA = @ALLOCA@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
@@ -161,6 +162,7 @@ libmeteo_la_SOURCES = \
 	MeteoException.cc MeteoValue.cc Vector.cc Wind.cc Rain.cc	\
 	Converter.cc Channel.cc Timeval.cc Station.cc Configuration.cc	\
 	Datasink.cc Pidfile.cc						\
+	Frame.cc							\
 	crc.c 								\
 	meteo.c graph.c dewpoint.c					\
 	msgque.c xmlconf.c 						\
@@ -179,8 +181,8 @@ libmeteo_la_LIBADD =
 am__objects_1 =
 am_libmeteo_la_OBJECTS = MeteoException.lo MeteoValue.lo Vector.lo \
 	Wind.lo Rain.lo Converter.lo Channel.lo Timeval.lo Station.lo \
-	Configuration.lo Datasink.lo Pidfile.lo crc.lo meteo.lo \
-	graph.lo dewpoint.lo msgque.lo xmlconf.lo average.lo \
+	Configuration.lo Datasink.lo Pidfile.lo Frame.lo crc.lo \
+	meteo.lo graph.lo dewpoint.lo msgque.lo xmlconf.lo average.lo \
 	database.lo timestamp.lo dograph.lo daemon.lo printver.lo \
 	pdebug.lo mdebug.lo colors.lo $(am__objects_1)
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
@@ -191,6 +193,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Channel.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Configuration.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Converter.Plo ./$(DEPDIR)/Datasink.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Frame.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/MeteoException.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/MeteoValue.Plo ./$(DEPDIR)/Pidfile.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Rain.Plo ./$(DEPDIR)/Station.Plo \
@@ -272,6 +275,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Converter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Datasink.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Frame.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeteoException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeteoValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Pidfile.Plo@am__quote@

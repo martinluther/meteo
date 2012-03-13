@@ -6,18 +6,33 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoupdate.cc,v 1.3 2003/06/12 01:01:09 afm Exp $
+ * $Id: meteoupdate.cc,v 1.4 2003/06/12 23:29:47 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
 #include <mysql.h>
 #include <meteo.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include <errno.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <msgque.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <printver.h>
 #include <mdebug.h>
 

@@ -4,11 +4,18 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <Configuration.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
 #include <mdebug.h>
 #include <errno.h>
 #include <MeteoException.h>

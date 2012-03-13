@@ -3,16 +3,25 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.h,v 1.4 2003/06/06 15:11:05 afm Exp $
+ * $Id: graph.h,v 1.5 2003/06/12 23:29:46 afm Exp $
  */
 #ifndef _GRAPH_H
 #define _GRAPH_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <gd.h>
 #include <colors.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

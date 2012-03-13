@@ -106,6 +106,21 @@ Name of the station from which to read data. This argument is mandatory.
 .B \-V
 print version information and exit.
 
+.SH SIGNALS
+.BR meteopoll (1)
+handles the following signals in a nontrivial way:
+.TP
+SIGINT and SIGTERM
+These signal not only kill the parent process, but also the currently
+running child.
+.TP
+SIGHUP
+This signal causes the parent to send a termination signal to the child.
+The parent then starts a new child. Note that this signal does not
+cause 
+.BR metepoll (1)
+to reread the configuration file.
+
 .SH FILES
 .BR meteopoll (1)
 writes its process id by default to a file 

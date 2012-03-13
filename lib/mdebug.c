@@ -3,15 +3,26 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mdebug.c,v 1.5 2003/06/09 00:27:37 afm Exp $
+ * $Id: mdebug.c,v 1.6 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <mdebug.h>
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 #include <errno.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <time.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 int	debug = 0;
 

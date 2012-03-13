@@ -4,14 +4,23 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.cc,v 1.2 2003/06/08 13:54:16 afm Exp $
+ * $Id: meteodequeue.cc,v 1.3 2003/06/12 23:29:46 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <meteo.h>
 #include <database.h>
 #include <msgque.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <daemon.h>
 #include <printver.h>
 #include <mdebug.h>
