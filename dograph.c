@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.1 2001/12/26 22:10:45 afm Exp $
+ * $Id: dograph.c,v 1.2 2002/01/11 19:35:19 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -63,6 +63,57 @@ graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
 	return g;
 }
 
+static color_t	default_fgcolor = { 0, 0, 0 };
+static color_t	default_bgcolor = { 255, 255, 255 };
+
+int	set_colors(graph_t *graph, int channel, mc_node_t *conf) {
+	const int	*col;
+	char	colorname[256];
+	char	*thisname;
+
+	/* first determine the name for the channel at hand		*/
+	switch (channel) {
+	case DOGRAPH_TEMPERATURE:
+		thisname = "temperature";
+		break;
+	case DOGRAPH_TEMPERATURE_INSIDE:
+		thisname = "temperature_inside";
+		break;
+	case DOGRAPH_BAROMETER:
+		thisname = "pressure";
+		break;
+	case DOGRAPH_RAIN:
+		thisname = "rain";
+		break;
+	case DOGRAPH_WIND:
+		thisname = "wind";
+		break;
+	case DOGRAPH_RADIATION:
+		thisname = "radiation";
+		break;
+	}
+	if (debug)
+		fprintf(stderr, "%s:%d: setting colors for '%s'\n",
+			__FILE__, __LINE__, thisname);
+
+	/* convert the name into a color name string and write set	*/
+	/* the corresponding color					*/
+	snprintf(colorname, sizeof(colorname), "%s.bgcolor", thisname);
+	col = mc_get_color(conf, colorname, default_bgcolor);
+	graph_set_color(graph, GRAPH_COLOR_BACKGROUND, col);
+
+	snprintf(colorname, sizeof(colorname), "%s.fgcolor", thisname);
+	col = mc_get_color(conf, colorname, default_fgcolor);
+	graph_set_color(graph, GRAPH_COLOR_FOREGROUND, col);
+
+	snprintf(colorname, sizeof(colorname), "%s.nodatacolor", thisname);
+	col = mc_get_color(conf, colorname, NULL);
+	if (NULL != col)
+		graph_set_color(graph, GRAPH_COLOR_NODATA, col);
+
+	return 0;
+}
+
 /*
  * barometer graphs
  */
@@ -83,6 +134,7 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"max(barometer), min(barometer), avg(barometer)",
 		"barometer_max, barometer_min, barometer");
+	set_colors(g, DOGRAPH_BAROMETER, meteoconfig);
 	graph_label(g, mc_get_string(meteoconfig, "pressure.left.label",
 		"Pressure (hPa)"), 0);
 	rangecolor = graph_color_allocate(g,
@@ -185,7 +237,7 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 
 	start = dgp->end;
 	/* setup the temperature graph, depending on inside flag	*/
-	if (inside)
+	if (inside) {
 		g = setup_graph(dgp, query, sizeof(query), interval,
 			&start,
 			"min(temperature_inside), "
@@ -193,13 +245,16 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 			"avg(humidity_inside)",
 			"temperature_inside_min, temperature_inside_max, "
 			"temperature_inside, humidity_inside");
-	else
+		set_colors(g, DOGRAPH_TEMPERATURE_INSIDE, meteoconfig);
+	} else {
 		g = setup_graph(dgp, query, sizeof(query), interval,
 			&start,
 			"min(temperature), max(temperature), avg(temperature), "
 			"avg(humidity)",
 			"temperature_min, temperature_max, temperature, "
 			"humidity");
+		set_colors(g, DOGRAPH_TEMPERATURE, meteoconfig);
+	}
 	
 	/* adornments of the temperature graph				*/
 	graph_label(g, mc_get_string(meteoconfig,
@@ -363,6 +418,7 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	start = dgp->end;
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"sum(rain)", "rain");
+	set_colors(g, DOGRAPH_RAIN, meteoconfig);
 	graph_label(g,
 		mc_get_string(meteoconfig, "rain.left.label",
 			"Precipitation (mm)"), 0);
@@ -462,6 +518,7 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 		"sum(windx), sum(windy), sum(duration), "
 		"max(windgust)",
 		"windgust, windspeed, winddir");
+	set_colors(g, DOGRAPH_WIND, meteoconfig);
 	graph_label(g, mc_get_string(meteoconfig, "wind.left.label",
 		"Speed (m/s)"), 0);
 	graph_label(g, mc_get_string(meteoconfig, "wind.right.label",
@@ -583,6 +640,7 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	g = setup_graph(dgp, query, sizeof(query), interval, &start,
 		"avg(solar), avg(uv)",
 		"solar, uv");
+	set_colors(g, DOGRAPH_RADIATION, meteoconfig);
 	graph_label(g, mc_get_string(meteoconfig, "radiation.left.label",
 		"Solar Radiation (W/m2)"), 0);
 	graph_label(g, mc_get_string(meteoconfig, "radiation.right.label",

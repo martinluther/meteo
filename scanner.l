@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: scanner.l,v 1.5 2001/12/26 22:10:46 afm Exp $
+ * $Id: scanner.l,v 1.6 2002/01/11 19:35:19 afm Exp $
  */
 #include <mconf.h>
 #include <parser.h>
@@ -53,7 +53,7 @@ label|format	{
 left	{ return MP_LEFT; }
 right	{ return MP_RIGHT; }
 
-color|gustcolor|speedcolor|rangecolor|dewcolor|solarcolor|uvcolor	{
+color|gustcolor|speedcolor|rangecolor|dewcolor|solarcolor|uvcolor|bgcolor|fgcolor|nodatacolor {
 		mplval.string = strdup(mptext);
 		return MP_COLORNAME;
 	}

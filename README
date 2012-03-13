@@ -1,8 +1,8 @@
-                _                    ___   _   ___
- _ __ ___   ___| |_ ___  ___        / _ \ / | ( _ )
-| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | || | / _ \
-| | | | | |  __/ ||  __/ (_) |_____| |_| || || (_) |
-|_| |_| |_|\___|\__\___|\___/       \___(_)_(_)___/
+                _                    ___   _  ___  
+ _ __ ___   ___| |_ ___  ___        / _ \ / |/ _ \ 
+| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | || | (_) |
+| | | | | |  __/ ||  __/ (_) |_____| |_| || |\__, |
+|_| |_| |_|\___|\__\___|\___/       \___(_)_(_)/_/
 
 
 What's this?
@@ -92,7 +92,9 @@ Installation
 ------------
 
 Read the INSTALL for installation instructions. Please also check the end
-of that file for plattform specific instructions.
+of that file for plattform specific instructions. meteo has been tested on
+Solaris 2.8 and on Linux 2.4, which are the plattforms of the two sample
+installations. It may work on other Unix platforms.
 
 --
-$Id: README,v 1.8 2002/01/09 23:36:06 afm Exp $
+$Id: README,v 1.9 2002/01/11 19:35:19 afm Exp $

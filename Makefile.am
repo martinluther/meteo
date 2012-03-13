@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.26 2002/01/09 23:36:06 afm Exp $
+# $Id: Makefile.am,v 1.27 2002/01/11 19:35:19 afm Exp $
 #
 lib_LTLIBRARIES = libmeteo.la
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
@@ -82,4 +82,4 @@ test2:	meteoupdate
 test3:	meteoloop meteo.conf
 	./meteoloop -F -d -d -n 10 -w 10 -f `pwd`/meteo.conf
 test4:	meteograph meteo.conf
-	./meteograph -d -d -d -c images -f `pwd`/meteo.conf 300
+	./meteograph -d -d -c images -a -f `pwd`/meteo.conf 1800

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.h,v 1.4 2001/12/24 14:51:26 afm Exp $
+ * $Id: graph.h,v 1.5 2002/01/11 19:35:19 afm Exp $
  */
 #ifndef _GRAPH_H
 #define _GRAPH_H
@@ -26,6 +26,10 @@ typedef struct channelformat {
 	double	max;
 } channelformat_t;
 
+#define	GRAPH_COLOR_FOREGROUND	0
+#define	GRAPH_COLOR_BACKGROUND	1
+#define	GRAPH_COLOR_NODATA	2
+
 typedef struct graph {
 	char		*prefix;
 	int		width, height;		/* image dimensions	*/
@@ -37,7 +41,7 @@ typedef struct graph {
 	channelformat_t	*channelfmt;
 	int		nentries;
 	entry_t		*data;
-	int		bg, fg, red;
+	int		bg, fg, nodatacolor;
 } graph_t;
 
 #define	GRAPH_HISTOGRAMM	1
@@ -48,6 +52,7 @@ extern graph_t	*graph_new(const char *prefix, int width, int height);
 extern void	graph_free(graph_t *graph);
 extern void	graph_set_dimensions(graph_t *, int llx, int lly, int urx,
 		int ury);
+extern int	graph_set_color(graph_t *, int whichcolor, const int *rgb);
 extern int	graph_color_allocate(graph_t *, const int *rgb);
 extern void	graph_add_channel(graph_t *g, int flags, int color,
 		double offset, double scale);

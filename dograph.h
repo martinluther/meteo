@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.h,v 1.1 2001/12/26 22:10:45 afm Exp $
+ * $Id: dograph.h,v 1.2 2002/01/11 19:35:19 afm Exp $
  */
 #ifndef _DOGRAPH_H
 #define _DOGRAPH_H
@@ -42,6 +42,7 @@ typedef struct dograph_s {
 
 extern graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
 			int interval, time_t *start, char *data, char *avgdata);
+extern int	set_colors(graph_t *graph, int channel, mc_node_t *conf);
 extern void	baro_graphs(dograph_t *dgp, int interval);
 extern void	temp_graphs(dograph_t *dgp, int interval);
 extern void	temp_graphs_inside(dograph_t *dgp, int interval);

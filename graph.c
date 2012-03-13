@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.8 2001/12/26 22:10:45 afm Exp $
+ * $Id: graph.c,v 1.9 2002/01/11 19:35:19 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,9 +28,9 @@ graph_t	*graph_new(const char *prefix, int width, int height) {
 	g->width = width;
 	g->height = height;
 	g->im = gdImageCreate(width, height);
-	g->bg = gdImageColorAllocate(g->im, 255, 255, 255);
-	g->fg = gdImageColorAllocate(g->im, 0, 0, 0);
-	g->red = gdImageColorAllocate(g->im, 255, 0, 0);
+	g->bg = -1;
+	g->fg = -1;
+	g->nodatacolor = -1;
 	return g;
 }
 
@@ -94,11 +94,47 @@ static double	maxvalue(graph_t *g, channelformat_t *cf) {
 	return cf->offset - cf->scale * (g->ury - g->lly);
 }
 
+/*
+ * graph_set_color	create a certain color and set it in the graph 
+ *			structure
+ */
+int	graph_set_color(graph_t *g, int whichcolor, const int *rgb) {
+	int	c;
+	c = graph_color_allocate(g, rgb);
+	switch (whichcolor) {
+	case GRAPH_COLOR_FOREGROUND:
+		if (debug)
+			fprintf(stderr, "%s:%d: setting foreground color %d\n",
+				__FILE__, __LINE__, c);
+		g->fg = c;
+		break;
+	case GRAPH_COLOR_BACKGROUND:
+		if (debug)
+			fprintf(stderr, "%s:%d: setting background color %d\n",
+				__FILE__, __LINE__, c);
+		g->bg = c;
+		break;
+	case GRAPH_COLOR_NODATA:
+		if (debug)
+			fprintf(stderr, "%s:%d: setting nodata color %d\n",
+				__FILE__, __LINE__, c);
+		g->nodatacolor = c;
+		break;
+	default:
+		fprintf(stderr, "%s:%d: internal error: unknown color %d\n",
+			__FILE__, __LINE__, whichcolor);
+		break;
+	}
+	return c;
+}
 
 /*
  * graph_color_allocate	allocate a new color in the gdb image
  */
 int	graph_color_allocate(graph_t *g, const int *rgb) {
+	if (debug)
+		fprintf(stderr, "%s:%d: allocate color #%02x%02x%02x\n",
+			__FILE__, __LINE__, rgb[0], rgb[1], rgb[2]);
 	return gdImageColorAllocate(g->im, rgb[0], rgb[1], rgb[2]);
 }
 
@@ -134,10 +170,15 @@ static void	graph_channel(graph_t *g, int channel) {
 	int		x1, y1, x2, y2;
 	time_t		when;
 	double		offset, scale, max, value;
+	int		donodata = 0;
 #define	px(x)	(tmpx = (previousx < 0) ? x : previousx, 	\
 		previousx = x, tmpx)
 #define	py(y)	(tmpy = (previousy < 0) ? y : previousy, 		\
 		previousy = y, tmpy)
+
+	/* check the channel parameter					*/
+	if ((channel < 0) || (channel >= g->nchannels))
+		donodata = 1;
 
 	/* get graph parameters						*/
 	cf = &g->channelfmt[channel];
@@ -177,8 +218,19 @@ static void	graph_channel(graph_t *g, int channel) {
 			fprintf(stderr, "%s:%d: data[%d].when = %d\n",
 				__FILE__, __LINE__, i, (int)when);
 
-		/* skip to the next data point				*/
-		for (t = t + 1; ((t < twidth) && (tm(g,t) < when)) ; t++);
+		/* skip to the next data point, or produce no data bg	*/
+		for (t = t + 1; ((t < twidth) && (tm(g,t) < when)) ; t++) {
+			/* every data point in this range is one for	*/
+			/* nodata background				*/
+			if (donodata) {
+				/* draw the no data background		*/
+				gdImageLine(g->im,
+					g->llx + t, g->lly, g->llx + t, g->ury,
+					(-1 == g->nodatacolor)
+						? g->bg
+						: g->nodatacolor);
+			}
+		}
 		if (t >= twidth) {
 			if (debug > 1)
 				fprintf(stderr, "%s:%d: time exceeded on "
@@ -189,35 +241,39 @@ static void	graph_channel(graph_t *g, int channel) {
 			fprintf(stderr, "%s:%d: key %ld at x = %d\n", __FILE__,
 				__LINE__, tm(g,t), t);
 
-		/* find the value of the data point and plot it		*/
-		value = g->data[i].data[channel];
-		if (debug > 1)
-			fprintf(stderr, "%s:%d: point (%ld, %f)\n", __FILE__,
-				__LINE__, when, value);
-		if ((value <= max) && (value >= offset)) {
-			if (flags & GRAPH_LINE) {
-				x2 = g->llx + t;
-				y2 = ycoord(g, cf, value);
-				x1 = px(x2);
-				y1 = py(y2);
-			}
-			if (flags & GRAPH_HISTOGRAMM) {
-				x1 = g->llx + t;
-				y1 = g->lly;
-				x2 = x1;
-				y2 = ycoord(g, cf, value);
-				if (flags & GRAPH_HIDE) y2--;
-			}
+		/* drawing data is only possible if we have a valid	*/
+		/* channel number, i.e. the donodata flag is 0		*/
+		if (!donodata) {
+			/* find the value of the data point and plot it	*/
+			value = g->data[i].data[channel];
 			if (debug > 1)
-				fprintf(stderr, "%s:%d: drawing line "
-					"(%d,%d)-(%d,%d)\n", __FILE__,
-					__LINE__, x1, y1, x2, y2);
-			gdImageLine(g->im, x1, y1, x2, y2, color);
-		} else {
-			if (debug)
-				fprintf(stderr, "%s:%d: point (%ld, %f) out "
-					"of range\n", __FILE__, __LINE__,
-					when, value);
+				fprintf(stderr, "%s:%d: point (%ld, %f)\n",
+					__FILE__, __LINE__, when, value);
+			if ((value <= max) && (value >= offset)) {
+				if (flags & GRAPH_LINE) {
+					x2 = g->llx + t;
+					y2 = ycoord(g, cf, value);
+					x1 = px(x2);
+					y1 = py(y2);
+				}
+				if (flags & GRAPH_HISTOGRAMM) {
+					x1 = g->llx + t;
+					y1 = g->lly;
+					x2 = x1;
+					y2 = ycoord(g, cf, value);
+					if (flags & GRAPH_HIDE) y2--;
+				}
+				if (debug > 1)
+					fprintf(stderr, "%s:%d: drawing line "
+						"(%d,%d)-(%d,%d)\n", __FILE__,
+						__LINE__, x1, y1, x2, y2);
+				gdImageLine(g->im, x1, y1, x2, y2, color);
+			} else {
+				if (debug)
+					fprintf(stderr, "%s:%d: point (%ld, %f)"
+						" out of range\n", __FILE__,
+						__LINE__, when, value);
+			}
 		}
 	}
 }
@@ -236,6 +292,9 @@ void	graph_add_data(graph_t *g, time_t start, int interval, int nentries,
 	for (i = 0; i < g->nchannels; i++) {
 		graph_channel(g, i);
 	}
+	/* draw the no data background over the graph, canceling 	*/
+	/* phantasy data						*/
+	graph_channel(g, -1);
 }
 
 
