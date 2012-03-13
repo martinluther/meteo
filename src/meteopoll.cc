@@ -107,8 +107,8 @@ static void	loop(const meteo::Configuration& conf, const std::string& name) {
 			if (minute != looptime.getMinute()) {
 				// send data to the database
 				std::cout << "sending update to db: "
-					<< s->updatequery(name) << std::endl;
-				ds->receive(s->updatequery(name));
+					<< s->updatequery() << std::endl;
+				ds->receive(s->updatequery());
 
 				// reset and restart
 				s->reset();

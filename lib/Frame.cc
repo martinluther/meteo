@@ -387,6 +387,8 @@ Color	Frame::getColorFromHexString(const std::string& c) const {
 		Color	color(c);
 		return color;
 	} catch (...) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot parse color '%s', "
+			"using foreground", c.c_str());
 	}
 	return foreground;
 }

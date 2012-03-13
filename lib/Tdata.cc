@@ -283,6 +283,7 @@ double	Tdata::max(void) const {
 		return i->second;
 	return -10000000.;
 }
+
 double	Tdata::min(void) const {
 	tdata_t::const_iterator	i = min_element(data.begin(), data.end(),
 		TdataCompare);

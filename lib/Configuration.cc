@@ -299,4 +299,94 @@ const std::vector<xmlNodePtr>	Configuration::getNodeVector(const std::string& xp
 	return result;
 }
 
+// convenience methods for access to units definitions
+std::string	Configuration::getTemperatureUnit(void) const {
+	return getString("/meteo/units/temperatur", std::string("C"));
+}
+std::string	Configuration::getHumidityUnit(void) const {
+	return getString("/meteo/units/humidity", std::string("%"));
+}
+std::string	Configuration::getPressureUnit(void) const {
+	return getString("/meteo/units/pressure", std::string("hPa"));
+}
+std::string	Configuration::getRainUnit(void) const {
+	return getString("/meteo/units/rain", std::string("mm"));
+}
+std::string	Configuration::getWindUnit(void) const {
+	return getString("/meteo/units/wind", std::string("m/s"));
+}
+std::string	Configuration::getSolarUnit(void) const {
+	return getString("/meteo/units/solar", std::string("W/m2"));
+}
+std::string	Configuration::getUVUnit(void) const {
+	return getString("/meteo/units/uv", std::string("index"));
+}
+
+// convenience methods for access to database parameters
+std::string	Configuration::getDBHostname(void) const {
+	std::string	s = getString("/meteo/database/hostname", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/hostname");
+	}
+	return s;
+}
+std::string	Configuration::getDBName(void) const {
+	std::string	s = getString("/meteo/database/dbname", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/dbname");
+	}
+	return s;
+}
+std::string	Configuration::getDBUser(void) const {
+	std::string	s = getString("/meteo/database/user", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/user");
+	}
+	return s;
+}
+std::string	Configuration::getDBPassword(void) const {
+	std::string	s = getString("/meteo/database/password", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/password");
+	}
+	return s;
+}
+std::string	Configuration::getDBWriter(void) const {
+	std::string	s = getString("/meteo/database/writer", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/writer");
+	}
+	return s;
+}
+std::string	Configuration::getDBWriterpassword(void) const {
+	std::string	s = getString("/meteo/database/writerpassword",
+		"unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/writerpassword");
+	}
+	return s;
+}
+std::string	Configuration::getDBMsgqueue(void) const {
+	std::string	s = getString("/meteo/database/msgqueue", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/msgqueue");
+	}
+	return s;
+}
+std::string	Configuration::getDBUpdatefile(void) const {
+	std::string	s = getString("/meteo/database/updatefile", "unknown");
+	if (s == "unknown") {
+		throw MeteoException("config tag missing",
+			"/meteo/database/updatefile");
+	}
+	return s;
+}
+
 } /* namespace meteo */

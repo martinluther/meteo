@@ -26,23 +26,21 @@ void	Datasink::receive(const std::string& query) {
 MysqlDatasink::MysqlDatasink(const Configuration& conf) {
 	mysql_init(&mysql);
 	// connect and authenticate
-	std::string	host = conf.getString("/meteo/database/hostname",
-				"meteo");
-	std::string	dbname = conf.getString("/meteo/database/dbname",
-				"meteo");
-	std::string	user = conf.getString("/meteo/database/writer",
-				"meteo");
-	std::string	pw = conf.getString("/meteo/database/writerpassword",
-				"public");
+	std::string	host = conf.getDBHostname();
+	std::string	dbname = conf.getDBName();
+	std::string	user = conf.getDBUser();
+	std::string	pw = conf.getDBPassword();
 	if (NULL == mysql_real_connect(&mysql, host.c_str(), user.c_str(),
 		pw.c_str(), dbname.c_str(), 0, NULL, 0)) {
 		throw MeteoException("cannot create database",
 			mysql_error(&mysql));
 	}
 }
+
 MysqlDatasink::~MysqlDatasink(void) {
 	mysql_close(&mysql);
 }
+
 void	MysqlDatasink::receive(const std::string& query) {
 	int	res = mysql_query(&mysql, query.c_str());
 	if (res) {
@@ -134,8 +132,8 @@ Datasink	*DatasinkFactory::newDatasink(const std::string& name) const {
 	for (i = preferences.begin(); i != preferences.end(); i++) {
 		// create a message queue datasink
 		if ("msgqueue" == *i) {
-			std::string	msgqueue = getConfiguration().getString(
-				"/meteo/database/msgqueue", "undefined");
+			std::string	msgqueue = getConfiguration()
+							.getDBMsgqueue();
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"trying msg queue");
@@ -158,10 +156,8 @@ Datasink	*DatasinkFactory::newDatasink(const std::string& name) const {
 		}
 		// create a file datasink
 		if ("file" == *i) {
-			std::string	filename = getConfiguration().getString(
-				"/meteo/database/updatefile", "undefined");
-			if (filename == "undefined") {
-			}
+			std::string	filename = getConfiguration()
+							.getDBUpdatefile();
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "trying file");
 				return new FileDatasink(filename);

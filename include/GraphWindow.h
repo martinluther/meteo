@@ -167,6 +167,10 @@ public:
 		return starttime + i * interval;
 	}
 
+	// color access
+	Color	getForeground(void) const { return parent.getForeground(); }
+	Color	getBackground(void) const { return parent.getBackground(); }
+
 	// handle vertical scales
 	int	getHeight(void) const { return window.getHeight(); }
 	void	setLeftScale(const Scale& l) { leftscale = l; }

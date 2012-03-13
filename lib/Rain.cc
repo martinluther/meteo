@@ -10,6 +10,15 @@
 
 namespace meteo {
 
+void	Rain::setUnit(const std::string& u) {
+	if (hasvalue) {
+		RainConverter	rc(u);
+		value = rc.convert(value, unit);
+		svalue = rc.convert(svalue, unit);
+	}
+	unit = u;
+}
+
 void	Rain::update(double rain) {
 	if (!hasvalue)
 		svalue = rain;

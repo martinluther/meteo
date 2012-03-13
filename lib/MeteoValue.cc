@@ -112,13 +112,19 @@ void	MeteoValue::reset(void) {
 
 // TemperatureValue methods
 TemperatureValue::TemperatureValue(double v) {
-	setValue(v); setUnit("C");
+	setUnit(std::string("C")); setValue(v);
 }
 TemperatureValue::TemperatureValue(double v, const std::string& u) {
-	setValue(v); setUnit(u);
+	setUnit(u); setValue(v);
 }
 TemperatureValue::TemperatureValue(const std::string& u) {
 	setUnit(u);
+}
+void	TemperatureValue::setUnit(const std::string& u) {
+	if (hasValue()) {
+		value = TemperatureConverter(u).convert(value, getUnit());
+	}
+	MeteoValue::setUnit(u);
 }
 void	TemperatureValue::update(const TemperatureValue& t) {
 	if (!t.hasValue())
@@ -130,13 +136,19 @@ void	TemperatureValue::update(const TemperatureValue& t) {
 
 // HumidityValue methods
 HumidityValue::HumidityValue(double v) {
-	setValue(v); setUnit("%");
+	setUnit(std::string("%")); setValue(v);
 }
 HumidityValue::HumidityValue(double v, const std::string& u) {
-	setValue(v); setUnit(u);
+	setUnit(u); setValue(v);
 }
 HumidityValue::HumidityValue(const std::string& u) {
 	setUnit(u);
+}
+void	HumidityValue::setUnit(const std::string& u) {
+	if (hasValue()) {
+		value = HumidityConverter(u).convert(value, getUnit());
+	}
+	MeteoValue::setUnit(u);
 }
 void	HumidityValue::update(const HumidityValue& t) {
 	if (!t.hasValue()) return;
@@ -162,13 +174,19 @@ TemperatureValue	HumidityValue::Dewpoint(const TemperatureValue& t) {
 
 // PressureValue methods
 PressureValue::PressureValue(double v) {
-	setValue(v); setUnit("hPa");
+	setUnit(std::string("hPa")); setValue(v);
 }
 PressureValue::PressureValue(double v, const std::string& u) {
-	setValue(v); setUnit(u);
+	setUnit(u); setValue(v);
 }
 PressureValue::PressureValue(const std::string& u) {
 	setUnit(u);
+}
+void	PressureValue::setUnit(const std::string& u) {
+	if (hasValue()) {
+		value = PressureConverter(u).convert(value, getUnit());
+	}
+	MeteoValue::setUnit(u);
 }
 void	PressureValue::update(const PressureValue& t) {
 	if (!t.hasValue()) return;
@@ -177,13 +195,19 @@ void	PressureValue::update(const PressureValue& t) {
 
 // SolarValue methods
 SolarValue::SolarValue(double v) {
-	setValue(v); setUnit("W/m2");
+	setUnit(std::string("W/m2")); setValue(v);
 }
 SolarValue::SolarValue(double v, const std::string& u) {
-	setValue(v); setUnit(u);
+	setUnit(u); setValue(v);
 }
 SolarValue::SolarValue(const std::string& u) {
 	setUnit(u);
+}
+void	SolarValue::setUnit(const std::string& u) {
+	if (hasValue()) {
+		value = SolarConverter(u).convert(value, getUnit());
+	}
+	MeteoValue::setUnit(u);
 }
 void	SolarValue::update(const SolarValue& t) {
 	if (!t.hasValue()) return;
@@ -192,13 +216,19 @@ void	SolarValue::update(const SolarValue& t) {
 
 // UVValue methods
 UVValue::UVValue(double v) {
-	setValue(v); setUnit("index");
+	setUnit(std::string("index")); setValue(v);
 }
 UVValue::UVValue(double v, const std::string& u) {
-	setValue(v); setUnit(u);
+	setUnit(u); setValue(v);
 }
 UVValue::UVValue(const std::string& u) {
 	setUnit(u);
+}
+void	UVValue::setUnit(const std::string& u) {
+	if (hasValue()) {
+		value = UVConverter(u).convert(value, getUnit());
+	}
+	MeteoValue::setUnit(u);
 }
 void	UVValue::update(const UVValue& t) {
 	if (!t.hasValue()) return;

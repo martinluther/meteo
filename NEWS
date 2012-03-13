@@ -1,6 +1,14 @@
+0.8.6	Attention: the configuration file syntax has changed slightly:
+	the unit tag inside the station is no longer supported, use the
+	units tag just inside the meteo tag.
+
+0.8.1-6	Many bug fixes in the new graphing code. Especially the addition of
+	an accumulation function (very useful for rain) has shown that we
+	are on the right track.
+
 0.8.0	This release comes with a complete rewrite of the graphing engine.
 	Graphs can now be specified completely in XML, there are only very
 	few items left that cannot be specified in the XML file.
 
 --
-$Id: NEWS,v 1.15 2003/07/09 08:13:50 afm Exp $
+$Id: NEWS,v 1.17 2003/08/24 20:26:40 afm Exp $

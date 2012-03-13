@@ -24,17 +24,25 @@ std::string	xmlGetAttrString(xmlNodePtr x, const char *attrname) {
 }
 
 static void	drawChannel(xmlNodePtr x, GraphWindow *gw, const Dataset *ds) {
+	// retrieve the type attribute for this node
+	std::string	type = xmlGetAttrString(x, "type");
+
 	// get the color for the channel we are about to draw
-	Color	color = gw->getColorFromHexString(xmlGetAttrString(x, "color"));
+	std::string	s = xmlGetAttrString(x, "color");
+	Color	color;
+	if (s == "") {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no color spec, using "
+			"foreground");
+		color = gw->getForeground();
+	} else {
+		color = gw->getColorFromHexString(xmlGetAttrString(x, "color"));
+	}
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "color is %s", color.getHex().c_str());
 
 	// what side scale do we use
 	bool	useleftscale = ("left" == xmlGetAttrString(x, "scale"));
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "using scale on %s",
 		useleftscale ? "left" : "right");
-
-	// retrieve the type attribute for this node
-	std::string	type = xmlGetAttrString(x, "type");
 
 	// handle each of the types
 	if (type == "nodata") {

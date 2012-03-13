@@ -34,6 +34,27 @@ public:
 	bool	getBool(const std::string& xpath, bool def = false) const;
 	bool	xpathExists(const std::string& xpath) const;
 
+	// some convenience methods to retrieve standard parameters from
+	// the configuration file
+	std::string	getTemperatureUnit(void) const;
+	std::string	getHumidityUnit(void) const;
+	std::string	getPressureUnit(void) const;
+	std::string	getRainUnit(void) const;
+	std::string	getWindUnit(void) const;
+	std::string	getSolarUnit(void) const;
+	std::string	getUVUnit(void) const;
+
+	// some convenience methods to retrieve database parameters more
+	// easily
+	std::string	getDBHostname(void) const;
+	std::string	getDBName(void) const;
+	std::string	getDBUser(void) const;
+	std::string	getDBPassword(void) const;
+	std::string	getDBWriter(void) const;
+	std::string	getDBWriterpassword(void) const;
+	std::string	getDBMsgqueue(void) const;
+	std::string	getDBUpdatefile(void) const;
+
 	// low level primitives, primarily used for the Dataset stuff where
 	// we want to perform operations on data according to the XML tree
 	const xmlNodePtr	getNode(const std::string& xpath) const;

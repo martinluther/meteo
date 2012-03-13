@@ -1,0 +1,104 @@
+.TH METEOLAST "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteolast \- retrieve recent meteo data from database
+.SH SYNOPSIS
+meteolast [
+.B \-dxMEh?+H
+] [
+.B \-V
+] [
+.BI \-l logurl
+] [
+.BI \-f conffile
+] [
+.BI \-t time
+] [
+.BI \-w window
+]
+.BI stationname ...
+.SH DESCRIPTION
+The 
+.BR meteoloop (1)
+programm locates the last (or first) record before (after) the
+.I time
+(the present time if the
+.B \-t
+option is not present) for each station named as arguments
+and formats it either as plain text or
+as a segment of XML data. Standard XSLT style sheets can be used
+to convert the XML data into almost any other format.
+All elements on the produced XML are optional, as are the lines
+in the plain text format. Only lines/elements for which there is
+data in the database are printed.
+.SH OPTIONS
+.TP
+.B \-d
+increase the debug level by one. Debug messages are written to standard
+error.
+.TP
+.B \-x
+produce XML format instead of plain text.
+.TP
+.B \-E
+output in english units.
+.TP
+.B \-M
+output in metric units (the default).
+.TP
+.B \-H
+add an XML header and a root element <meteolist>
+to the output, so that the output is legal XML
+.TP
+.B \-f conffile
+read configuration from
+.IR conffile ,
+usually something like
+.IR /usr/local/etc/meteo.xml .
+.TP
+.B \-V
+print version and exit
+.TP
+.B \-h
+.B \-?
+print a help message and exit
+.TP
+.B \-+
+instead of search for the last record before a given time, look for
+the first record after that time. Using this option without
+the 
+.B \-t
+option does notmake sense: as the default for a search is the current
+time, searches with
+.B \-+
+will look into the future, for which normally no data is available yet.
+Suggestions for algorithms that allow to add such data to the database
+are highly welcome, though.
+.TP
+.B \-w window
+The program performs a query of the form
+.I select max(timekey) from stationdata where station = 'Altendor' and timekey ...
+Such a query would normally be extremely slow, as the restriction
+on the station name causes MySQL to almost scan the whole table. Thus
+the query only searches for timekeys between some not too distant point
+in the past and the current time. The 
+.I window
+parameter tells it how many seconds into the past it should look. The default
+is 3600, i.e. meteolast is successful if an update has happened during
+the last hour. If data comes in with longer intervals, you should increase
+the
+.IR window .
+Using 86400 for the
+.I window
+still gives reasonably fast results.
+
+.SH "SEE ALSO"
+.BR meteo (1)
+.BR meteo.xml (5),
+.BR meteodraw (1),
+.BR meteodequeue (1),
+.BR meteojob (1),
+.BR meteoavg (1).
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>, based on a version of meteolast
+for meteo-0.5 by Jeff Wabik

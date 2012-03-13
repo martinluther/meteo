@@ -13,52 +13,9 @@
 #include <Rain.h>
 #include <Wind.h>
 #include <Configuration.h>
+#include <Datarecord.h>
 
 namespace meteo {
-
-class	Datarecord {
-public:
-	TemperatureValue	temperatureinside;
-	TemperatureValue	temperatureoutside;
-	HumidityValue		humidityinside;
-	HumidityValue		humidityoutside;
-	PressureValue		barometer;
-	Rain			rain;
-	Wind			wind;
-	SolarValue		solar;
-	UVValue			uv;
-	int			samples;
-public:
-	// construction
-	Datarecord(void);
-	~Datarecord(void) { }
-
-	// update and reset
-	void	update(void) { samples++; }
-	void	reset(void);
-
-	// set temperature units
-	void	setTemperatureUnit(const std::string& unit) {
-		temperatureinside.setUnit(unit);
-		temperatureoutside.setUnit(unit);
-	}
-	void	setHumidityUnit(const std::string& unit) {
-		humidityinside.setUnit(unit);
-		humidityoutside.setUnit(unit);
-	}
-	void	setPressureUnit(const std::string& unit) {
-		barometer.setUnit(unit); 
-	}
-	void	setRainUnit(const std::string& unit) { rain.setUnit(unit); }
-	void	setWindUnit(const std::string& unit) { wind.setUnit(unit); }
-	void	setSolarUnit(const std::string& unit) { solar.setUnit(unit); }
-	void	setUVUnit(const std::string& unit){ uv.setUnit(unit); }
-
-	// accessor
-	std::string	updatequery(const std::string& stationname) const;
-
-	// show stuff on stdout
-};
 
 class Station {
 	Datarecord	r;
@@ -67,14 +24,16 @@ class Station {
 	int		packets;
 public:
 	// construction
-	Station(const std::string& n) : name(n) { }
+	Station(const std::string& n) : name(n) {
+		r.setStationname(n);
+	}
 	virtual	~Station(void);
 
 	// accumulate data
 	virtual void	update(const std::string &);
 	void	reset(void) { r.reset(); }
-	std::string	updatequery(const std::string& stationname) const {
-		return r.updatequery(stationname);
+	std::string	updatequery() {
+		return r.updatequery();
 	}
 
 	// the station reads a packet from the channel	

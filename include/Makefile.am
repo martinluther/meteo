@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.20 2003/07/24 22:34:24 afm Exp $
+# $Id: Makefile.am,v 1.21 2003/08/24 14:46:40 afm Exp $
 #
 
 noinst_HEADERS =							\
@@ -11,6 +11,7 @@ noinst_HEADERS =							\
 	Channel.h Timeval.h Station.h Configuration.h			\
 	Datasink.h Pidfile.h Converter.h Timelabel.h Dewpoint.h		\
 	Tdata.h Query.h Dataset.h Frame.h GraphWindow.h Graphics.h	\
+	Datarecord.h							\
 	crc.h meteo.h 							\
 	msgque.h							\
 	meteograph.h xmlconf.h						\

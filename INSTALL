@@ -335,7 +335,7 @@ Frequently asked questions
    shared mysqlclient library) and a package mysql-devel, which contains
    all the headers. You may be using MySQL on your system even without
    mysql-devel being installed, but to compile a program that uses
-   MySQL, you must install mysql-devel firts.
+   MySQL, you must install mysql-devel first.
 
 3. The dequeuer does not start
 
@@ -348,4 +348,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.19 2003/07/31 22:03:46 afm Exp $
+$Id: INSTALL,v 1.20 2003/08/24 20:54:24 afm Exp $

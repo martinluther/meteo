@@ -41,6 +41,13 @@ public:
 	}
 	~Rain(void) { }
 
+	// primitive accessors
+	void	setValue(double v) { value = v; svalue = 0; hasvalue = true; }
+	void	setTotal(double v) {
+		double d = value - svalue;
+		value = v; svalue = value - d;
+	}
+
 	// update
 	void	reset(void);
 	void	update(double rain);
@@ -50,8 +57,8 @@ public:
 	double	getValue(void) const;
 	double	getTotal(void) const;
 	double	getRate(void) const;
-	const std::string&	getUnit(void) { return unit; }
-	void	setUnit(const std::string& u) { unit = u; }
+	const std::string&	getUnit(void) const { return unit; }
+	void	setUnit(const std::string& u);
 	bool	hasValue(void) const { return hasvalue; }
 
 	// get string form

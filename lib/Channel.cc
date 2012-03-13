@@ -31,6 +31,9 @@
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 #include <Timeval.h>
 #include <mdebug.h>
 

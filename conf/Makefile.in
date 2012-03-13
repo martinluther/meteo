@@ -146,11 +146,11 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.4 2003/07/19 14:57:34 afm Exp $
+# $Id: Makefile.am,v 1.5 2003/08/24 20:26:40 afm Exp $
 #
-EXTRA_DIST = meteo.xml meteo-60.xml
+EXTRA_DIST = meteo.xml meteo-60.xml meteo.dtd
 
-pkgdata_DATA = meteo.xml
+pkgdata_DATA = meteo.xml meteo.dtd
 subdir = conf
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h

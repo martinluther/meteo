@@ -6,6 +6,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <Datarecord.h>
 #include <Station.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
@@ -15,86 +16,6 @@
 #include <crc.h>
 
 namespace meteo {
-
-Datarecord::Datarecord(void) {
-	setTemperatureUnit("C");
-	setHumidityUnit("%");
-	setPressureUnit("hPa");
-	setRainUnit("mm");
-	setWindUnit("m/s");
-	setSolarUnit("W/m2");
-	setUVUnit("index");
-	samples = 0;
-}
-
-std::string	Datarecord::updatequery(const std::string& stationname) const {
-	char	sb[100];
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "preparing update query");
-	std::string	query =
-		"insert into stationdata(timekey, station, year, month, mday, "
-		"	hour, min, temperature, temperature_inside, "
-		"	barometer, humidity, humidity_inside, "
-		"	rain, raintotal, windspeed, winddir, windgust, "
-		"	windx, windy, duration, solar, uv, samples, "
-		"	group300, group1800, group7200, group86400) "
-		"values(";
-	// timekey and station name
-	time_t	current = time(NULL);
-	current -= (current % 60);
-	snprintf(sb, sizeof(sb), "/*timekey */ %d, ", (int)current);
-	query += sb;
-	query += "/* stationname */ '" + stationname + "', ";
-
-	// store data stamp
-	struct tm	*st = gmtime(&current);
-	snprintf(sb, sizeof(sb), "%d, ", 1900 + st->tm_year); query += sb;
-	snprintf(sb, sizeof(sb), "%d, ", 1 + st->tm_mon); query += sb;
-	snprintf(sb, sizeof(sb), "%d, ", st->tm_mday); query += sb;
-	snprintf(sb, sizeof(sb), "%d, ", st->tm_hour); query += sb;
-	snprintf(sb, sizeof(sb), "%d, ", st->tm_min); query += sb;
-
-	// meteorological data fields
-	query += "/* temp */ " + temperatureoutside.getValueString() + ", ";
-	query += "/* tempi */ " + temperatureinside.getValueString() + ", ";
-	query += "/* barometer */ " + barometer.getValueString() + ", ";
-	query += "/* hum */ " + humidityoutside.getValueString() + ", ";
-	query += "/* humi */ " + humidityinside.getValueString() + ", ";
-	query += "/* rain */ " + rain.getValueString() + ", ";
-	query += "/* raintotal */ " + rain.getTotalString() + ", ";
-	if (wind.hasValue()) {
-		query += "/* speed */ " + wind.getSpeedString() + ", ";
-		query += "/* azi */ " + wind.getAziString() + ", ";
-		query += "/* max */ " + wind.getMaxString() + ", ";
-		query += "/* x */ " + wind.getXString() + ", ";
-		query += "/* y */ " + wind.getYString() + ", ";
-		query += "/* duration */" + wind.getDurationString() + ", ";
-	} else {
-		query += "NULL, NULL, NULL, NULL, NULL, NULL, ";
-	}
-	query += "/* solar */ " + solar.getValueString() + ", ";
-	query += "/* uv */ " + uv.getValueString() + ", ";
-	snprintf(sb, sizeof(sb), "/* samples */ %d, ", samples); query += sb;
-	time_t	t = time(NULL);
-	snprintf(sb, sizeof(sb), "%ld, ", t/300); query += sb;
-	snprintf(sb, sizeof(sb), "%ld, ", t/1800); query += sb;
-	snprintf(sb, sizeof(sb), "%ld, ", t/7200); query += sb;
-	snprintf(sb, sizeof(sb), "%ld)", t/86400); query += sb;
-
-	return query;
-}
-
-void	Datarecord::reset(void) {
-	samples = 0;
-	temperatureinside.reset();
-	temperatureoutside.reset();
-	humidityinside.reset();
-	humidityoutside.reset();
-	barometer.reset();
-	rain.reset();
-	wind.reset();
-	solar.reset();
-	uv.reset();
-}
 
 // concstruction/Destruction of Station
 Station::~Station(void) {
@@ -521,14 +442,13 @@ Station	*StationFactory::newStation(const std::string& name) const {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station %s created", name.c_str());
 
 	// retrieve the unit settings from the configuration file
-	std::string	station = "/meteo/station[@name='" + name + "']/unit/";
-	result->setTemperatureUnit(conf.getString(station + "temperature", "C"));
-	result->setHumidityUnit(conf.getString(station + "humidity", "%"));
-	result->setPressureUnit(conf.getString(station + "pressure", "hPa"));
-	result->setRainUnit(conf.getString(station + "rain", "mm"));
-	result->setWindUnit(conf.getString(station + "wind", "m/s"));
-	result->setSolarUnit(conf.getString(station + "solar", "W/m2"));
-	result->setUVUnit(conf.getString(station + "uv", "index"));
+	result->setTemperatureUnit(conf.getTemperatureUnit());
+	result->setHumidityUnit(conf.getHumidityUnit());
+	result->setPressureUnit(conf.getPressureUnit());
+	result->setRainUnit(conf.getRainUnit());
+	result->setWindUnit(conf.getWindUnit());
+	result->setSolarUnit(conf.getSolarUnit());
+	result->setUVUnit(conf.getUVUnit());
 
 	// open a channel to the station
 	Channel	*channel = ChannelFactory(conf).newChannel(name);

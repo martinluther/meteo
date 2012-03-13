@@ -51,6 +51,14 @@ The configuration file is described in the manual page meteo.xml(5).
 There is also a sample configuration file included in the conf
 directory.
 
+There also is a DTD in the conf directory of the distribution,
+checking your configuration file against the DTD can help pinpoint
+problems. Use the command 
+
+    xmllint --validurl file:///path/to/meteo.dtd /path/to/meteo.xml
+
+to validate the configuration file.
+
 
 Run
 ---
@@ -78,4 +86,4 @@ should first alter your tables so that it fits. See the MySQL manual
 for details.
 
 --
-$Id: SETUP,v 1.2 2003/07/19 14:57:34 afm Exp $
+$Id: SETUP,v 1.3 2003/08/24 20:54:24 afm Exp $

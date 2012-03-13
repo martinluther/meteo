@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <MeteoException.h>
 
 #define	NGRAPHNAMES	8
 char	*graphname[NGRAPHNAMES] = {
@@ -254,21 +255,33 @@ int	main(int argc, char *argv[]) {
 			bool	imgold = imageIsOld(outfilename,
 						ti->getInterval());
 
-			// compute the graph
-			meteo::Graphics	graph(conf, stationname,
-				ti->getInterval(), ti->getTime(), true,
-				currentgraph, (images || imgold));
+			// make sure we catch any problems that happen during
+			// a call graph generation
+			try {
+				// compute the graph
+				meteo::Graphics	graph(conf, stationname,
+					ti->getInterval(), ti->getTime(), true,
+					currentgraph, (images || imgold));
 
-			if (images || imgold)
-				graph.toFile(outfilename);
+				if (images || imgold)
+					graph.toFile(outfilename);
 
-			// output image map if available
-			if (imagemap)
-				std::cout << graph.mapString(url);
+				// output image map if available
+				if (imagemap)
+					std::cout << graph.mapString(url);
 
-			// output the image tag if asked to do so
-			if (imagetag)
-				std::cout << graph.imageTagString(outfilename);
+				// output the image tag if asked to do so
+				if (imagetag)
+					std::cout << graph.imageTagString(
+						outfilename);
+			}
+			catch (meteo::MeteoException& ex) {
+				// report the problem
+				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+					"MeteoException caught: %s, %s",
+					ex.getReason().c_str(),
+					ex.getAddinfo().c_str());
+			}
 		}
 	}
 
@@ -303,12 +316,23 @@ int	main(int argc, char *argv[]) {
 			// than the interval old
 			bool	imgold = imageIsOld(outfilename, interval);
 
-			// compute the graph
-			meteo::Graphics	graph(conf, stationname, interval, end,
-				false, currentgraph, (images || imgold));
+			// again, catch all errors during graph generation
+			try {
+				// compute the graph
+				meteo::Graphics	graph(conf, stationname,
+					interval, end, false, currentgraph,
+					(images || imgold));
 
-			if (images || imgold)
-				graph.toFile(outfilename);
+				if (images || imgold)
+					graph.toFile(outfilename);
+			}
+			catch (meteo::MeteoException& ex) {
+				// report the problem
+				mdebug(LOG_CRIT, MDEBUG_LOG, 0,
+					"MeteoException caught: %s, %s",
+					ex.getReason().c_str(),
+					ex.getAddinfo().c_str());
+			}
 		}
 	}
 

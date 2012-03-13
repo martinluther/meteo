@@ -1,0 +1,138 @@
+<!--
+
+  meteo.dtd
+
+  a first try at a DTD for meteo configuration files, use with the command
+  xmllint -validurl file://`pwd`/meteo.dtd conffile.xml to validate 
+  configuration
+
+  (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
+
+  -->
+<!ELEMENT meteo (database, units, station*, graphs)>
+<!ELEMENT database (hostname, dbname, user, password, writer, writerpassword,
+			msgqueue, updatefile, prefix)>
+<!ELEMENT hostname (#PCDATA)>
+<!ELEMENT dbname (#PCDATA)>
+<!ELEMENT user (#PCDATA)>
+<!ELEMENT password (#PCDATA)>
+<!ELEMENT writer (#PCDATA)>
+<!ELEMENT writerpassword (#PCDATA)>
+<!ELEMENT msgqueue (#PCDATA)>
+<!ELEMENT updatefile (#PCDATA)>
+<!ELEMENT prefix (#PCDATA)>
+
+<!ELEMENT units (temperature?, humidity?, pressure?, rain?, wind?, solar?, uv?)>
+<!ELEMENT temperature (#PCDATA)>
+<!ELEMENT humidity (#PCDATA)>
+<!ELEMENT pressure (#PCDATA)>
+<!ELEMENT rain (#PCDATA)>
+<!ELEMENT wind (#PCDATA)>
+<!ELEMENT solar (#PCDATA)>
+<!ELEMENT uv (#PCDATA)>
+
+<!ELEMENT station (url, type, speed?)>
+<!ATTLIST station name CDATA #REQUIRED>
+<!ELEMENT url (#PCDATA)>
+<!ELEMENT speed (#PCDATA)>
+<!ELEMENT type (#PCDATA)>
+
+<!ELEMENT graphs (graph+)>
+
+<!ELEMENT graph (leftlabel | rightlabel | leftaxis | rightaxis | graphwindow |
+		channels)*>
+<!ATTLIST graph name	CDATA #REQUIRED>
+<!ATTLIST graph height	CDATA #IMPLIED>
+<!ATTLIST graph width	CDATA #IMPLIED>
+<!ATTLIST graph fgcolor	CDATA #IMPLIED>
+<!ATTLIST graph bgcolor	CDATA #IMPLIED>
+
+<!ELEMENT channels (query, channel+)>
+<!ELEMENT query (select+, data*)>
+
+<!ELEMENT select (#PCDATA)>
+<!ATTLIST select name CDATA #REQUIRED>
+
+<!ELEMENT data (function | function2 | sum | mult | diff | quot )>
+<!ATTLIST data name CDATA #REQUIRED>
+
+<!ELEMENT sum ( data | value | constant )+>
+<!ELEMENT mult ( data | value | constant )+>
+<!ELEMENT diff ( data | value | constant )+>
+<!ELEMENT quot ( data | value | constant )+>
+
+<!ELEMENT constant EMPTY>
+<!ATTLIST constant value CDATA #REQUIRED>
+
+<!ELEMENT value EMPTY>
+<!ATTLIST value name CDATA #REQUIRED>
+
+<!ELEMENT function (value|function|constant)>
+<!ATTLIST function name ( sin | cos | tan | sqr | sqrt | max | min
+			| floor | ceil | accumulate ) #REQUIRED>
+<!ATTLIST function limit CDATA #IMPLIED>
+
+<!ELEMENT function2 (value+)>
+<!ATTLIST function2 name ( atan2 | azi | hypot | max | min | dewpoint )
+			#REQUIRED>
+
+<!ELEMENT channel EMPTY>
+<!ATTLIST channel color	CDATA #IMPLIED>
+<!ATTLIST channel type	( curve | histogram | range | nodata | lowdata |
+			windbackground ) #REQUIRED>
+<!ATTLIST channel name	CDATA #IMPLIED>
+<!ATTLIST channel namelower	CDATA #IMPLIED>
+<!ATTLIST channel nameupper	CDATA #IMPLIED>
+<!ATTLIST channel scale	(left | right)  #IMPLIED>
+<!ATTLIST channel southcolor CDATA #IMPLIED>
+<!ATTLIST channel northcolor CDATA #IMPLIED>
+<!ATTLIST channel westcolor CDATA #IMPLIED>
+<!ATTLIST channel eastcolor CDATA #IMPLIED>
+<!ATTLIST channel letters CDATA #IMPLIED>
+<!ATTLIST channel limit CDATA #IMPLIED>
+
+<!ELEMENT leftaxis EMPTY>
+<!ATTLIST leftaxis type	( static | dynamic | toprange | bottomrange )
+				#IMPLIED>
+<!ATTLIST leftaxis min		CDATA #IMPLIED>
+<!ATTLIST leftaxis minname	CDATA #IMPLIED>
+<!ATTLIST leftaxis max		CDATA #IMPLIED>
+<!ATTLIST leftaxis maxname	CDATA #IMPLIED>
+<!ATTLIST leftaxis first	CDATA #IMPLIED>
+<!ATTLIST leftaxis last		CDATA #IMPLIED>
+<!ATTLIST leftaxis step		CDATA #IMPLIED>
+<!ATTLIST leftaxis format	CDATA #IMPLIED>
+<!ATTLIST leftaxis ticks	( yes | no ) #IMPLIED>
+<!ATTLIST leftaxis gridlines	( yes | no ) #IMPLIED>
+<!ATTLIST leftaxis origin	CDATA #IMPLIED>
+<!ATTLIST leftaxis maxtickcount	CDATA #IMPLIED>
+<!ATTLIST leftaxis interval	CDATA #IMPLIED>
+
+<!ELEMENT rightaxis EMPTY>
+<!ATTLIST rightaxis type	( static | dynamic | toprange | bottomrange
+				| windbackground ) #IMPLIED>
+<!ATTLIST rightaxis min		CDATA #IMPLIED>
+<!ATTLIST rightaxis minname	CDATA #IMPLIED>
+<!ATTLIST rightaxis max		CDATA #IMPLIED>
+<!ATTLIST rightaxis maxname	CDATA #IMPLIED>
+<!ATTLIST rightaxis first	CDATA #IMPLIED>
+<!ATTLIST rightaxis last	CDATA #IMPLIED>
+<!ATTLIST rightaxis step	CDATA #IMPLIED>
+<!ATTLIST rightaxis format	CDATA #IMPLIED>
+<!ATTLIST rightaxis ticks	( yes | no ) #IMPLIED>
+<!ATTLIST rightaxis gridlines	( yes | no ) #IMPLIED>
+<!ATTLIST rightaxis origin	CDATA #IMPLIED>
+<!ATTLIST rightaxis maxtickcount	CDATA #IMPLIED>
+<!ATTLIST rightaxis interval	CDATA #IMPLIED>
+
+<!ELEMENT leftlabel (#PCDATA)>
+<!ATTLIST leftlabel	align CDATA #IMPLIED>
+
+<!ELEMENT rightlabel (#PCDATA)>
+<!ATTLIST rightlabel	align CDATA #IMPLIED>
+
+<!ELEMENT graphwindow EMPTY>
+<!ATTLIST graphwindow llx CDATA #REQUIRED>
+<!ATTLIST graphwindow lly CDATA #REQUIRED>
+<!ATTLIST graphwindow urx CDATA #REQUIRED>
+<!ATTLIST graphwindow ury CDATA #REQUIRED>

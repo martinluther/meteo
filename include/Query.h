@@ -11,11 +11,16 @@
 #include <MeteoValue.h>
 #include <vector>
 #include <Tdata.h>
+#include <Datarecord.h>
 
 namespace meteo {
 
 typedef	std::map<std::string, std::string>	smap_t;
 
+// The Query class encapsulates queries for a set of data fields and a given
+// interval. It thus represents a vertical section through the table. This
+// class is not very useful to access all data in a row, the QueryProcessor
+// class is capable of retrieving entire records
 class	Query {
 	smap_t	select;
 	time_t	start, end;
@@ -68,6 +73,8 @@ public:
 // on QueryProcessor does not depend on the type of database)
 class	QueryProcessor_internal;
 
+// the QueryProcessor either executes a Query-object and returns a QueryResult
+// or it can be used to retrieve a certain DataRecord directly
 class 	QueryProcessor {
 	std::string		stationname;
 	const Configuration&	configuration;
@@ -77,6 +84,8 @@ public:
 	~QueryProcessor(void) { }
 
 	void	perform(const Query& query, QueryResult& result);
+	Datarecord	lastRecord(const time_t notafter, int window = 3600);
+	Datarecord	firstRecord(const time_t notbefore, int window = 3600);
 };
 
 } /* namespace meteo */

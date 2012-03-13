@@ -16,6 +16,17 @@ void	Wind::reset(void) {
 	hasvalue = false;
 }
 
+void	Wind::setUnit(const std::string& u) {
+	if (hasvalue) {
+		WindConverter	wc(u);
+		v = Vector(wc.convert(v.getX(), unit),
+			wc.convert(v.getY(), unit));
+		max = Vector(wc.convert(max.getX(), unit),
+			wc.convert(max.getY(), unit));
+	}
+	unit = u;
+}
+
 void	Wind::update(const Vector& v0) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 		"Wind udpate (start = %.f, last = %.f) with (%.1f, %.1f)",

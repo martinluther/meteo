@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.22 2003/07/24 22:34:24 afm Exp $
+# $Id: Makefile.am,v 1.23 2003/08/24 14:46:40 afm Exp $
 #
 
 lib_LTLIBRARIES = libmeteo.la
@@ -20,6 +20,7 @@ libmeteo_la_SOURCES =							\
 	Converter.cc Channel.cc Timeval.cc Station.cc Configuration.cc	\
 	Datasink.cc Pidfile.cc Dataset.cc Timelabel.cc Dewpoint.cc	\
 	Tdata.cc Query.cc Frame.cc GraphWindow.cc Graphics.cc		\
+	Datarecord.cc							\
 	crc.c 								\
 	meteo.c 			 				\
 	msgque.c xmlconf.c 						\

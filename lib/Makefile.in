@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.22 2003/07/24 22:34:24 afm Exp $
+# $Id: Makefile.am,v 1.23 2003/08/24 14:46:40 afm Exp $
 #
 
 srcdir = @srcdir@
@@ -162,6 +162,7 @@ libmeteo_la_SOURCES = \
 	Converter.cc Channel.cc Timeval.cc Station.cc Configuration.cc	\
 	Datasink.cc Pidfile.cc Dataset.cc Timelabel.cc Dewpoint.cc	\
 	Tdata.cc Query.cc Frame.cc GraphWindow.cc Graphics.cc		\
+	Datarecord.cc							\
 	crc.c 								\
 	meteo.c 			 				\
 	msgque.c xmlconf.c 						\
@@ -180,9 +181,9 @@ am_libmeteo_la_OBJECTS = MeteoException.lo MeteoValue.lo Vector.lo \
 	Wind.lo Rain.lo Converter.lo Channel.lo Timeval.lo Station.lo \
 	Configuration.lo Datasink.lo Pidfile.lo Dataset.lo Timelabel.lo \
 	Dewpoint.lo Tdata.lo Query.lo Frame.lo GraphWindow.lo \
-	Graphics.lo crc.lo meteo.lo msgque.lo xmlconf.lo average.lo \
-	database.lo timestamp.lo daemon.lo printver.lo pdebug.lo \
-	mdebug.lo
+	Graphics.lo Datarecord.lo crc.lo meteo.lo msgque.lo xmlconf.lo \
+	average.lo database.lo timestamp.lo daemon.lo printver.lo \
+	pdebug.lo mdebug.lo
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/include
@@ -190,7 +191,8 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Channel.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Configuration.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Converter.Plo ./$(DEPDIR)/Dataset.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Converter.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Datarecord.Plo ./$(DEPDIR)/Dataset.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Datasink.Plo ./$(DEPDIR)/Dewpoint.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Frame.Plo ./$(DEPDIR)/GraphWindow.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Graphics.Plo \
@@ -274,6 +276,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Converter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Datarecord.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Dataset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Datasink.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Dewpoint.Plo@am__quote@

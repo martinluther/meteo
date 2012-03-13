@@ -21,7 +21,7 @@ namespace meteo {
 //                 an xpath
 Scale::Scale(const Configuration& conf, const std::string& xpath,
 	const Dataset& ds) {
-	double		min, max, max2, min2, r;
+	double		min, max, max2, min2, r, step;
 	std::string	minname, maxname;
 	// get the type from the configuration file
 	std::string	type = conf.getString(xpath + "/@type", "static");
@@ -38,26 +38,46 @@ Scale::Scale(const Configuration& conf, const std::string& xpath,
 		return;
 	}
 
+	// all the dynamic ranges are in relation to the step height, so we
+	// try to get a value for the step
+	step = conf.getDouble(xpath + "/@step", 1.);
+
 	// the dynamic range adapts to the data to be displayed
 	maxname = conf.getString(xpath + "/@maxname", "none");
 	if (maxname == "none") {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no maxname specified");
-		throw MeteoException("no maxname specified", xpath);
+		if (!conf.xpathExists(xpath + "/@max"))
+			throw MeteoException("no maxname/max specified", xpath);
+		max = conf.getDouble(xpath + "/@max", 0.);
+	} else {
+		max = ds.getData(maxname).max();
 	}
-	max = ds.getData(maxname).max();
 	minname = conf.getString(xpath + "/@minname", "none");
 	if (minname == "none") {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no minname specified");
-		throw MeteoException("no minname specified", xpath);
+		if (!conf.xpathExists(xpath + "/@min"))
+			throw MeteoException("no minname specified", xpath);
+		min = conf.getDouble(xpath + "/@min", 0.);
+	} else {
+		min = ds.getData(minname).min();
 	}
-	min = ds.getData(minname).min();
 	if (type == "dynamic") {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "dynamic range %f - %f",
 			min, max);
 		b = min;
+		// make sure the difference is at least the step height, 
+		// increasing the maximum if necessary (this is ok for all
+		// meteo data I can think of, but other applications may
+		// have different needs)
+		if ((max - min) < step)
+			max = min + step;
 		a = 1/(max - min);
 		return;
 	}
+
+	// the following types all use a range derived from max and min,
+	// we assume the user is clever enough to make sure they are
+	// large than the step.
 
 	// a range type scale keeps the same
 	if (type == "toprange") {
@@ -129,7 +149,8 @@ Axis::Axis(const Configuration& conf, const std::string& xpath,
 	}
 
 	// we want at most maxtickcount ticks, but the step should be
-	// of the form step * 10^n * x, where x \in {1,2,5}
+	// of the form step * 10^n * x, where x \in {1,2,5}, and n is
+	// non-negative
 	if (type == "dynamic") {
 		// compute a suitable step, i.e. the number of ticks should
 		// be as large as possible with the current ticklimit
@@ -143,16 +164,23 @@ Axis::Axis(const Configuration& conf, const std::string& xpath,
 						10);
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "maxtickcount = %d",
 			maxtickcount);
-		double	stepbase = pow(10.,
-				ceil(log10(sc.range()/(step * maxtickcount))));
+		double	s = ceil(log10(sc.range()/(step * maxtickcount)));
+		if (s < 0) s = 0.;	// make sure step does not become
+					// smaller than the configured step
+		double	stepbase = pow(10., s);
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "initial step = %.f, "
 			"stepbase = %f", step, stepbase);
 		step *= stepbase;
-		if ((5 * sc.range() / step) < maxtickcount) {
-			step = step / 5.;
-		}
-		if ((2 * sc.range() / step) < maxtickcount) {
-			step = step / 2.;
+		// if the step is not smaller than the configured step, i.e.
+		// it is at least 10 times larger, we can make the step 
+		// smaller without exceeding the maximum allowed ticks.
+		if (s > 0.5) {
+			if ((5 * sc.range() / step) < maxtickcount) {
+				step = step / 5.;
+			}
+			if ((2 * sc.range() / step) < maxtickcount) {
+				step = step / 2.;
+			}
 		}
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "final step = %f", step);
 	}

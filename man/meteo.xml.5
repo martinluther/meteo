@@ -150,8 +150,12 @@ uses UDS-10 device server):
 Starting with version 0.7.0, different units have become less of a problem.
 The original meteo always stored metric units in the database, now
 you can specify in the configuration file in what units you want meteo
-to store the data. All unit specifications are within the
-.RI /meteo/station[@name=' stationname ']/unit
+to store the data.
+For consistence, meteo enforces that all stations that are described in
+a single configuration file use the same units, i.e. units are usually 
+uniform within a database.
+All unit specifications are within the
+.RI /meteo/units
 XPath. The following table shows possible tags and the values:
 
 .TS
@@ -173,18 +177,12 @@ To get degrees Fahrenheit in the database, add the following tags to the
 contents of the station tag:
 
 .nf
-    <unit>
+    <units>
       <temperature>degF</temperature>
-    </unit>
+    </units>
 .fi
 
-The unit tag is also used for dewpoint computations. However, since the
-dewpoint class does not know for which station it has been called, it simply
-takes the first unit definition it can find, and uses that. If different
-unit specifications for temperature are used, the first found will be
-used in the 
-.BR meteodraw (1)
-program.
+The units tag is also used for dewpoint computations.
 
 .SH "GRAPH CONFIGURATION"
 The graphs produced by

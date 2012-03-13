@@ -1,3 +1,25 @@
+Release 0.8.6:
+	* added a DTD for meteo configuration files
+	* moved the unit configuration tags out of the station configuration
+	  into a units tag at the same level as the database tags
+	* add manual page for meteolast
+	* write the meteolast programm after the suggestions in Jeff
+	  Wabik's very nice version for 0.5 (which unfortunately cannot
+	  be used any longer as units are now handled rather differently)
+	* change semantics of setUnit methods: in all derived classes
+	  and in Wind and Rain classes, setUnit converts the value to
+	  the new unit if a value is already present.
+	* fix ticks calculation: make sure ticks are always spaced at least
+	  the step  width (or 1, if no step attribute is present)
+	* make sure that the range for dynamic scales is always at least
+	  the step with. This solves a problem where the range was extremely
+	  small, causing the data line to be plotted below the graph.
+	* make sure exceptions during graph generation are trapped so that
+	  we certainly get an error message related to the original problem
+	* alloca.h: must include the header on Solaris 9 with gcc-3.3
+	* This release is no longer tested with gcc-2.95.3, since all my systems
+	  now run with gcc-3.{2,3}
+
 Release 0.8.5:
 	* incorrect pressure calibration reading (pointed out by Josep Sort)
 
@@ -338,4 +360,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.72 2003/08/18 20:26:11 afm Exp $
+$Id: ChangeLog,v 1.75 2003/08/24 20:26:40 afm Exp $

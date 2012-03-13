@@ -22,6 +22,7 @@ class	MeteoValue {
 	bool	hasvalue;
 
 protected:
+
 	// current/average value
 	double	value;
 
@@ -53,7 +54,7 @@ public:
 
 	// other accessors
 	const std::string&	getUnit(void) const { return unit; }
-	void	setUnit(const std::string& u) { unit = u; }
+	virtual void	setUnit(const std::string& u) { unit = u; }
 
 	// check for availability of a value
 	bool	hasValue(void) const { return hasvalue; }
@@ -67,6 +68,7 @@ public:
 	TemperatureValue(double, const std::string&);
 	TemperatureValue(const std::string&);
 	virtual ~TemperatureValue(void) { }
+	virtual void	setUnit(const std::string& unit);
 	void	update(const TemperatureValue&);
 };
 
@@ -77,6 +79,7 @@ public:
 	HumidityValue(double, const std::string&);
 	HumidityValue(const std::string&);
 	virtual	~HumidityValue(void) { }
+	virtual void	setUnit(const std::string&);
 	void	update(const HumidityValue&);
 	TemperatureValue	Dewpoint(const TemperatureValue&);
 };
@@ -88,6 +91,7 @@ public:
 	PressureValue(double, const std::string&);
 	PressureValue(const std::string&);
 	virtual	~PressureValue(void) { }
+	virtual void	setUnit(const std::string& unit);
 	void	update(const PressureValue&);
 };
 
@@ -98,6 +102,7 @@ public:
 	SolarValue(double, const std::string&);
 	SolarValue(const std::string&);
 	virtual	~SolarValue(void) { }
+	virtual void	setUnit(const std::string& unit);
 	void	update(const SolarValue&);
 };
 
@@ -108,6 +113,7 @@ public:
 	UVValue(double, const std::string&);
 	UVValue(const std::string&);
 	virtual	~UVValue(void) { }
+	virtual void	setUnit(const std::string& unit);
 	void	update(const UVValue&);
 };
 

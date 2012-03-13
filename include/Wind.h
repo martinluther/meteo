@@ -63,9 +63,11 @@ public:
 	double		getMax(void) const { return max.getAbs(); }
 	double		getMaxAzimut(void) const { return max.getArg(); }
 	const std::string&	getUnit(void) const { return unit; }
-	void		setUnit(const std::string& u) { unit = u; }
+	void		setUnit(const std::string& u);
 	bool		hasValue(void) const { return hasvalue; }
 	double		getDuration(void) const;
+	void		setValue(const Vector& vv) { v = vv; hasvalue = true; }
+	void		setMax(const Vector& vv) { max = vv; }
 
 	// string representation
 	std::string	getSpeedString(void) const;
