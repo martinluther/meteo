@@ -240,5 +240,46 @@ Linux:
     freetype library, usually by adding -lfreetype to the LDFLAGS environment
     variable during configure and/or compile.
 
+
+Frequently asked questions
+==========================
+
+1. I've MySQL installed on my system, but the configure script does not
+   find it.
+
+   The configure script does not try to be smart, if the mysql headers and
+   libraries are not in one of the locations the compiler usually looks, it
+   will not find it. However, the environment variables CPPFLAGS and LDFLAGS
+   are precisely what is needed to help the compiler find the libraries. If
+   you have the MySQL headers in /usr/local/mysql/include, set
+
+	CPPFLAGS="-I/usr/local/mysql/include"; export CPPFLAGS
+
+   and if your MySQL libraries are in /usr/local/lib/mysql, try
+
+	LDFLAGS="-L/usr/local/lib/mysql"; export LDFLAGS
+
+   Your compiler should now find headers and libraries during configure.
+
+2. I've tried various settings of CPPFLAGS and LDFLAGS, but configure
+   still does not find the headers or libraries.
+
+   Some Linux distributions separate libraries and headers into different
+   RPMs, e.g. SuSE Linux has a mysql-shared package (containing the
+   shared mysqlclient library) and a package mysql-devel, which contains
+   all the headers. You may be using MySQL on your system even without
+   mysql-devel being installed, but to compile a program that uses
+   MySQL, you must install mysql-devel firts.
+
+3. The dequeuer does not start
+
+   The most common problem with the dequeuer is that it expects the
+   message queue file to exist. The message queue id is derived from
+   a file name in the file system, which you must create manually.
+   Sometimes IPC resources don't get cleaned up properly, so the must
+   be removed manually (this is a known deficiency of System V IPC,
+   for details read section 14.6 of `Advanced Programming in the Unix
+   Environment' by W. Richard Stevens). See ipcrm(8).
+
 --
 $Id: INSTALL,v 1.9 2002/03/08 23:50:43 afm Exp $

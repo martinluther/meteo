@@ -39,15 +39,11 @@ static time_t	last_update(watch_t *w, MYSQL *mysql) {
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
 	time_t		lu, t;
-	char		timekey[128];
-	struct tm	*tmp;
 
 	/* compute a time key for the current time minus the check	*/
 	/* interval							*/
 	time(&t);
 	t -= UPDATECHECKINTERVAL;
-	tmp = localtime(&t);
-	strftime(timekey, sizeof(timekey), "%Y%m%d%H%M%S", tmp);
 
 	/* compute the query to use to retrieve the last update 	*/	
 	/* anything further than UPDATECHECKINTERVAL in the past is	*/
@@ -56,7 +52,7 @@ static time_t	last_update(watch_t *w, MYSQL *mysql) {
 	/* XXX what is returned for max(timekey) if result set  empty?	*/
 	snprintf(query, sizeof(query),
 		"select max(timekey) from stationdata where station = '%s' "
-		"and timekey > %s", w->station, timekey);
+		"and timekey > %d", w->station, (int)t);
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 			"querying last update with query '%s'", query);
@@ -80,7 +76,7 @@ static time_t	last_update(watch_t *w, MYSQL *mysql) {
 	row = mysql_fetch_row(res);
 
 	/* convert the timestamp into a time_t				*/
-	lu = string2time(row[0]);
+	lu = atoi(row[0]);
 	mysql_free_result(res);
 	return lu;
 }

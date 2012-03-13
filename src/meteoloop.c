@@ -226,6 +226,7 @@ static void	slaveloop(loopdata_t *ld) {
 	ddp = dest_new();
 	if (ld->usequeue) {
 		ddp->type = DEST_MSGQUE;
+		ddp->name = strdup(ld->queuename);
 		ddp->destdata.msgque = msgque_setup(ld->queuename);
 		if (ddp->destdata.msgque < 0) {
 			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "cannot open msg queue");
@@ -233,6 +234,8 @@ static void	slaveloop(loopdata_t *ld) {
 		}
 	} else {
 		ddp->type = DEST_MYSQL;
+		ddp->name = mc_get_string(meteoconfig, "database.dbname",
+			"meteo");
 		ddp->destdata.mysql = mc_opendb(meteoconfig, O_WRONLY);
 		if (NULL == ddp->destdata.mysql) {
 			mdebug(LOG_CRIT, MDEBUG_LOG, 0, "failed to connect to "

@@ -19,6 +19,9 @@ MYSQL	*mc_opendb(const mc_node_t *lmeteoconfig, const int mode) {
 	/* read the database parameters from the configuration file     */
 	database = mc_get_string(lmeteoconfig, "database.dbname", "meteo");
 	host = mc_get_string(lmeteoconfig, "database.hostname", "localhost");
+	if (debug)
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "connecting to %s@%s",
+			database, host);
 	if ((mode & O_WRONLY) || (mode & O_RDWR)) {
 		user = mc_get_string(lmeteoconfig, "database.writer", "meteo");
 		password = mc_get_string(lmeteoconfig,

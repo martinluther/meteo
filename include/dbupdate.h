@@ -17,6 +17,7 @@
 #define	DEST_MSGQUE	2
 typedef struct	dest_s {
 	int	type;
+	char	*name;
 	union {
 		MYSQL	*mysql;
 		int	msgque;

@@ -49,6 +49,9 @@ static namegraph_t	ngs[NGRAPHS] = {
 	{ "radiation",		DOGRAPH_RADIATION			}
 };
 
+/* declare to keep compiler happy					*/
+void	usage(void);
+
 void	usage(void) {
 	printf(
 "usage: meteograph [ -adtV ] [ -l logfile ] [ -c dir ] [ -G graph ] \n"
@@ -108,7 +111,7 @@ int	main(int argc, char *argv[]) {
 		case 'e':
 			/* convert a timestamp into a time_t		*/
 			dg.timestamp = optarg;
-			dg.end = string2time(optarg);
+			dg.end = localtime2time(optarg);
 			if (debug)
 				printf("%s:%d: timestamp %d\n", __FILE__,
 					__LINE__, (int)dg.end);
@@ -145,7 +148,8 @@ int	main(int argc, char *argv[]) {
 			exit(EXIT_SUCCESS);
 			break;
 		default:
-			fprintf(stderr, "%s:%d: unknown option: %c\n", c);
+			fprintf(stderr, "%s:%d: unknown option: %c\n",
+				__FILE__, __LINE__, c);
 			usage();
 			exit(EXIT_FAILURE);
 		}

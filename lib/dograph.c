@@ -41,39 +41,37 @@ static void	create_filename(char *filename, int length,
 graph_t 	*setup_graph(const dograph_t *dgp, char *query, int querylen,
 	int interval, time_t *start, char *data, char *avgdata) {
 	graph_t	*g;
-	char	startstamp[32], endstamp[32];
+	time_t	end;
 
 	/* set up the graph geometrically				*/
 	g = graph_new(dgp->prefix, METEO_WIDTH, METEO_HEIGHT);
 	graph_set_dimensions(g, METEO_LLX, METEO_LLY, METEO_URX, METEO_URY);
 
 	/* set up the time margins for the graph			*/
-	*start -= *start % interval;
-	strftime(endstamp, 32, stampformat, localtime(start));
+	end = *start -= *start % interval;
 	*start -= 400 * interval;
-	strftime(startstamp, 32, stampformat, localtime(start));
 
 	/* formulate the query						*/
 	if (dgp->useaverages)
 		snprintf(query, querylen,
-			"select unix_timestamp(timekey) - %d, %s "
+			"select timekey - %d, %s "
 			"from averages "
-			"where timekey between  %s and %s "
+			"where timekey between %d and %d "
 			"  and station = '%-8.8s' "
 			"  and intval = %d "
 			"limit 400",
-			interval, avgdata, startstamp, endstamp,
+			interval, avgdata, (int)*start, (int)end,
 			dgp->prefix, interval);
 	else
 		snprintf(query, querylen,
 			"select group%d * %d, %s "
 			"from stationdata "
-			"where timekey between  %s and %s "
+			"where timekey between %d and %d "
 			"  and station = '%-8.8s' "
 			"group by group%d "
 			"order by 1 "
 			"limit 400",
-			interval, interval, data, startstamp, endstamp,
+			interval, interval, data, (int)*start, (int)end,
 			dgp->prefix, interval);
 
 	return g;

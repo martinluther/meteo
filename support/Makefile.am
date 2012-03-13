@@ -6,8 +6,11 @@
 # $Id: Makefile.am,v 1.1 2002/01/30 10:41:31 afm Exp $
 #
 noinst_DATA = rc.meteo
-EXTRA_DIST = meteojob meteooverview $(noinst_DATA)
+EXTRA_DIST = meteojob meteooverview How_to_migrate $(noinst_DATA)
 
 install-exec-local:
 	cp meteojob meteooverview $(bindir)
 
+bin_PROGRAMS = meteofixtimestamps
+
+meteofixtimestamps_SOURCES = meteofixtimestamps.c

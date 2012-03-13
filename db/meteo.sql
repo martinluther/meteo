@@ -7,7 +7,7 @@
 --
 create table meteo.stationdata (
 	-- the time stamp is the key
-	timekey			timestamp not null,
+	timekey			integer not null,
 	station			char(8) not null,
 	-- add broken up time
 	year 			smallint not null,
@@ -42,7 +42,7 @@ create table meteo.stationdata (
 );
 
 create table meteo.windhistogram (
-	timekey 	timestamp not null,
+	timekey 	integer not null,
 	direction	tinyint not null,
 	count		int not null,
 	speedavg	double not null,
@@ -51,7 +51,7 @@ create table meteo.windhistogram (
 
 create table meteo.averages (
 	-- identification
-	timekey			timestamp not null,
+	timekey			integer not null,
 	station			char(8) not null,
 	-- interval duration
 	intval		int not null,

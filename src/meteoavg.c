@@ -81,7 +81,7 @@ int	main(int argc, char *argv[]) {
 	char		*pidfilename = "/var/run/meteoavg-%s.pid";
 
 	/* parse the command line					*/
-	while (EOF != (c = getopt(argc, argv, "adf:Fil::r:np:V")))
+	while (EOF != (c = getopt(argc, argv, "adf:Fi:l:r:np:V")))
 		switch (c) {
 		case 'l':
 			if (mdebug_setup("meteoavg", optarg) < 0) {
@@ -155,15 +155,15 @@ int	main(int argc, char *argv[]) {
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "start timestamp: %s",
 				argv[optind]);
-		fromt = string2time(argv[optind]);
+		fromt = localtime2time(argv[optind]);
 		tot = fromt + interval * naverages;
 		break;
 	case 2:
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "interval %s - %s",
 				argv[optind], argv[optind + 1]);
-		fromt = string2time(argv[optind]);
-		tot = string2time(argv[optind + 1]);
+		fromt = localtime2time(argv[optind]);
+		tot = localtime2time(argv[optind + 1]);
 		break;
 	default:
 		mdebug(LOG_CRIT, MDEBUG_LOG, 0, "wrong number of arguments");

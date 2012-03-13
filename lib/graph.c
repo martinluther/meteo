@@ -12,6 +12,7 @@
 #include <meteo.h>
 #include <time.h>
 #include <mdebug.h>
+#include <string.h>
 
 /*
  * graph_new	create a new graph structure

@@ -2,6 +2,9 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
+# Note: this script assumes the average table has correctly been filled
+#       e.g. using the meteoavg program
+#
 # $Id: meteojob,v 1.1 2002/01/30 10:41:31 afm Exp $
 #
 s=`/usr/local/bin/date +%s`
@@ -11,7 +14,7 @@ for interval in 300 1800 7200 86400
 do
 	if [ `expr $s % $interval` -eq 0 ]
 	then
-		/usr/local/bin/meteograph "$@" ${interval}
+		/usr/local/bin/meteograph -a "$@" ${interval}
 	fi
 done
 

@@ -1,3 +1,18 @@
+Release 0.4.0:
+	* add migration utility meteofixtimestamps and describe how migration
+	  should be done in How_to_migrate in the support directory
+	* add some help about the use of CPPFLAGS and LDFLAGS in INSTALL
+	* convert to unix timestamps in database (MySQL lacks functions to
+	  specify the time zone of a timestamp, it expects us to know the
+	  servers time zone, and to provide timestamps in the right time
+	  zone for the server).
+	* try to make sure configure blows up if one of the required libraries
+	  mysql, gd or png cannot be linked
+	* Type in meteoavg.c option parsing
+	* add -a flag to support/meteojob, because otherwise the database
+	  will get slow
+	* fix some missing includes
+
 Release 0.3.4:
 	* added individual graphs for humidity and humidity_inside
 	* updated autoconf/automake to newer releases (2.52/1.5)

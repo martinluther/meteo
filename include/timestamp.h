@@ -10,6 +10,7 @@
 
 #include <time.h>
 
-extern time_t	string2time(const char *ts);
+extern time_t	localtime2time(const char *ts);
+extern time_t	gmtime2time(const char *ts);
 
 #endif /* _TIMESTAMP_H */

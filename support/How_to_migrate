@@ -1,0 +1,112 @@
+Database Migration to from pre 0.4.0 databases
+==============================================
+
+Since starting with version 0.4.0 stores timestamps in GMT instead of
+local time, some migration steps are required. This file describes how
+the migration can be most easily accomplished. Care is taken that as
+few data points as possible are lost, but during the migration, the
+graphs make look strange or may not even be generated.
+
+Outline
+-------
+
+1. configure and build the new version of the meteo package
+2. stop the old version, so that no further updates go into the database
+3. rename the stationdata and averages table, and create new empty
+   tables instead
+4. install the new version, and start it, new data now gets sent to
+   the new tables
+5. use the meteofixtimestamps utility to convert the old data to the
+   new table, i.e. modifying the timestamps
+6. recreate the averages that could not correctly be computed while
+   step 5 was not complete
+7. if you are convinced that conversion worked ok, drop the old tables
+
+Details
+-------
+
+1. configure and build the new version
+
+   This is described in detail in the usual places in the package
+
+2. stop the old version 
+
+   /etc/init.d/meteo stop
+
+3. rename tables, create new tables
+
+   Using the mysql program with an identity that has all the rights to
+   create tables and grant rights to users, to the following
+
+   a) rename stationdata and averages table
+
+	ALTER TABLE stationdata RENAME stationdataold;
+	ALTER TABLE averages RENAME averagesold;
+
+   b) create new tables
+
+	CREATE TABLE stationdata SELECT * FROM stationdataold WHERE 0 = 1;
+	CREATE TABLE averages SELECT * FROM averagesold WHERE 0 = 1;
+
+      this creates two new tables with the same structure as the old
+      ones, but the primary key is not correct. Since we want to convert
+      the timekey column from TIMESTAMP type to INTEGER, we have to do the
+      following
+
+	ALTER TABLE stationdata MODIFY COLUMN timekey INTEGER NOT NULL;
+	ALTER TABLE averages MODIFY COLUMN timekey INTEGER NOT NULL;
+
+      Now we can recreate the primary key, using
+
+	ALTER TABLE stationdata ADD PRIMARY KEY (timekey, station);
+	ALTER TABLE averages ADD PRIMARY KEY (timekey, station, intval);
+
+   c) using grant commands, make sure your update user is allowed to 
+      insert data into the new tables. And your read only user should
+      be able to select from them.
+
+4. install the new version
+
+   make install
+   /etc/init.d/meteo start
+
+5. fix timestamps
+
+   The meteofixtimestamps utility expects to convert a stationdataold
+   table to a stationdata table, and similarly for averages. Depending
+   on the speed of your machine, it may run for quite some time.
+   Converting the data of my two weather stations (about 1.2 million
+   rows) takes about two hours on my development system (a 266MHz
+   Pentium Notebook with only 96MB of RAM).
+
+   Meteofixtimestamps does not come with a manual page (it's a one shot
+   program), but it expects the following options
+
+	-h hostname	hostname where the MySQL database resides
+			(default localhost)
+	-b database	database name (default meteo)
+	-u user		user name used to connect to database (no default)
+	-p password	password (I know, it's not secure to provide
+			passwords on the command line, but for a program
+			that is run only once, this should be acceptable)
+	-v		verbose mode
+	-?		display usage message and exit
+
+6. recompute some of the averages
+
+   meteoavg -i 300 starttimestamp endtimestamp
+   meteoavg -i 1800 starttimestamp endtimestamp
+   meteoavg -i 7200 starttimestamp endtimestamp
+   meteoavg -i 86400 starttimestamp endtimestamp
+
+   if your migration was quick, you may not need the last two, but if you
+   have more than one station, you will have to run meteoavg as many times
+   as you have stations, using the -c option to specify the configuration
+   file for each of the stations.
+
+7. drop old tables
+
+   This is left as an exercise to the reader.
+
+--
+$Id$

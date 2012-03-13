@@ -17,7 +17,7 @@ int	average_fake = 0;
 
 typedef struct querydata_s {
 	MYSQL	*mysql;
-	char	from[32], to[32];
+	time_t	from, to;
 	int	interval, group;
 	char	*station;
 } querydata_t;
@@ -53,16 +53,17 @@ static MYSQL_RES	*perform_query(querydata_t *qdp, const char *clause) {
 
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"perform_query from %s to %s, station %s\n",
+			"perform_query from %d to %d, station %s\n",
 			qdp->from, qdp->to, qdp->station);
 	
 	/* compute the query string					*/
 	snprintf(query, sizeof(query),
 		"select %s "
 		"from stationdata "
-		"where timekey between %s and %s "
+		"where timekey between %d and %d "
 		"  and group%d = %d and station = '%-8.8s'", clause,
-		qdp->from, qdp->to, qdp->interval, qdp->group, qdp->station);
+		(int)qdp->from, (int)qdp->to, qdp->interval,
+		qdp->group, qdp->station);
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "averageing query is '%s'",
 			query);
@@ -103,7 +104,7 @@ static int	perform_update(querydata_t *qdp, avgdata_t *adp) {
 		"	windspeed, winddir, windgust, "
 		"	solar, uv ) "
 		"values ("
-		"	%s, '%-8.8s', %d, "
+		"	%d, '%-8.8s', %d, "
 		"	%.1f, %.1f, %.1f, "
 		"	%.1f, %.1f, %.1f, "
 		"	%.1f, %.1f, %.1f, "
@@ -113,7 +114,7 @@ static int	perform_update(querydata_t *qdp, avgdata_t *adp) {
 		"	%.1f, %.0f, %.1f, "
 		"	%.1f, %.2f "
 		")",
-		qdp->to, qdp->station, qdp->interval,
+		(int)qdp->to, qdp->station, qdp->interval,
 		adp->temperature, adp->temperature_max, adp->temperature_min,
 		adp->temperature_inside, adp->temperature_inside_max,
 			adp->temperature_inside_min,
@@ -143,29 +144,23 @@ static int	perform_update(querydata_t *qdp, avgdata_t *adp) {
 
 int	add_average(MYSQL *mysql, const time_t now, const int interval,
 	const char *station) {
-	time_t		fromt, tot;
 	querydata_t	qd;
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
 	avgdata_t	avg;
 	double		x, y;
-	struct tm	*tp;
 	char		query[1024];
 	int		rows = 0;
 
 	/* compute the timestamps					*/
-	tot = now - (now % interval);
-	fromt = tot - interval;
-	tp = localtime(&fromt);
-	strftime(qd.from, sizeof(qd.from), "%Y%m%d%H%M%S", tp);
-	tp = localtime(&tot);
-	strftime(qd.to, sizeof(qd.to), "%Y%m%d%H%M%S", tp);
+	qd.to = now - (now % interval);
+	qd.from = qd.to - interval;
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"average for points between %s and %s", qd.from, qd.to);
+			"average for points between %d and %d", qd.from, qd.to);
 
 	/* compute the group number					*/
-	qd.group = fromt / interval;
+	qd.group = qd.from / interval;
 	qd.interval = interval;
 
 	/* remaining parameters						*/
@@ -175,8 +170,8 @@ int	add_average(MYSQL *mysql, const time_t now, const int interval,
 	/* delete the row if it happens to exists			*/
 	snprintf(query, sizeof(query),
 		"delete from averages "
-		"where timekey = %s and intval = %d and station = '%-8.8s'",
-		qd.to, interval, station);
+		"where timekey = %d and intval = %d and station = '%-8.8s'",
+		(int)qd.to, interval, station);
 	if (mysql_query(mysql, query)) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "cannot delete row: %s",
 			mysql_error(mysql));
@@ -255,8 +250,7 @@ int	add_average(MYSQL *mysql, const time_t now, const int interval,
 
 int	have_average(MYSQL *mysql, const time_t now, const int interval,
 		const char *station) {
-	char		query[1024], tmstmp[64];
-	struct tm	*tp;
+	char		query[1024];
 	MYSQL_RES	*res;
 	MYSQL_ROW	row;
 
@@ -270,14 +264,12 @@ int	have_average(MYSQL *mysql, const time_t now, const int interval,
 	}
 
 	/* query averages table for a row				*/
-	tp = localtime(&now);
-	strftime(tmstmp, sizeof(tmstmp), "%Y%m%d%H%M%S", tp);
 	snprintf(query, sizeof(query),
 			"select count(*) "
 			"from averages "
-			"where	timekey = %s "
+			"where	timekey = %d "
 			"	and station = '%-8.8s' "
-			"	and intval = %d", tmstmp, station, interval);
+			"	and intval = %d", (int)now, station, interval);
 	if (debug)
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "have_average-query is '%s'",
 			query);
@@ -307,8 +299,8 @@ int	have_average(MYSQL *mysql, const time_t now, const int interval,
 		if (0 < atoi(row[0])) {
 			if (debug)
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-					"average %s/%d positively exists",
-					tmstmp, interval);
+					"average %d/%d positively exists",
+					now, interval);
 			mysql_free_result(res);
 			return 1;
 		}

@@ -18,10 +18,14 @@ dest_t	*dest_new(void) {
 	dest_t	*result;
 	result = (dest_t *)malloc(sizeof(dest_t));
 	result->type = DEST_NONE;
+	result->name = NULL;
 	return result;
 }
 
 void	dest_free(dest_t *d) {
+	if (d->name != NULL) {
+		free(d->name); d->name = NULL;
+	}
 	switch (d->type) {
 	case DEST_MYSQL:
 		mc_closedb(d->destdata.mysql);
@@ -58,7 +62,8 @@ static int	dbquery(dest_t *ddp, const char *query) {
 	case DEST_MSGQUE:
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"sending query to msg queue %d (length = %d)",
+				"sending query to msg queue %s/%d "
+				"(length = %d)", ddp->name,
 				ddp->destdata.msgque, strlen(query) + 1);
 		return msgque_sendquery(ddp->destdata.msgque, query,
 			strlen(query) + 1);
@@ -81,7 +86,7 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 	/* compute a time stamp						*/
 	time(&now);
 	now -= now % 60;
-	nt = localtime(&now);
+	nt = gmtime(&now);
 	strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", nt);
 
 	/* normalize the data						*/
@@ -94,7 +99,7 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 	
 	/* prepare the query						*/
         sprintf(query,
-		"insert into meteo.stationdata(timekey, station, "
+		"insert into stationdata(timekey, station, "
 		"	year, month, mday, hour, min, "
 		"	temperature, temperature_inside, barometer, "
 		"	humidity, humidity_inside, rain, raintotal, "
@@ -102,7 +107,7 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 		"	solar, uv, "
 		"	duration, samples, "
 		"	group300, group1800, group7200, group86400) "
-		"values(%s, '%s', "
+		"values(%d, '%s', "
 		"	%d, %d, %d, "
 		"	%d, %d, "
 		"	%.2f, %.2f, %.2f, %.0f, %.0f, %.1f, %.1f, "
@@ -110,7 +115,7 @@ int	dbupdate(dest_t *ddp, meteodata_t *md, const char *station) {
 		"	%.1f, %.1f, "
 		"	%.6f, %d, "
 		"	%ld, %ld, %ld, %ld)",
-		timestamp, station,
+		now, station,
 
 		1900 + nt->tm_year, 1 + nt->tm_mon, nt->tm_mday,
 
