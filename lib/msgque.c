@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: msgque.c,v 1.6 2003/06/01 23:09:28 afm Exp $
+ * $Id: msgque.c,v 1.7 2003/06/09 07:33:21 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -42,9 +42,8 @@ msgque_t	*msgque_setup(const char *filename) {
 	/* convert the filename to a key				*/
 	mqkey = ftok(filename, 1);
 	if (mqkey == (key_t)-1) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, MDEBUG_ERRNO,
-				"cannot convert key");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, MDEBUG_ERRNO,
+			"cannot convert key");
 		return rc;
 	}
 
@@ -55,8 +54,7 @@ msgque_t	*msgque_setup(const char *filename) {
 			"cannot get message queue");
 		return rc;
 	}
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "msgque id %d allocated", rc);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "msgque id %d allocated", rc);
 #else
 	mid = socket(AF_UNIX, SOCK_DGRAM, 0);
 	if (mid < 0) {
@@ -116,11 +114,12 @@ typedef struct querymsg {
 int	msgque_sendquery(msgque_t *id, const char *query, int size) {
 	int		s, rc = -1;
 	querymsg_t	*qm = NULL;
+#ifndef HAVE_SYS_MSG_H
 	struct sockaddr_un	sau;
+#endif
 
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"sending query of length %d to queue", size);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		"sending query of length %d to queue", size);
 
 	/* create a data structure for the message			*/
 	s = sizeof(long) + size;
@@ -129,9 +128,8 @@ int	msgque_sendquery(msgque_t *id, const char *query, int size) {
 
 	/* copy the data to the message structure			*/
 	memcpy(qm->mtext, query, size);
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"message packet of size %d ready", s);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		"message packet of size %d ready", s);
 
 #ifdef HAVE_SYS_MSG_H
 	/* send the message to the queue				*/
@@ -158,10 +156,10 @@ int	msgque_sendquery(msgque_t *id, const char *query, int size) {
 		mdebug(LOG_ERR, MDEBUG_LOG, MDEBUG_ERRNO,
 			"could not send to socket");
 	}
-#endif
 
 	/* free the data allocated for the message			*/
 cleanup:
+#endif
 	free(qm);
 	return rc;
 }
@@ -170,7 +168,9 @@ int	msgque_rcvquery(msgque_t *id, char *query, int size) {
 	querymsg_t	*qm = NULL;
 	int		r = -1;
 	time_t		now;
+#ifndef HAVE_SYS_MSG_H
 	struct sockaddr_un	sau;
+#endif
 
 	/* allocate a buffer large enough to hold the message		*/
 	qm = (querymsg_t *)malloc(sizeof(querymsg_t));

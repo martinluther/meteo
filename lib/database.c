@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: database.c,v 1.5 2002/11/25 00:17:44 afm Exp $
+ * $Id: database.c,v 1.6 2003/06/09 07:33:21 afm Exp $
  */
 #include <database.h>
 #include <string.h>
@@ -22,9 +22,7 @@ MYSQL	*mc_opendb(const meteoconf_t *mc, const int mode) {
 		"meteo");
 	host = xmlconf_get_abs_string(mc, "/meteo/database/hostname",
 		"localhost");
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "connecting to %s@%s",
-			database, host);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "connecting to %s@%s", database, host);
 	if ((mode & O_WRONLY) || (mode & O_RDWR)) {
 		user = xmlconf_get_abs_string(mc, "/meteo/database/writer",
 			"meteo");
@@ -61,8 +59,7 @@ MYSQL	*mc_opendb(const meteoconf_t *mc, const int mode) {
 			mysql_error(mysql));
 		return NULL;
 	}
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "connected to database");
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "connected to database");
 
 	/* return the mysql query					*/
 	return mysql;

@@ -1,13 +1,8 @@
-0.5.1 adds the possiblity to write the updates to a file instead of the
-      database. I intend to use this feature to create a highly available
-      setup (well, at least for the computers, if the station fails, I cannot
-      prevent data loss).
+0.7.1	some minor bug fixes
 
-0.5.0 converts the configuration file to XML. It also fixes some minor
-      bugs.
-
-0.4.0 modfies the format of the database, please read support/How_to_migrate
-      for instructions about how to convert to the new format.
+0.7.0	comes with a complete rewrite of the station interface code,
+	which in particular handles undefined values much more gracefully
+	and can now work with english units
 
 --
-$Id: NEWS,v 1.13 2003/05/04 16:31:58 afm Exp $
+$Id: NEWS,v 1.14 2003/06/09 07:38:17 afm Exp $

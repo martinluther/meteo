@@ -51,15 +51,13 @@ void	crc_addbyte(crc_t *crc, unsigned char c) {
 crc_t	*crc_new(void) {
 	crc_t	*result;
 	result = (crc_t *)malloc(sizeof(crc_t));
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(crc_t *)malloc(%d) = %p",
-			sizeof(crc_t), result);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(crc_t *)malloc(%d) = %p",
+		sizeof(crc_t), result);
 	return result;
 }
 
 void	crc_free(crc_t *crc) {
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((crc_t *)%p\n", crc);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((crc_t *)%p\n", crc);
 	free(crc);
 }
  

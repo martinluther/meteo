@@ -1801,7 +1801,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=meteo
- VERSION=0.7.0
+ VERSION=0.7.1
 
 
 cat >>confdefs.h <<_ACEOF

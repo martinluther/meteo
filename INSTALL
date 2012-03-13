@@ -239,15 +239,43 @@ Solaris:
     like the Korn shell (/usr/bin/ksh) or, even better, the Bash
     /usr/local/bin/bash (or wherever you have installed it).
 
+	There will be lots of warnings during the compile about alignment
+    of data types, these can be ignored. They are not caused by any
+    meteo code, but come from the string class implementation that comes
+    with gcc.
+
 Linux:
 	Some Linux distributions have the gd library compiled with freetype
     support. Consequently, the meteo programs must be linked against the
     freetype library, usually by adding -lfreetype to the LDFLAGS environment
     variable during configure and/or compile.
 
+Mac OS X:
+	There seems to be a problem with libtool on this platform, somehow
+    it does not find a working sed, resulting in very strange error
+    messages about -e not being found. Set the environment variable SED
+    to /usr/bin/sed:
+
+	$ export SED=/usr/bin/sed	(if using sh/bash)
+	% setenv SED /usr/bin/sh	(if using csh/tcsh)
+
+    You also have to make sure everything needed by configure is on your
+    PATH. I usually forget to do
+
+	export PATH=/usr/local/bin:/usr/local/sbin:${PATH}
+
 
 Frequently asked questions
 ==========================
+
+0. How do you configure meteo?
+
+   Starting with 0.7.0, the package includes a script configureit, which
+   I use to configure the package. It sets all the compiler options I
+   like, and calls configure with the right paths for my installation.
+   Use this as a start for your own experiments. I usually create such
+   a file in every package I install, it nicely documents the options
+   I was using when building the package.
 
 1. I've MySQL installed on my system, but the configure script does not
    find it.
@@ -287,4 +315,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.11 2002/11/24 22:31:05 afm Exp $
+$Id: INSTALL,v 1.12 2003/06/09 07:33:21 afm Exp $

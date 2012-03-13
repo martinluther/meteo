@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.5 2002/11/24 19:48:01 afm Exp $
+ * $Id: graph.c,v 1.6 2003/06/09 07:33:21 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,10 +20,9 @@
 graph_t	*graph_new(const char *prefix, int width, int height) {
 	graph_t	*g;
 	g = (graph_t *)malloc(sizeof(graph_t));
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(graph_t *)malloc(%d) = %p, "
-			"prefix = %s", sizeof(graph_t), g,
-			(NULL != prefix) ? prefix : "(null)");
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(graph_t *)malloc(%d) = %p, "
+		"prefix = %s", sizeof(graph_t), g,
+		(NULL != prefix) ? prefix : "(null)");
 	memset(g, 0, sizeof(graph_t));
 	g->prefix = strdup(prefix);
 	g->width = width;
@@ -68,8 +67,7 @@ void	graph_free(graph_t *g) {
 	}
 
 	/* free the data structure					*/
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((graph_t *)%p)", g);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "free((graph_t *)%p)", g);
 	free(g);
 }
 
@@ -103,21 +101,17 @@ int	graph_set_color(graph_t *g, int whichcolor, const ncolor_t rgb) {
 	c = graph_color_allocate(g, rgb);
 	switch (whichcolor) {
 	case GRAPH_COLOR_FOREGROUND:
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"setting foreground color %d", c);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting foreground color %d",
+			c);
 		g->fg = c;
 		break;
 	case GRAPH_COLOR_BACKGROUND:
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"setting background color %d", c);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting background color %d",
+			c);
 		g->bg = c;
 		break;
 	case GRAPH_COLOR_NODATA:
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"setting nodata color %d", c);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "setting nodata color %d", c);
 		g->nodatacolor = c;
 		break;
 	default:
@@ -132,9 +126,8 @@ int	graph_set_color(graph_t *g, int whichcolor, const ncolor_t rgb) {
  * graph_color_allocate	allocate a new color in the gdb image
  */
 int	graph_color_allocate(graph_t *g, const ncolor_t rgb) {
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "allocate color #%02x%02x%02x",
-			  rgb.c[0], rgb.c[1], rgb.c[2]);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "allocate color #%02x%02x%02x",
+		  rgb.c[0], rgb.c[1], rgb.c[2]);
 	return gdImageColorAllocate(g->im, rgb.c[0], rgb.c[1], rgb.c[2]);
 }
 
@@ -144,9 +137,8 @@ int	graph_color_allocate(graph_t *g, const ncolor_t rgb) {
 void	graph_add_channel(graph_t *g, int flags, int color, channelscale_t cs) {
 	channelformat_t	*gf;
 	g->nchannels++;
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding channel: now %d",
-			  g->nchannels);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding channel: now %d",
+		  g->nchannels);
 	g->channelfmt = (channelformat_t *)realloc(g->channelfmt,
 		g->nchannels * sizeof(channelformat_t));
 	gf = &g->channelfmt[g->nchannels - 1];
@@ -189,20 +181,15 @@ static void	graph_channel(graph_t *g, int channel) {
 		scale = cf->scale;
 		max = cf->max;
 	}
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"graphing channel %d, flags = %0x, "
-			" color = %d, offset = %f, scale = %f", 
-			 channel, flags, color, offset, scale);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "graphing channel %d, flags = %0x, "
+		" color = %d, offset = %f, scale = %f", 
+		 channel, flags, color, offset, scale);
 
 	twidth = g->urx - g->llx;
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"max channel value: %f, entries: %d",
-			max, g->nentries);
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "parameters: start %d, "
-			"interval: %d", (int)g->start, g->interval);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "max channel value: %f, entries: %d",
+		max, g->nentries);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "parameters: start %d, interval: %d",
+		(int)g->start, g->interval);
 
 	/*
 	 * the for loop below uses the following logic:
@@ -253,17 +240,15 @@ static void	graph_channel(graph_t *g, int channel) {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point (%ld, %f)",
 					  when, value);
 			if (value > max) {
-				if (debug)
-					mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-						"point (%ld, %f): clipping top",
-						 when, value);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"point (%ld, %f): clipping top",
+					 when, value);
 				value = max;
 			}
 			if (value < offset) {
-				if (debug)
-					mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-						"point (%ld, %f): clipping bot",
-						 when, value);
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"point (%ld, %f): clipping bot",
+					 when, value);
 				value = offset;
 			}
 			if (flags & GRAPH_LINE) {
@@ -423,11 +408,10 @@ void	graph_add_grid(graph_t *g, int channel, gridscale_t gs) {
 
 	max = maxvalue(g, cf);
 	width = g->urx - g->llx;
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding grid starting at %ld, "
-			"interval %d, based on channel %d, "
-			"valint = %f",  
-			g->start, g->interval, channel, gs.step);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding grid starting at %ld, "
+		"interval %d, based on channel %d, "
+		"valint = %f",  
+		g->start, g->interval, channel, gs.step);
 
 	/* define the dotted style for ``internal'' grid lines		*/
 	styleDotted[0] = gdTransparent;
@@ -437,16 +421,12 @@ void	graph_add_grid(graph_t *g, int channel, gridscale_t gs) {
 
 	/* draw horizontal grid lines and tick marks on both data axes,	*/
 	/* as well as labels for the 					*/
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
-			"offset = %f, interval = %f",  
-			cf->offset, gs.step);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
+		"offset = %f, interval = %f",  cf->offset, gs.step);
 	for (i = (gs.start/gs.step);
 		vy = i * gs.step, y = ycoord(g, cf, vy), y >= g->ury; i++) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"try line for i = %d, y = %f, y coord = %d",  
-				i, vy, y);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"try line for i = %d, y = %f, y coord = %d",  i, vy, y);
 		if ((vy < gs.start) || (vy > gs.end))
 			goto noline2;
 		gdImageLine(g->im, g->llx, y, g->urx, y, gdStyled);
@@ -484,24 +464,19 @@ void	graph_add_ticks(graph_t *g, int channel, ticklabel_t tl,
 
 	max = maxvalue(g, cf);
 	width = g->urx - g->llx;
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"adding ticks starting at %ld, interval %d, based "
-			"on channel %d, tl.gs.step = %f",  
-			g->start, g->interval, channel, tl.gs.step);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		"adding ticks starting at %ld, interval %d, based "
+		"on channel %d, tl.gs.step = %f",  
+		g->start, g->interval, channel, tl.gs.step);
 
 	/* draw horizontal grid lines and tick marks on both data axes,	*/
 	/* as well as labels for the 					*/
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
-			"offset = %f, interval = %f",  
-			cf->offset, tl.gs.step);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing vertical lines for "
+		"offset = %f, interval = %f",  cf->offset, tl.gs.step);
 	for (i = tl.gs.start/tl.gs.step;
 		vy = i * tl.gs.step, y = ycoord(g, cf, vy), y >= g->ury; i++) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"try tick for i = %d, y = %f, y coord = %d",  
-				i, vy, y);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"try tick for i = %d, y = %f, y coord = %d",  i, vy, y);
 		if ((vy < tl.gs.start) || (vy > tl.gs.end))
 			goto noline2;
 		snprintf(label, 128, tl.format, vy);

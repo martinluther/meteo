@@ -42,6 +42,16 @@ doc/uds10
 Prerequisites
 -------------
 
+Meteo compiles and works with gcc 2.95.3 and gcc 3.x, I've not tested
+any other compilers. But since the code is usually quite straight forward,
+and does not use any real GNUisms, it may also work with other compilers.
+Compilation takes about 2 minutes on a dual 400MHz Pentium II.
+
+Meteo requires quite a few packages that still do not come with all the
+modern operating systems it is known to run on. Linux users have a
+distinct advantage here, the usually don't have to do anything to get
+these packages:
+
 GD	To compile this package, you will need a complete installation of
 	Tom Boutell's GD library, which you can get from www.boutell.com.
 	Note that the meteo programs expect to be able to create PNG images,
@@ -137,5 +147,14 @@ Special installation instructions for the meteo browser (meteobrowser.php)
 can be found in the file README.browser.
 
 
+Thanks
+------
+
+Over time, many people have contributed to meteo by asking questions (thus
+pointing out deficiencies in code and/or documentation), providing bug
+reports or fixes. I hope I've recorded all of them in the AUTHORS file.
+Thanks to all those who have helped.
+
+
 --
-$Id: README,v 1.26 2003/06/08 13:54:16 afm Exp $
+$Id: README,v 1.28 2003/06/09 07:38:17 afm Exp $

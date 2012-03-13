@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: xmlconf.c,v 1.3 2003/05/04 16:31:58 afm Exp $
+ * $Id: xmlconf.c,v 1.4 2003/06/09 07:33:21 afm Exp $
  */
 #include <xmlconf.h>
 #include <sys/stat.h>
@@ -60,10 +60,9 @@ meteoconf_t	*xmlconf_new(const char *filename, const char *stationname) {
 	result->xml = xp;
 	result->station = strdup(stationname);
 
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"new configuration created for station %s from file %s",
-			result->station, filename);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		"new configuration created for station %s from file %s",
+		result->station, filename);
 	return result;
 }
 
@@ -110,9 +109,8 @@ static xmlNodePtr	xmlconf_get_abs(const xmlDocPtr xc, const char *path) {
 
 	/* handle various cases with return values that are not useful	*/
 	if (NULL == xop) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"%s not found, using default", path);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"%s not found, using default", path);
 		goto cleanup;
 	}
 	if (XPATH_NODESET != xop->type)
@@ -184,9 +182,7 @@ static xmlNodePtr	xmlconf_getcontainer(xmlXPathContextPtr xp,
 
 	/* stop when we encounter a NULL current node			*/
 	if (current == NULL) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"arrived at NULL node");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "arrived at NULL node");
 		return NULL;
 	}
 
@@ -198,8 +194,7 @@ static xmlNodePtr	xmlconf_getcontainer(xmlXPathContextPtr xp,
 	else
 		snprintf(relname, sizeof(relname), "./%s",
 			element);
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "searching for %s", relname);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "searching for %s", relname);
 
 	/* perform a search for the current node			*/
 	xp->node = current;
@@ -207,30 +202,26 @@ static xmlNodePtr	xmlconf_getcontainer(xmlXPathContextPtr xp,
 	
 	/* if we found something, return it				*/
 	if (xop) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found a node");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found a node");
 		if (XPATH_NODESET != xop->type)
 			goto tryparent;
 		if (xmlXPathNodeSetIsEmpty(xop->nodesetval))
 			goto tryparent;
 
 		/* clean up after the search				*/
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found target node");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found target node");
 		result = xmlXPathNodeSetItem(xop->nodesetval, 0);
 		xmlXPathFreeObject(xop);
 
 		/* return the first node				*/
 		return result;
 	} else {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "search returns NULL");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "search returns NULL");
 	}
 
 	/* search the parent node for the same stuff			*/
 tryparent:
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "retry in parent");
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "retry in parent");
 	if (xop)
 		xmlXPathFreeObject(xop);
 	return xmlconf_getcontainer(xp, current->parent, element, name);
@@ -247,8 +238,7 @@ static xmlNodePtr	xmlconf_get(xmlXPathContextPtr xpc,
 	va_start(ap, format);
 	vsnprintf(path, sizeof(path), format, ap);
 	va_end(ap);
-	if (debug)
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "search base: %s", path);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "search base: %s", path);
 
 	/* search for a node with this path, this must succeed!		*/
 	start = xmlXPathEval((xmlChar *)path, xpc);
@@ -293,16 +283,13 @@ static xmlNodePtr	xmlconf_getnode(const meteoconf_t *mc,
 
 	/* build the correct search to start with			*/
 	if (interval > 0) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"search with interval");
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "search with interval");
 		startnode = xmlconf_get(xpctp,
 			"/meteo/station[@name='%s']/%s/interval[@width='%d']",
 			mc->station, initialpath, interval);
 	}
 	if (NULL == startnode) {
-		if (debug)
-			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 				"interval node not found, trying plain");
 		startnode = xmlconf_get(xpctp,
 			"/meteo/station[@name='%s']%s%s",

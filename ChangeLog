@@ -1,3 +1,7 @@
+Release 0.7.1
+	* some minor bug fixes
+	* documentation cleanup
+
 Release 0.7.0:
 	* added wundgerground contribution by Walter Poxon
 	* fixed many documentation bugs related to obsolete programs and
@@ -247,4 +251,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.49 2003/06/08 23:36:24 afm Exp $
+$Id: ChangeLog,v 1.50 2003/06/09 07:38:17 afm Exp $
