@@ -14,8 +14,11 @@ programs which have their own manual pages. This page serves to
 explain the overall architecture and common prerequisites for the
 individual programs.
 
-All programs use a common configuration file which must be specified
-using a command line switch (there is no default), the syntax of
+All programs use a common configuration file which defaults to
+.IR @METEOCONFFILE@ ,
+or can be specified with the 
+.B -f
+command line switch, the syntax of
 the configuration file is explained in 
 .BR meteo.conf (5).
 

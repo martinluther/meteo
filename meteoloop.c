@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoloop.c,v 1.11 2002/01/06 23:02:07 afm Exp $
+ * $Id: meteoloop.c,v 1.12 2002/01/09 23:36:07 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,7 +30,7 @@ extern int	optind;
 extern char	*optarg;
 
 int	minutes;
-int	watchinterval;
+int	watchinterval = -1;
 
 /*
  * the updateloop function is quite davis specific. It keeps reading meteo
@@ -64,15 +64,13 @@ static int	updateloop(dest_t *ddp, loop_t *l, meteodata_t *md, int n,
 			__FILE__, __LINE__);
 
 	/* wait for acknowledgment					*/
-	if (l->m->m->flags & COM_VANTAGE) {
-		if (get_acknowledge(l->m->m) < 0) {
-			fprintf(stderr, "%s:%d: no ack received\n",
-				__FILE__, __LINE__);
-			if (watchinterval > 0)
-				wd_fire("no ack from station");
-			else
-				exit(EXIT_FAILURE);
-		}
+	if (get_acknowledge(l->m->m) < 0) {
+		fprintf(stderr, "%s:%d: no ack received\n",
+			__FILE__, __LINE__);
+		if (watchinterval > 0)
+			wd_fire("no ack from station");
+		else
+			exit(EXIT_FAILURE);
 	}
 
 	/* arm the watchdog timer, if set. We do this here so we can	*/
@@ -90,7 +88,7 @@ static int	updateloop(dest_t *ddp, loop_t *l, meteodata_t *md, int n,
 				"function %p\n", __FILE__, __LINE__, i,
 				l->read);
 		if (l->read(l, md) == 0) {
-			if (watchinterval > 0)
+			if (watchinterval >= 0)
 				wd_arm(watchinterval);
 		} else {
 			fprintf(stderr, "%s:%d: retrieving an image failed\n",
@@ -126,7 +124,7 @@ int	main(int argc, char *argv[]) {
 	const char	*url = NULL,
 			*station = "Altendorf",
 			*queuename = NULL;
-	char		*conffilename = NULL;
+	char		*conffilename = METEOCONFFILE;
 	int		r, c, n = 1, speed = 2400, usequeue = 0,
 			foreground = 0;
 	loop_t		*l;
@@ -164,8 +162,6 @@ int	main(int argc, char *argv[]) {
 			break;
 		case 'w':
 			watchinterval = atoi(optarg);
-			if (watchinterval < 0)
-				watchinterval = 0;
 			break;
 		}
 
@@ -278,7 +274,7 @@ int	main(int argc, char *argv[]) {
 		if (r != 0) {
 			fprintf(stderr, "%s:%d: failed with %d remaining "
 				"updates\n", __FILE__, __LINE__, r);
-			if (watchinterval > 0)
+			if (watchinterval >= 0)
 				wd_fire("updateloop function failed");
 			else
 				exit(EXIT_FAILURE);

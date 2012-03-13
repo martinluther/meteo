@@ -1,3 +1,16 @@
+Release 0.1.8:
+	* fixed meteooverview to produce better results
+	* fix a bug in msgque.c that could cause a segmentation fault in
+	  the dequeue process sometimes
+	* Davis station LOOP code did not wait for LOOP ack, causing dead
+	  lock
+	* the daemonize function was not complete yet, it did not yet start
+	  a new session
+	* make ${sysconfdir}/meteo.conf a default configuration file, so
+	  that the -f flag is no longer strictly necessary, and updated
+	  the documentation accordingly
+	* simplify the start/stop script, as well as the meteojob script
+
 Release 0.1.7:
 	* fixed a bug in meteoavg.c, which did not daemonize by default,
 	  and did not honor the -p option
@@ -80,4 +93,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.16 2002/01/07 01:08:44 afm Exp $
+$Id: ChangeLog,v 1.20 2002/01/10 00:50:37 afm Exp $

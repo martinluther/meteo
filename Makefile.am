@@ -3,14 +3,18 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.25 2002/01/07 01:08:44 afm Exp $
+# $Id: Makefile.am,v 1.26 2002/01/09 23:36:06 afm Exp $
 #
 lib_LTLIBRARIES = libmeteo.la
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
 	meteo.conf.5
 noinst_DATA = meteo.html meteodata.html rc.meteo
 EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 	\
-	meteo.conf $(man_MANS) $(noinst_DATA)
+	meteo.conf $(noinst_DATA)					\
+	meteo.1.in meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
+	meteo.conf.5
+METEOCONFFILE = \"@METEOCONFFILE@\"
+CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
 
 pkgdata_DATA = meteo.conf
 
@@ -45,9 +49,9 @@ libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 		\
 meteo_vers.c:	configure.in
 	./shtool version -l c -s @VERSION@ -n Meteo -p meteo_ meteo_vers.c
 
-bin_PROGRAMS = meteotest meteoupdate meteoloop meteograph meteoavg	\
-	meteodequeue
-noinst_PROGRAMS = meteocheck
+bin_PROGRAMS = meteoupdate meteoloop meteograph meteoavg		\
+	meteodequeue meteowatch
+noinst_PROGRAMS = meteocheck meteotest
 
 meteotest_SOURCES = meteotest.c
 meteoupdate_SOURCES = meteoupdate.c
@@ -56,6 +60,7 @@ meteograph_SOURCES = meteograph.c
 meteocheck_SOURCES = meteocheck.c
 meteoavg_SOURCES = meteoavg.c
 meteodequeue_SOURCES = meteodequeue.c
+meteowatch_SOURCES = meteowatch.c
 
 meteotest_LDADD = libmeteo.la
 meteoupdate_LDADD = libmeteo.la
@@ -64,6 +69,7 @@ meteograph_LDADD = libmeteo.la
 meteocheck_LDADD = libmeteo.la
 meteoavg_LDADD = libmeteo.la
 meteodequeue_LDADD = libmeteo.la
+meteowatch_LDADD = libmeteo.la
 
 install-exec-local:
 	cp meteojob meteooverview $(bindir)

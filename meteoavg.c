@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.c,v 1.4 2002/01/07 01:08:44 afm Exp $
+ * $Id: meteoavg.c,v 1.5 2002/01/09 23:36:07 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -71,7 +71,7 @@ static void	avg_daemon(MYSQL *mysql, const char *station) {
 }
 
 int	main(int argc, char *argv[]) {
-	char		*conffilename = NULL;
+	char		*conffilename = METEOCONFFILE;
 	const char	*station;
 	int		c, naverages = -1, interval = 0, remainder,
 			daemonmode = 0, all = 0, haveavg, foreground = 0;

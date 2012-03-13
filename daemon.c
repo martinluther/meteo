@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: daemon.c,v 1.1 2001/12/29 20:39:54 afm Exp $
+ * $Id: daemon.c,v 1.2 2002/01/09 23:36:06 afm Exp $
  */
 #include <daemon.h>
 #include <meteo.h>
@@ -27,6 +27,15 @@ int	daemonize(const char *pidfilenamepattern, const char *station) {
 	if (pid > 0) {
 		return 0;
 	}
+
+	/* start a new session						*/
+	setsid();
+
+	/* switch to the / directory					*/
+	chdir("/");
+
+	/* set a good umask						*/
+	umask(022);
 
 	/* compute the pidfile name					*/
 	l = strlen(pidfilenamepattern) + ((station) ? strlen(station) : 1) + 1;

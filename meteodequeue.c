@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.c,v 1.2 2001/12/29 20:39:55 afm Exp $
+ * $Id: meteodequeue.c,v 1.4 2002/01/09 23:53:37 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -15,11 +15,11 @@
 #include <daemon.h>
 
 static void	dequeue_one(int mq, MYSQL *mysql) {
-	char	*buffer;
+	char	buffer[2048];
 	int	r;
 	
 	/* read one message from the message queue			*/
-	if (0 > (r = msgque_rcvquery(mq, &buffer, sizeof(buffer)))) {
+	if (0 > (r = msgque_rcvquery(mq, buffer, sizeof(buffer)))) {
 		fprintf(stderr, "%s:%d: failed to read a message\n",
 			__FILE__, __LINE__);
 		return;
@@ -33,15 +33,12 @@ static void	dequeue_one(int mq, MYSQL *mysql) {
 		fprintf(stderr, "%s:%d: query failed: '%s'\n", __FILE__,
 			__LINE__, buffer);
 	}
-
-	/* free the message we have received previously			*/
-	free(buffer);
 }
 
 int	main(int argc, char *argv[]) {
 	MYSQL		*mysql = NULL;
 	int		c, mq, foreground = 0;
-	char		*conffilename = NULL;
+	char		*conffilename = METEOCONFFILE;
 	const char	*queuename = NULL;
 	char		*pidfilename = "/var/run/meteodequeue.pid";
 

@@ -15,7 +15,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.25 2002/01/07 01:08:44 afm Exp $
+# $Id: Makefile.am,v 1.26 2002/01/09 23:36:06 afm Exp $
 #
 
 
@@ -93,8 +93,10 @@ lib_LTLIBRARIES = libmeteo.la
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1		meteo.conf.5
 
 noinst_DATA = meteo.html meteodata.html rc.meteo
-EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 		meteo.conf $(man_MANS) $(noinst_DATA)
+EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 		meteo.conf $(noinst_DATA)						meteo.1.in meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1		meteo.conf.5
 
+METEOCONFFILE = \"@METEOCONFFILE@\"
+CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
 
 pkgdata_DATA = meteo.conf
 
@@ -111,9 +113,9 @@ libmeteo_la_LDFLAGS = -version-info `./shtool version -d libtool $(VERSION_FILE)
 libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 			meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c		msgque.c dbupdate.c meteosocket.c mconf.c				scanner.c parser.c average.c database.c timestamp.c dograph.c		daemon.c watchdog.c							$(VERSION_FILE)
 
 
-bin_PROGRAMS = meteotest meteoupdate meteoloop meteograph meteoavg		meteodequeue
+bin_PROGRAMS = meteoupdate meteoloop meteograph meteoavg			meteodequeue meteowatch
 
-noinst_PROGRAMS = meteocheck
+noinst_PROGRAMS = meteocheck meteotest
 
 meteotest_SOURCES = meteotest.c
 meteoupdate_SOURCES = meteoupdate.c
@@ -122,6 +124,7 @@ meteograph_SOURCES = meteograph.c
 meteocheck_SOURCES = meteocheck.c
 meteoavg_SOURCES = meteoavg.c
 meteodequeue_SOURCES = meteodequeue.c
+meteowatch_SOURCES = meteowatch.c
 
 meteotest_LDADD = libmeteo.la
 meteoupdate_LDADD = libmeteo.la
@@ -130,15 +133,15 @@ meteograph_LDADD = libmeteo.la
 meteocheck_LDADD = libmeteo.la
 meteoavg_LDADD = libmeteo.la
 meteodequeue_LDADD = libmeteo.la
+meteowatch_LDADD = libmeteo.la
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = 
+CONFIG_CLEAN_FILES =  meteo.1
 LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I.
-CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libmeteo_la_LIBADD = 
@@ -147,15 +150,12 @@ meteodata.lo meteo.lo conversions.lo dloop.lo graph.lo dewpoint.lo \
 msgque.lo dbupdate.lo meteosocket.lo mconf.lo scanner.lo parser.lo \
 average.lo database.lo timestamp.lo dograph.lo daemon.lo watchdog.lo \
 meteo_vers.lo
-bin_PROGRAMS =  meteotest$(EXEEXT) meteoupdate$(EXEEXT) \
-meteoloop$(EXEEXT) meteograph$(EXEEXT) meteoavg$(EXEEXT) \
-meteodequeue$(EXEEXT)
-noinst_PROGRAMS =  meteocheck$(EXEEXT)
+bin_PROGRAMS =  meteoupdate$(EXEEXT) meteoloop$(EXEEXT) \
+meteograph$(EXEEXT) meteoavg$(EXEEXT) meteodequeue$(EXEEXT) \
+meteowatch$(EXEEXT)
+noinst_PROGRAMS =  meteocheck$(EXEEXT) meteotest$(EXEEXT)
 PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 
-meteotest_OBJECTS =  meteotest.$(OBJEXT)
-meteotest_DEPENDENCIES =  libmeteo.la
-meteotest_LDFLAGS = 
 meteoupdate_OBJECTS =  meteoupdate.$(OBJEXT)
 meteoupdate_DEPENDENCIES =  libmeteo.la
 meteoupdate_LDFLAGS = 
@@ -171,9 +171,15 @@ meteoavg_LDFLAGS =
 meteodequeue_OBJECTS =  meteodequeue.$(OBJEXT)
 meteodequeue_DEPENDENCIES =  libmeteo.la
 meteodequeue_LDFLAGS = 
+meteowatch_OBJECTS =  meteowatch.$(OBJEXT)
+meteowatch_DEPENDENCIES =  libmeteo.la
+meteowatch_LDFLAGS = 
 meteocheck_OBJECTS =  meteocheck.$(OBJEXT)
 meteocheck_DEPENDENCIES =  libmeteo.la
 meteocheck_LDFLAGS = 
+meteotest_OBJECTS =  meteotest.$(OBJEXT)
+meteotest_DEPENDENCIES =  libmeteo.la
+meteotest_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -190,16 +196,16 @@ HEADERS =  $(noinst_HEADERS)
 
 DIST_COMMON =  README ./stamp-h.in AUTHORS COPYING ChangeLog INSTALL \
 Makefile.am Makefile.in NEWS TODO aclocal.m4 config.guess config.h.in \
-config.sub configure configure.in install-sh ltconfig ltmain.sh missing \
-mkinstalldirs
+config.sub configure configure.in install-sh ltconfig ltmain.sh \
+meteo.1.in missing mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-SOURCES = $(libmeteo_la_SOURCES) $(meteotest_SOURCES) $(meteoupdate_SOURCES) $(meteoloop_SOURCES) $(meteograph_SOURCES) $(meteoavg_SOURCES) $(meteodequeue_SOURCES) $(meteocheck_SOURCES)
-OBJECTS = $(libmeteo_la_OBJECTS) $(meteotest_OBJECTS) $(meteoupdate_OBJECTS) $(meteoloop_OBJECTS) $(meteograph_OBJECTS) $(meteoavg_OBJECTS) $(meteodequeue_OBJECTS) $(meteocheck_OBJECTS)
+SOURCES = $(libmeteo_la_SOURCES) $(meteoupdate_SOURCES) $(meteoloop_SOURCES) $(meteograph_SOURCES) $(meteoavg_SOURCES) $(meteodequeue_SOURCES) $(meteowatch_SOURCES) $(meteocheck_SOURCES) $(meteotest_SOURCES)
+OBJECTS = $(libmeteo_la_OBJECTS) $(meteoupdate_OBJECTS) $(meteoloop_OBJECTS) $(meteograph_OBJECTS) $(meteoavg_OBJECTS) $(meteodequeue_OBJECTS) $(meteowatch_OBJECTS) $(meteocheck_OBJECTS) $(meteotest_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -246,6 +252,8 @@ distclean-hdr:
 	-rm -f config.h
 
 maintainer-clean-hdr:
+meteo.1: $(top_builddir)/config.status meteo.1.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 mostlyclean-libLTLIBRARIES:
 
@@ -353,10 +361,6 @@ distclean-noinstPROGRAMS:
 
 maintainer-clean-noinstPROGRAMS:
 
-meteotest$(EXEEXT): $(meteotest_OBJECTS) $(meteotest_DEPENDENCIES)
-	@rm -f meteotest$(EXEEXT)
-	$(LINK) $(meteotest_LDFLAGS) $(meteotest_OBJECTS) $(meteotest_LDADD) $(LIBS)
-
 meteoupdate$(EXEEXT): $(meteoupdate_OBJECTS) $(meteoupdate_DEPENDENCIES)
 	@rm -f meteoupdate$(EXEEXT)
 	$(LINK) $(meteoupdate_LDFLAGS) $(meteoupdate_OBJECTS) $(meteoupdate_LDADD) $(LIBS)
@@ -377,9 +381,17 @@ meteodequeue$(EXEEXT): $(meteodequeue_OBJECTS) $(meteodequeue_DEPENDENCIES)
 	@rm -f meteodequeue$(EXEEXT)
 	$(LINK) $(meteodequeue_LDFLAGS) $(meteodequeue_OBJECTS) $(meteodequeue_LDADD) $(LIBS)
 
+meteowatch$(EXEEXT): $(meteowatch_OBJECTS) $(meteowatch_DEPENDENCIES)
+	@rm -f meteowatch$(EXEEXT)
+	$(LINK) $(meteowatch_LDFLAGS) $(meteowatch_OBJECTS) $(meteowatch_LDADD) $(LIBS)
+
 meteocheck$(EXEEXT): $(meteocheck_OBJECTS) $(meteocheck_DEPENDENCIES)
 	@rm -f meteocheck$(EXEEXT)
 	$(LINK) $(meteocheck_LDFLAGS) $(meteocheck_OBJECTS) $(meteocheck_LDADD) $(LIBS)
+
+meteotest$(EXEEXT): $(meteotest_OBJECTS) $(meteotest_DEPENDENCIES)
+	@rm -f meteotest$(EXEEXT)
+	$(LINK) $(meteotest_LDFLAGS) $(meteotest_OBJECTS) $(meteotest_LDADD) $(LIBS)
 
 install-man1:
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
@@ -588,6 +600,8 @@ meteotest.o: meteotest.c sercom.h com.h crc.h tcpcom.h meteodata.h \
 	conversions.h davis.h meteo.h mconf.h meteograph.h
 meteoupdate.o: meteoupdate.c meteo.h mconf.h meteograph.h meteodata.h \
 	com.h crc.h conversions.h davis.h sercom.h tcpcom.h msgque.h
+meteowatch.o: meteowatch.c meteo.h mconf.h meteograph.h daemon.h \
+	timestamp.h
 msgque.lo msgque.o : msgque.c msgque.h meteo.h mconf.h meteograph.h
 parser.lo parser.o : parser.c mconf.h meteograph.h
 scanner.lo scanner.o : scanner.c mconf.h meteograph.h parser.h

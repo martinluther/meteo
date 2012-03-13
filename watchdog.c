@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beartung und Entwicklung
  *
- * $Id$ 
+ * $Id: watchdog.c,v 1.1 2002/01/09 23:36:07 afm Exp $ 
  */
 #include <watchdog.h>
 #include <meteo.h>

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: msgque.c,v 1.2 2001/12/26 22:10:46 afm Exp $
+ * $Id: msgque.c,v 1.3 2002/01/09 23:53:37 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -67,7 +67,7 @@ void	msgque_cleanup(int id) {
  */
 typedef struct querymsg {
 	long	mtype;
-	char	mtext[1];
+	char	mtext[QUERYMSG_SIZE];
 } querymsg_t;
 int	msgque_sendquery(int id, const char *query, int size) {
 	int		s, rc;
@@ -79,7 +79,7 @@ int	msgque_sendquery(int id, const char *query, int size) {
 
 	/* create a data structure for the message			*/
 	s = sizeof(long) + size;
-	qm = (querymsg_t *)malloc(s);
+	qm = (querymsg_t *)malloc(sizeof(querymsg_t));
 	time(&qm->mtype);
 
 	/* copy the data to the message structure			*/
@@ -99,16 +99,16 @@ int	msgque_sendquery(int id, const char *query, int size) {
 	return rc;
 }
 
-int	msgque_rcvquery(int id, char **query, int size) {
+int	msgque_rcvquery(int id, char *query, int size) {
 	querymsg_t	*qm;
 	int		r;
 	time_t		now;
 
 	/* allocate a buffer large enough to hold the message		*/
-	qm = (querymsg_t *)malloc(QUERYMSG_SIZE);
+	qm = (querymsg_t *)malloc(sizeof(querymsg_t));
 
 	/* pick up a message from the queue				*/
-	r = msgrcv(id, qm, QUERYMSG_SIZE - sizeof(long), 0, 0);
+	r = msgrcv(id, qm, QUERYMSG_SIZE, 0, 0);
 	if (r < 0) {
 		fprintf(stderr, "%s:%d: msg not retrieved: %s (%d)\n",
 			__FILE__, __LINE__, strerror(errno), errno);
@@ -124,10 +124,13 @@ int	msgque_rcvquery(int id, char **query, int size) {
 	/* check whether it fits in the query buffer, otherwise 	*/
 	/* reallocate							*/
 	if (r > size) {
-		*query = (char *)realloc(*query, r + 1);
+		fprintf(stderr, "%s:%d: message buffer too small\n",
+			__FILE__, __LINE__);
+		return -1;
 	}
-	memcpy(*query, qm->mtext, r);
-	(*query)[r] = '\0';
+	memcpy(query, qm->mtext, r);
+	query[r] = '\0';
+	free(qm);
 
 	/* return the number of bytes					*/
 	return r;

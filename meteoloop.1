@@ -84,6 +84,13 @@ seconds. If no reply is received from the station for an interval of
 this duration, the
 .BR meteloop (1)
 command is restarted with the same arguments.
+A watchdoginterval of 0 means that the signal handler is installed, but
+not armed. An external programm can be used to signal the ALARM signal
+to
+.BR meteoloop (1)
+and cause it to restart. It is suggested that
+.BR meteowatch (1)
+be used for that purpose.
 
 .SH FILES
 .BR meteoloop (1)
@@ -98,7 +105,8 @@ writes its process id by default to a file
 .BR meteodequeue (1),
 .BR meteocheck (1),
 .BR meteojob (1),
-.BR meteoavg (1)
+.BR meteoavg (1),
+.BR meteowatch (1)
 
 .SH AUTHOR
 Dr. Andreas Mueller <afm@othello.ch>

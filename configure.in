@@ -4,7 +4,7 @@ AC_REVISION([1.0])dnl
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(meteo.h)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(meteo, 0.1.7)
+AM_INIT_AUTOMAKE(meteo, 0.1.8)
 AM_CONFIG_HEADER(config.h)
 
 dnl add support for libtool
@@ -46,5 +46,8 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 dnl Checks for library functions.
 AC_CHECK_FUNCS(strerror)
 
+dnl default configuration directory
+METEOCONFFILE=${sysconfdir}/meteo.conf
+AC_SUBST(METEOCONFFILE)
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile meteo.1)

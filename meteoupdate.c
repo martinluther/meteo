@@ -6,7 +6,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoupdate.c,v 1.3 2001/12/24 14:51:26 afm Exp $
+ * $Id: meteoupdate.c,v 1.4 2002/01/09 23:53:37 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,7 +27,7 @@ extern int	optind;
 extern char	*optarg;
 
 int	main(int argc, char *argv[]) {
-	char		*query;
+	char		query[4096];
 	char		*hostname = "localhost",
 			*user = "meteo",
 			*password = "public",
@@ -71,9 +71,6 @@ int	main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* allocate query buffer					*/
-	query = (char *)malloc(4096);
-
 	/* connect to the database					*/
 	mysql_init(&mysql);
 	if (NULL == mysql_real_connect(&mysql, hostname, user, password,
@@ -86,7 +83,7 @@ int	main(int argc, char *argv[]) {
 	/* start reading messages from the message queue		*/
 	do {
 		/* read message from queue				*/
-		l = msgque_rcvquery(mq, &query, 4096);
+		l = msgque_rcvquery(mq, query, 4096);
 		if (l < 0) {
 			fprintf(stderr, "%s:%d: problem receiving message: "
 				"%s (%d)\n", __FILE__, __LINE__,

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteograph.c,v 1.12 2001/12/26 22:10:46 afm Exp $
+ * $Id: meteograph.c,v 1.13 2002/01/09 23:36:07 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -44,7 +44,7 @@ static namegraph_t	ngs[NGRAPHS] = {
 };
 
 int	main(int argc, char *argv[]) {
-	char		*conffilename = NULL;
+	char		*conffilename = METEOCONFFILE;
 	int		c, interval, i, G = 0;
 	dograph_t	dg;
 

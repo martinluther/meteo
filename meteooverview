@@ -2,13 +2,81 @@
 #
 # meteooverview -- generate an meteo data overview
 #
+# SYNTAX
+#
+#   meteooverview stationname meteoparm1 meteoparm2 ...
+#
+# the first argument is the name of the station, the following arguments
+# are the names of the parameters this station measures.
+#
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: meteooverview,v 1.4 2001/12/29 20:39:56 afm Exp $
+# $Id: meteooverview,v 1.5 2002/01/10 00:49:22 afm Exp $
 #
 name=${1}
+shift
+graphs="$*"
 
-cat > ${name}-meteo.html <<EOF
+#
+# text explanations for the graphs
+#
+text_temperature () {
+cat <<EOF
+The <font color="#b40000">red</font> curve shows the temperature,
+the <font color="#ffb4b4">light red</font> area shows the range between
+maximum and minimum temperature during the sampling interval.
+The <font color="#6464ff">blue</font> curve shows the dew point, the
+temperature at which dew begins to form.
+EOF
+}
+
+text_temperature_inside () {
+cat <<EOF
+EOF
+}
+
+text_barometer () {
+cat <<EOF
+The <font color="#7f7fff">blue</font> graph shows
+average barometric pressure, the range between minimum and maximum
+pressure during the sampling interval is shown in
+<font color="#d2d2ff">light blue</font>.
+EOF
+}
+
+text_wind () {
+cat <<EOF
+The lower part of the graph shows in <font color="#00ff00">light green</font>
+the average wind speed during the sampling interval, the maximum speed
+is shown in <font color="#006400">dark green</font>, scale on the
+left of the graph. The upper part
+shows the wind azimut in <font color="#6464ff">blue</font>, scale on the
+right.
+EOF
+}
+
+text_radiation () {
+cat <<EOF
+The <font color="#c8b400">gold</font> histogram shows
+the total solar radiation in W/m^2, scale on the left of the graph.
+The <font color="#6400c8">pink</font> curve shows the UV index,
+scale on the right.
+EOF
+}
+
+text_rain () {
+cat <<EOF
+The <font color="0000ff">blue</font> histogram shows
+the total rain (or moisture content of the precipitation) in
+<i>mm</i> during the sampling interval.
+EOF
+}
+
+overviewpage=${name}-meteo.html
+
+echo creating ${overviewpage}...
+
+cat > ${overviewpage} <<EOF
 <html>
 <head>
 <title>${name} Weather Overview</title>
@@ -17,6 +85,7 @@ cat > ${name}-meteo.html <<EOF
 <h1>${name} Weather Overview</h1>
 
 <table border="1">
+
 <tr>
 <td>&nbsp;</td>
 <th><a href="${name}-day.html">Day</a></th>
@@ -24,7 +93,11 @@ cat > ${name}-meteo.html <<EOF
 <th><a href="${name}-month.html">Month</a></th>
 <th><a href="${name}-year.html">Year</a></th>
 </tr>
+EOF
 
+
+line_temperature () {
+cat <<EOF
 <tr>
 <td><a href="${name}-temperature.html">Temperature</a></td>
 <td><img src="${name}-temperature-day.png" width="125" height="36"></td>
@@ -32,7 +105,11 @@ cat > ${name}-meteo.html <<EOF
 <td><img src="${name}-temperature-month.png" width="125" height="36"></td>
 <td><img src="${name}-temperature-year.png" width="125" height="36"></td>
 </tr>
+EOF
+}
 
+line_barometer () {
+cat <<EOF
 <tr>
 <td><a href="${name}-barometer.html">Pressure</a></td>
 <td><img src="${name}-barometer-day.png" width="125" height="36"></td>
@@ -40,7 +117,11 @@ cat > ${name}-meteo.html <<EOF
 <td><img src="${name}-barometer-month.png" width="125" height="36"></td>
 <td><img src="${name}-barometer-year.png" width="125" height="36"></td>
 </tr>
+EOF
+}
 
+line_wind () {
+cat <<EOF
 <tr>
 <td><a href="${name}-wind.html">Wind</a></td>
 <td><img src="${name}-wind-day.png" width="125" height="36"></td>
@@ -48,7 +129,11 @@ cat > ${name}-meteo.html <<EOF
 <td><img src="${name}-wind-month.png" width="125" height="36"></td>
 <td><img src="${name}-wind-year.png" width="125" height="36"></td>
 </tr>
+EOF
+}
 
+line_radiation () {
+cat <<EOF
 <tr>
 <td><a href="${name}-radiation.html">Radiation</a></td>
 <td><img src="${name}-radiation-day.png" width="125" height="36"></td>
@@ -56,7 +141,11 @@ cat > ${name}-meteo.html <<EOF
 <td><img src="${name}-radiation-month.png" width="125" height="36"></td>
 <td><img src="${name}-radiation-year.png" width="125" height="36"></td>
 </tr>
+EOF
+}
 
+line_rain () {
+cat <<EOF
 <tr>
 <td><a href="${name}-rain.html">Precipitation</a></td>
 <td><img src="${name}-rain-day.png" width="125" height="36"></td>
@@ -64,68 +153,121 @@ cat > ${name}-meteo.html <<EOF
 <td><img src="${name}-rain-month.png" width="125" height="36"></td>
 <td><img src="${name}-rain-year.png" width="125" height="36"></td>
 </tr>
+EOF
+}
 
+for g in ${graphs}
+do
+	eval line_${g} >>${overviewpage}
+done
+
+cat >> ${overviewpage} <<EOF
 </table>
 </body>
 </html>
 EOF
 
+vertical_temperature () {
+cat <<EOF
+<tr>
+<td><img src="${name}-temperature-${key}.png"></td>
+<td valign="top">
+EOF
+text_temperature 
+cat <<EOF
+</td>
+</tr>
+EOF
+}
+
+vertical_temperature_inside () {
+cat <<EOF
+<tr>
+<td><img src="${name}-temperature_inside-${key}.png"></td>
+<td valign="top">
+EOF
+text_temperature_inside
+cat <<EOF
+</td>
+</tr>
+EOF
+}
+
+vertical_barometer () {
+cat <<EOF
+<tr>
+<td><img src="${name}-barometer-${key}.png"></td>
+<td valign="top">
+EOF
+text_barometer
+cat <<EOF
+</td>
+</tr>
+EOF
+}
+
+vertical_wind () {
+cat <<EOF
+<tr>
+<td><img src="${name}-wind-${key}.png"></td>
+<td valign="top">
+EOF
+text_wind
+cat <<EOF
+</td>
+</tr>
+EOF
+}
+
+vertical_radiation () {
+cat <<EOF
+<tr>
+<td><img src="${name}-radiation-${key}.png"></td>
+<td valign="top">
+EOF
+text_radiation
+cat <<EOF
+</td>
+</tr>
+EOF
+}
+
+vertical_rain () {
+cat <<EOF
+<tr>
+<td><img src="${name}-rain-${key}.png"></td>
+<td valign="top">
+EOF
+text_rain
+cat <<EOF
+</td>
+</tr>
+EOF
+}
+
+
 vertical () {
 name=${1}
 period=${2}
 key=${3}
-cat >${name}-${key}.html <<EOF
+vpage=${name}-${key}.html
+echo creating ${vpage}...
+cat >${vpage} <<EOF
 <html>
 <head>
-<title>${name} Weather Year Overview</title>
+<title>${name} Weather ${period} Overview</title>
 </head>
 <body bgcolor="#ffffff">
 <h1>${name} Weather: ${period} Overview</h1>
 <table>
-<tr>
-<td><img src="${name}-temperature-${key}.png"></td>
-<td valign="top">
-The <font color="#b40000">red</font> curve shows the temperature,
-the <font color="#ffb4b4">light red</font> area shows the range between
-maximum and minimum temperature during the sampling interval.
-The <font color="#6464ff">blue</font> curve shows the dew point, the
-temperature at which dew begins to form.
-</td>
-</tr>
-<tr>
-<td><img src="${name}-barometer-${key}.png"></td>
-<td valign="top">The <font color="#7f7fff">blue</font> graph shows
-average barometric pressure, the range between minimum and maximum
-pressure during the sampling interval is shown in
-<font color="#d2d2ff">light blue</font>.
-</td>
-</tr>
-<tr>
-<td><img src="${name}-wind-${key}.png"></td>
-<td valign="top">
-The lower part of the graph shows in <font color="#00ff00">light green</font>
-the average wind speed during the sampling interval, the maximum speed
-is shown in <font color="#006400">dark green</font>, scale on the
-left of the graph. The upper part
-shows the wind azimut in <font color="#6464ff">blue</font>, scale on the
-right.
-</td>
-</tr>
-<tr>
-<td><img src="${name}-radiation-${key}.png"></td>
-<td valign="top">The <font color="#c8b400">gold</font> histogram shows
-the total solar radiation in W/m^2, scale on the left of the graph.
-The <font color="#6400c8">pink</font> curve shows the UV index,
-scale on the right.
-</td>
-</tr>
-<tr>
-<td><img src="${name}-rain-${key}.png"></td>
-<td valign="top">The <font color="0000ff">blue</font> histogram shows
-the total rain (or moisture content of snow of the precipitation) in
-<i>mm</i> during the sampling interval.
-</td>
-</tr>
+EOF
+
+for g in ${graphs}
+do
+	eval vertical_${g} >>${vpage}
+done
+
+cat >>${vpage} <<EOF
 </table>
 </body>
 </html>
@@ -139,30 +281,44 @@ vertical ${name} Year year
 
 horizontal () {
 name=${1}
-value="${2}"
-key=${3}
-cat > ${name}-${key}.html <<EOF
+key=${2}
+case ${key} in
+temperature)		value="Temperature"		;;
+temeprature_inside)	value="Temperature inside"	;;
+barometer)		value="Pressure"		;;
+radiation)		value="Radiation"		;;
+wind)			value="Wind"			;;
+rain)			value="Precipitation"		;;
+esac
+cat <<EOF
 <html>
 <head>
 <title>${name} Weather: ${value}</title>
 </head>
 <body bgcolor="#ffffff">
 <h1>${name} Weather: ${value}</h1>
-<p><img src="${name}-${key}-day.png"></p>
-<p><img src="${name}-${key}-week.png"></p>
-<p><img src="${name}-${key}-month.png"></p>
-<p><img src="${name}-${key}-year.png"></p>
-</p>
+<table>
+<tr><td><img src="${name}-${key}-day.png"></td></tr>
+<tr><td><img src="${name}-${key}-week.png"></td></tr>
+<tr><td><img src="${name}-${key}-month.png"></td></tr>
+<tr><td><img src="${name}-${key}-year.png"></td></tr>
+<tr><td>
+EOF
+eval text_${key}
+cat <<EOF
+</td></tr>
+</table>
 </body>
 </html>
 EOF
 }
 
-horizontal ${name} Temperature temperature
-horizontal ${name} Temperature\ inside temperature_inside
-horizontal ${name} Pressure barometer
-horizontal ${name} Wind wind
-horizontal ${name} Radiation radiation
-horizontal ${name} Precipitation rain
+
+for g in ${graphs}
+do
+	hpage=${name}-${g}.html
+	echo createing ${hpage}...
+	horizontal ${name} ${g} > ${hpage}
+done
 
 exit 0

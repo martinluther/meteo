@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id$
+ * $Id: watchdog.h,v 1.1 2002/01/09 23:36:07 afm Exp $
  */
 #ifndef _WATCHDOG_H
 #define _WATCHDOG_H
