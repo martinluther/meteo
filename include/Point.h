@@ -9,7 +9,7 @@
 
 namespace meteo {
 
-// Points use the coordinate system of the inner frame (so the dont remember
+// Points use the coordinate system of the inner frame (so they dont remember
 // the lower left point where the inner frame is attached).
 class Point {
 	int	x, y;

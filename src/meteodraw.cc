@@ -141,6 +141,8 @@ static void	usage(void) {
 
 // draw a graph based on a timelabel
 void	drawlabeled(const std::string& currentgraph, const meteo::Timelabel& ti) {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "working on graph %s",
+		currentgraph.c_str());
 	// write the graph to a file
 	std::string	outfilename = prefix + currentgraph + "-"
 		+ ti.getString() + ".png";
@@ -148,6 +150,10 @@ void	drawlabeled(const std::string& currentgraph, const meteo::Timelabel& ti) {
 
 	// check age of the graph
 	bool	imgold = imageIsOld(outfilename, ti.getInterval());
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image is %sold",
+		(imgold) ? "" : "not ");
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "(images || imgold) = %s",
+		(images || imgold) ? "true" : "false");
 
 	// make sure we catch any problems that happen during
 	// a call graph generation
@@ -155,17 +161,26 @@ void	drawlabeled(const std::string& currentgraph, const meteo::Timelabel& ti) {
 		// compute the graph
 		meteo::Graphics	graph(ti.getInterval(), ti.getTime(), true,
 			currentgraph, (images || imgold));
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "graph %s constructed",
+			currentgraph.c_str());
 
-		if (images || imgold)
+		if (images || imgold) {
 			graph.toFile(outfilename);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "graph written to %s",
+				outfilename.c_str());
+		}
 
 		// output image map if available
-		if (imagemap)
+		if (imagemap) {
 			std::cout << graph.mapString(url, stationname);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "image map written");
+		}
 
 		// output the image tag if asked to do so
-		if (imagetag)
+		if (imagetag) {
 			std::cout << graph.imageTagString( outfilename);
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "IMG tag written");
+		}
 	}
 	catch (meteo::MeteoException& ex) {
 		// report the problem

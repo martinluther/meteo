@@ -30,7 +30,7 @@ static int	meteodbdump(int argc, char *argv[]) {
 	std::string	basename("./");
 	std::string	logurl("file:///-");
 	std::string	conffile(METEOCONFFILE);
-	int	chunksize = 1440; 	// one day worth of data
+	int	chunksize = 86400; 	// one day worth of data
 	int	c;
 	bool	raw = false;
 
@@ -78,14 +78,12 @@ static int	meteodbdump(int argc, char *argv[]) {
 	// if there are more arguments, use them to select the tables we
 	// want to dump
 	if (argc > optind) {
-		cd.disableAvg(); cd.disableHeader(); cd.disableSdata();
+		cd.disableAvg(); cd.disableSdata();
 		for (int i = optind; i < argc; i++) {
 			if (0 == strcmp(argv[i], "avg"))
 				cd.enableAvg();
 			if (0 == strcmp(argv[i], "sdata"))
 				cd.enableSdata();
-			if (0 == strcmp(argv[1], "header"))
-				cd.enableHeader();
 		}
 	}
 

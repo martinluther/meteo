@@ -3,7 +3,7 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.16 2003/11/11 08:13:53 afm Exp $
+-- $Id: meteo.sql,v 1.17 2004/02/24 23:33:20 afm Exp $
 --
 create table if not exists station (
 	name		varchar(60) not null,
@@ -114,19 +114,10 @@ insert into mfield(name, id, unit)
 insert into mfield(name, id, unit)
 	values('samples',		121, '');
 
-create table if not exists header (
-	-- primary key for data header
-	timekey		integer not null,
-	-- averaging group membership
-	group300	integer not null,
-	group1800	integer not null,
-	group7200	integer not null,
-	group86400	integer not null,
-	primary key(timekey)
-);
-
 create table if not exists sdata (
-	timekey		integer not null,
+	timekey		integer not null,	-- unix time of beginning of
+						-- interval where this value
+						-- was measured
 	sensorid	tinyint not null,
 	fieldid		tinyint not null,
 	value		float not null,
@@ -136,7 +127,8 @@ create table if not exists sdata (
 create index sdatax1 on sdata(sensorid, timekey);
 
 create table if not exists avg (
-	timekey		integer not null,
+	timekey		integer not null,	-- timekey, i.e. unixtime
+						-- + offset
 	intval		integer not null,
 	sensorid	tinyint not null,
 	fieldid		tinyint not null,

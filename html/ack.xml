@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+	ack.xml		acknowledgment page
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: ack.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+-->
+
+<page name="ack">
+<h1>Acknowledgments</h1>
+<p>
+Release 0.9.0 was made possible by generous support from the university
+Univates in Lajeado, RS, Brazil.
+</p>
+<p>
+Over time, many people have contributed by submitting bug reports
+(the bugs themselves were all my fault, of course). I tried to
+keep track of them in the AUTHORS file, please send me mail if I
+forgot someone.
+</p>
+<p>
+This software was mainly developed by
+<a href="mailto:andreas.mueller@othello.ch">Andreas M&#xFC;ller</a>,
+contributions by others are detailed in the <a href="http://meteo.othello.ch/AUTHORS">AUTHORS</a>.
+You can also see the
+<a href="http://meteo.othello.ch/temp.html" target="_new">server room
+temperature</a> where the main development machine lives.
+The new web site design is by my 13 year old daughter
+<a href="http://carmen.othello.ch/" target="_new">Carmen</a>.
+</p>
+</page>

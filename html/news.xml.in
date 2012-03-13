@@ -1,13 +1,21 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
-<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
-</head>
-<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
-<img src="normband.jpg" width="841" height="150" border="0">
-<p><h1>News</h1>
+<?xml version="1.0"?>
+<!--
+	news.xml	news about meteo
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: news.xml.in,v 1.1 2004/02/24 23:33:21 afm Exp $
+-->
+
+<page name="news">
+<h1>News</h1>
+<p>
+Release 0.9.6 fixes some nasty bugs in the offset code, which even caused
+some graphs at low resolution (month and year graphs) to incorrectly
+display. Since some of the incorrect code was in the averager class, it
+may be necessary to run <strong>meteoavg</strong> to recompute all the
+averages. For details about the changes in this release, please see the
+<a href="ChangeLog">ChangeLog</a>.
+</p>
 <p>
 Development of release 0.9.0 was sponsored by the University
 <a href="http://www.univates.br/" target="_new">Univates</a> in
@@ -62,5 +70,4 @@ will be updated in a future release).
 His work was for for a previous release, and some things have changed
 slightly, but it is still helpful as a guide through the installation.
 </p>
-</body>
-</html>
+</page>

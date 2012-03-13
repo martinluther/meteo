@@ -13,6 +13,13 @@ TODO
 
 Bugs
 
+* meteolast still does not work...
+
+* there seems to be a bug in the browser, where meteolabels are computed
+  incorrectly and attributes show up multiple times
+
+* Receiver Status/ISS battery seem to be incorrect
+
 * on a make clean, remove the .mo files in browser/po
 
 * make sure meteodraw does not crash with a segmentation fault when asked
@@ -20,4 +27,4 @@ Bugs
   in the XML file)
 
 --
-$Id: TODO,v 1.43 2003/11/19 12:47:03 afm Exp $
+$Id: TODO,v 1.44 2004/02/24 23:33:20 afm Exp $

@@ -58,28 +58,28 @@ static void	reportrows(const char *file, const int line, const int rows) {
 //
 class groupinfo {
 	time_t	timekey;
-	time_t	from;
-	time_t	to;
+	time_t	from;	// time value
+	time_t	to;	// time value
 	int	group;
 	int	interval;
 	int	offset;
 public:
-	groupinfo(time_t t, int i, int o) {
+	groupinfo(time_t tk, int i, int o) {
 		interval = i;
 		offset = o;
-		timekey = t - t % interval;
+		timekey = tk - tk % interval;
 		from = timekey - offset;
 		to = from + interval;
-		group = timekey / interval;
 		reportinterval("groupinfo", interval, from, to, timekey,
 			__LINE__);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "timekey -> group%d: %d->%d",
-			interval, timekey, group);
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "timekey -> group%d: %d",
+			interval, timekey);
 	}
 	time_t	getTimekey(void) const { return timekey; }
 	time_t	getFrom(void) const { return from; }
+	time_t	getFromKey(void) const { return from + offset; }
 	time_t	getTo(void) const { return to; }
-	int	getGroup(void) const { return group; }
+	time_t	getToKey(void) const { return to + offset; }
 	int	getInterval(void) const { return interval; }
 };
 
@@ -126,15 +126,14 @@ int	Averager::addGeneric(const time_t timekey, const int interval,
 	snprintf(query, sizeof(query),
 		"insert into avg(timekey, intval, sensorid, fieldid, value) "
 		"select %ld, %d, %d, %d, %s(value) "
-		"from header a, sdata b "
-		"where a.group%d = %d and a.timekey >= %ld and a.timekey <= %ld "
-		"  and a.timekey = b.timekey "
+		"from sdata b "
+		"where b.timekey >= %ld and b.timekey <= %ld "
 		"  and b.sensorid = %d and b.fieldid = %d "
 		"group by 1, 2, 3, 4",
 		gi.getTimekey(), gi.getInterval(), sensorid,
-		mfieldid + fieldoffset,
-		op.c_str(),
-		gi.getInterval(), gi.getGroup(), gi.getFrom(), gi.getTo(),
+			mfieldid + fieldoffset,
+			op.c_str(),
+		gi.getFrom(), gi.getTo(),
 		sensorid, mfieldid);
 	reportinterval("addGeneric", interval, gi.getFrom(), gi.getTo(),
 		gi.getTimekey(), __LINE__);
@@ -220,24 +219,21 @@ int	Averager::addWind(const time_t timekey, const int interval,
 	// while we are at it
 	char	query[2048];
 	snprintf(query, sizeof(query),
-		"select sum(c.value), sum(d.value), "
-		"       sum(b.value), sum(e.value) "
-		"from header a, sdata b, sdata c, sdata d, sdata e "
-		"where a.group%d = %d "
-		"  and a.timekey = b.timekey "
-		"  and b.timekey = c.timekey "
+		"select sum(c.value) , sum(d.value), "	/* windx, windy */
+		"       sum(b.value), sum(e.value) " 	/* duration,  samples */
+		"from sdata b, sdata c, sdata d, sdata e "
+		"where b.timekey = c.timekey "
 		"  and c.timekey = d.timekey "
 		"  and d.timekey = e.timekey "
 		"  and b.sensorid = c.sensorid "
 		"  and c.sensorid = d.sensorid "
 		"  and d.sensorid = e.sensorid "
-		"  and b.fieldid = %d "
-		"  and c.fieldid = %d "
-		"  and d.fieldid = %d "
-		"  and e.fieldid = %d "
-		"  and b.sensorid = %d "
-		"  and a.timekey >= %ld and a.timekey <= %ld",
-		interval, gi.getGroup(), 
+		"  and b.fieldid = %d " /* durationid */
+		"  and c.fieldid = %d "	/* windxid */
+		"  and d.fieldid = %d " /* windyid */
+		"  and e.fieldid = %d " /* samplesid */
+		"  and b.sensorid = %d " /* sensorid */
+		"  and b.timekey >= %ld and b.timekey <= %ld",
 		durationid, windxid, windyid, samplesid,
 		sensorid, 
 		gi.getFrom(), gi.getTo());
@@ -279,13 +275,11 @@ int	Averager::addWind(const time_t timekey, const int interval,
 	snprintf(query, sizeof(query),
 		"insert into avg(timekey, intval, sensorid, fieldid, value) "
 		"select %ld, %d, %d, %d, max(value) "
-		"from header a, sdata b "
-		"where a.timekey = b.timekey and a.group%d = %d "
-		"  and a.timekey >= %ld and a.timekey <= %ld "
+		"from sdata b "
+		"where b.timekey >= %ld and b.timekey <= %ld "
 		"  and b.sensorid = %d and b.fieldid = %d "
 		"group by 1, 2, 3, 4",
 		timekey, interval, sensorid, windgustid,
-		interval, gi.getGroup(),
 		gi.getFrom(), gi.getTo(),
 		sensorid, windgustid);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "windgust query is %s", query);

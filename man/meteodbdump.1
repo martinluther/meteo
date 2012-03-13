@@ -44,19 +44,12 @@ option.
 It then starts reading data for the station
 .I station
 and writes SQL insert statements to the files
-.IB basename sdata,
-.IB basename header
+.IB basename sdata
 and
 .IB basename avg.
-Data is read in chunks of at most 
+Data is read in chunks of time length at most
 .I chunksize
-records from the header (default 349), and written  to the header file,
-then the station data in
-.B sdata
-and the averages present in the
-.B avg
-table for the same period
-is also read and written to the avg file.
+seconds. 
 
 The SQL insert statements do not rely on a certain order of the fields
 in the table definition. However, the contents of the
@@ -70,7 +63,7 @@ should be used to backup those tables.
 
 Without any additional arguments,
 .BR meteodbdump (1)
-dumps all three tables, i.e. avg, header and sdata.
+dumps all data tables, i.e. avg and sdata.
 The names of the tables to be dumped can be specified as additional
 arguments, in which case only the specified tables are dumped.
 
@@ -80,7 +73,6 @@ arguments, in which case only the specified tables are dumped.
 The
 .I basename
 string is prepended to the strings
-.IR header ,
 .I sdata 
 and
 .IR avg ,
@@ -98,17 +90,16 @@ of
 will let 
 .BR meteodbdump (1)
 dump the data to the files
-.IR /var/tmp/Lajeado-header ,
 .I /var/tmp/Lajeado-sdata
 and
 .IR /var/tmp/Lajeado-avg .
 
 .TP
 .BI \-c chunksize
-read at most 
+read at most records for a time interval of length
 .I chunksize 
-records from the database at one time. By default, 349 records are
-read in the leading header query. This reduces 
+seconds from the database at one time. By default, a days worth of records
+is read in every iteration, minimizing
 .BR metedbdump (1)'s
 impact on concurrency. Larger values for the chunksize cause the dump to
 use more memory, and usually hurt concurrency noticably.

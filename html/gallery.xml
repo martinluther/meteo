@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!--
+	gallery.xml	gallery of weather stations
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: gallery.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+-->
+<page name="gallery">
+<h1>Gallery of meteo installations</h1>
+<p>
+If your station is public, and you want the world (of meteo users at least)
+to know about your station, send a message to
+<a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a> containing the
+URL to your installation and the geographic location, so that it can be
+included in the list below.
+</p>
+<table border="1" cellspacing="0">
+<tr>
+  <td>Location</td>
+  <td>Link to current data</td>
+  <td>Link to browser</td>
+</tr>
+<tr>
+  <td valign="top">Altendorf, Schwyz, Switzerland</td>
+  <td><a href="http://meteo.othello.ch/meteo/"><img border="0"
+    width="250" height="72"
+    src="http://meteo.othello.ch/meteo/Altendorf-temperature-week.png" /></a>
+  </td>
+  <td><a href="http://meteo.othello.ch/meteo/meteobrowser.php"><img border="0"
+    src="http://meteo.othello.ch/meteo/Altendorf-temperature-year.png"
+    width="250" height="72" /></a>
+  </td>
+</tr>
+<tr>
+  <td valign="top">Rossboda, Bosco/Gurin, Ticino, Switzerland
+    (<a href="http://grossalp.othello.ch">Web Cam and general info</a>)
+  </td>
+  <td valign="top"><a href="http://grossalp.othello.ch/meteo/"><img border="0"
+    src="http://grossalp.othello.ch/meteo/Gurin-temperature-week.png"
+    width="250" height="72" /></a>
+  </td>
+  <td valign="top"><a
+    href="http://meteo.othello.ch/meteo/meteobrowser.php?station=Gurin"><img
+    src="http://grossalp.othello.ch/meteo/Gurin-temperature-year.png"
+    width="250" height="72" border="0" /></a></td>
+</tr>
+<!--
+<tr>
+  <td valign="top">Frauenfeld, Thurgau, Switzerland</td>
+  <td><a href="http://it.sia-abrasives.ch/meteo/"><img border="0"
+    src="http://it.sia-abrasives.ch/meteo/Frauenfeld-temperature-week.png"
+    width="250" height="72" /></a>
+  </td>
+  <td><a href="http://it.sia-abrasives.ch/browser/"><img border="0"
+    src="http://it.sia-abrasives.ch/meteo/Frauenfeld-temeprature-year.png"
+    width="250" height="72" /></a>
+  </td>
+</tr>
+-->
+</table>
+</page>

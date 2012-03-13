@@ -6,10 +6,17 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.22 2003/10/24 16:15:17 afm Exp $
+ $Id: meteo.xml,v 1.23 2004/02/24 23:33:20 afm Exp $
 
   -->
 <meteo>
+  <!--
+    database configuration
+    
+    each meteo instance has exactly one database, which may hold data
+    for several stations (as in the sample installation, where the
+    database holds data for the stations in Gurin and Altendorf)
+  -->
   <database>
     <hostname>localhost</hostname>
     <dbname>meteo</dbname>
@@ -17,18 +24,47 @@
     <password>public</password>
     <writer>meteoupdate</writer>
     <writerpassword>m57cwrt</writerpassword>
+    <!-- the msgqueue tag is required if the meteodequeue process is used,
+         which is highly recommended. Make sure the file referenced here
+	 exists, as it is needed by SysV IPC to generate a msgqueue id. -->
     <msgqueue>/tmp/meteodb-queue</msgqueue>
+    <!-- the updatefile tag is only necessary if the database updates
+         cannot be sent to a database directly. Use the file generated
+	 by this directive to update the database off line. -->
     <updatefile>/var/log/meteoupdate.log</updatefile>
     <prefix>meteo</prefix>
   </database>
 
+  <!--
+    station configuration
+
+    for each station, define the type, the connection method (using url and
+    possibly speed) und the sensors. Use the meteosensors program to find out
+    what sensors your particular station knows about. The sensor configuration
+    here only affects what meteopoll will read and store in the database.
+    You are still free to add other data manually and use the meteodraw program
+    to draw graphs of this data.
+
+    Fully qualified field names are formed by the name attributes of the
+    station and sensor tags and the contents of the field tags. The Altendorf
+    station below has the following fully qualified fields:
+	Altendorf.inside.temperature
+	Altendorf.inside.humidity
+	Altendorf.inside.barometer
+	Altendorf.outside.temperature
+	Altendorf.outside.humidity
+	Altendorf.outside.rain
+	Altendorf.outside.wind
+  -->
   <station name="Altendorf">
     <!-- <url>file:///dev/ttyS0</url> -->
     <url>tcp://weathermonitor.othello.ch:10001</url>
     <type>WMII</type>
     <speed>2400</speed>
     <sensors>
+      <!-- each sensor name must appear in the sensor table in the db-->
       <sensor name="inside">
+        <!-- each field name must appear in the mfield table in the db -->
         <field>temperature</field>
         <field>humidity</field>
         <field>barometer</field>
@@ -91,9 +127,20 @@
     <offset>-10800</offset>
   </station>
 
+  <!--
+    Graph configurations
+
+    Each graph has a name by which it can be referenced. The meteodraw program
+    uses the name look up the XML specification of the graph. The name will
+    be used to form the file name for the produced graph (together with the
+    time label), so it should be a legal part of a filename, in particular it
+    should not contain /, and shell metacharacters will cause file names
+    that are clumsy to handle in shell scripts.
+  -->
   <graphs>
     <graph name="Lajeado.temperature-new" offset="-10800"
 	height="300" width="600" bgcolor="#ffffff" fgcolor="#000000">
+      <!-- label and axis definitions -->
       <leftlabel align="center">Temperatur grad C</leftlabel>
       <rightlabel align="center">relative Humidity %</rightlabel>
       <leftaxis type="dynamic" maxname="tt" minname="dd" min="-100" max="100"
@@ -102,16 +149,29 @@
 	last="100" step="10" format="%.1f" ticks="yes" gridlines="yes"/>
       <rightaxis min="0" max="100" first="0" last="100" step="20" format="%3.0f"
         ticks="yes" gridlines="no"/>
+      <!-- the graphwindow tag defines the area inside the image where the
+	   data will be plotted -->
       <graphwindow llx="55" lly="19" urx="545" ury="293"/>
-      <channels>
 
+      <!-- the channels contains the query definitions that tell meteodraw
+	   how to retrieve the data from the database, and give it symbolic
+	   names, and thq channel tags that describe how the data should
+	   be plotted -->
+      <channels>
+	<!-- 
+	  the query tag describes how data has to be retrived and modified
+	  before graphing.
+	-->
 	<query>
+	  <!-- give certain data sets in the DB a symbolic name -->
 	  <select name="t">Lajeado.iss.temperature</select>
 	  <select name="tmax">Lajeado.iss.temperature_max</select>
 	  <select name="tmin">Lajeado.iss.temperature_min</select>
 	  <select name="h">Lajeado.iss.humidity</select>
 	  <select name="hmax">Lajeado.iss.humidity_max</select>
 	  <select name="hmin">Lajeado.iss.humidity_min</select>
+	  <!-- perform some arithmetic on the data sets, give the result
+	       again a symbolic name -->
 	  <data name="tt">
 	    <function name="floor" limit="-50">
 	      <function name="ceil" limit="50">
@@ -144,6 +204,7 @@
 	  </data>
 	</query>
 
+	<!-- draw graphs for the datasets as specified in the previous tags -->
 	<channel color="#aaaaff" type="range" scale="left"
 	  namelower="dewpointmin" nameupper="dewpointmax"/>
 	<channel color="#0000ff" type="curve" scale="left" name="dewpoint"/>

@@ -27,6 +27,13 @@
 
 namespace meteo {
 
+/*
+ * breakup_time -- break a timestamp in the form YYYYMMDDhhmmsss to struct tm
+ *
+ * this function only takes care of the numeric conversions, it does not do
+ * any verification. The localtime2time function below is supposed to
+ * compute actual time_t values.
+ */
 static int	breakup_time(struct tm *tp, const char *ts) {
 	char	*wc;
 	int	l;
@@ -50,14 +57,35 @@ static int	breakup_time(struct tm *tp, const char *ts) {
 	return 0;
 }
 
+/*
+ * localtime2time -- convert a timestamp string of the form YYYYMMDDhhmmss
+ *                   to local time
+ *
+ * the main problem in this method is that the timestamp strings include 
+ * daylight savings time, but the time_t returned should be corrected for
+ * that. A correct version was found by Eric Varsanyi. Thanks Eric!
+ * The main idea is to do the mktime conversion twice: the first call sets
+ * the tm_isdst flag to the correct value, and with the second call the
+ * conversion takes place using this correct tm_isdst.
+ */
 static time_t	localtime2time(const char *ts) {
 	struct tm	tt;
 
 	/* break up time						*/
+	memset(&tt, 0, sizeof(tt));	// bug pointed out by eric varsanyi
 	if (breakup_time(&tt, ts) < 0)
 		return -1;
 
-	/* make time from that						*/
+	/* Get daylight savings, mktime() will 'adjust' the hour if it
+	   found that the target date was DST (since we started off saying
+	   is_dst == 0). This will give as the correct DST setting	*/
+	mktime(&tt);
+
+	/* new we have to break up the time again and we'll get the actual
+	   time requested on that date (rather than adjusted an hour if the
+	   date was DST).						*/
+	if (breakup_time(&tt, ts) < 0)
+		return -1;
 	return mktime(&tt);
 }
 

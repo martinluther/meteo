@@ -60,21 +60,19 @@ std::string	Query::getQuery(void) const {
 	// build the basic part of the query
 	char	b[1024];
 	if (interval != 60) {
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "correcting query for "
-			"offset %d", offset);
 		snprintf(b, sizeof(b),
-			"select timekey + (%d), sensorid, fieldid, value "
+			"select timekey, sensorid, fieldid, value "
 			"from avg "
 			"where timekey >= %ld "
 			"  and timekey <= %ld "
-			"  and intval = %d ", -offset,
-			start + offset, end + offset, interval);
+			"  and intval = %d ",
+			start, end, interval);
 	} else {
 		snprintf(b, sizeof(b),
 			"select timekey, sensorid, fieldid, value from sdata "
 			"where timekey >= %ld "
 			"  and timekey <= %ld ",
-			start, end);	// no offset in sdata table
+			start, end);
 	}
 	std::string	query(b);
 

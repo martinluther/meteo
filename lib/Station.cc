@@ -221,31 +221,9 @@ void	Station::update(const std::string& packet) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "all data values updated");
 }
 
-static bool	timekeyheader(const time_t timekey) {
-	char	query[1024];
-	snprintf(query, sizeof(query),
-		"select count(*) from header where timekey = %ld", timekey);
-
-	QueryProcessor  qp(false);
-	BasicQueryResult	bqr = qp(query);
-	return (1 == atoi((*bqr.begin())[0].c_str()));
-}
-
 // updatequery method, constructs the union of all the queries
 stringlist	Station::updatequery(time_t timekey) const {
 	stringlist	result;
-	// add the query for the header to the result list
-	if (!timekeyheader(timekey)) {
-		char    query[1024];
-		snprintf(query, sizeof(query),
-			"insert into header(timekey, group300, group1800, "
-			"	group7200, group86400) values "
-			"	(%ld, %ld, %ld, %ld, %ld)",
-			timekey,
-			(timekey + offset)/300, (timekey + offset)/1800,
-			(timekey + offset)/7200, (timekey + offset)/86400);
-		result.push_back(query);
-	}
 
 	// go through the sensor map, and add every element of the sensors
 	// update queries to the result

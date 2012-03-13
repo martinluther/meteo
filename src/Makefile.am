@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.42 2003/11/02 21:41:02 afm Exp $
+# $Id: Makefile.am,v 1.43 2004/02/24 23:33:21 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
@@ -34,11 +34,11 @@ test:	meteopoll
 #		-f `pwd`/../conf/meteo.xml -I -p ../src/ 
 testdraw:	meteodraw
 	cp /dev/null /var/tmp/meteodraw.log
-	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Lajeado -d -d \
+	DYLD_BIND_AT_LAUNCH=1 TZ=BRT ./meteodraw -s Lajeado -d -d \
 		-l file:///var/tmp/meteodraw.log \
 		-f ../conf/meteo.xml -I -p ../src/ \
 		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L d20030930 \
+		-L y2003 \
 		-g Lajeado.rain -g Lajeado.temperature -g Lajeado.humidity \
 		-g Lajeado.wind -g Lajeado.radiation
 
@@ -54,11 +54,11 @@ testmap:	meteodraw
 #
 testdraw60:
 	cp /dev/null /var/tmp/meteodraw.log
-	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin \
+	DYLD_BIND_AT_LAUNCH=1 TZ=BRST./meteodraw -s Gurin \
 		-l file:///var/tmp/meteodraw.log -d -d \
 		-f `pwd`/../conf/meteo-60.xml -I -p ../src/ \
 		-u "/browser/meteobrowser.php?lang=de" \
-		-L d20030719 -g temperature -g temperature_inside -g pressure \
+		-L w200339 -g temperature -g temperature_inside -g pressure \
 		-g radiation -g rain -g wind -g humidity -g humidity_inside -m
 
 #
@@ -68,7 +68,7 @@ testavg:	meteoavg
 	cp /dev/null /var/tmp/meteoavg.log
 	DYLD_BIND_AT_LAUNCH=1 ./meteoavg -sLajeado \
 		-l file:///var/tmp/meteoavg.log \
-		-i 300 -f `pwd`/../conf/meteo.xml -a \
+		-i 86400 -f `pwd`/../conf/meteo.xml -a \
 		20030901000000 20031002160000
 
 testavgd:	meteoavg

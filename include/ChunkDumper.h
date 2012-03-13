@@ -18,28 +18,33 @@ class	ChunkDumper {
 	QueryProcessor	qp;
 	std::ofstream	avgfile;
 	std::ofstream	sdatafile;
-	std::ofstream	headerfile;
-	int	avg, sdata, header;
-	bool	doavg, dosdata, doheader;
+	int	avg, sdata;
+	int	starttime, endtime;
+	bool	doavg, dosdata;
 	bool	sql;
-	int	chunksize;
+	int	chunksize;	// time interval size for dump chunk
 	void	checkFile(const std::ofstream& file, const char *name);
 public:
 	ChunkDumper(const std::string prefix, int size);
 	~ChunkDumper(void);
 
 	void	enableAvg(void) { doavg = true; }
-	void	enableHeader(void) { doheader = true; }
 	void	enableSdata(void) { dosdata = true; }
 	void	disableAvg(void) { doavg = false; }
-	void	disableHeader(void) { doheader = false; }
 	void	disableSdata(void) { dosdata = false; }
 	void	enableRaw(void) { sql = false; }
 	void	enableSql(void) { sql = true; }
 
+	void	setStarttime(int s) { starttime = s; }
+	int	getStarttime(void) { return starttime; }
+	void	setEndtime(int e) { endtime = e; }
+	int	getEndtime(void) { return endtime; }
+
 	std::string	out(const std::string& leadin,
 		std::vector<std::string>& row) const;
-	int	dump(const int timekey, const int sensorid);
+	void	dump(const int sensorid);
+	int	dumpAvg(const int start, const int sesorid);
+	int	dumpSdata(const int start, const int sensorid);
 	void	dumpStation(const std::string& stationname);
 	void	dumpStations(const stringlist& stations);
 };

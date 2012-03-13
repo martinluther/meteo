@@ -170,21 +170,30 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 	f->setForeground(conf.getString(basepath + "/@fgcolor", "#000000"));
 	f->setBackground(conf.getString(basepath + "/@bgcolor", "#ffffff"));
 
+	// retrieve the offset from the configuration
+	int	offset = conf.getInt(basepath + "/@offset", 0);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "offset set to %d", offset);
+
 	// retrieve GraphWindow parameters and create graphwindow
 	Rectangle	r(basepath + "/graphwindow");
-	gw = new GraphWindow(*f, r);
+	gw = new GraphWindow(*f, r, offset, interval);
 	if (aligncenter)
-		gw->setEndTime(end + interval * (r.getWidth() / 2), interval);
+		gw->setEndTime(end + interval * (r.getWidth() / 2));
 	else
-		gw->setEndTime(end, interval);
+		gw->setEndTime(end);
 
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "plotting %d(%d)%d",
 		gw->getStartTime(), interval, gw->getEndTime());
 
 	if (withdata) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "including data in graph");
 		// create query from graph description, this requires that
 		// fully qualified field names are inside the <select> tags
-		Query	q(interval, gw->getStartTime(), gw->getEndTime());
+		time_t	st = (interval == 60)	? gw->getStartTime()
+						: gw->getStartTimekey();
+		time_t	et = (interval == 60)	? gw->getEndTime()
+						: gw->getEndTimekey();
+		Query	q(interval, st, et);
 		stringlist	vn = conf.getStringList(basepath
 					+ "/channels/query/select/@name");
 		stringlist::iterator	i;
@@ -193,11 +202,6 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 				+ "/channels/query/select[@name='"
 				+ *i + "']", ""));
 		}
-
-		// retrieve the offset from the configuration
-		int	offset = conf.getInt(basepath + "/@offset", 0);
-		q.setOffset(offset);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "offset set to %d", offset);
 
 		// retrieve data from database
 		QueryProcessor	qp(false);
@@ -231,6 +235,8 @@ Graphics::Graphics(int interval, time_t end, bool aligncenter,
 
 		// draw graphs
 		drawChannels(basepath + "/channels/channel", &ds);
+	} else {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "not including data");
 	}
 
 	// draw labels

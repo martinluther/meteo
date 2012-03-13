@@ -1,13 +1,11 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
-<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
-</head>
-<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
-<img src="normband.jpg" width="841" height="150" border="0">
-<p><h1>Requirements</h1>
+<page name="prereq">
+<!--
+	prereq.xml	prerequisites (hareware-wise) for meteo
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: prereq.xml,v 1.1 2004/02/24 23:33:21 afm Exp $
+-->
+<h1>Requirements</h1>
 <p>Generally speaking, <b>meteo</b> is quite lean, at least for current
 hardware. The reference installation is on a dual 60MHz processor
 SPARCstation 20 with 200MB of RAM, this can hardly be called current,
@@ -40,5 +38,4 @@ the database on the meteo website was about 1.4GB in size and contained
 more than 47mio rows in the three large tables, more than 30mio rows
 in the <i>sdata</i> table alone.
 </p>
-</body>
-</html>
+</page>

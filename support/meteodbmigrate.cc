@@ -4,6 +4,14 @@
  *                      new database structure. Do not modify the existing
  *                      tables in any way
  *
+ * In most cases, the fields can just be copied over from the old database
+ * to the new one. However, for wind, there is a change in interpretation
+ * of the fields. In pre 0.9.0 versions, the windx and windy fields meant
+ * x and y component of wind. In newer versions, the mean x and y components
+ * of the vector describing the displacement during the measurement interval.
+ * Therefore, when migrating the wind data from the sdata table, we have
+ * to multiply by the duration.
+ *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
 #include <stdio.h>
@@ -37,6 +45,7 @@ typedef struct fieldmap_s fieldmap_t;
 #define	VANTAGE_NFIELDS 26
 #endif
 fieldmap_t	vantagemap[VANTAGE_NFIELDS] = {
+  /* fieldname */               /* sensor */    /* mfieldname */
 { "temperature",		"iss",		"temperature",		1, 1 },
 { "temperature_min",		"iss",		"temperature_min",	0, 1 },
 { "temperature_max",		"iss",		"temperature_max",	0, 1 },
@@ -162,11 +171,11 @@ static fieldid	*getallfieldids(MYSQL *mysql, const char *stationname,
 
 // insert a header row, there does not exist anything equivalent in the
 // old architecture, so we can just do this
-static void	insertheader(MYSQL *mysql, time_t timekey) {
+static void	insertheader(MYSQL *mysql, time_t t) {
 	char	query[1024];
 	// first check whether this particular key value already exists	
 	snprintf(query, sizeof(query),
-		"select count(*) from header where timekey = %ld", timekey);
+		"select count(*) from header where timekey = %ld", t);
 	mysql_query(mysql, query);
 	MYSQL_RES	*res = mysql_store_result(mysql);
 	MYSQL_ROW	row = mysql_fetch_row(res);
@@ -182,14 +191,14 @@ static void	insertheader(MYSQL *mysql, time_t timekey) {
 	}
 	// time timekey marks the end of the interval, so when we compute the
 	// group, we should substract the interval and add the offset
-	int	group300 = (timekey + offset) / 300;
-	int	group1800 = (timekey + offset) / 1800;
-	int	group7200 = (timekey + offset) / 7200;
-	int	group86400 = (timekey + offset) / 86400;
+	int	group300 = (t + offset) / 300;
+	int	group1800 = (t + offset) / 1800;
+	int	group7200 = (t + offset) / 7200;
+	int	group86400 = (t + offset) / 86400;
 	snprintf(query, sizeof(query),
 		"insert into header(timekey, group300, group1800, group7200, "
 		"group86400) values (%ld, %d, %d, %d, %d)",
-		timekey, group300, group1800, group7200, group86400);
+		t, group300, group1800, group7200, group86400);
 	if (debug)
 		fprintf(stderr, "%s:%d: header insert: %s\n",
 			__FILE__, __LINE__, query);
@@ -202,7 +211,7 @@ static void	insertheader(MYSQL *mysql, time_t timekey) {
 }
 
 // insert a single row the sdata table.
-static void	insertsrow(MYSQL *mysql, time_t timekey, const fieldid& sfi,
+static void	insertsrow(MYSQL *mysql, time_t t, const fieldid& sfi,
 			const char *value) {
 	char	query[1024];
 	if (debug)
@@ -217,7 +226,7 @@ static void	insertsrow(MYSQL *mysql, time_t timekey, const fieldid& sfi,
 	snprintf(query, sizeof(query),
 		"insert into sdata(timekey, sensorid, fieldid, value) "
 		"values (%ld, %d, %d, %.5f)",
-		timekey, sfi.sensorid, sfi.mfieldid, v);
+		t, sfi.sensorid, sfi.mfieldid, v);
 	if (debug)
 		fprintf(stderr, "%s:%d: query is %s\n", __FILE__, __LINE__,
 			query);
@@ -233,7 +242,7 @@ static void	insertsrow(MYSQL *mysql, time_t timekey, const fieldid& sfi,
 }
 
 // insert a single row into the avg table
-static void	insertarow(MYSQL *mysql, time_t timekey, int intval,
+static void	insertarow(MYSQL *mysql, time_t t, int intval,
 			const fieldid& sfi, const char *value) {
 	char	query[1024];
 	if (value == NULL)
@@ -241,7 +250,7 @@ static void	insertarow(MYSQL *mysql, time_t timekey, int intval,
 	double	v = atof(value);
 	snprintf(query, sizeof(query), "insert into avg(timekey, intval, "
 		"sensorid, fieldid, value) values (%ld, %d, %d, %d, %.5f)",
-		timekey, intval, sfi.sensorid, sfi.mfieldid, v);
+		t + offset, intval, sfi.sensorid, sfi.mfieldid, v);
 	if (mysql_query(mysql, query)) {
 		if (!quiet)
 			fprintf(stderr, "%s:%d: WARNING: value not inserted: "
@@ -253,11 +262,11 @@ static void	insertarow(MYSQL *mysql, time_t timekey, int intval,
 
 // read a chunk of data from the stationdate table
 static int	getschunk(MYSQL *mysql, const std::string& station,
-			int timekey, const fieldmap_t *map,
+			int t, const fieldmap_t *map,
 			const fieldid *idlist, int nfields, int chunksize) {
 	if (debug)
 		fprintf(stderr, "%s:%d: getchunk %d/%d\n", __FILE__, __LINE__,
-			timekey, chunksize);
+			t, chunksize);
 	char	query[1024];
 	int	endtime;
 
@@ -269,7 +278,13 @@ static int	getschunk(MYSQL *mysql, const std::string& station,
 		// in the stationdata table
 		if (map[i].instationdata) {
 			strcat(query, ", ");
-			strcat(query, map[i].fieldname);
+			if (map[i].fieldname == "windx") {
+				strcat(query, "windx * duration");
+			} else if (map[i].fieldname == "windy") {
+				strcat(query, "windy * duration");
+			} else {
+				strcat(query, map[i].fieldname);
+			}
 		}
 	}
 	int o = strlen(query);
@@ -277,7 +292,7 @@ static int	getschunk(MYSQL *mysql, const std::string& station,
 		"from stationdata "
 		"where station = '%-8.8s' "
 		"  and timekey > %d order by timekey limit %d",
-		station.c_str(), timekey, chunksize);
+		station.c_str(), t, chunksize);
 	if (debug)
 		fprintf(stderr, "%s:%d: stationdata query: %s\n",
 			__FILE__, __LINE__, query);
@@ -298,14 +313,14 @@ static int	getschunk(MYSQL *mysql, const std::string& station,
 	stationdata += nrows;
 	MYSQL_ROW	row;
 	while (NULL != (row = mysql_fetch_row(res))) {
-		endtime = timekey = atoi(row[0]);
+		endtime = t = atoi(row[0]);
 		if (debug)
 			fprintf(stderr, "%s:%d: stationdata timekey: %d\n",
-				__FILE__, __LINE__, timekey);
-		insertheader(mysql, timekey);
+				__FILE__, __LINE__, t);
+		insertheader(mysql, t);
 		for (int i = 0, j = 1; i < nfields; i++) {
 			if (map[i].instationdata) {
-				insertsrow(mysql, timekey, idlist[i],
+				insertsrow(mysql, t, idlist[i],
 					row[j++]);
 			}
 		}
@@ -322,11 +337,11 @@ static int	getschunk(MYSQL *mysql, const std::string& station,
 
 // get a chunk of data from the averages table
 static int	getachunk(MYSQL *mysql, const std::string& station,
-			int timekey, const fieldmap_t *map,
+			int t, const fieldmap_t *map,
 			const fieldid *idlist, int nfields, int chunksize) {
 	if (debug)
 		fprintf(stderr, "%s:%d: getachunk %d/%d\n", __FILE__, __LINE__,
-			timekey, chunksize);
+			t, chunksize);
 	char	query[1024];
 	int	endtime;
 
@@ -347,7 +362,7 @@ static int	getachunk(MYSQL *mysql, const std::string& station,
 		"from averages "
 		"where station = '%-8.8s' "
 		"  and timekey > %d order by timekey limit %d",
-		station.c_str(), timekey, chunksize);
+		station.c_str(), t, chunksize);
 	if (debug)
 		fprintf(stderr, "%s:%d: averages query: %s\n",
 			__FILE__, __LINE__, query);
@@ -367,10 +382,10 @@ static int	getachunk(MYSQL *mysql, const std::string& station,
 	MYSQL_ROW	row;
 	while ((row = mysql_fetch_row(res))) {
 		int	intval = atoi(row[2]);
-		endtime = timekey = atoi(row[0]);
+		endtime = t = atoi(row[0]);
 		for (int i = 0, j = 1; i < nfields; i++) {
 			if (map[i].inaverages) {
-				insertarow(mysql, timekey, intval, idlist[i],
+				insertarow(mysql, t, intval, idlist[i],
 					row[j++]);
 			}
 		}
@@ -431,7 +446,7 @@ int	main(int argc, char *argv[]) {
 	std::string	basename("./");
 	std::string	logurl("file:///-");
 	std::string	stationtype;
-	int	timekey = 0;
+	int	t = 0;
 	int	chunksize = 1440; 	// one day worth of data
 	fieldmap_t	*map = NULL;
 	int	mapsize = 0;
@@ -472,7 +487,7 @@ int	main(int argc, char *argv[]) {
 			chunksize = atoi(optarg);
 			break;
 		case 'f':
-			timekey = atoi(optarg);
+			t = atoi(optarg);
 			break;
 		case 'q':
 			quiet = true;
@@ -513,31 +528,31 @@ int	main(int argc, char *argv[]) {
 			__LINE__, station.c_str());
 
 	// work on stationdata
-	if (timekey == 0)
-		timekey = firstkey(&mysql, station);
+	if (t == 0)
+		t = firstkey(&mysql, station);
 	if (debug)
 		fprintf(stderr, "%s:%d: trying stationdata\n",
 			__FILE__, __LINE__);
 	do {
-		int	oldtimekey = timekey;
-		timekey = getschunk(&mysql, station.c_str(), timekey, map,
+		int	oldt = t;
+		t = getschunk(&mysql, station.c_str(), t, map,
 			idlist, mapsize, chunksize);
-		if (timekey == oldtimekey)
+		if (t == oldt)
 			break;
-	} while (timekey > 0);
+	} while (t > 0);
 
 	// work on averages
-	timekey = firstkey(&mysql, station);
+	t = firstkey(&mysql, station);
 	if (debug)
 		fprintf(stderr, "%s:%d: trying averages\n",
 			__FILE__, __LINE__);
 	do {
-		int	oldtimekey = timekey;
-		timekey = getachunk(&mysql, station.c_str(), timekey, map,
+		int	oldt = t;
+		t = getachunk(&mysql, station.c_str(), t, map,
 			idlist, mapsize, chunksize);
-		if (timekey == oldtimekey)
+		if (t == oldt)
 			break;
-	} while (timekey > 0);
+	} while (t > 0);
 
 	// disconnect from database
 	if (debug)

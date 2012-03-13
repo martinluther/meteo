@@ -27,8 +27,6 @@ Vector::Vector(double r, unsigned short azideg, bool azinotarg) {
 		x = r * cos(p);
 		y = r * sin(p);
 	}
-	x = r * cos(p);
-	y = r * sin(p);
 	if ((fabs(x) > 1000.) || (fabs(y) > 1000.)) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "illegal vector components");
 	}

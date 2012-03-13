@@ -1,6 +1,10 @@
 /*
  * Tdata.cc -- implementation of operators on time dependent data sets
  *
+ * the time values used in the Tdata class usually is a timekey, i.e.
+ * one has to substract the offset to get an actual time value. However,
+ * the offset is not known to the Tdata class.
+ *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  */
 #include <Tdata.h>
@@ -110,12 +114,17 @@ Tdata	apply2(double (*func)(double, double), const Tdata& a, const Tdata& b) {
 		commonstart, commonfinish);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "applying %p to var(%d)/var(%d)",
 		func, a.data.size(), b.data.size());
+	// go through the first array
 	for (i = a.data.begin(); i != a.data.end(); i++) {
+		// look for the same key in the second arary
 		if (b.data.end() != b.data.find(i->first)) {
+			// we have found a common time index, so make sure
+			// it is in the common range
 			if ((i->first < commonstart)
 				|| (i->first > commonfinish))
 				continue;
 			try {
+				// apply the function to the 
 				result.data[i->first] = func(i->second,
 					b.data.find(i->first)->second);
 				count++;
@@ -136,7 +145,17 @@ static double	operatorquotient(double a, double b) {
 }
 static double	operatormax(double a, double b) { return (a > b) ? a : b; }
 static double	operatormin(double a, double b) { return (a < b) ? a : b; }
-static double	operatoratan2(double x, double y) { return ::atan2(x, y); }
+static double	operatoratan2(double y, double x) { return ::atan2(y, x); }
+
+// There is some tricky confusion here about how azi is computed. first note
+// that the azi is measured from the north in the direction of the clock. This
+// is exactly the opposite of the argument angle usually used in mathematics,
+// which is measured from x-axis counterclockwise. The azi of a vector v is
+// the argument angle of the vector's mirror image at the line y=x. This
+// mirror image can easily be computed by exchanging x and y. So to compute
+// the azi of a vector (x,y), we need to compute that argument of the vector
+// (y,x). But atan2(v,u) computes the argument of vector (u,v), so the
+// correct way to compute the azi is atan2(x,y).
 static double	operatorazi(double x, double y) {
 	if ((::fabs(x) + ::fabs(y)) < 0.01)
 		throw MeteoException("value too small to compute azi", "");
@@ -184,8 +203,8 @@ Tdata	operator/(const Tdata& a, const Tdata& b) {
 	return apply2(operatorquotient, a, b);
 }
 
-Tdata	atan2(const Tdata& x, const Tdata& y) {
-	return apply2(operatoratan2, x, y);
+Tdata	atan2(const Tdata& y, const Tdata& x) {
+	return apply2(operatoratan2, y, x);
 }
 
 Tdata	azi(const Tdata& x, const Tdata& y) {

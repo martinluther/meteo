@@ -17,44 +17,56 @@ namespace meteo {
 class GraphWindow {
 	Frame&		parent;
 	Rectangle	window;
+	int		offset;
 	int		interval;
+	// starttime and endtime are times such that starttime + offset
+	// is divisible by the interval. this ensures that all numbers
+	// of the form starttime + i * interval + offset are also valid
+	// timekeys.
 	time_t		starttime, endtime;
 	Scale		leftscale, rightscale;
 	Axis		leftaxis, rightaxis;
 	ImageMap	imap;
 public:
-	GraphWindow(Frame& p, const Rectangle& r) : parent(p), window(r)  {
+	GraphWindow(Frame& p, const Rectangle& r, int off, int i) : parent(p),
+		window(r), offset(off), interval(i)  {
+		imap.setLevel(interval);
 		time_t	e;
 		time(&e);
-		setEndTime(e, 300);
+		setEndTime(e);
 	}
 	~GraphWindow(void) { }
 
+	// method to reduce the time to the grid.
+	time_t	reduceTime(time_t t) const;
+
 	// methods to specify the time scale 
-	void	setEndTime(time_t e, int i) {
-		interval = i;
-		imap.setLevel(i);
-		endtime = e - (e % interval);
+	void	setEndTime(time_t e) {
+		endtime = reduceTime(e);
 		starttime = endtime - getWidth() * interval;
 	}
-	void	setStartTime(time_t s, int i) {
-		interval = i;
-		imap.setLevel(i);
-		starttime = s - (s % interval);
-		endtime = s + getWidth() * interval;
+	void	setStartTime(time_t s) {
+		starttime = reduceTime(s);
+		endtime = starttime + getWidth() * interval;
 	}
 	int	getInterval(void) const { return interval; }
 	time_t	getEndTime(void) const { return endtime; }
+	time_t	getEndTimekey(void) const { return getEndTime() + offset; }
 	time_t	getStartTime(void) { return starttime; }
+	time_t	getStartTimekey(void) { return getStartTime() + offset; }
 	int	getWidth(void) const { return window.getWidth(); }
 	int	getIndexFromTime(time_t t) const {
-		return (t - starttime) / interval;
+		return (reduceTime(t) - starttime) / interval;
 	}
 	int	getXFromTime(time_t t) const {
 		return window.getLeft() + getIndexFromTime(t);
 	}
+	// takes the index and computes the real time timestamp from it
 	time_t	getTimeFromIndex(int i) const {
 		return starttime + i * interval;
+	}
+	time_t	getTimekeyFromIndex(int i) const {
+		return getTimeFromIndex(i) - offset;
 	}
 
 	// color access
@@ -73,7 +85,7 @@ public:
 		return (int)(y * window.getHeight() + window.getLow());
 	}
 	int	getX(time_t t) const {
-		return window.getLeft() + getIndexFromTime(t);
+		return getXFromTime(t);
 	}
 
 	// accessors for axis
@@ -84,18 +96,9 @@ public:
 
 	// point conversions from Window coordinates (time_t, double)
 	// to frame coordinates (int, int)
-	Point	getPoint(bool useleftscale, const GraphPoint& gp) const {
-		return Point(getX(gp.getTime()),
-			getY(useleftscale, gp.getValue()));
-	}
-	Point	getBottomPoint(time_t t) const {
-		return Point(window.getRight() - (endtime - t)/interval,
-			window.getLow());
-	}
-	Point	getTopPoint(time_t t) const {
-		return Point(window.getRight() - (endtime - t)/interval,
-			window.getHigh());
-	}
+	Point	getPoint(bool useleftscale, const GraphPoint& gp) const;
+	Point	getBottomPoint(time_t t) const;
+	Point	getTopPoint(time_t t) const;
 
 	// get a color from a string, or use the foreground for the present
 	// image

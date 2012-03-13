@@ -48,8 +48,6 @@ user will look like
 
 and for the read/write user:
 
-	mysql> grant select, insert on header to mtp@localhost 
-		identified by 'private';
 	mysql> grant select, insert on sdata to mtp@localhost;
 	mysql> grant select, insert on avg to mtp@localhost;
 	mysql> flush privilges;
@@ -104,19 +102,18 @@ index, as the triple (timekey, stationid, fieldid) is the primary
 key, all queries for graphing can be done entirely on the index.
 
 The stationdata table also contained information about the averaging
-group, but since this information is rather dependent on the timekey,
-and is some form of denormalization anyway, it was put in the
-separate header table.  Computing averages for the various data
-items now involves more tables, in particular wind is now a four-way
-join of header table and three copies of the sdata table. However,
-since primary keys are properly indexed, these queries are not
-slower then they used to be in previous versions.
+group, but this was only used when meteograph (now dead) knew how
+to graph directly from the stationdata table, without using the averages
+table. The averaging group numbers were used to speed up those queries.
+meteodraw never supported direct access to sdata, so the group info
+is no longer needed (in previous 0.9.x releases, this info was placed
+in the header table, but it turned out to a useless waste of space).
 
 The avg table contains the additional intval field, which describes
-the averaging interval for the present data point. The averages
-table in the previous architecture did not contain any data purely
-dependent on the timekey, so there is no for something like the
-header table in this case.
+the averaging interval for the present data point. Note that the timekey
+field in this table really is a timekey, i.e. it is corrected for the
+offset of the station. The beginning time for the interval addressed
+by a timekey tk is tk - offset;
 
 The following diagram illustrates relationships between the different
 tables.
@@ -136,15 +133,13 @@ tables.
                                     |                    |    +--------+
                                     |    +----------+    +--->|*id     |
                                     |    | sdata    |    |    | name   |
-                  +------------+    |    +----------+    |    | unit   |
-                  | header     |    `----|*sensorid |    |    | class  |
-                  +------------+         |*fieldid  |----'    | title  |
-                  |*timekey    |<--------|*timekey  |         +--------+
-                  | group300   |         | value    |
-                  | group1800  |         +----------+
-                  | group7200  |
-                  | group86400 |
-                  +------------+
+                                    |    +----------+    |    | unit   |
+                                    `----|*sensorid |    |    | class  |
+                                         |*fieldid  |----'    | title  |
+                                         |*timekey  |         +--------+
+                                         | value    |
+                                         +----------+
+
 
 
 Indexes
@@ -234,4 +229,4 @@ Note that for the VantagePro and WMII, the necessary methods are already
 implemented, so only the last step needs to be added.
 
 --
-$Id: README,v 1.5 2003/10/28 08:48:08 afm Exp $
+$Id: README,v 1.6 2004/02/24 23:33:20 afm Exp $

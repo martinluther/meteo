@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.cc,v 1.10 2003/11/11 08:13:54 afm Exp $
+ * $Id: meteoavg.cc,v 1.11 2004/02/24 23:33:21 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -70,21 +70,21 @@ static void	avg_daemon(const std::string& station) {
 		// to indicate the end of the time interval, but now
 		// it points to the beginning, so we have to substract the
 		// interval length to get the same behaviour
-		avg.add(next + offset - 300, 300, false);
-		if (0 == (next % 1800)) {
+		avg.add(next - 300, 300, false);
+		if (0 == ((next + offset) % 1800)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"adding 1/2h avgs necessary");
-			avg.add(next + offset - 1800, 1800, false);
+			avg.add(next - 1800, 1800, false);
 		}
-		if (0 == (next % 7200)) {
+		if (0 == ((next + offset) % 7200)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"adding 2h avgs necessary");
-			avg.add(next + offset - 7200, 7200, false);
+			avg.add(next - 7200, 7200, false);
 		}
-		if (0 == (next % 86400)) {
+		if (0 == ((next + offset) % 86400)) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"adding 1day avgs necessary");
-			avg.add(next + offset - 86400, 86400, false);
+			avg.add(next - 86400, 86400, false);
 		}
 	}
 }
@@ -248,14 +248,16 @@ static int	meteoavg(int argc, char *argv[]) {
 	// for timekey t actually uses data from t - offset to
 	// t - offset + interval, so we must add the offset to t to get
 	// the intervals we are interested in
-	fromt += si.getOffset();
-	fromt -= (fromt) % interval;
+	fromt -= (fromt + si.getOffset()) % interval;
 
 	// compute updates in the range according to the command line parameters
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 		"start querying for averages between %d and %d",
 		(int)fromt, (int)tot);
-	for (t = fromt; t <= tot + si.getOffset(); t += interval) {
+	// t is the start time of an interval, it is chosen such that t+offset
+	// is a valid time key
+	for (t = fromt; t <= tot; t += interval) {
+		time_t	timekey = t + si.getOffset();
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 			"averages for time %d/%d, station '%s'",
 			(int)t, interval, station.c_str());
@@ -266,11 +268,11 @@ static int	meteoavg(int argc, char *argv[]) {
 
 		// create necessary averages
 		if (!all)
-			haveavg = avg.have(t, interval);
+			haveavg = avg.have(timekey, interval);
 		else
 			haveavg = false;
 		if (!haveavg)
-			avg.add(t, interval, all);
+			avg.add(timekey, interval, all);
 	}
 
 	exit(EXIT_SUCCESS);

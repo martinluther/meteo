@@ -11,6 +11,40 @@
 
 namespace meteo {
 
+// method to reduce the time to the grid. Note that the reduced time
+// satisfies the following equation:
+//
+//      (t - ((t + offset) % interval)) + offset
+//    = t+offset - (t+offset)%interval = 0 mod interval
+//
+// i.e. the reduced time is always such that t+offset is a multiple
+// of the interval, i.e. is a timekey. Furthermore, the equation shows
+// that the reduceTime operation is idempotent.
+//
+// as long as the offset is divisible by the interval (for intervals
+// 300 and 1800 satisfied), the reduction does nothing, but for larger
+// intervals, the difference is large. E.g. for Lajeado, we have
+// offset = -10800, so time t=0 reduces to -10800%7200 = -3600, so
+// the offset leads to an offset of one hour.
+time_t	GraphWindow::reduceTime(time_t t) const {
+	return t - ((t + offset) % interval);
+}
+
+// getPoint	get apoint from a graphpoint
+Point	GraphWindow::getPoint(bool useleftscale, const GraphPoint& gp) const {
+	return Point(getXFromTime(gp.getTime()), getY(useleftscale, gp.getValue()));
+}
+
+// getBottomPoint and getTopPoint -- get a point based on a time value
+Point	GraphWindow::getBottomPoint(time_t t) const {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "reduce: %d to %d, x = %d", t,
+		reduceTime(t), getXFromTime(t));
+	return Point(getXFromTime(t), window.getLow());
+}
+Point	GraphWindow::getTopPoint(time_t t) const {
+	return Point(getXFromTime(t), window.getHigh());
+}
+
 // drawLine -- draw a line joining the data points of data in the specified
 //             color. If a datapoint is missing, interrupt the graph unless
 //             the connected flag is set
@@ -22,14 +56,20 @@ void	GraphWindow::drawLine(bool useleftscale, const Tdata& data,
 
 	for (int i = 0; i < getWidth(); i++) {
 		time_t	timeindex = getTimeFromIndex(i);
-		j = data.find(timeindex);
+		// look for data based on timekey = time + offset
+		j = data.find(timeindex + offset);
 		if (j == data.end()) {
 			if (!connected)
 				haveprevious = false;
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"no data for time %d, key %d",
+				timeindex, timeindex + offset);
 		} else {
-			GraphPoint	current(j->first, j->second);
+			GraphPoint	current(timeindex, j->second);
 			// draw a line if the previous point is set
 			if (haveprevious) {
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"drawing data for time %d", timeindex);
 				drawLine(useleftscale, previous, current,
 					color, style);
 			}
@@ -46,10 +86,12 @@ void	GraphWindow::drawHistogram(bool useleftscale, const Tdata& data,
 		const Color& color) {
 	tdata_t::const_iterator	i;
 	for (i = data.begin(); i != data.end(); i++) {
-		time_t	timeindex = i->first;
-		parent.drawLine(getBottomPoint(timeindex),
+		// since data always uses timekeys, not time, we must correct
+		// for the offset where we need time
+		time_t	timekey = i->first;
+		parent.drawLine(getBottomPoint(timekey - offset),
 			getPoint(useleftscale,
-				GraphPoint(timeindex, i->second)),
+				GraphPoint(timekey - offset, i->second)),
 			color, solid);
 	}
 }
@@ -61,12 +103,15 @@ void	GraphWindow::drawRange(bool useleftscale, const Tdata& lower,
 		const Tdata& upper, const Color& color) {
 	tdata_t::const_iterator	i, j;
 	for (i = lower.begin(); i != lower.end(); i++) {
-		time_t	timeindex = i->first;
-		j = upper.find(timeindex);
+		time_t	timekey = i->first;
+		j = upper.find(timekey);
 		if (j != upper.end()) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "data for time %d",
+				timekey - offset);
 			drawLine(useleftscale,
-				GraphPoint(i->first, i->second),
-				GraphPoint(j->first, j->second), color, solid);
+				GraphPoint(i->first - offset, i->second),
+				GraphPoint(j->first - offset, j->second),
+				color, solid);
 		}
 	}
 }
@@ -78,7 +123,9 @@ void	GraphWindow::drawNodata(const Tdata& data, const Color& color) {
 	for (int i = 0; i <= getWidth(); i++) {
 		time_t	t = getTimeFromIndex(i);
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "nodata at %d->%d", i, t);
-		if (data.end() == data.find(t)) {
+		// look for the data based on the timekey (datasets always
+		// use timekey) timekey = time + offset
+		if (data.end() == data.find(t + offset)) {
 			parent.drawLine(getTopPoint(t),
 				getBottomPoint(t), color, solid);
 		}
@@ -255,8 +302,8 @@ static bool	middleOfMonth(time_t t, int interval, struct tm *tmp) {
 MapArea	GraphWindow::getArea(time_t start, time_t end) const {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "adding area %d - %d", start, end);
 	// compute dimensions for the rectangle
-	Point	ll(getX(start), window.getLow());
-	Point	ur(getX(end), window.getHigh());
+	Point	ll(getXFromTime(start), window.getLow());
+	Point	ur(getXFromTime(end), window.getHigh());
 	Rectangle r(ll, ur);
 
 	// compute mid time for this area

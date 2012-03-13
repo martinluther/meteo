@@ -21,6 +21,11 @@ typedef std::map<fieldid, std::string>		imap_t;
 // interval. It thus represents a vertical section through the table. This
 // class is not very useful to access all data in a row, the QueryProcessor
 // class is capable of retrieving entire records
+//
+// Unless the interval is 60 seconds, which means that the query is executed
+// against the sdata table, the query always runs against the avg table.
+// In that case, the time range for the query is a range of timekeys, i.e.
+// the real time is tk - offset
 class	Query {
 	// the smap_t select maps symbolic names to field names in the old
 	// structure of the database. In the new structure, these field
@@ -33,11 +38,10 @@ class	Query {
 	imap_t	idmap;
 	time_t	start, end;
 	int	interval;
-	int	offset;
 public:
-	Query(void) { offset = 0; }
+	Query(void) { }
 	Query(int i, time_t s, time_t e) {
-		interval = i; start = s - s % i; end = e - e % i; offset = 0;
+		interval = i; start = s - s % i; end = e - e % i;
 	}
 	~Query(void) { }
 
@@ -50,8 +54,6 @@ public:
 	time_t	getEnd(void) const { return end; }
 	void	addSelect(const std::string& n, const std::string& fqfieldname);
 	int	getSelectCount(void) const { return select.size(); }
-	void	setOffset(int o) { offset = o; }
-	int	getOffset(void) const { return offset; }
 	std::string	getNameById(const fieldid& id) const;
 
 	// more complex accessors 

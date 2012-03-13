@@ -61,6 +61,7 @@ Contributors: in no particular order, email addresses withheld to protect
 	Carsten Guenther	found a bug in ReaderInfo.cc, where all the
 				extra humidity readers had the same name
 	Stephen Huberty		found a bug in QueryProcessor.cc
+	Eric Varasnyi		found important bugs in the offset code
 
 --
-$Id: AUTHORS,v 1.12 2004/01/07 21:53:37 afm Exp $
+$Id: AUTHORS,v 1.13 2004/02/24 23:33:20 afm Exp $

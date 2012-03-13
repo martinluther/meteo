@@ -1,15 +1,11 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ASCII">
-<title>Meteo</title>
-<link href="meteo.css" type="text/css" rel="stylesheet">
-</head>
-<body>
-<div id="titel"></div>
-<div id="menu">
-<a href="about.html"><div class="menuitem">About</div></a><a href="news.html"><div class="menuitem">News</div></a><a href="gallery.html"><div class="menuitem">Gallery</div></a><a href="install.html"><div class="menuitem">Install</div></a><a href="config.html"><div class="menuitemselected">Configure</div></a><a href="util.html"><div class="menuitem">Utilities</div></a><a href="prereq.html"><div class="menuitem">Prerequisites</div></a><a href="ack.html"><div class="menuitem">Acknowledgments</div></a>
-</div>
-<div id="content">
+<?xml version="1.0"?>
+<!--
+	config.xml	configuring the software
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: config.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+-->
+<page name="config">
 <h1>Configuring the software</h1>
 <p>
 After the software has been installed, it must be configured.
@@ -53,10 +49,4 @@ See the <a href="http://meteo.othello.ch/README.browser">README.browser</a> for 
 For details of the configuration of all these programs, please consult
 the manual pages installed with the distribution.
 </p>
-</div>
-<div id="footer">
-  &#169; 2004 <a href="mailto:afm@othello.ch">Dr. Andreas M&#252;ller</a>,
-   <a href="http://www.othello.ch">Beratung und Entwicklung</a>
-</div>
-</body>
-</html>
+</page>

@@ -1,15 +1,12 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ASCII">
-<title>Meteo</title>
-<link href="meteo.css" type="text/css" rel="stylesheet">
-</head>
-<body>
-<div id="titel"></div>
-<div id="menu">
-<a href="about.html"><div class="menuitemselected">About</div></a><a href="news.html"><div class="menuitem">News</div></a><a href="gallery.html"><div class="menuitem">Gallery</div></a><a href="install.html"><div class="menuitem">Install</div></a><a href="config.html"><div class="menuitem">Configure</div></a><a href="util.html"><div class="menuitem">Utilities</div></a><a href="prereq.html"><div class="menuitem">Prerequisites</div></a><a href="ack.html"><div class="menuitem">Acknowledgments</div></a>
-</div>
-<div id="content">
+<?xml version="1.0"?>
+<!--
+	about.xml	Meteo home page XML content file
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: about.xml,v 1.1 2004/02/24 23:33:20 afm Exp $
+-->
+
+<page name="about">
 <h1>About</h1>
 <p>
 Welcome to the home of the meteo package, and in particular to its
@@ -38,12 +35,14 @@ Here are the stations used to develop this package:
 </td>
 <td valign="top">
 <a href="http://meteo.othello.ch/meteo/" target="_new">
-<img src="http://meteo.othello.ch/meteo/Altendorf-temperature-week.png" width="250" height="72" border="0">
+<img src="http://meteo.othello.ch/meteo/Altendorf-temperature-week.png"
+width="250" height="72" border="0" />
 </a>
 </td>
 <td valign="top">
 <a href="http://meteo.othello.ch/meteo/meteobrowser.php" target="_new">
-<img src="http://meteo.othello.ch/meteo/Altendorf-temperature-year.png" width="250" height="72" border="0">
+<img src="http://meteo.othello.ch/meteo/Altendorf-temperature-year.png"
+width="250" height="72" border="0" />
 </a>
 
 </td>
@@ -55,12 +54,14 @@ currently out of service due to lightning, in repair)
 </td>
 <td valign="top">
 <a href="http://grossalp.othello.ch/meteo/" target="_new">
-<img src="http://grossalp.othello.ch/meteo/Gurin-temperature-week.png" width="250" height="72" border="0">
+<img src="http://grossalp.othello.ch/meteo/Gurin-temperature-week.png"
+width="250" height="72" border="0" />
 </a>
 </td>
 <td valign="top">
 <a href="http://meteo.othello.ch/meteo/meteobrowser.php?station=Gurin" target="_new">
-<img src="http://grossalp.othello.ch/meteo/Gurin-temperature-year.png" width="250" height="72" border="0">
+<img src="http://grossalp.othello.ch/meteo/Gurin-temperature-year.png"
+width="250" height="72" border="0" />
 </a>
 </td>
 
@@ -99,10 +100,4 @@ installing the script.
 You may also want to read the <a href="http://meteo.othello.ch/README">README</a> for additional
 information.
 </p>
-</div>
-<div id="footer">
-  &#169; 2004 <a href="mailto:afm@othello.ch">Dr. Andreas M&#252;ller</a>,
-   <a href="http://www.othello.ch">Beratung und Entwicklung</a>
-</div>
-</body>
-</html>
+</page>

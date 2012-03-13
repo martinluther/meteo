@@ -98,14 +98,43 @@ convert to the appropriate units on the fly.
 The
 .B avg
 table contains averages over longer intervals of time, namely
-5 minutes, 30 minutes, 2 hours and a day. These averages are computed
+5 minutes, 30 minutes, 2 hours and a day. Originally, these averages
+were computed
 by aggregating those values for which the unixtime divided by the
 length of the interval in seconds gives the same integer value.
-This implies that the timekey field in a row of the
+Since the integer division causes bad performance, these quotients,
+also called group numbers were precomputed in some table. Present
+versions of meteo no longer use these fields or tables, as they don't rely
+on the group numbers for average computation.
+
+The timekey field in the 
 .B avg
 table indicates the start of the interval. Furthermore, this
 value is always such that it is divisible by the length of the interval
-in seconds.
+in seconds. This works well for UTC.
+
+To correct for local time, the offset variable was added. The timekey
+field in the avg table however retains its mathematical properties,
+i.e. it should be divisible by the aggregation interval. But we would
+of course want the aggregation interval of length 86400 to cover a
+day from midnight to midnight. So a given timekey must be corrected
+by the local time offset to give the first data item of an aggregation
+interval. If the offset is
+.I o (negativ on the western hemisphere), and
+the aggregation interval length is
+.iR i,
+then
+the timekey
+.I tk
+aggregates time values
+.I tk - o
+to
+.I tk - o + interval
+(not including this last value). When graphing these averages, the
+aggregated data for timekey
+.I tk
+should be plotted at time
+.IR "tk - o" .
 
 As an example, consider the station Lajeado, Brazil. It is 3 hours
 behind GMT, i.e. the timekey 106567600, which corresponds to
@@ -126,12 +155,9 @@ Unix:  0     |                                         0
        | -3h |
 .fi
 
-To problem of course starts with the computation of the group numbers
-in the header table. To make sure rain (and all the other values)
+To make sure rain (and all the other values)
 are accumulated from midnight to midnight local time, an offset
-can be configured in the configuration file. The offset will be
-added to the timekey of the value added to the sdata
-table before the group values are computed.
+can be configured in the configuration file.
 
 Lajeado would use -10800 as the offset (as for time zone differences,
 longitudes west of Grenwich get negativ offsets). This number is
@@ -144,9 +170,6 @@ with this offset applied, timekey 106567600 points to the
 averages of values between 00:00 on october 9, 2003 and 23:59 on the
 same day. However, that Unix time points to 21:00 local time on 
 october 8, 2003.
-
-Changing the timekey involves updating all the entries in the
-header table and recomputing all averages.
 
 .SH "SEE ALSO"
 .BR meteo (1),

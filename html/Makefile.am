@@ -3,20 +3,20 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.12 2003/11/19 22:27:07 afm Exp $
+# $Id: Makefile.am,v 1.13 2004/02/24 23:33:20 afm Exp $
 #
-HTMLFILES = meteodata.html meteo-install.html meteo.css gallery.html	\
-	about.html ack.html config.html index.html inhalt.html		\
-	news.html requ.html uti.html get.html
-IMAGES = inhaltband.jpg normband.jpg
+HTML =	ack.html gallery.html prereq.html install.html util.html 	\
+	news.html about.html config.html
+HTMLFILES = meteodata.html meteo-install.html meteo.css $(HTML)
+IMAGES = meteo.jpg
 TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../INSTALL \
 	../COPYING ../SETUP
 HTMLDIR = @HTMLDIR@
-EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.html	\
-	about.html ack.html config.html index.html inhalt.html		\
-	news.html.in requ.html uti.html get.html.in $(IMAGES)
+EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.xml	\
+	about.xml ack.xml config.xml news.xml.in prereq.xml util.xml 	\
+	$(IMAGES) meteo.xsl $(HTML)
 
-install-data-local:
+install-data-local:	html
 	@if [ ! -z "$(HTMLDIR)" ];					\
 	then								\
 		echo "installing the HTML documentation in $(HTMLDIR)";	\
@@ -26,3 +26,8 @@ install-data-local:
 		echo "info: HTML docs not installed, used --with-html-dir"; \
 	fi
 
+
+%.html : %.xml ; xsltproc meteo.xsl $< > $@
+
+html:	ack.html gallery.html prereq.html install.html util.html 	\
+	news.html about.html config.html

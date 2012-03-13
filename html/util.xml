@@ -1,13 +1,12 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
-<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
-</head>
-<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
-<img src="normband.jpg" width="841" height="150" border="0">
-<p><h1>Utilities</h1>
+<page name="util">
+<!--
+	util.xml	utility programs used e.g. for migrations or
+			for administration
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: util.xml,v 1.1 2004/02/24 23:33:21 afm Exp $
+-->
+<h1>Utilities</h1>
 <p>
 Some utilities included in the package are not documented in manual
 pages. Here is a short description of these tools:
@@ -41,5 +40,4 @@ of meteo. <b>meteodbdump</b> allows to dump the database without noticable
 impact on the other meteo programs.</dd>
 </dl>
 </p>
-</body>
-</html>
+</page>

@@ -1,0 +1,52 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ASCII">
+<title>Meteo</title>
+<link href="meteo.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<div id="titel"></div>
+<div id="menu">
+<a href="about.html"><div class="menuitem">About</div></a><a href="news.html"><div class="menuitem">News</div></a><a href="gallery.html"><div class="menuitem">Gallery</div></a><a href="install.html"><div class="menuitem">Install</div></a><a href="config.html"><div class="menuitem">Configure</div></a><a href="util.html"><div class="menuitem">Utilities</div></a><a href="prereq.html"><div class="menuitemselected">Prerequisites</div></a><a href="ack.html"><div class="menuitem">Acknowledgments</div></a>
+</div>
+<div id="content">
+<h1>Requirements</h1>
+<p>Generally speaking, <b>meteo</b> is quite lean, at least for current
+hardware. The reference installation is on a dual 60MHz processor
+SPARCstation 20 with 200MB of RAM, this can hardly be called current,
+Sun has canceled support for this platform for several years now.
+</p>
+<p>
+<strong>Disk space:</strong>
+To build meteo on a Linux system, you need at least 150MB of disk space,
+the installed libraries with debug symbols take about 45MB (they become
+considerably smaller if you strip them), the installed programms use
+about 5.5MB. On Solaris, the shared library is smaller, but the
+archive library is larger. The binaries are linked against the
+shared libraries by default.
+</p>
+<p>
+<strong>CPU:</strong> While compiling the software can take some
+time (it takes about an hour on the reference machine),
+running meteo hardly produces any noticeable load on current hardware.
+On the meteo website server, meteo's activities account for hardly more
+than about 10% of the CPU load. The most important portion of CPU load comes
+from the database, the meteo programs themselves cause less than 1% of
+the CPU load.
+</p>
+<p>
+<strong>Database space:</strong> 
+The most important requirement for meteo is database space. A VantagePro Plus
+station uses about 970kB in the <i>sdata</i>, <i>avg</i> and <i>header</i>
+per day of database space, or about 343MB per year. On october 30th, 2003,
+the database on the meteo website was about 1.4GB in size and contained
+more than 47mio rows in the three large tables, more than 30mio rows
+in the <i>sdata</i> table alone.
+</p>
+</div>
+<div id="footer">
+  &#169; 2004 <a href="mailto:afm@othello.ch">Dr. Andreas M&#252;ller</a>,
+   <a href="http://www.othello.ch">Beratung und Entwicklung</a>
+</div>
+</body>
+</html>

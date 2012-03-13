@@ -1,0 +1,53 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ASCII">
+<title>Meteo</title>
+<link href="meteo.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<div id="titel"></div>
+<div id="menu">
+<a href="about.html"><div class="menuitem">About</div></a><a href="news.html"><div class="menuitem">News</div></a><a href="gallery.html"><div class="menuitem">Gallery</div></a><a href="install.html"><div class="menuitem">Install</div></a><a href="config.html"><div class="menuitem">Configure</div></a><a href="util.html"><div class="menuitemselected">Utilities</div></a><a href="prereq.html"><div class="menuitem">Prerequisites</div></a><a href="ack.html"><div class="menuitem">Acknowledgments</div></a>
+</div>
+<div id="content">
+<h1>Utilities</h1>
+<p>
+Some utilities included in the package are not documented in manual
+pages. Here is a short description of these tools:
+<dl>
+<dt><b>meteojob</b></dt>
+<dd>This script can be run from cron to recompute exactly those
+graphs that need updating. The script is not very sophisticated,
+e.g. it does not check whether the graphs have previously been
+generated, but it can be used as a starting point for a more elaborate
+solution.</dd>
+<dt><b>meteooverview</b></dt>
+
+<dd>Run with exactly one argument, the name of the station, this script
+generates HTML pages in the current directory with embedded tags linking
+to the graphs. The pages show overviews of all parameters for either a day,
+a week, a month or a year, or an overview of only one parameter over all
+these periods on one page.
+The pages at <a href="http://grossalp.othello.ch/meteo/" target="_new">http://grossalp.othello.ch/meteo/</a> have been generated with this script.
+Again, the script isn't very intelligent, but helpful as a start.
+</dd>
+<dt><b>meteolast</b></dt>
+<dd>retrieves the last entry from the database and formats it as either
+text or XML.
+</dd>
+<dt><b>meteodbdump</b></dt>
+<dd>Dump the contents of the database to text files. Since the meteo
+tables tend to be extremely large (dozens of millions of rows, hundrets
+of megabytes), mysqldump from the MySQL distribution cannot dump the
+tables. And even if it could, it would interfere with normal operation
+of meteo. <b>meteodbdump</b> allows to dump the database without noticable
+impact on the other meteo programs.</dd>
+</dl>
+</p>
+</div>
+<div id="footer">
+  &#169; 2004 <a href="mailto:afm@othello.ch">Dr. Andreas M&#252;ller</a>,
+   <a href="http://www.othello.ch">Beratung und Entwicklung</a>
+</div>
+</body>
+</html>

@@ -1,20 +1,21 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.78 [de] (X11; U; Linux 2.4.10-4GB i686) [Netscape]">
-<link href="http://meteo.othello.ch/meteo.css" type="text/css" rel="stylesheet">
-</head>
-<body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
-<img src="normband.jpg" width="841" height="150" border="0">
-<p><h1>Getting and installing the software</h1>
+<?xml version="1.0"?>
+<!--
+	install.xml	installtion of meteo
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: install.xml.in,v 1.1 2004/02/24 23:33:20 afm Exp $
+-->
+
+<page name="install">
+
+<h1>Getting and installing the software</h1>
 <p>
 The meteo package is free software distributed under the
 <a href="http://meteo.othello.ch/COPYING">GNU general
 public license GPL</a>. The full license is included with the package.
-The current version is @VERSION@, it can be downloaded from
+The current version is 0.9.6, it can be downloaded from
 
-<a href="http://meteo.othello.ch/download/meteo-@VERSION@.tar.gz">http://meteo.othello.ch/download/meteo-@VERSION@.tar.gz</a>.
+<a href="http://meteo.othello.ch/download/meteo-0.9.6.tar.gz">http://meteo.othello.ch/download/meteo-0.9.6.tar.gz</a>.
 </p>
 <p>
 Configuration and Installation of the package follow the familiar
@@ -28,3 +29,4 @@ you can try your luck with the mailing list, just send a message
 containing nothing but "subscribe meteo" in the body to 
 <a href="mailto:majordomo@lists.othello.ch">majordomo@lists.othello.ch</a>.
 </p>
+</page>
