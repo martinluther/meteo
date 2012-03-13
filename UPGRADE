@@ -1,6 +1,12 @@
 How to upgrade from previous versions
 =====================================
 
+To 0.9.9 and 0.9.10
+-------------------
+
+No changes in the database were introduced in these releases, so upgrading
+from 0.9.8 is trivial: just install over your current installtion.
+
 0.9.x to 0.9.{7,8}
 ------------------
 

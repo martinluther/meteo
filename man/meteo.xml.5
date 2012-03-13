@@ -149,6 +149,8 @@ can be a file URL
 .IR file:///dev/ttyS0 ,
 indicating that a serial device should be used to communicate with
 the station.
+USB serial ports on Linux work also, the URL will usually be
+.IR file:///dev/ttyUSB0 .
 A TCP url of the form
 .I tcp://192.168.7.3:10001
 can be used to communicate with the station over the network through
@@ -165,9 +167,25 @@ As weather station protocols vary substantially for the various types
 of stations, and there don't seem to be reliably methods to find out
 the type of station, the station type must be specified. Possible
 values are
-.I WMII
+.IR WMII ,
+.IR Perception ,
+.IR Wizzard , 
+.IR GroWeather , 
+.IR Energy , 
+.I Health
 and
 .IR VantagePro .
+The
+.I type
+element has an option
+.I crc
+attribute. The value 
+.I off
+for the
+.I crc
+attribute causes meteopoll to send a CRC0 command to the weatherlink,
+which is necessary for GroWeather which always starts up with CRC checked
+commands.
 
 The following
 .I station

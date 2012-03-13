@@ -33,9 +33,10 @@ see doc/Techref.txt and doc/vtechref.txt).
 
 Make sure you have a working connection between the station and
 your computer. If you connect directly to a serial port, the cables
-and connectors provided by Davis will work. If you are using a
-device server like the Lantronix UDS-10, you'll need a null modem
-connector. See doc/uds10 for details on using a Lantronix UDS-10.
+and connectors provided by Davis will work. UDS serial dongles for
+linux will also work. If you are using a device server like the
+Lantronix UDS-10, you'll need a null modem connector. See doc/uds10
+for details on using a Lantronix UDS-10.
 
 To test the connection to a Vantage Pro, you can use the TEST command
 (see doc/vtechref.txt), send the string TEST followed by a \r, the
@@ -116,4 +117,4 @@ meteoavg, since some averages may have been computed by the new meteoavg
 with incomplete data (old data not yet converted).
 
 --
-$Id: SETUP,v 1.5 2003/10/25 00:52:31 afm Exp $
+$Id: SETUP,v 1.6 2004/04/02 16:05:47 afm Exp $

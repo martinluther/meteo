@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: ChannelFactory.cc,v 1.2 2004/02/25 23:48:04 afm Exp $
+ * $Id: ChannelFactory.cc,v 1.3 2004/04/02 16:00:02 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -53,6 +53,18 @@ Channel	*ChannelFactory::newChannel(const std::string& name) {
 	} else {
 		throw MeteoException("unknown URL type", url);
 	}
+
+	// turn of crc checking
+	std::string     crcattr = conf.getString("/meteo/station[@name='"
+		+ name + "']/type/@crc", "on");
+	if (crcattr == "off") {
+		result->sendChar(44);   // these two bytes form the CRC for
+		result->sendChar(247);  // the CRC0 command
+		result->sendString("CRC0");
+		result->sendChar(0x0d);
+		result->drain(2);
+	}
+
 	return result;
 }
 

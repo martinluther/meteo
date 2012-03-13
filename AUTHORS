@@ -54,8 +54,8 @@ Contributors: in no particular order, email addresses withheld to protect
 				combine temperature and humidity, where hum.
 				shines through the temperature range graph where
 				necessary)
-	Aaron Spike		volunteered to test early releases of meteo
-				0.9.0 on a GrowWeather
+	Aaron Spike		pointed out that the GroWeather needs CRC
+				on all commands, unless turned off with CRC0
 	Carmen Mueller		(http://carmen.othello.ch) contributed the
 				new meteo web site design
 	Carsten Guenther	found a bug in ReaderInfo.cc, where all the
@@ -69,4 +69,4 @@ Contributors: in no particular order, email addresses withheld to protect
 				station) can be graphed.
 
 --
-$Id: AUTHORS,v 1.14 2004/03/01 10:07:06 afm Exp $
+$Id: AUTHORS,v 1.15 2004/04/02 16:00:02 afm Exp $

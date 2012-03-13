@@ -3,11 +3,19 @@
 	news.xml	news about meteo
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: news.xml.in,v 1.3 2004/03/20 01:15:55 afm Exp $
+	$Id: news.xml.in,v 1.4 2004/04/02 16:00:02 afm Exp $
 -->
 
 <page name="news">
 <h1>News</h1>
+<p>
+Release 0.9.10 adds the attribute <i>crc</i> to the station type
+element. This attribute directs <code>meteopoll</code> to send a
+<code>CRC0</code> to the station to turn off CRC checking on commands.
+Type E Weatherlinks always start up in CRC mode, and CRC checking must
+be turned off explicitely for them to work with meteo. This means
+e.g. that GroWeather is now a supported Station type.
+</p>
 <p>
 Release 0.9.9 includes a defense against denial of service attacks
 on the meteo browser. Twice during march 2004 some crazy guy aparently

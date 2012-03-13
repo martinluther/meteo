@@ -12,6 +12,14 @@
 <div id="content">
 <h1>News</h1>
 <p>
+Release 0.9.10 adds the attribute <i>crc</i> to the station type
+element. This attribute directs <code>meteopoll</code> to send a
+<code>CRC0</code> to the station to turn off CRC checking on commands.
+Type E Weatherlinks always start up in CRC mode, and CRC checking must
+be turned off explicitely for them to work with meteo. This means
+e.g. that GroWeather is now a supported Station type.
+</p>
+<p>
 Release 0.9.9 includes a defense against denial of service attacks
 on the meteo browser. Twice during march 2004 some crazy guy aparently
 from south america tried to download everything the browser could give
@@ -44,7 +52,7 @@ I would like to thank the University for their generous support,
 and all the people involved for their continued help and encouragment.
 </p>
 <p>
-The current release (version 0.9.9) was published on march 20, 2004.
+The current release (version 0.9.10) was published on april 02, 2004.
 See the <a href="NEWS">NEWS</a> file for the most important changes
 in this release.
 For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.

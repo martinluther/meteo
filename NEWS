@@ -1,3 +1,8 @@
+0.9.10	turn of CRC0 for GroWeather and possibly other type E weatherlinks.
+
+0.9.9	A hack to protect from IE reading the complete meteobrowser.php
+	space offline
+
 0.9.8	fixes a integer overflow bug: to compute the time labels for the
 	maps, GraphWindow.cc used the formular (start + end)/2, but since
 	about the middle of january, this causes an overflow, so that the
@@ -23,8 +28,7 @@
 
 0.9.0	Major rewrite of many aspects of meteo sponsored by the University
 	Univates in Lajeado in Rio Grande do Sul, Southern Brazil. Further
-	contributions: Jeff Wabik (new derived value computations) and
-	Aron Spike (voluntered to test GroWeather).
+	contributions: Jeff Wabik (new derived value computations).
 
 --
-$Id: NEWS,v 1.25 2004/03/01 09:49:45 afm Exp $
+$Id: NEWS,v 1.26 2004/04/02 16:00:02 afm Exp $
