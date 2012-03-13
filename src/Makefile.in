@@ -168,7 +168,7 @@ MAKEINFO = @MAKEINFO@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.49 2004/02/27 22:09:04 afm Exp $
+# $Id: Makefile.am,v 1.51 2004/03/20 01:15:55 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 MSGFMT = @MSGFMT@
@@ -554,12 +554,30 @@ test:	meteopoll
 #		-f `pwd`/../conf/meteo.xml -I -p ../src/ 
 testdraw:	meteodraw
 	cp /dev/null /var/tmp/meteodraw.log
-	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin -d -d \
+	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -x -s Lajeado -d -d \
 		-l file:///var/tmp/meteodraw.log \
 		-f ../conf/meteo.xml -I -p ../src/ \
 		-u "/browser/meteobrowser.php?lang=de" -I \
-		-L d20040227 \
-		-g Gurin.battery
+		-L m200309 \
+		-g Lajeado.temperature & \
+	./meteodraw -s Lajeado -x -d -d \
+		-l file:///var/tmp/meteodraw.log \
+		-f ../conf/meteo.xml -I -p ../src/ \
+		-u "/browser/meteobrowser.php?lang=de" -I \
+		-L m200309 \
+		-g Lajeado.radiation & \
+	./meteodraw -s Lajeado -x -d -d \
+		-l file:///var/tmp/meteodraw.log \
+		-f ../conf/meteo.xml -I -p ../src/ \
+		-u "/browser/meteobrowser.php?lang=de" -I \
+		-L m200309 \
+		-g Lajeado.wind & \
+	./meteodraw -s Lajeado -x -d -d \
+		-l file:///var/tmp/meteodraw.log \
+		-f ../conf/meteo.xml -I -p ../src/ \
+		-u "/browser/meteobrowser.php?lang=de" -I \
+		-L m200309 \
+		-g Lajeado.humidity
 
 testmap:	meteodraw
 	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Lajeado -d -d \

@@ -3,7 +3,7 @@
 	install.xml	installtion of meteo
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: install.xml.in,v 1.4 2004/03/01 10:07:06 afm Exp $
+	$Id: install.xml.in,v 1.5 2004/03/19 21:58:03 afm Exp $
 -->
 
 <page name="install">
@@ -14,8 +14,8 @@
 The meteo package is free software distributed under the
 <a href="http://meteo.othello.ch/COPYING">GNU general
 public license GPL</a>. The full license is included with the package.
-The current version is 0.9.6, it can be downloaded from
-<a href="http://meteo.othello.ch/download/meteo-0.9.6.tar.gz">http://meteo.othello.ch/download/meteo-0.9.6.tar.gz</a>.
+The current version is @VERSION@, it can be downloaded from
+<a href="http://meteo.othello.ch/download/meteo-@VERSION@.tar.gz">http://meteo.othello.ch/download/meteo-@VERSION@.tar.gz</a>.
 </p>
 <h2>Build</h2>
 <p>

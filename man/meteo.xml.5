@@ -30,6 +30,31 @@ element should be placed in the
 element.
 Their contents are described in the sections below.
 
+When used with the meteobrowser, a web robot running havoc (e.g. a
+MSIE trying to read the browser contents offline) can case the system
+to start many
+.BR meteodraw (1)
+processes in parallel. The following attributes of the
+.B <grahps>
+element allow to limit the damage.
+The 
+.I queued
+attribute limits the number of
+.BR meteodraw (1)
+processes that may be
+active at any one time. If an additional
+.BR meteodraw (1)
+process is started, it will exit without doing anything.
+The
+.I running
+attribute allows to limit the number of
+.BR meteodraw (1)
+processes that may actually run in parallel.
+These locking functions need a file name to attach the locks to,
+which is specified by the
+.I lockfile
+attribute.
+
 .SH "DATABASE CONFIGURATION"
 The
 .B <database>

@@ -4,7 +4,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.inc,v 1.10 2003/10/22 21:30:45 afm Exp $
+//   $Id: meteobrowser.inc,v 1.11 2004/03/19 22:13:15 afm Exp $
 //
 
 // include the following only if your PHP installation lacks gettext support
@@ -63,7 +63,7 @@ $conflist[Gurin] = "/usr/local/etc/meteo-Gurin.xml";
 // the path to the meteodraw and meteolabel binaries, could be derived
 // from the configure run, but as quite a few things have to be configured
 // in the script anyway, doing it manually isn't really more complicated.
-$meteodraw = "/usr/local/bin/meteodraw";
+$meteodraw = "/usr/local/bin/meteodraw -x";
 $meteolabel = "/usr/local/bin/meteolabel";
 
 // the URL path used as a bases for URLs embedded in the generated page

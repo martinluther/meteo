@@ -96,6 +96,9 @@
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
+/* Define to 1 if the system has the type `semun'. */
+#undef HAVE_SEMUN
+
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
 
@@ -164,6 +167,9 @@
 
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/sem.h> header file. */
+#undef HAVE_SYS_SEM_H
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #undef HAVE_SYS_SOCKET_H

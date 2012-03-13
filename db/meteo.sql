@@ -3,14 +3,14 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.20 2004/02/26 23:43:12 afm Exp $
+-- $Id: meteo.sql,v 1.21 2004/03/19 21:58:03 afm Exp $
 --
 create table if not exists station (
 	name		varchar(60) not null,
 	id		tinyint not null,
 	timezone	varchar(12),	-- time zone
 	offset		int not null,
-	primary key(name)
+	primary key(id)
 );
 -- Altendorf:	a WeatherMonitor II
 insert into station(name, id, timezone, offset)

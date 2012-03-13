@@ -1,4 +1,9 @@
-release 0.9.8:
+Release 0.9.9:
+	* introduce locking for processes, to protect from crazy robots
+	  that may overload the system with meteodraw processes
+	* version number on web page was not automatically updated.
+
+Release 0.9.8:
 	* fixed documentation
 	* added the UPGRADE file
 	* found an integer overflow bug in the computation of the new time
@@ -632,4 +637,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.122 2004/03/01 10:14:50 afm Exp $
+$Id: ChangeLog,v 1.124 2004/03/19 22:13:15 afm Exp $

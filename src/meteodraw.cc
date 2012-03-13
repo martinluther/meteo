@@ -2,7 +2,7 @@
  * meteodraw.cc -- create meteo drawings
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
- * $Id: meteodraw.cc,v 1.18 2004/03/01 09:44:08 afm Exp $
+ * $Id: meteodraw.cc,v 1.21 2004/03/20 01:15:55 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <Lock.h>
 #include <MeteoException.h>
 
 
@@ -118,7 +119,7 @@ static void	readintervals(int argc, char *argv[],
 // help option is invoked
 static void	usage(void) {
 	printf(
-"usage: meteodraw [ -dtVmI ] [ -l logurl ] [ -c dir ] [ -G graph ] \n"
+"usage: meteodraw [ -dtVmIx ] [ -l logurl ] [ -c dir ] [ -G graph ] \n"
 "    [ -s station ] [ -p prefix ] [ -g graph ] [ -f config ] [ -u url ] \n"
 "    [ -e endtime ] [ -L label ] [ interval ... ]\n"
 "	-d		increase debug level\n"
@@ -135,7 +136,8 @@ static void	usage(void) {
 "	-f config	use configuration file config\n"
 "	-p prefix	store images in files with this prefix\n"
 "	-u url		use this URL prefix for image maps\n"
-"	-e endtime	specify end time of graph\n");
+"	-e endtime	specify end time of graph\n"
+"	-x		lock processes according to graphs attributes\n");
 }
 
 // draw a graph based on a timelabel
@@ -251,12 +253,13 @@ static int	meteodraw(int argc, char *argv[]) {
 	intvector_t	intervals;
 	timelabellist_t	labeled;
 	meteo::Timelabel	tl;
+	bool		exclusive = false;
 
 	// remember current time
 	time(&end);
 
 	// parse the command line
-	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:iIl:L:mp:ts:V?u:")))
+	while (EOF != (c = getopt(argc, argv, "adc:e:f:g:iIl:L:mp:ts:V?u:x")))
 		switch (c) {
 		case '?':
 			usage();
@@ -317,6 +320,9 @@ static int	meteodraw(int argc, char *argv[]) {
 		case 'u':
 			url = std::string(optarg);
 			break;
+		case 'x':
+			exclusive = true;
+			break;
 		default:
 			mdebug(LOG_ERR, MDEBUG_LOG, 0, "unkown option %c", c);
 			break;
@@ -339,6 +345,15 @@ static int	meteodraw(int argc, char *argv[]) {
 	meteo::Configuration	conf(conffilename);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "read configuration %s",
 		conffilename.c_str());
+
+	// create lock, so the system cannot be flooded by requests
+	meteo::Lock	lock(conf);
+	if (exclusive)
+		// wait until we can fetch the lock
+		if (!lock.enter(true)) {
+			mdebug(LOG_ERR, MDEBUG_LOG, 0, "lock failed");
+			throw meteo::MeteoException("lock failed", "");
+		}
 
 	// read the intervals from the command line
 	readintervals(argc, argv, intervals, (labeled.size() == 0));
@@ -363,6 +378,8 @@ static int	meteodraw(int argc, char *argv[]) {
 	if (labeled.size() != 0) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "labeled graphs drawn, "
 			"suppressing any interval graphing, exiting");
+		if (exclusive)
+			lock.leave();
 		exit(EXIT_SUCCESS);
 	}
 
@@ -377,6 +394,10 @@ static int	meteodraw(int argc, char *argv[]) {
 			drawinterval(currentgraph, interval);
 		}
 	}
+
+	// release the lock
+	if (exclusive)
+		lock.leave();
 
 	exit(EXIT_SUCCESS);
 }

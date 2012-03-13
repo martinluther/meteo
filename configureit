@@ -2,13 +2,26 @@
 #
 # sample configure call
 #
-# $Id: configureit,v 1.18 2004/02/24 23:33:20 afm Exp $
+# $Id: configureit,v 1.19 2004/03/20 02:06:27 afm Exp $
 #
 
 CFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
 CXXFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes"
 
 export CXXFLAGS CFLAGS
+
+if [ timon = `uname -n` ]
+then
+        PATH=/usr/local/mysql/bin:$PATH
+        export PATH
+        CFLAGS="-g -Wall -pedantic -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
+        CXXFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes"
+        export CFLAGS CXXFLAGS
+        basedir=/usr/local/apache/htdocs/meteo.othello.ch
+        ./configure --with-browser-dir=${basedir}/meteo/ \
+                -with-html-dir=${basedir}/
+        exit
+fi
 
 case `uname` in
 	Linux)

@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.39 2004/02/27 22:09:04 afm Exp $
+# $Id: Makefile.am,v 1.40 2004/03/19 21:58:03 afm Exp $
 #
 
 noinst_HEADERS =							\
@@ -53,6 +53,7 @@ noinst_HEADERS =							\
 	Timestamp.h							\
 	Daemon.h							\
 	ChunkDumper.h							\
+	Lock.h								\
 	crc.h 								\
 	printver.h mdebug.h
 

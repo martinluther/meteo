@@ -6,7 +6,7 @@
 
  (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 
- $Id: meteo.xml,v 1.29 2004/03/01 09:44:08 afm Exp $
+ $Id: meteo.xml,v 1.30 2004/03/19 21:58:02 afm Exp $
 
   -->
 <meteo>
@@ -258,7 +258,7 @@
     should not contain /, and shell metacharacters will cause file names
     that are clumsy to handle in shell scripts.
   -->
-  <graphs>
+  <graphs lockfile="lockfile" running="3" queued="10">
     <graph name="Lajeado.temperature-new" offset="-10800"
 	height="300" width="600" bgcolor="#ffffff" fgcolor="#000000">
       <!-- label and axis definitions -->

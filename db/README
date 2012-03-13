@@ -89,10 +89,14 @@ table structure required to ALTER a table in this case to add the
 new fields.
 
 In the sdata table, which replaces the previous stationdata table,
-a record is identified by timekey (as before), stationid and fieldid.
+a record is identified by timekey (as before), sensorid and fieldid.
 The stationid is a numeric representation of the station name, the
 station table provides the mapping between station name and station
-id. Similarly, the field id is a numeric representation of the
+id. Each station can have several sensors (most have two, console and
+iss, inside and outside), the sensorid identifies the sensor of
+a station. The sensorid is required to be unique so that it also
+identifies the station (this improves performance in some places).
+Similarly, the field id is a numeric representation of the
 field name, the mapping of field names and field ids can be found
 in the mfield table. Note that both fields are tinyints, so the
 occupy just 1 byte. The actual value is stored in the value field,
@@ -229,4 +233,4 @@ Note that for the VantagePro and WMII, the necessary methods are already
 implemented, so only the last step needs to be added.
 
 --
-$Id: README,v 1.6 2004/02/24 23:33:20 afm Exp $
+$Id: README,v 1.7 2004/03/19 21:58:03 afm Exp $

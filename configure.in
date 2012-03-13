@@ -5,7 +5,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT
 AC_CONFIG_SRCDIR([include/crc.h])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(meteo, 0.9.8)
+AM_INIT_AUTOMAKE(meteo, 0.9.9)
 AM_CONFIG_HEADER(include/config.h)
 
 dnl add support for libtool
@@ -80,7 +80,18 @@ AC_HEADER_SYS_WAIT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([argz.h arpa/inet.h fcntl.h malloc.h memory.h netdb.h \
 netinet/in.h stdio.h stdlib.h string.h strings.h sys/socket.h sys/time.h \
-syslog.h signal.h termios.h unistd.h sys/msg.h sys/ipc.h alloca.h errno.h])
+syslog.h signal.h termios.h unistd.h sys/msg.h sys/ipc.h sys/sem.h \
+alloca.h errno.h])
+AC_CHECK_TYPES([semun])
+if test "$ac_cv_type_semun" = "no"; then
+  AC_MSG_CHECKING(if sem.h defines semun)
+  AC_TRY_COMPILE([#include <sys/types.h>
+      #include <sys/ipc.h>
+      #include <sys/sem.h>],
+  [union semun s;],
+  [ac_cv_type_semun=yes; AC_DEFINE(HAVE_SEMUN) AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)])
+fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

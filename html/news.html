@@ -12,17 +12,28 @@
 <div id="content">
 <h1>News</h1>
 <p>
+Release 0.9.9 includes a defense against denial of service attacks
+on the meteo browser. Twice during march 2004 some crazy guy aparently
+from south america tried to download everything the browser could give
+him to read offline. Every call to a browser page starts several
+instances of meteodraw. As the machine as quite limited (2 50MHz processors,
+200MB RAM), it quickly became overwhelmed. On one occasion it took 9 hours
+for the machine to handle all the load.
+</p>
+<p>
+One protection is to limit the number of processes Apache may start,
+but that does not limit then umber of meteodraw processes that may
+ultimately hang around. Thus a new class Lock was included that
+limits the number of meteodraw processes that can be running concurrently,
+and the number of processes that are waiting to be run. By default,
+at most 3 processes can be running at the same time, and only ten
+processes can be startet simultaneously. This can be tuned through
+the attributes of the graphs element in the XML configuration file.
+</p>
+<p>
 Release 0.9.7 solves a long standing problem: how to specify which
 values have to be averaged using what type of aggregation function.
 This information is now in the XML configuration file.
-</p>
-<p>
-Release 0.9.6 fixes some nasty bugs in the offset code, which even caused
-some graphs at low resolution (month and year graphs) to incorrectly
-display. Since some of the incorrect code was in the averager class, it
-may be necessary to run <strong>meteoavg</strong> to recompute all the
-averages. For details about the changes in this release, please see the
-<a href="ChangeLog">ChangeLog</a>.
 </p>
 <p>
 Development of release 0.9.0 was sponsored by the University
@@ -33,7 +44,7 @@ I would like to thank the University for their generous support,
 and all the people involved for their continued help and encouragment.
 </p>
 <p>
-The current release (version 0.9.8) was published on march 01, 2004.
+The current release (version 0.9.9) was published on march 20, 2004.
 See the <a href="NEWS">NEWS</a> file for the most important changes
 in this release.
 For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.
