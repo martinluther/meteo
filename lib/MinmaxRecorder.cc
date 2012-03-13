@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: MinmaxRecorder.cc,v 1.9 2006/05/16 11:19:54 afm Exp $
+ * $Id: MinmaxRecorder.cc,v 1.12 2009/01/10 21:47:01 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <MinmaxRecorder.h>
 #include <MeteoException.h>
 #include <mdebug.h>
@@ -82,35 +85,20 @@ void	MinmaxRecorder::reset(void) {
 	BasicRecorder::reset();
 }
 
-stringlist	MinmaxRecorder::updatequery(const time_t timekey,
+void	MinmaxRecorder::sendOutlet(Outlet *outlet, const time_t timekey,
 	const int sensorid, const int fieldid) const {
-	stringlist	result;
 	// return empty result if no value available
 	if (!isValid())
-		return result;
+		return;
 
 	// get the BasicRecorder's update query
-	result = BasicRecorder::updatequery(timekey, sensorid, fieldid);
+	BasicRecorder::sendOutlet(outlet, timekey, sensorid, fieldid);
 
 	// get maximum and minimu update query
 	if (storeminmax) {
-		char	query[1024];
-		snprintf(query, sizeof(query),
-			"insert into sdata(timekey, sensorid, fieldid, value) "
-			"values (%ld, %d, %d, %.5f)",
-			timekey, sensorid, fieldid + 1, min);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "min query: %s", query);
-		result.push_back(std::string(query));
-		snprintf(query, sizeof(query),
-			"insert into sdata(timekey, sensorid, fieldid, value) "
-			"values (%ld, %d, %d, %.5f)",
-			timekey, sensorid, fieldid + 2, max);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "max query: %s", query);
-		result.push_back(std::string(query));
+		outlet->send(sensorid, fieldid + 1, min, getUnit());
+		outlet->send(sensorid, fieldid + 2, max, getUnit());
 	}
-
-	// return the queries
-	return result;
 }
 
 std::string	MinmaxRecorder::plain(void) const {

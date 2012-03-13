@@ -3,15 +3,21 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: DavisStation.cc,v 1.4 2004/02/25 23:48:05 afm Exp $
+ * $Id: DavisStation.cc,v 1.6 2009/01/10 19:32:20 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
 #include <DavisStation.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
-#endif
+#endif /* HAVE_ARPA_INET_H */
 #include <MeteoException.h>
 #include <mdebug.h>
 #include <crc.h>
@@ -21,7 +27,7 @@ namespace meteo {
 // starting the Davis station loop is essentially waiting for an ACK
 void	DavisStation::startLoop(int p) {
 	// wait for a an ack on the channel
-	char	*expect = "\r\nOK\n\r";
+	const char	*expect = "\r\nOK\n\r";
 	unsigned int	idx = 0;
 	bool	ackfound = false;
 	do {

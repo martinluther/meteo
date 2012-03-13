@@ -3,40 +3,50 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: SerialChannel.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: SerialChannel.cc,v 1.3 2009/01/10 19:00:25 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <SerialChannel.h>
 #include <Configuration.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif /* HAVE_STRINGS_H */
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
 #include <MeteoException.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
+#endif /* HAVE_FCNTL_H */
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
-#endif
+#endif /* HAVE_TERMIOS_H */
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
+#endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
-#endif
+#endif /* HAVE_SYS_SOCKET_H */
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
-#endif
+#endif /* HAVE_NETINET_IN_H */
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
-#endif
+#endif /* HAVE_NETDB_H */
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
-#endif
+#endif /* HAVE_ALLOCA_H */
 #include <Timeval.h>
 #include <mdebug.h>
 

@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Datasink.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
+ * $Id: Datasink.cc,v 1.9 2009/01/10 19:00:23 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Datasink.h>
 #include <Configuration.h>
 #include <mdebug.h>

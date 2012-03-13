@@ -3,11 +3,17 @@
 	news.xml	news about meteo
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: news.xml.in,v 1.8 2006/05/07 21:01:57 afm Exp $
+	$Id: news.xml.in,v 1.9 2009/01/10 22:11:40 afm Exp $
 -->
 
 <page name="news">
 <h1>News</h1>
+<p>Release 0.9.17 adds another option to the meteopoll program. The
+<b>-x</b> option defines an outlet through which meteopoll writes the
+data consolidated every minute in XML format to the outlet. An outlet
+is either a file or a pipe, i.e.~a command startet each time a new batch
+of data is available.
+</p>
 <p>Release 0.9.15 adds a new option to the meteopoll program. This option
 allows to write the current data received from the station to an XML
 file. Using a simple CGI program, this XML data can then be turned into

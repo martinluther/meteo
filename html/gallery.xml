@@ -3,12 +3,16 @@
 	gallery.xml	gallery of weather stations
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: gallery.xml.in,v 1.4 2006/05/16 14:39:59 afm Exp $
+	$Id: gallery.xml,v 1.5 2009/01/10 21:13:36 afm Exp $
 -->
 <page name="gallery">
 <h1>Gallery of meteo installations</h1>
 <p>
 The two stations in Altendorf and Bosco/Gurin started the meteo project.
+Unfortunately, the Bosco/Gurin station is no longer operational, the
+location was no longer available (it was coupled with a web cam, our
+successor operating the webcam decided not to continue the weather
+station).
 </p>
 
 
@@ -29,6 +33,7 @@ The two stations in Altendorf and Bosco/Gurin started the meteo project.
     width="250" height="72" /></a>
   </td>
 </tr>
+<!--
 <tr>
   <td valign="top">Rossboda, Bosco/Gurin, Ticino, Switzerland
     (<a href="http://grossalp.othello.ch">Web Cam and general info</a>)
@@ -42,6 +47,7 @@ The two stations in Altendorf and Bosco/Gurin started the meteo project.
     src="http://grossalp.othello.ch/meteo/Gurin.temperature-year.png"
     width="250" height="72" border="0" /></a></td>
 </tr>
+-->
 <!--
 <tr>
   <td valign="top">Frauenfeld, Thurgau, Switzerland</td>
@@ -83,18 +89,18 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
     610m
 
   </td></tr>
-  <tr><td><strong>Contact:</strong></td><td>Dr. Andreas M&#xFC;ller, http://www.othello.ch</td></tr>
+  <tr><td><strong>Contact:</strong></td><td>Dr. Andreas Müller, http://www.othello.ch</td></tr>
   <tr><td valign="top"><strong>Comments:</strong></td><td valign="top">This was the prototype station that started it all</td></tr>
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>WMII</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>WMII</td></tr>
     <tr><td><strong>Connection:</strong></td><td>via UDS-10 device server</td></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
     <tr><td><strong>Browser:</strong></td><td><a href="http://meteo.othello.ch/meteo/meteobrowser.php">http://meteo.othello.ch/meteo/meteobrowser.php</a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>Arrowwood</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -115,16 +121,16 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
   <tr><td valign="top"><strong>Comments:</strong></td><td valign="top">If you use Mozilla, a streaming video feed can be seen at http://geurin.homelinux.com:8000/multipart
   </td></tr>
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>VantagePro</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>VantagePro</td></tr>
     <tr><td><strong>Connection:</strong></td><td>Keyspan 4-port serial-to-USB adapter</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td/></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td/></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://geurin.homelinux.com:8081/Arrowwood-meteo.html">http://geurin.homelinux.com:8081/Arrowwood-meteo.html</a></td></tr>
-    <tr><td><strong>Browser:</strong></td><td><a href=""></a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href=""></a></td></tr>
+    <tr><td><strong>Browser:</strong></td><td><a href=""/></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href=""/></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>ChinoHills</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -144,16 +150,16 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
   <tr><td><strong>Contact:</strong></td><td>kent at bci dot com, http://www.bci.com/weather</td></tr>
   <tr><td valign="top"><strong>Comments:</strong></td><td valign="top">Wireless. Solar Powered. Running on a Macintosh g4/933 OS X in southern California, U.S.</td></tr>
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>VantagePro</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>VantagePro</td></tr>
     <tr><td><strong>Connection:</strong></td><td>Keyspan twin serial to USB adaptor</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td>solar, uv</td></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td>solar, uv</td></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://ozma.no-ip.com/weather/ChinoHills/ChinoHills-meteo.html">http://ozma.no-ip.com/weather/ChinoHills/ChinoHills-meteo.html</a></td></tr>
     <tr><td><strong>Browser:</strong></td><td><a href="http://ozma.no-ip.com/weather/ChinoHills/meteobrowser.php">http://ozma.no-ip.com/weather/ChinoHills/meteobrowser.php</a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href="http://ozma.no-ip.com/weather/ChinoHills/setup.html">http://ozma.no-ip.com/weather/ChinoHills/setup.html</a></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href="http://ozma.no-ip.com/weather/ChinoHills/setup.html">http://ozma.no-ip.com/weather/ChinoHills/setup.html</a></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>Gurin</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -170,23 +176,23 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
     2000m
 
   </td></tr>
-  <tr><td><strong>Contact:</strong></td><td>Dr. Andreas M&#xFC;ller, http://www.othello.ch</td></tr>
+  <tr><td><strong>Contact:</strong></td><td>Dr. Andreas Müller, http://www.othello.ch</td></tr>
   <tr><td valign="top"><strong>Comments:</strong></td><td valign="top">Altendorf was built as a prototype for the station in Bosco/Gurin,
     which was originally intended for tourist information. However, the
     temperature graphs were considered too sophisticated by the marketing types,
     and are no longer shown on the tourist information page of Bosco/Gurin.
   </td></tr>
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>VantagePro</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>VantagePro</td></tr>
     <tr><td><strong>Connection:</strong></td><td>via UDS-10 device server</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td>solar, uv</td></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td>solar, uv</td></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
     <tr><td><strong>Browser:</strong></td><td><a href="http://meteo.othello.ch/meteo/meteobrowser.php">http://meteo.othello.ch/meteo/meteobrowser.php</a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href="http://meteo.othello.ch/">http://meteo.othello.ch/</a></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>Lajeado</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -211,15 +217,15 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
 	We were told the weather station would only be accessible by a Windows		software... They were really wrong!
   </td></tr>
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>VantagePro</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>VantagePro</td></tr>
     <tr><td><strong>Connection:</strong></td><td>serial</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td>uv,solar,soil-moisture,soil-temperature</td></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td>uv,solar,soil-moisture,soil-temperature</td></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://www.univates.br/handler.php?module=fred&amp;action=view&amp;sys_date=&amp;article=761">http://www.univates.br/handler.php?module=fred&amp;action=view&amp;sys_date=&amp;article=761</a></td></tr>
     <tr><td><strong>Browser:</strong></td><td><a href="http://www.univates.br/handler.php?module=fred&amp;action=view&amp;sys_date=&amp;article=761">http://www.univates.br/handler.php?module=fred&amp;action=view&amp;sys_date=&amp;article=761</a></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>Martin Luther College</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -239,16 +245,45 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
   <tr><td><strong>Contact:</strong></td><td/></tr>
   
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>GroWeather</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>GroWeather</td></tr>
     <tr><td><strong>Connection:</strong></td><td>Serial</td></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://weather.mlc-wels.edu/">http://weather.mlc-wels.edu/</a></td></tr>
     <tr><td><strong>Browser:</strong></td><td><a href="http://weather.mlc-wels.edu/meteo/">http://weather.mlc-wels.edu/meteo/</a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href=""></a></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href=""/></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
+
+  <tr><td><strong>Name:</strong></td><td><strong>meteo.guenthers.net</strong></td></tr>
+  <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
+    Bergisch Gladbach,
+
+    Nordrhein-Westfalen,
+
+    Deutschland / Germany,
+
+    7.133E,
+
+    50.983N,
+
+  </td></tr>
+  <tr><td><strong>Contact:</strong></td><td>cguenther.NOSPAM@guenthers.net</td></tr>
+  <tr><td valign="top"><strong>Comments:</strong></td><td valign="top">The Setup includes approx. 12 additional Wireless Temperature/Humidity/Pressure-Sensors from ELV, http://www.ELV.de, Type e.g. IA2000 to monitor some points in the house and garage. The Station itself will control a Pan/Tilt/Zoom-Weathercamera in the near future to have the camera looking straight into the wind.</td></tr>
+  
+    <tr><td><strong>Station type:</strong></td><td>VantagePro Plus Wireless</td></tr>
+    <tr><td><strong>Connection:</strong></td><td>Equinox Multiport SST-8P, polls Vantage, ELV, controls Weathercam</td></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td>soil moisture</td></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td>solar/uv</td></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td>ext. Non-Davis Temp/Hum/Press</td></tr>
+  
+  
+    <tr><td><strong>Web:</strong></td><td><a href="http://meteo.guenthers.net/">http://meteo.guenthers.net/</a></td></tr>
+    <tr><td><strong>Browser:</strong></td><td><a href="http://meteo.guenthers.net/meteobrowser.php">http://meteo.guenthers.net/meteobrowser.php</a></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href="http://meteo.guenthers.net/">http://meteo.guenthers.net/</a></td></tr>
+  
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>NFO</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -270,12 +305,12 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
             graph it.</td></tr>
   
     <tr><td><strong>Connection:</strong></td><td>serial</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td/></tr>
+    <tr><td><strong>Additional sensors:</strong></td><td/></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://65.123.150.9">http://65.123.150.9</a></td></tr>
   
-<tr colspan="2"><td>&#xA0;</td></tr>
+<tr colspan="2"><td> </td></tr>
 
   <tr><td><strong>Name:</strong></td><td><strong>Terrassa</strong></td></tr>
   <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
@@ -295,41 +330,12 @@ it to <a href="mailto:afm@othello.ch">Andreas M&#xFC;ller</a>.
   <tr><td><strong>Contact:</strong></td><td>Josep Sort, http://meteo.infoterrassa.com</td></tr>
   <tr><td valign="top"><strong>Comments:</strong></td><td valign="top"/></tr>
   
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>WMII</td></tr>
+    <tr><td><strong>Station type:</strong></td><td>WMII</td></tr>
     <tr><td><strong>Connection:</strong></td><td>serial</td></tr>
   
   
     <tr><td><strong>Web:</strong></td><td><a href="http://meteo.infoterrassa.com">http://meteo.infoterrassa.com</a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href="http://meteo.infoterrassa.com">http://meteo.infoterrassa.com</a></td></tr>
-  
-<tr colspan="2"><td>&#xA0;</td></tr>
-
-  <tr><td><strong>Name:</strong></td><td><strong>meteo.guenthers.net</strong></td></tr>
-  <tr><td valign="top"><strong>Location:</strong></td><td valign="top">
-    Bergisch Gladbach,
-
-    Nordrhein-Westfalen,
-
-    Deutschland / Germany,
-
-    7.133E,
-
-    50.983N,
-
-  </td></tr>
-  <tr><td><strong>Contact:</strong></td><td>cguenther.NOSPAM@guenthers.net</td></tr>
-  <tr><td valign="top"><strong>Comments:</strong></td><td valign="top">The Setup includes approx. 12 additional Wireless Temperature/Humidity/Pressure-Sensors from ELV, http://www.ELV.de, Type e.g. IA2000 to monitor some points in the house and garage. The Station itself will control a Pan/Tilt/Zoom-Weathercamera in the near future to have the camera looking straight into the wind.</td></tr>
-  
-    <tr><td><strong>Station&#xA0;type:</strong></td><td>VantagePro Plus Wireless</td></tr>
-    <tr><td><strong>Connection:</strong></td><td>Equinox Multiport SST-8P, polls Vantage, ELV, controls Weathercam</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td>soil moisture</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td>solar/uv</td></tr>
-    <tr><td><strong>Additional&#xA0;sensors:</strong></td><td>ext. Non-Davis Temp/Hum/Press</td></tr>
-  
-  
-    <tr><td><strong>Web:</strong></td><td><a href="http://meteo.guenthers.net/">http://meteo.guenthers.net/</a></td></tr>
-    <tr><td><strong>Browser:</strong></td><td><a href="http://meteo.guenthers.net/meteobrowser.php">http://meteo.guenthers.net/meteobrowser.php</a></td></tr>
-    <tr><td><strong>Additional&#xA0;info:</strong></td><td><a href="http://meteo.guenthers.net/">http://meteo.guenthers.net/</a></td></tr>
+    <tr><td><strong>Additional info:</strong></td><td><a href="http://meteo.infoterrassa.com">http://meteo.infoterrassa.com</a></td></tr>
   
 
 </table>

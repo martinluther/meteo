@@ -3,12 +3,16 @@
 	gallery.xml	gallery of weather stations
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: gallery.xml.in,v 1.4 2006/05/16 14:39:59 afm Exp $
+	$Id: gallery.xml.in,v 1.5 2009/01/10 20:19:04 afm Exp $
 -->
 <page name="gallery">
 <h1>Gallery of meteo installations</h1>
 <p>
 The two stations in Altendorf and Bosco/Gurin started the meteo project.
+Unfortunately, the Bosco/Gurin station is no longer operational, the
+location was no longer available (it was coupled with a web cam, our
+successor operating the webcam decided not to continue the weather
+station).
 </p>
 
 
@@ -29,6 +33,7 @@ The two stations in Altendorf and Bosco/Gurin started the meteo project.
     width="250" height="72" /></a>
   </td>
 </tr>
+<!--
 <tr>
   <td valign="top">Rossboda, Bosco/Gurin, Ticino, Switzerland
     (<a href="http://grossalp.othello.ch">Web Cam and general info</a>)
@@ -42,6 +47,7 @@ The two stations in Altendorf and Bosco/Gurin started the meteo project.
     src="http://grossalp.othello.ch/meteo/Gurin.temperature-year.png"
     width="250" height="72" border="0" /></a></td>
 </tr>
+-->
 <!--
 <tr>
   <td valign="top">Frauenfeld, Thurgau, Switzerland</td>

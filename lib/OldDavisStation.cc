@@ -3,15 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: OldDavisStation.cc,v 1.9 2004/02/25 23:48:05 afm Exp $
+ * $Id: OldDavisStation.cc,v 1.10 2009/01/10 19:00:24 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <OldDavisStation.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
-#endif
+#endif /* HAVE_ARPA_INET_H */
 #include <MeteoException.h>
 #include <mdebug.h>
 #include <ChannelFactory.h>

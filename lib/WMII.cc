@@ -3,15 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: WMII.cc,v 1.15 2006/05/16 13:02:03 afm Exp $
+ * $Id: WMII.cc,v 1.16 2009/01/10 19:00:25 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <WMII.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
-#endif
+#endif /* HAVE_ARPA_INET_H */
 #include <Configuration.h>
 #include <ChannelFactory.h>
 #include <MeteoException.h>

@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: MapArea.cc,v 1.3 2004/03/01 09:44:08 afm Exp $
+ * $Id: MapArea.cc,v 1.4 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <MapArea.h>
 #include <mdebug.h>
 

@@ -3,30 +3,29 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Timestamp.cc,v 1.5 2006/05/16 11:19:54 afm Exp $
+ * $Id: Timestamp.cc,v 1.6 2009/01/10 19:00:25 afm Exp $
  */
-#include <Timestamp.h>
-#include <MeteoException.h>
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
+#include <Timestamp.h>
+#include <MeteoException.h>
 #include <time.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
-#endif
+#endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 #ifdef HAVE_STRING_H
 #include <string.h>
-#endif
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
-#endif
+#endif /* HAVE_ALLOCA_H */
 
 namespace meteo {
 

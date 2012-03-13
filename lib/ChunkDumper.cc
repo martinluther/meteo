@@ -4,16 +4,24 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: ChunkDumper.cc,v 1.4 2004/02/25 23:48:04 afm Exp $
+ * $Id: ChunkDumper.cc,v 1.5 2009/01/10 19:00:23 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <ChunkDumper.h>
-
 #include <MeteoTypes.h>
 #include <MeteoException.h>
 #include <StationInfo.h>
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif /* HAVE_STRINGS_H */
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 #include <mdebug.h>
 
 namespace meteo {

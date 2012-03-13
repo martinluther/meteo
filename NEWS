@@ -1,3 +1,7 @@
+0.9.17	a new outlet interface can be used to process meteo station data
+	directly. In contrast to the map interface, the data is pushed
+	to a file or into a pipe by the meteopoll process every minute.
+
 0.9.15	new interface which allows to read current readings from the console
 	to display on the web page. The new -m option to meteopoll makes
 	sure current data is written to a file (the argument to the option)
@@ -51,4 +55,4 @@
 	contributions: Jeff Wabik (new derived value computations).
 
 --
-$Id: NEWS,v 1.31 2006/05/07 19:50:14 afm Exp $
+$Id: NEWS,v 1.32 2009/01/10 19:00:23 afm Exp $

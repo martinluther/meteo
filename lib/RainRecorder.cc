@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: RainRecorder.cc,v 1.7 2006/05/16 11:19:54 afm Exp $
+ * $Id: RainRecorder.cc,v 1.10 2009/01/10 21:47:01 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <RainRecorder.h>
 #include <MeteoException.h>
 #include <RainConverter.h>
@@ -107,43 +110,25 @@ std::string	RainRecorder::getTotalString(void) const {
 	return std::string(buffer);
 }
 
-stringlist	RainRecorder::updatequery(const time_t timekey,
+void	RainRecorder::sendOutlet(Outlet *outlet, const time_t timekey,
 		const int sensorid, const int fieldid) const {
-	stringlist	result;
 	// return an empty query set immediately if we have nothing to display
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "asking for rain update query");
 	if (!isValid()) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no valid rain data");
-		return result;
+		return;
 	}
-
-	// add queries for total rain and rain
-	char	query[1024];
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) values "
-		"(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid, getValue());
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "rain update: %s", query);
 
 	// only add the query if the current value is nonzero, this saves
 	// quite a few rows in the database
 	if (getValue() > 0) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no rain in last interval, "
 			"suppressing db update");
-		result.push_back(std::string(query));
+		outlet->send(sensorid, fieldid, getValue(), getUnit());
 	}
 
 	// add total rain to the database
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) values "
-		"(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid + 1, getTotal());
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "total rain update: %s", query);
-	result.push_back(std::string(query));
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "total rain update: %s", query);
-
-	// return the set of two queries
-	return result;
+	outlet->send(sensorid, fieldid + 1, getTotal(), getUnit());
 }
 
 std::string	RainRecorder::plain(void) const {

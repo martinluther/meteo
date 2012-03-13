@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: DataRecorder.h,v 1.6 2006/05/16 11:19:54 afm Exp $
+ * $Id: DataRecorder.h,v 1.7 2008/09/07 15:18:52 afm Exp $
  */
 #ifndef _DataRecorder_h
 #define _DataRecorder_h
@@ -12,6 +12,7 @@
 #include <MeteoTypes.h>
 #include <map>
 #include <Recorder.h>
+#include <Outlet.h>
 
 namespace meteo {
 
@@ -35,7 +36,7 @@ public:
 	recordermap_t::iterator	end(void) { return recorders.end(); }
 
 	// retrieve update queries for all recorders
-	stringlist	updatequery(const time_t timekey,
+	void	sendOutlet(Outlet *outlet, const time_t timekey,
 		const int sensorid) const;
 
 	// reset the recorder

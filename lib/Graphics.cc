@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Graphics.cc,v 1.19 2004/05/08 20:09:32 afm Exp $
+ * $Id: Graphics.cc,v 1.20 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Graphics.h>
 #include <Configuration.h>
 #include <mdebug.h>

@@ -6,8 +6,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: NibblePacketReader.cc,v 1.4 2004/04/03 19:15:35 afm Exp $
+ * $Id: NibblePacketReader.cc,v 1.5 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <NibblePacketReader.h>
 #include <mdebug.h>
 #include <MeteoException.h>

@@ -3,8 +3,17 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Timelabel.cc,v 1.8 2006/05/07 19:47:22 afm Exp $
+ * $Id: Timelabel.cc,v 1.9 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
 #include <Timelabel.h>
 #include <mdebug.h>
 #include <MeteoException.h>

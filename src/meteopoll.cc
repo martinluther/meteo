@@ -5,7 +5,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteopoll.cc,v 1.28 2006/05/07 21:48:14 afm Exp $
+ * $Id: meteopoll.cc,v 1.29 2008/09/07 15:18:52 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -30,6 +30,8 @@
 #include <Configuration.h>
 #include <MeteoException.h>
 #include <Mapfile.h>
+#include <XmlOutletFactory.h>
+#include <QueryOutlet.h>
 #include <Datasink.h>
 #include <Daemon.h>
 #include <mdebug.h>
@@ -74,7 +76,7 @@ void	kill_child(int cause) {
 }
 
 static void	loop(const std::string& station,
-			const std::string& mapfilename) {
+	const std::string& mapfilename, const meteo::stringlist& xmloutlets) {
 	// limit memory to 16MB so this process cannot monopolize the system
 #define	memmax	0x1 << 25
 	struct rlimit	l;
@@ -102,9 +104,18 @@ static void	loop(const std::string& station,
 		s->addMapfile(mapfile);	// takes ownership
 	}
 
-	// create a data sink
-	meteo::Datasink	*ds = meteo::DatasinkFactory().newDatasink(station);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "datasink %s ready", station.c_str());
+	// if we have an XML file, create a XmlOutlet with a delegate
+	for (meteo::stringlist::const_iterator i = xmloutlets.begin(); i != xmloutlets.end(); i++) {
+		if (!i->empty()) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "preparing XML outlet to %s",
+				i->c_str());
+			meteo::XmlOutlet *xmloutlet = meteo::XmlOutletFactory::get(station, *i);
+			s->addOutlet(xmloutlet); // takes ownership
+		}
+	}
+
+	// create a data sink (new implementation uses QueryOutlet class)
+	s->addOutlet(new meteo::QueryOutlet(station));
 
 	// loop:
 	meteo::Timeval	looptime; looptime.now();
@@ -136,12 +147,8 @@ static void	loop(const std::string& station,
 			// reset the datarecord
 			looptime.now();
 			if (minute != looptime.getMinute()) {
-				// get the lists of queries
-				std::list<std::string>	queries
-					= s->updatequery(looptime.getTimekey());
-
-				// send each query to the database
-				ds->receive(queries);
+				// send data to outlets
+				s->sendOutlets(looptime.getTimekey());
 
 				// reset and restart
 				s->reset();
@@ -154,7 +161,7 @@ static void	loop(const std::string& station,
 static void	usage(void) {
 	printf(
 "usage: meteopoll [ -dFVh? ] [ -l logurl ] [ -f conffile ] [ -b prefs ] \\\n"
-"       [ -p pidfile ] -s stationname\n"
+"       [ -p pidfile ] [ -m mapfile ] [ -x xmlfile ] -s stationname\n"
 "   -d                increase debug level\n"
 "   -F                don't fork (used for debugging)\n"
 "   -V                print version and exit\n"
@@ -164,19 +171,21 @@ static void	usage(void) {
 "   -b prefs          add backend preference prefs (one of msgqueue, mysql\n"
 "                     file, debug)\n"
 "   -p pidfile        write the process pid to this file\n"
-"   -m mapfile        keep current sensor information in mapfile\n");
+"   -m mapfile        keep current sensor information in mapfile\n"
+"   -x xmlfile        send output to XML file as well\n");
 }
 
 static int	meteopoll(int argc, char *argv[]) {
 	std::string	conffile(METEOCONFFILE);
 	std::string	logurl("file:///-");	// logging to stderr
 	std::string	station, mapfilename;
+	meteo::stringlist	xmloutlets;
 	meteo::stringlist	preferences;
 	std::string	pidfileprefix;
 
 	// parse command line
 	int	c;
-	while (EOF != (c = getopt(argc, argv, "dl:f:m:s:b:p:VFh?")))
+	while (EOF != (c = getopt(argc, argv, "dl:f:m:s:b:p:VFh?x:")))
 		switch (c) {
 		case 'd':
 			debug++;
@@ -209,6 +218,9 @@ static int	meteopoll(int argc, char *argv[]) {
 			exit(EXIT_SUCCESS);
 		case 'm':
 			mapfilename = std::string(optarg);
+			break;
+		case 'x':
+			xmloutlets.push_back(std::string(optarg));
 			break;
 		default:
 			mdebug(LOG_ERR, MDEBUG_LOG, 0,
@@ -286,7 +298,7 @@ static int	meteopoll(int argc, char *argv[]) {
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"starting loop(%s)", station.c_str());
-				loop(station, mapfilename);
+				loop(station, mapfilename, xmloutlets);
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"return from loop");
 			} catch (meteo::MeteoException& e) {

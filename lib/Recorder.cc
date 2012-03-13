@@ -5,8 +5,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Recorder.cc,v 1.9 2006/05/16 11:19:54 afm Exp $
+ * $Id: Recorder.cc,v 1.11 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Recorder.h>
 #include <MeteoException.h>
 #include <mdebug.h>
@@ -99,9 +102,9 @@ void	Recorder::update(const Value& other) {
 }
 
 // deleget all the other methods to the BasicRecorder payload class
-stringlist	Recorder::updatequery(const time_t timekey,
+void	Recorder::sendOutlet(Outlet *outlet, const time_t timekey,
 		const int sensorid) const {
-	return bv->updatequery(timekey, sensorid, getId());
+	bv->sendOutlet(outlet, timekey, sensorid, getId());
 }
 
 std::string	Recorder::plain(void) const {

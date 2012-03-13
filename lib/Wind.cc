@@ -3,8 +3,11 @@
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Wind.cc,v 1.15 2006/05/16 11:19:54 afm Exp $
+ * $Id: Wind.cc,v 1.16 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Wind.h>
 #include <WindConverter.h>
 #include <mdebug.h>

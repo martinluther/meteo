@@ -3,10 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Dewpoint.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
+ * $Id: Dewpoint.cc,v 1.6 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Dewpoint.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 #include <QueryProcessor.h>
 
 namespace meteo {

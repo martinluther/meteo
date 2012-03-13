@@ -3,19 +3,21 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Timeval.cc,v 1.6 2004/02/25 23:48:06 afm Exp $
+ * $Id: Timeval.cc,v 1.7 2009/01/10 19:00:25 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <Timeval.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
+#endif /* HAVE_SYS_TYPES_H */
 #include <mdebug.h>
 
 namespace meteo {

@@ -3,14 +3,19 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: HumidityValue.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: HumidityValue.cc,v 1.3 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <HumidityValue.h>
 #include <MeteoException.h>
 #include <HumidityConverter.h>
 #include <TemperatureConverter.h>
 #include <mdebug.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 
 namespace meteo {
 

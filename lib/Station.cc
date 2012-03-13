@@ -3,15 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Station.cc,v 1.35 2006/05/07 19:47:22 afm Exp $
+ * $Id: Station.cc,v 1.37 2009/01/10 19:00:25 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <Station.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
-#endif
+#endif /* HAVE_ARPA_INET_H */
 #include <Configuration.h>
 #include <StationInfo.h>
 #include <SensorStationInfo.h>
@@ -22,6 +22,7 @@
 #include <Field.h>
 #include <ChannelFactory.h>
 #include <mdebug.h>
+#include <XmlOutletFactory.h>
 
 namespace meteo {
 
@@ -242,23 +243,21 @@ void	Station::update(const std::string& packet) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "all data values updated");
 }
 
-// updatequery method, constructs the union of all the queries
-stringlist	Station::updatequery(time_t timekey) const {
-	stringlist	result;
-
-	// go through the sensor map, and add every element of the sensors
-	// update queries to the result
-	sensormap_t::const_iterator	i;
-	for (i = sensors.begin(); i != sensors.end(); i++) {
-		stringlist	a = i->second.updatequery(timekey);
-		// splice this query at the end of the result list
-		result.splice(result.end(), a);
+// send data to all outlets
+void	Station::sendOutlets(time_t timekey) {
+	std::list<Outlet *>::iterator	outlet;
+	for (outlet = outlets.begin(); outlet != outlets.end(); outlet++) {
+		sendOutlet(*outlet, timekey);
 	}
-
-	// return the accumulated results
-	return result;
 }
 
+void	Station::sendOutlet(Outlet *outlet, time_t timekey) const {
+	sensormap_t::const_iterator	i;
+	for (i = sensors.begin(); i != sensors.end(); i++) {
+		i->second.sendOutlet(outlet, timekey);
+	}
+	outlet->flush(timekey);
+}
 
 // reset all recorders
 void	Station::reset(void) {

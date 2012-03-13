@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicValue.cc,v 1.8 2004/02/25 23:48:04 afm Exp $
+ * $Id: BasicValue.cc,v 1.9 2009/01/10 19:00:23 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <BasicValue.h>
 #include <mdebug.h>
 #include <MeteoException.h>

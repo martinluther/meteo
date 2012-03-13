@@ -1,3 +1,8 @@
+Release 0.9.17:
+	* add outlet concept
+	* fix some missing includes
+	* fix XML syntax error in map file
+
 Release 0.9.16:
 	* add timestamp to meteomap
 	* add Format file and stringprintf functions
@@ -695,4 +700,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.134 2006/05/16 11:19:53 afm Exp $
+$Id: ChangeLog,v 1.136 2009/01/10 19:00:23 afm Exp $

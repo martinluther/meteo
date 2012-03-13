@@ -10,7 +10,7 @@
  *                   is hardly useful anybody but me.
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
- * $Id: meteodbdump.cc,v 1.12 2004/02/25 23:41:13 afm Exp $
+ * $Id: meteodbdump.cc,v 1.13 2008/09/07 15:18:52 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +26,21 @@
 #include <mdebug.h>
 #include <fstream>
 
-static int	meteodbdump(int argc, char *argv[]) {
+static void	usage(const char *progname) {
+	printf("usage: %s [ options ] tables \n", progname);
+	printf("dump meteo database contents to a file. valid table names are avg and sdata\n");
+	printf("options:\n");
+	printf("  -f <conffile>    read <conffile> on startup instead of the default\n");
+	printf("  -l <logurl>      send log messages to this url instead of stderr\n");
+	printf("  -d               increase debug level\n");
+	printf("  -s <station>     include data for this station (multiple stations allowed\n");
+	printf("  -b <base>        base path name, file namess will be built by\n");
+	printf("  -c <size>        dump data in chunks of size <size> seconds\n");
+	printf("  -h,-?            display this help message and exit\n");
+	printf("  -r               write data raw instead of SQL insert statements\n");
+}
+
+static void	meteodbdump(int argc, char *argv[]) {
 	meteo::stringlist	stations;
 	std::string	basename("./");
 	std::string	logurl("file:///-");
@@ -36,8 +50,13 @@ static int	meteodbdump(int argc, char *argv[]) {
 	bool	raw = false;
 
 	// parse the command line
-	while (EOF != (c = getopt(argc, argv, "db:l:s:f:c:r")))
+	while (EOF != (c = getopt(argc, argv, "db:l:s:f:c:rh?")))
 		switch (c) {
+		case '?':
+		case 'h':
+			usage(argv[0]);
+			return;
+			break;
 		case 'f':
 			conffile = std::string(optarg);
 			break;
@@ -91,9 +110,6 @@ static int	meteodbdump(int argc, char *argv[]) {
 	// do the work in a function, so that destructors are properly
 	// called when it completes
 	cd.dumpStations(stations);
-
-	// that's it
-	exit(EXIT_SUCCESS);
 }
 
 int	main(int argc, char *argv[]) {

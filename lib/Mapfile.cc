@@ -2,18 +2,26 @@
 // Mapfile.cc -- class used to send current station data to a map file
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-// $Id: Mapfile.cc,v 1.3 2006/05/16 11:19:54 afm Exp $
+// $Id: Mapfile.cc,v 1.5 2009/01/10 19:00:24 afm Exp $
 //
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 #include <Mapfile.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif /* HAVE_FCNTL_H */
 #include <mdebug.h>
 #include <MeteoException.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
 #include <Format.h>
 #include <Timestamp.h>
 #ifdef HAVE_ALLOCA_H
@@ -45,7 +53,7 @@ Mapfile::Mapfile(const std::string& filename, bool writable) {
 void	Mapfile::publish(void) {
 	Timestamp	t;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "publishing meteo data");
-	std::string	result("<?xml version=\"1.0\"?>\n<meteomap station=\"");
+	std::string	result("<?xml version=\"1.0\"?>\n");
 	stringprintf(result, "<meteomap station=\"%s\" timestamp=\"%s\"",
 		stationname.c_str(), t.ctime().c_str());
 	result.append(t.strftime(" day=\"%d\" month=\"%m\" year=\"%Y\" hour=\"%H\" minute=\"%M\" second=\"%S\""));

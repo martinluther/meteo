@@ -31,11 +31,11 @@ static int	offset = 0;
 static bool	quiet = false;
 
 struct fieldmap_s {
-	char	*fieldname;
-	char	*sensorname;
-	char	*mfieldname;
-	int	instationdata;
-	int	inaverages;
+	const char	*fieldname;
+	const char	*sensorname;
+	const char	*mfieldname;
+	int		instationdata;
+	int		inaverages;
 };
 typedef struct fieldmap_s fieldmap_t;
 

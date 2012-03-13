@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.43 2006/05/16 11:19:54 afm Exp $
+# $Id: Makefile.am,v 1.44 2008/09/07 15:18:52 afm Exp $
 #
 
 noinst_HEADERS =							\
@@ -55,6 +55,8 @@ noinst_HEADERS =							\
 	Daemon.h							\
 	ChunkDumper.h							\
 	Lock.h								\
+	Outlet.h QueryOutlet.h XmlOutlet.h XmlOutletDelegate.h		\
+	XmlOutletFactory.h						\
 	crc.h 								\
 	printver.h mdebug.h
 

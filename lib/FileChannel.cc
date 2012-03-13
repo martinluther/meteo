@@ -3,11 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: FileChannel.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: FileChannel.cc,v 1.3 2009/01/10 19:00:24 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <FileChannel.h>
 #include <Configuration.h>
 #include <strings.h>
@@ -15,13 +15,13 @@
 #include <MeteoException.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#endif
+#endif /* HAVE_FCNTL_H */
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
+#endif /* HAVE_SYS_TYPES_H */
 #include <Timeval.h>
 #include <mdebug.h>
 

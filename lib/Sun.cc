@@ -5,12 +5,18 @@
 // public domain 1992
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-// $Id: Sun.cc,v 1.1 2004/05/08 20:09:32 afm Exp $
+// $Id: Sun.cc,v 1.2 2009/01/10 19:00:25 afm Exp $
 //
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Sun.h>
-
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 
 namespace meteo {
 

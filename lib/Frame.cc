@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Frame.cc,v 1.17 2004/02/27 22:09:04 afm Exp $
+ * $Id: Frame.cc,v 1.19 2009/01/10 19:33:18 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Frame.h>
 #include <mdebug.h>
 #include <MeteoException.h>
@@ -12,9 +15,13 @@
 #include <gd.h>
 #include <gdfonts.h>
 #include <mdebug.h>
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
+#ifdef HAVE_STRING_H
 #include <string.h>
-#include <algo.h>
+#endif /* HAVE_STRING_H */
+#include <algorithm>
 
 namespace meteo {
 
@@ -49,7 +56,7 @@ public:
 	void	drawRectangle(const Rectangle& rectangle, const Color& c);
 	void	drawText(const std::string& text, const Point& p1,
 		const Color& c, bool horizontal);
-	void	drawLetter(const char c, const Point& center, const Color& c);
+	void	drawLetter(const char c, const Point& center, const Color& color);
 
 	// write to file
 	void	toFile(const std::string& filename) const;

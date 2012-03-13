@@ -4,7 +4,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteofixtimestamps.c,v 1.2 2003/06/12 01:01:09 afm Exp $
+ * $Id: meteofixtimestamps.c,v 1.3 2009/01/10 19:32:20 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -143,6 +143,10 @@ int	copy_rows(MYSQL *mysql, char *tablename, MYSQL_RES *res) {
 						"ENUM/NULL type\n", __FILE__,
 						__LINE__);
 					return -1;
+				default:
+					fprintf(stderr, "%s:%d: don't know how "
+						"to handle field of type %d\n",
+						__FILE__, __LINE__, f[i].type);
 				}
 			}
 			if (i < num_fields - 1)

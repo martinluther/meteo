@@ -3,10 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: TimeReader.cc,v 1.3 2004/02/26 23:43:12 afm Exp $
+ * $Id: TimeReader.cc,v 1.4 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <TimeReader.h>
+#ifdef HAVE_TIME_H
 #include <time.h>
+#endif /* HAVE_TIME_H */
 
 namespace meteo {
 

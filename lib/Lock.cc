@@ -3,23 +3,35 @@
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-// $Id: Lock.cc,v 1.5 2004/04/28 19:35:15 afm Exp $
+// $Id: Lock.cc,v 1.6 2009/01/10 19:00:24 afm Exp $
 //
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 #include <Lock.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif /* HAVE_FCNTL_H */
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 #include <string>
 #include <mdebug.h>
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#ifdef HAVE_SYS_SEM_H
+#endif /* HAVE_ERRNO_H */
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_SYS_IPC_H
 #include <sys/ipc.h>
+#endif /* HAVE_SYS_IPC_H */
+#ifdef HAVE_SYS_SEM_H
 #include <sys/sem.h>
-#include <sys/stat.h>
 #endif /* HAVE_SYS_SEM_H */
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif /* HAVE_SYS_STAT_H */
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif /* HAVE_ALLOCA_H */

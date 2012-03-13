@@ -4,10 +4,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Windchill.cc,v 1.3 2004/02/25 23:48:06 afm Exp $
+ * $Id: Windchill.cc,v 1.4 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Windchill.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 #include <TemperatureConverter.h>
 #include <WindConverter.h>
 #include <MeteoException.h>

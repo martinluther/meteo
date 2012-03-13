@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: RainReader.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
+ * $Id: RainReader.cc,v 1.6 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <RainReader.h>
 
 namespace meteo {

@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Station.h,v 1.19 2006/05/07 19:47:22 afm Exp $
+ * $Id: Station.h,v 1.20 2008/09/07 15:18:52 afm Exp $
  */
 #ifndef _Station_h
 #define _Station_h
@@ -20,6 +20,7 @@
 #include <SensorStation.h>
 #include <ReaderInfo.h>
 #include <Mapfile.h>
+#include <Outlet.h>
 
 namespace meteo {
 
@@ -34,6 +35,7 @@ class Station {
 	int		packets;
 	sensormap_t	sensors;
 	Mapfile		*mapfile;
+	std::list<Outlet *>	outlets;
 protected:
 	// the readers map contains all the readers, and allows the station
 	// to read data symbolically. Since real stations may redefine the
@@ -66,10 +68,16 @@ public:
 	Value	readValue(const std::string& readername,
 		const std::string& packet) const;
 
+	// managing outlets
+	void	addOutlet(Outlet *outlet) {
+		outlets.push_back(outlet);
+	}
+	void	sendOutlets(time_t timekey);
+	void	sendOutlet(Outlet *outlet, time_t timekey) const;
+
 	// accumulate data
 	void	update(const std::string &packet);
 	void	reset(void);
-	stringlist	updatequery(time_t timekey) const;
 
 	// the station reads a packet from the channel	
 	Channel	*getChannel(void) { return channel; }

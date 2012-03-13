@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: LastRecorder.cc,v 1.1 2004/02/26 14:00:19 afm Exp $
+ * $Id: LastRecorder.cc,v 1.2 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <LastRecorder.h>
 #include <MeteoException.h>
 #include <mdebug.h>

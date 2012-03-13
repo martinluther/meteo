@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: RecorderFactory.cc,v 1.10 2004/04/03 19:15:35 afm Exp $
+ * $Id: RecorderFactory.cc,v 1.11 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <RecorderFactory.h>
 #include <Field.h>
 #include <MeteoException.h>

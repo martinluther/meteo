@@ -7,17 +7,27 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Tdata.cc,v 1.14 2004/02/25 23:48:05 afm Exp $
+ * $Id: Tdata.cc,v 1.15 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
 #include <Tdata.h>
-
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 #include <MeteoException.h>
 #include <mdebug.h>
 #include <Dewpoint.h>
 #include <Heatindex.h>
 #include <Windchill.h>
-#include <algo.h>
+#include <algorithm>
 
 namespace meteo {
 

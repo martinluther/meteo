@@ -3,10 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Derivedvalue.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: Derivedvalue.cc,v 1.3 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Derivedvalue.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 #include <QueryProcessor.h>
 #include <MeteoException.h>
 

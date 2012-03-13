@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: GraphWindow.cc,v 1.16 2004/03/01 09:44:08 afm Exp $
+ * $Id: GraphWindow.cc,v 1.17 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <GraphWindow.h>
 #include <Configuration.h>
 #include <mdebug.h>

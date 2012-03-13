@@ -3,10 +3,12 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: ValueFactory.cc,v 1.6 2004/02/25 23:48:06 afm Exp $
+ * $Id: ValueFactory.cc,v 1.7 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <ValueFactory.h>
-
 #include <MeteoException.h>
 #include <BasicValueFactory.h>
 #include <Wind.h>

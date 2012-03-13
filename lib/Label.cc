@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Label.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: Label.cc,v 1.3 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Label.h>
 #include <mdebug.h>
 #include <Configuration.h>

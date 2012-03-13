@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: RainRecorder.h,v 1.6 2006/05/16 11:19:54 afm Exp $
+ * $Id: RainRecorder.h,v 1.7 2008/09/07 15:18:52 afm Exp $
  */
 #ifndef _RainRecorder_h
 #define _RainRecorder_h
@@ -12,6 +12,7 @@
 #include <mdebug.h>
 #include <BasicRecorder.h>
 #include <Rain.h>
+#include <Outlet.h>
 
 namespace meteo {
 
@@ -42,7 +43,7 @@ public:
 	virtual void	reset(void);
 
 	// update query
-	virtual stringlist	updatequery(const time_t timekey,
+	virtual void	sendOutlet(Outlet *outlet, const time_t timekey,
 		const int stationid, const int fieldid) const;
 
 	// access data

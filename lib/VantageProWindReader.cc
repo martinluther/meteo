@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: VantageProWindReader.cc,v 1.4 2004/02/26 23:43:12 afm Exp $
+ * $Id: VantageProWindReader.cc,v 1.5 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <VantageProWindReader.h>
 #include <MeteoException.h>
 #include <mdebug.h>

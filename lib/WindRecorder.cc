@@ -3,8 +3,11 @@
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: WindRecorder.cc,v 1.9 2006/05/16 11:19:54 afm Exp $
+ * $Id: WindRecorder.cc,v 1.14 2009/01/10 22:11:40 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <WindRecorder.h>
 #include <WindConverter.h>
 #include <mdebug.h>
@@ -179,66 +182,35 @@ std::string	WindRecorder::getDurationString(void) const {
 // all what we know about wind to the sdata table. Note that this sensor
 // must be refered to as windspeed, and all the other fields have ids
 // larger than that
-stringlist	WindRecorder::updatequery(const time_t timekey,
+void	WindRecorder::sendOutlet(Outlet *outlet, const time_t timekey,
 	const int sensorid, const int fieldid) const {
 	stringlist	result;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "asking for wind queries");
 	// return immediately if we don't have a value
 	if (!isValid()) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "no wind queries");
-		return result;
+		return;
 	}
 
-	// build queries to insert wind data in the database
-	char	query[1024];
-
 	// wind speed
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid, v.getAbs());
-	result.push_back(std::string(query));
+	outlet->send(sensorid, fieldid, v.getAbs(), getUnit());
 
 	// wind direction
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid + 1, v.getAzideg());
-	result.push_back(std::string(query));
+	outlet->send(sensorid, fieldid + 1, v.getAzideg(), std::string("deg"));
 
 	// maximum wind speed (windgust)
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid + 2, max.getAbs());
-	result.push_back(std::string(query));
+	outlet->send(sensorid, fieldid + 2, max.getAbs(), getUnit());
 
 	// wind x and y coordinates
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid + 3, getDuration() * v.getX());
-	result.push_back(std::string(query));
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid + 4, getDuration() * v.getY());
-	result.push_back(std::string(query));
+	outlet->send(sensorid, fieldid + 3, getDuration() * v.getX(),
+		getUnit());
+	outlet->send(sensorid, fieldid + 4, getDuration() * v.getY(),
+		getUnit());
 
 	// insert duration and samples into database
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, Field().getId("duration"), getDuration());
-	result.push_back(std::string(query));
-	snprintf(query, sizeof(query),
-		"insert into sdata (timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %d)",
-		timekey, sensorid, Field().getId("samples"), samples);
-	result.push_back(std::string(query));
-
-	// return the set of queries
-	return result;
+	outlet->send(sensorid, Field().getId("duration"), getDuration(),
+		std::string("s"));
+	outlet->send(sensorid, Field().getId("samples"), samples, "");
 }
 
 // output methods

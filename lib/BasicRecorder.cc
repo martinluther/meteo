@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicRecorder.cc,v 1.11 2006/05/16 11:19:54 afm Exp $
+ * $Id: BasicRecorder.cc,v 1.14 2009/01/10 21:47:01 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <BasicRecorder.h>
 #include <mdebug.h>
 #include <MeteoException.h>
@@ -105,19 +108,9 @@ void	BasicRecorder::reset(void) {
 // the updatequery method returns an insert query for the value, this method
 // needs overriding for values that have a minimum and a maximum (where
 // additional queries are necessary)
-stringlist	BasicRecorder::updatequery(const time_t timekey,
+void	BasicRecorder::sendOutlet(Outlet *outlet, const time_t timekey,
 		const int sensorid, const int fieldid) const {
-
-	char	query[1024];
-	snprintf(query, sizeof(query),
-		"insert into sdata(timekey, sensorid, fieldid, value) "
-		"values(%ld, %d, %d, %.5f)",
-		timekey, sensorid, fieldid, value);
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "udpate query: %s", query);
-	
-	stringlist	result;
-	result.push_back(std::string(query));
-	return result;
+	outlet->send(sensorid, fieldid, value, getUnit());
 }
 
 std::string	BasicRecorder::plain(void) const {

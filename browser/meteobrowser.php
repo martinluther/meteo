@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.31 2006/05/07 19:47:22 afm Exp $
+//   $Id: meteobrowser.php,v 1.32 2009/01/10 21:05:48 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -131,6 +131,7 @@ $fulltitle = $station." ".strftime($title, $timestamp);
 <meta name="robots" content="index,nofollow">
 </head>
 <body bgcolor="#ffffff">
+<div id="content">
 
 <h1><?echo $fulltitle?></h1>
 
@@ -344,5 +345,6 @@ foreach ($graphs as $graph) {
 &copy; 2002 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch/">Beratung und Entwicklung</a>
 </p>
+</div>
 </body>
 </html>

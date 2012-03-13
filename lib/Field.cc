@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Field.cc,v 1.10 2004/02/25 23:48:05 afm Exp $
+ * $Id: Field.cc,v 1.11 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Field.h>
 #include <Field_internals.h>
 #include <mdebug.h>

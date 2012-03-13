@@ -5,8 +5,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Value.cc,v 1.5 2004/02/25 23:48:06 afm Exp $
+ * $Id: Value.cc,v 1.6 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Value.h>
 #include <MeteoException.h>
 

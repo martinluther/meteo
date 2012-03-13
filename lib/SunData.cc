@@ -3,8 +3,11 @@
 //               the sun is above the horizon
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-// $Id: SunData.cc,v 1.3 2004/05/08 22:07:17 afm Exp $
+// $Id: SunData.cc,v 1.5 2009/01/10 19:32:20 afm Exp $
 //
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <SunData.h>
 #include <StationInfo.h>
 #include <SensorStationInfo.h>
@@ -59,7 +62,7 @@ std::vector<time_t>	SunData::from_database(int interval, time_t startkey,
 			"  and a.sensorid = %d and b.sensorid = %d "
 			"  and a.fieldid = %d "		/* sunriseid */
 			"  and b.fieldid = %d "		/* sunsetid */
-			"  and a.timekey >= %d and a.timekey <= %d "
+			"  and a.timekey >= %ld and a.timekey <= %ld "
 			"  and (a.timekey - %d) < b.value " /* now < sunset */
 			"  and (b.timekey - %d) > a.value ", /* now > sunrise */
 			sensorid, sensorid,
@@ -75,7 +78,7 @@ std::vector<time_t>	SunData::from_database(int interval, time_t startkey,
 			"  and a.sensorid = %d and b.sensorid = %d "
 			"  and a.fieldid = %d "		/* sunriseid */
 			"  and b.fieldid = %d "		/* sunsetid */
-			"  and a.timekey >= %d and a.timekey <= %d "
+			"  and a.timekey >= %ld and a.timekey <= %ld "
 			"  and (a.timekey - %d) < b.value " /* now < sunset */
 			"  and (b.timekey - %d) > a.value ", /* now > sunrise */
 			interval, interval,

@@ -3,17 +3,19 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Datarecord.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
+ * $Id: Datarecord.cc,v 1.9 2009/01/10 19:00:23 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <Datarecord.h>
 #include <ValueFactory.h>
 #include <StationInfo.h>
 #include <MeteoException.h>
 #include <mdebug.h>
+#ifdef HAVE_TIME_H
 #include <time.h>
+#endif /* HAVE_TIME_H */
 #include <Timelabel.h>
 
 namespace meteo {

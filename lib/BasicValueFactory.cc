@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicValueFactory.cc,v 1.10 2004/02/26 14:00:19 afm Exp $
+ * $Id: BasicValueFactory.cc,v 1.11 2009/01/10 19:00:23 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <BasicValueFactory.h>
 #include <BasicValue.h>
 #include <TemperatureValue.h>

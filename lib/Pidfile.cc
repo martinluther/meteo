@@ -3,26 +3,36 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Pidfile.cc,v 1.6 2004/02/25 23:48:05 afm Exp $
+ * $Id: Pidfile.cc,v 1.7 2009/01/10 19:00:24 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
 #include <Pidfile.h>
 #include <fstream>
 #include <iostream>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
+#endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
+#endif /* HAVE_SYS_STAT_H */
+#ifdef HAVE_SIGNAL_H
 #include <signal.h>
+#endif /* HAVE_SIGNAL_H */
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
 #include <mdebug.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 #include <MeteoException.h>
 
 namespace meteo {

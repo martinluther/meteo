@@ -3,11 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: StationFactory.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
+ * $Id: StationFactory.cc,v 1.6 2009/01/10 19:00:25 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <StationFactory.h>
 #include <WMII.h>
 #include <GroWeather.h>
@@ -17,7 +17,7 @@
 #include <VantagePro.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
-#endif
+#endif /* HAVE_ARPA_INET_H */
 #include <ChannelFactory.h>
 #include <MeteoException.h>
 #include <mdebug.h>

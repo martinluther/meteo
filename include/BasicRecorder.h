@@ -8,7 +8,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicRecorder.h,v 1.9 2006/05/16 11:19:54 afm Exp $
+ * $Id: BasicRecorder.h,v 1.10 2008/09/07 15:18:51 afm Exp $
  */
 #ifndef _BasicRecorder_h
 #define _BasicRecorder_h
@@ -16,6 +16,7 @@
 #include <Timeval.h>
 #include <MeteoTypes.h>
 #include <Converter.h>
+#include <Outlet.h>
 
 namespace meteo {
 
@@ -51,7 +52,7 @@ public:
 
 	// knows how to update the value field, this may be overridden by
 	// subclasses
-	virtual stringlist updatequery(const time_t timekey,
+	virtual void sendOutlet(Outlet *outlet, const time_t timekey,
 		const int sensorid, const int fieldid) const;
 
 	// unit accessors

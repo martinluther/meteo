@@ -16,8 +16,10 @@ meteopoll [
 .BI \-f conffile
 ] [
 .BI \-m mapfile
+] [
+.BI \-x xmloutlet
 ]
-.BI \-s stationname
+.BI \-s stationname 
 .SH DESCRIPTION
 The 
 .BR meteopoll (1)
@@ -38,6 +40,14 @@ up by the
 program, or appended to the file specified in the
 .I <updatefile>
 tag in the configuration file.
+
+The 
+.B \-x
+option allows to specify additional outlets for the data gathered by
+.BR metepoll (1).
+The argument to this option is either a file or a pipe command, 
+XML-formatted data is written to the file or piped into the command
+every minute.
 .SH OPTIONS
 .TP
 .B \-d
@@ -111,10 +121,31 @@ Name of the station from which to read data. This argument is mandatory.
 .TP
 .B \-V
 print version information and exit.
+.TP
+.BI \-x xmloutlet
+Add 
+.I xmloutlet
+as an outlet specification.
+If the string is a simple file name, 
+.BR meteopoll (1)
+writes the data not only to the database but also to this
+file in XML format.
+If the outlet specification starts with a
+pipe symbol, the rest of the string is interpreted as a command
+which is run whenever 
+.BR meteopoll (1)
+has new data (roughly every minute). Such a command may not use
+much time, if it does not return within about a second, the next
+data point from the station may be lost. Therefore such outlet
+commands should never perform any activities that could block
+on network latencies or lock files.
+There may be arbitrarily many outlets, but keep in mind that
+the time it takes to process all outlets should not exceed the
+data interval from the station.
 
 .SH SIGNALS
 .BR meteopoll (1)
-handles the following signals in a nontrivial way:
+handles the following signals in a nontrivial way: 
 .TP
 SIGINT and SIGTERM
 These signal not only kill the parent process, but also the currently

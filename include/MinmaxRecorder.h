@@ -5,13 +5,14 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: MinmaxRecorder.h,v 1.6 2006/05/16 11:19:54 afm Exp $
+ * $Id: MinmaxRecorder.h,v 1.7 2008/09/07 15:18:52 afm Exp $
  */
 #ifndef _MinmaxRecorder_h
 #define _MinmaxRecorder_h
 
 #include <BasicRecorder.h>
 #include <Timeval.h>
+#include <Outlet.h>
 
 namespace meteo {
 
@@ -39,7 +40,7 @@ public:
 	virtual void	setValue(double v);
 
 	// update query
-	virtual stringlist	updatequery(const time_t timekey,
+	virtual void	sendOutlet(Outlet *outlet, const time_t timekey,
 		const int stationid, const int fieldid) const;
 
 	// retrieve the values

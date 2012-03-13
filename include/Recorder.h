@@ -5,13 +5,14 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Recorder.h,v 1.7 2006/05/16 11:19:54 afm Exp $
+ * $Id: Recorder.h,v 1.8 2008/09/07 15:18:52 afm Exp $
  */
 #ifndef _Recorder_h
 #define _Recorder_h
 
 #include <BasicRecorder.h>
 #include <string>
+#include <Outlet.h>
 
 namespace meteo {
 
@@ -54,7 +55,7 @@ public:
 	// update method: update the present value from a value reference
 	//                given as argument
 	void	update(const Value& other);
-	stringlist	updatequery(const time_t timekey,
+	void	sendOutlet(Outlet *outlet, const time_t timekey,
 		const int sensorid) const;
 
 	// access data

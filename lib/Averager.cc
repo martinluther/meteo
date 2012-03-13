@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Averager.cc,v 1.15 2004/02/26 23:43:12 afm Exp $
+ * $Id: Averager.cc,v 1.16 2009/01/10 19:00:23 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Averager.h>
 #include <StationInfo.h>
 #include <SensorStationInfo.h>

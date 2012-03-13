@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: SensorStation.cc,v 1.8 2006/05/16 11:19:54 afm Exp $
+ * $Id: SensorStation.cc,v 1.10 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <SensorStation.h>
 #include <SensorStationInfo.h>
 #include <Station.h>
@@ -45,8 +48,8 @@ SensorStation::~SensorStation(void) {
 	parentstation = NULL;
 }
 
-stringlist	SensorStation::updatequery(time_t timekey) const {
-	return r.updatequery(timekey, sensorid);
+void	SensorStation::sendOutlet(Outlet *outlet, time_t timekey) const {
+	r.sendOutlet(outlet, timekey, sensorid);
 }
 
 void	SensorStation::reset(void) {

@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: SensorStationInfo.cc,v 1.5 2004/02/26 23:43:12 afm Exp $
+ * $Id: SensorStationInfo.cc,v 1.6 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <SensorStationInfo.h>
 #include <QueryProcessor.h>
 #include <Configuration.h>

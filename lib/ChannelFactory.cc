@@ -3,11 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: ChannelFactory.cc,v 1.3 2004/04/02 16:00:02 afm Exp $
+ * $Id: ChannelFactory.cc,v 1.4 2009/01/10 19:00:23 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <ChannelFactory.h>
 #include <TcpChannel.h>
 #include <SerialChannel.h>

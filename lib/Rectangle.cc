@@ -4,8 +4,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Rectangle.cc,v 1.2 2004/02/25 23:48:05 afm Exp $
+ * $Id: Rectangle.cc,v 1.3 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Rectangle.h>
 #include <mdebug.h>
 #include <Configuration.h>

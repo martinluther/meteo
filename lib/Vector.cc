@@ -3,10 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Vector.cc,v 1.12 2004/04/30 13:25:13 afm Exp $
+ * $Id: Vector.cc,v 1.13 2009/01/10 19:00:25 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Vector.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif /* HAVE_MATH_H */
 #include <mdebug.h>
 
 namespace meteo {

@@ -3,15 +3,18 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Query.cc,v 1.18 2004/02/27 22:09:04 afm Exp $
+ * $Id: Query.cc,v 1.19 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <Query.h>
 #include <mdebug.h>
 #include <MeteoException.h>
 #include <Field.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
-#endif
+#endif /* HAVE_ALLOCA_H */
 
 namespace meteo {
 

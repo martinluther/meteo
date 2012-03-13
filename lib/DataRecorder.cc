@@ -3,8 +3,11 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: DataRecorder.cc,v 1.10 2006/05/16 11:19:54 afm Exp $
+ * $Id: DataRecorder.cc,v 1.12 2009/01/10 19:00:23 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <DataRecorder.h>
 #include <RecorderFactory.h>
 #include <mdebug.h>
@@ -55,25 +58,13 @@ void	DataRecorder::update(const std::string& sensorname, const Value& v) {
 }
 
 // retrieve the update queries from all recorders
-stringlist	DataRecorder::updatequery(const time_t timekey,
+void	DataRecorder::sendOutlet(Outlet *outlet, const time_t timekey,
 	const int sensorid) const {
-	// prepare a result list
-	stringlist	result;
-
 	// go through the  vector of recorders
 	recordermap_t::const_iterator	i;
 	for (i = recorders.begin(); i != recorders.end(); i++) {
-		stringlist	a = 
-			i->second.updatequery(timekey, sensorid);
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"add queries for sensorid %d, mfield %s: %d", sensorid,
-			i->first.c_str(), a.size());
-		// add all queries from the individual recorder to the result
-		result.splice(result.end(), a);
+		i->second.sendOutlet(outlet, timekey, sensorid);
 	}
-
-	// return the result vector
-	return result;
 }
 
 // reset all recorders

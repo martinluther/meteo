@@ -3,7 +3,7 @@
  * 
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: MsgQueuer.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
+ * $Id: MsgQueuer.cc,v 1.6 2009/01/10 19:00:24 afm Exp $
  */
 #include <MsgQueuer.h>
 
@@ -12,10 +12,10 @@
 #endif /* HAVE_CONFIG_H */
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
-#endif
+#endif /* HAVE_STDIO_H */
 #ifdef HAVE_SYS_MSG_H
 #include <sys/msg.h>
 #endif /* HAVE_SYS_MSG_H */
@@ -24,22 +24,26 @@
 #endif /* HAVE_SYS_IPC_H */
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
+#endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
-#endif
+#endif /* HAVE_SYS_SOCKET_H */
+#ifdef HAVE_SYS_UN_H
 #include <sys/un.h>
+#endif /* HAVE_SYS_UN_H */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
+#ifdef HAVE_TIME_H
 #include <time.h>
+#endif /* HAVE_TIME_H */
 #include <mdebug.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
-#endif
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
-#endif
+#endif /* HAVE_ALLOCA_H */
 
 #define QUERYMSG_SIZE	4096
 

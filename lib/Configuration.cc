@@ -4,22 +4,30 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Configuration.cc,v 1.13 2004/02/25 23:48:04 afm Exp $
+ * $Id: Configuration.cc,v 1.15 2009/05/03 11:20:28 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <Configuration.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif /* HAVE_STRING_H */
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
+#endif /* HAVE_SYS_STAT_H */
 #include <mdebug.h>
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
 #include <MeteoException.h>
 #include <map>
 

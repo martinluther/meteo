@@ -6,7 +6,7 @@
 			files to HTML
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id$
+	$Id: gallery.xsl,v 1.1 2007/08/29 21:03:20 afm Exp $
   -->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">

@@ -2,13 +2,24 @@
 #
 # sample configure call
 #
-# $Id: configureit,v 1.20 2006/05/07 19:47:22 afm Exp $
+# $Id: configureit,v 1.22 2009/01/10 21:06:40 afm Exp $
 #
 
 CFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
 CXXFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline"
 
 export CXXFLAGS CFLAGS
+
+if [ webserver = `uname -n` ]
+then
+        CFLAGS="-g -Wall -pedantic -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
+        CXXFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline"
+        export CFLAGS CXXFLAGS
+        basedir=/srv/www/vhosts/meteo.othello.ch/htdocs
+        ./configure --with-browser-dir=${basedir}/browser/ \
+                -with-html-dir=${basedir}/
+        exit
+fi
 
 if [ timon = `uname -n` ]
 then

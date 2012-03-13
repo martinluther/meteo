@@ -3,15 +3,15 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: GroWeather.cc,v 1.14 2004/02/25 23:48:05 afm Exp $
+ * $Id: GroWeather.cc,v 1.15 2009/01/10 19:00:24 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 #include <GroWeather.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
-#endif
+#endif /* HAVE_ARPA_INET_H */
 #include <Configuration.h>
 #include <ChannelFactory.h>
 #include <MeteoException.h>

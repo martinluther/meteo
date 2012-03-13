@@ -3,12 +3,21 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: FQField_internals.cc,v 1.4 2004/02/27 16:03:50 afm Exp $
+ * $Id: FQField_internals.cc,v 1.5 2009/01/10 19:00:24 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <FQField_internals.h>
 #include <MeteoException.h>
 #include <map>
 #include <SensorStationInfo.h>
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 namespace meteo {
 
