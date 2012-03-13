@@ -194,6 +194,11 @@ the meteo package:
 		should be installed. If this option is not specified,
 		the script is not installed.
 
+	--with-html-dir=DIR
+		set the directory where the HTML files should be installed,
+		this is primarily useful on the site http://meteo.othello.ch,
+		where it is used to keep the web site up to date.
+
 
 Special issues
 ==============
@@ -234,4 +239,4 @@ Linux:
     variable during configure and/or compile.
 
 --
-$Id: INSTALL,v 1.7 2002/01/16 10:04:35 afm Exp $
+$Id: INSTALL,v 1.8 2002/01/18 23:34:21 afm Exp $

@@ -2,10 +2,10 @@ AC_PREREQ(2.12)dnl
 AC_REVISION([1.0])dnl
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(meteo.h)
+AC_INIT(include/meteo.h)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(meteo, 0.2.2)
-AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(meteo, 0.3.0)
+AM_CONFIG_HEADER(include/config.h)
 
 dnl add support for libtool
 dnl AC_LIBLTDL_CONVENIENCE
@@ -64,4 +64,6 @@ AC_ARG_WITH(html-dir,
 HTMLDIR="${with_html_dir}"
 AC_SUBST(HTMLDIR)
 
-AC_OUTPUT(Makefile meteo.1)
+AC_OUTPUT(Makefile include/Makefile lib/Makefile src/Makefile support/Makefile
+conf/Makefile doc/Makefile html/Makefile browser/Makefile db/Makefile
+man/Makefile man/meteo.1 html/meteo.html)

@@ -3,8 +3,5 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.36 2002/01/18 23:36:46 afm Exp $
+# $Id: Makefile.am,v 1.1 2002/01/18 23:34:23 afm Exp $
 #
-SUBDIRS = include lib src conf html browser db doc man support
-
-EXTRA_DIST = shtool

@@ -260,7 +260,7 @@ SHELL=${CONFIG_SHELL-/bin/sh}
 # only ac_max_sed_lines should be used.
 : ${ac_max_here_lines=38}
 
-ac_unique_file="meteo.h"
+ac_unique_file="include/meteo.h"
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1374,7 +1374,7 @@ fi
 
 PACKAGE=meteo
 
-VERSION=0.2.2
+VERSION=0.3.0
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { { echo "$as_me:1380: error: source directory already configured; run \"make distclean\" there first" >&5
@@ -1466,7 +1466,7 @@ else
 echo "${ECHO_T}missing" >&6
 fi
 
-ac_config_headers="$ac_config_headers config.h"
+ac_config_headers="$ac_config_headers include/config.h"
 
 ac_config_commands="$ac_config_commands default-1"
 
@@ -7993,7 +7993,7 @@ if test "${with_html_dir+set}" = set; then
 fi;
 HTMLDIR="${with_html_dir}"
 
-ac_config_files="$ac_config_files Makefile meteo.1"
+ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile support/Makefile conf/Makefile doc/Makefile html/Makefile browser/Makefile db/Makefile man/Makefile man/meteo.1 html/meteo.html"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -8311,10 +8311,21 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "meteo.1" ) CONFIG_FILES="$CONFIG_FILES meteo.1" ;;
+  "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
+  "lib/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
+  "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+  "support/Makefile" ) CONFIG_FILES="$CONFIG_FILES support/Makefile" ;;
+  "conf/Makefile" ) CONFIG_FILES="$CONFIG_FILES conf/Makefile" ;;
+  "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+  "html/Makefile" ) CONFIG_FILES="$CONFIG_FILES html/Makefile" ;;
+  "browser/Makefile" ) CONFIG_FILES="$CONFIG_FILES browser/Makefile" ;;
+  "db/Makefile" ) CONFIG_FILES="$CONFIG_FILES db/Makefile" ;;
+  "man/Makefile" ) CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
+  "man/meteo.1" ) CONFIG_FILES="$CONFIG_FILES man/meteo.1" ;;
+  "html/meteo.html" ) CONFIG_FILES="$CONFIG_FILES html/meteo.html" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
-  "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
-  *) { { echo "$as_me:8317: error: invalid argument: $ac_config_target" >&5
+  "include/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
+  *) { { echo "$as_me:8328: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -8556,7 +8567,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:8559: creating $ac_file" >&5
+    { echo "$as_me:8570: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -8574,7 +8585,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:8577: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:8588: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -8587,7 +8598,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:8590: error: cannot find input file: $f" >&5
+           { { echo "$as_me:8601: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -8648,7 +8659,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:8651: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:8662: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -8659,7 +8670,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:8662: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:8673: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -8672,7 +8683,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:8675: error: cannot find input file: $f" >&5
+           { { echo "$as_me:8686: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -8789,7 +8800,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:8792: $ac_file is unchanged" >&5
+      { echo "$as_me:8803: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -8840,7 +8851,7 @@ for ac_file in : $CONFIG_COMMANDS; do test "x$ac_file" = x: && continue
   ac_source=`echo "$ac_file" | sed 's,[^:]*:,,'`
 
   case $ac_dest in
-    default-1 ) test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h ;;
+    default-1 ) test -z "$CONFIG_HEADERS" || echo timestamp > include/stamp-h ;;
   esac
 done
 EOF

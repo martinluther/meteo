@@ -1,0 +1,56 @@
+How to set up the meteo browser
+===============================
+
+Description
+-----------
+
+Starting with release 0.2.0, the meteo package includes a PHP script
+that can be used as a browser to the meteo database. It allows to
+view every day, week, month or year for which there is data in the
+database (and for all the others as well, but that's less interesting).
+
+Navigation is very simple: zooming in is accomplished by clicking
+into the graphs, to zoom one uses the navigation bar, the same is
+true for the `sideways' navigation.
+
+Installation
+------------
+
+The browser uses only a single PHP script: meteobrowser.php. This script
+and the suppporting PNG graphics are placed into the directory specified
+with the --with-browser-dir configuration directive.
+
+In addition, the meteograph.inc file (a sample is included with the
+distribution) must be placed in the same location as the browser script,
+and edited to fit the local situation. This file is not installed
+automatically, as this would destroy the local configuration.
+
+Make sure that for each station there is also a configuration file
+/usr/local/etc/meteo-stationname.conf, as the meteobrowser.php script
+calls meteograph with this configuration file for the station named
+stationname. Set the $confpath variable at the beginning of the script 
+to the directory containing the configuration files. Also configure 
+the absolute path to the cache directory in $cachedir, and the full
+path to the meteograph binary in $meteograph.
+
+Maintenance
+-----------
+
+The cache directory should be cleaned out regularly. In principle,
+all files older than a few hours can be removed from the directory.
+However, this is not striclty necessary. There is a maximum of
+
+	(366 + 53 + 12 + 1) * g = 432 * g
+
+images per year which take about 900 * g kilobytes on disk, where
+g is the number of graphs actually displayed per page (depending on the
+capabilities of your weather station between 2 and 5). But as the number
+of files increases, performance may degrade slightly. Since the
+meteobrowser never searches through the cache directory, but accesses
+the files directly, the performance impact should be minimal. It 
+certainly is negligible for tree structured file systems like Linux'
+Reiser fs, but even with a standard UFS, performance will usually suffer
+much more from network latency than file system latency.
+
+--
+$Id: README.browser,v 1.1 2002/01/18 23:34:22 afm Exp $

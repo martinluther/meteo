@@ -1,3 +1,9 @@
+Release 0.3.0:
+	* fix minor off-by-one bug in meteograph that hid the last data point
+	  behind the nodatat color although the data did exist
+	* completely reorganized the source code, as the number of files
+	  in the top level directory has grown quite large by now.
+
 Release 0.2.2:
 	* made sure navigation is not possible into the future and before
 	  the first data point (to prevent robots from creating havoc)
@@ -127,4 +133,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.25 2002/01/16 10:04:35 afm Exp $
+$Id: ChangeLog,v 1.26 2002/01/18 23:34:21 afm Exp $
