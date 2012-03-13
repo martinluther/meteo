@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.15 2003/06/12 20:29:33 afm Exp $
+# $Id: Makefile.am,v 1.20 2003/07/24 22:34:24 afm Exp $
 #
 
 srcdir = @srcdir@
@@ -152,14 +152,18 @@ target_vendor = @target_vendor@
 noinst_HEADERS = \
 	MeteoException.h MeteoValue.h Vector.h Wind.h Rain.h		\
 	Channel.h Timeval.h Station.h Configuration.h			\
-	Datasink.h Pidfile.h Converter.h				\
-	Frame.h								\
+	Datasink.h Pidfile.h Converter.h Timelabel.h Dewpoint.h		\
+	Tdata.h Query.h Dataset.h Frame.h GraphWindow.h Graphics.h	\
 	crc.h meteo.h 							\
-	graph.h dewpoint.h msgque.h					\
+	msgque.h							\
 	meteograph.h xmlconf.h						\
-	average.h database.h timestamp.h dograph.h daemon.h 		\
+	average.h database.h timestamp.h daemon.h 			\
 	printver.h mdebug.h pdebug.h colors.h
 
+
+VERSION_FILE = meteo_vers.h
+
+EXTRA_DIST = $(VERSION_FILE)
 subdir = include
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -292,7 +296,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(HEADERS) config.h
+all-am: Makefile $(HEADERS) config.h all-local
 
 installdirs:
 
@@ -365,16 +369,22 @@ ps-am:
 
 uninstall-am: uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool ctags distclean distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags uninstall uninstall-am uninstall-info-am
+.PHONY: CTAGS GTAGS all all-am all-local check check-am clean \
+	clean-generic clean-libtool ctags distclean distclean-generic \
+	distclean-hdr distclean-libtool distclean-tags distdir dvi \
+	dvi-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-info-am
 
+
+all-local:	$(VERSION_FILE)
+
+meteo_vers.h:	../configure.in
+	../shtool version -l c -s @VERSION@ -n Meteo -p meteo_ $(VERSION_FILE)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

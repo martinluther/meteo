@@ -1,3 +1,25 @@
+Release 0.8.0:
+	* improve info about prerequisite packages and how to make the package
+	  work with gd1.
+	* added pt_BR.po contributed by Tiago Giovanaz da Silva, translated
+	  by Cesar Brod
+	* created a new meteodraw.cc program that can create just about
+	  any drawing based on an XML specification. The only things still
+	  fixed are: allowed steps (300/1800/7200/86400), fact that grid and
+	  labels are drawn in foreground color.
+	* fixed the rain data bug for WMII introduced by reading the raincal.
+	  Fix contributed by Josep Sort.
+	* add the ability to draw 1 minute interval graphs
+	* add ability to suppress data that is below a certain limit, most
+	  useful for wind, where the azimut does not make sense whenever
+	  the wind speed is very small)
+	* add the ability to draw wind direction letters on the wind background,
+	  making the graph more readable
+	* made a (probably failed) attempt to adapt the portuguese translation
+	  to the new strings
+	* provided possibility to use different configuration files for
+	  different weather stations in meteobrowser.php
+
 Release 0.7.4:
 	* fix a fatal bug in dewpoint.c: if no temperature unit was set
 	  in meteo.xml, meteograph crashed during the dewpoint computation
@@ -31,7 +53,7 @@ Release 0.7.1
 	* documentation cleanup
 
 Release 0.7.0:
-	* added wundgerground contribution by Walter Poxon
+	* added wunderground contribution by Walter Poxon
 	* fixed many documentation bugs related to obsolete programs and
 	  versions
 	* using a new drain algorithm: we now read data from the station
@@ -286,4 +308,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.59 2003/06/12 23:29:46 afm Exp $
+$Id: ChangeLog,v 1.65 2003/07/26 22:39:43 afm Exp $

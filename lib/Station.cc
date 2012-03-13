@@ -331,7 +331,7 @@ Wind	WMII::getWind(const std::string& s) const {
 }
 Rain	WMII::getRain(const std::string& s) const {
 	if (validShort(s, 12)) {
-		Rain	rr(getUnsignedShort(s, 12)/raincal, "in");
+		Rain	rr(((double)getUnsignedShort(s, 12))/raincal, "in");
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "WMII rain value: %.2f",
 			rr.getValue());
 		return rr;

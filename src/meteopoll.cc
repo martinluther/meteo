@@ -117,6 +117,7 @@ static void	loop(const meteo::Configuration& conf, const std::string& name) {
 		}
 	}
 }
+
 static void	usage(void) {
 	printf(
 "usage: meteopoll [ -dFVh? ] [ -l logurl ] [ -f conffile ] [ -b prefs ] \\\n"

@@ -32,7 +32,7 @@ config::config(const std::string& filename) {
 	// open the configuration file
 	struct stat	sb;
 	if (stat(filename.c_str(), &sb) < 0) {
-		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot stat conf file '%s'",
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "cannot stat conf file '%s'"
 			"%s (%d)", filename.c_str(), strerror(errno), errno);
 		throw MeteoException(std::string("cannot open file ")
 			+ filename, strerror(errno));
@@ -57,9 +57,11 @@ config	*Configuration::l = NULL;
 
 double	Configuration::getDouble(const std::string& xpath, double def) const {
 	std::vector<std::string>	r = getStringVector(xpath);
-	if (0 == r.size())
+	if (0 == r.size()) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s not found, use default %f",
+			xpath.c_str(), def);
 		return def;
-	else
+	} else
 		return atof(r[0].c_str());
 }
 
@@ -68,6 +70,8 @@ std::vector<double>	Configuration::getDoubleVector(const std::string& xpath) con
 	std::vector<std::string>	r = getStringVector(xpath);
 	std::vector<std::string>::const_iterator	i;
 	for (i = r.begin(); i != r.end(); i++) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found %s = %s",
+			xpath.c_str(), i->c_str());
 		result.push_back(atof(i->c_str()));
 	}
 	return result;
@@ -75,9 +79,11 @@ std::vector<double>	Configuration::getDoubleVector(const std::string& xpath) con
 
 int	Configuration::getInt(const std::string& xpath, int def) const {
 	std::vector<std::string>	r = getStringVector(xpath);
-	if (0 == r.size())
+	if (0 == r.size()) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s not found, use default %d",
+			xpath.c_str(), def);
 		return def;
-	else
+	} else
 		return atoi(r[0].c_str());
 }
 
@@ -86,6 +92,8 @@ std::vector<int>	Configuration::getIntVector(const std::string& xpath) const {
 	std::vector<std::string>	r = getStringVector(xpath);
 	std::vector<std::string>::const_iterator	i;
 	for (i = r.begin(); i != r.end(); i++) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "found %s = %s",
+			xpath.c_str(), i->c_str());
 		result.push_back(atoi(i->c_str()));
 	}
 	return result;
@@ -152,6 +160,142 @@ std::vector<std::string> Configuration::getStringVector(const std::string& xpath
 	xmlXPathFreeContext(xpctp);
 
 	// return the vector we have built
+	return result;
+}
+
+bool	Configuration::getBool(const std::string& xpath, bool def) const {
+	std::string	x = getString(xpath, std::string((def) ? "yes" : "no"));
+	if ((x == "yes") || (x == "true") || (x == "y")) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s is true", xpath.c_str());
+		return true;
+	}
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "%s is false", xpath.c_str());
+	return false;
+}
+
+bool	Configuration::xpathExists(const std::string& xpath) const {
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "checking existence of %s",
+		xpath.c_str());
+	xmlXPathContextPtr	xpctp = xmlXPathNewContext(l->cf);
+	if (NULL == xpctp) {
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "xmlXPathNewContext failed");
+		throw MeteoException("cannt create XPathContextPtr", "");
+	}
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "request for %s", xpath.c_str());
+	xmlXPathObjectPtr	start = xmlXPathEval((xmlChar *)xpath.c_str(),
+					xpctp);
+	if (NULL == start) {
+		mdebug(LOG_INFO, MDEBUG_LOG, 0, "cannot find xpath %s",
+			xpath.c_str());
+		xmlXPathFreeContext(xpctp);
+		return false;
+	}
+	xmlXPathFreeContext(xpctp);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "path %s found", xpath.c_str());
+	if (start->type == XPATH_NODESET) {
+		if (xmlXPathNodeSetIsEmpty(start->nodesetval)) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "but %s is empty",
+				xpath.c_str());
+			return false;
+		}
+	}
+	return true;
+}
+
+const xmlNodePtr	Configuration::getNode(const std::string& xpath) const {
+	xmlNodePtr	result = NULL;
+
+	// set up an XPath context for searching
+	xmlXPathContextPtr	xpctp = xmlXPathNewContext(l->cf);
+	if (NULL == xpctp) {
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "xmlXPathNewContext failed");
+		throw MeteoException("cannt create XPathContextPtr", "");
+	}
+
+	// evaluate the xpath
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "request for %s", xpath.c_str());
+	xmlXPathObjectPtr	start = xmlXPathEval((xmlChar *)xpath.c_str(),
+					xpctp);
+
+	// handle case where we have not found enything
+	if (NULL == start) {
+		mdebug(LOG_INFO, MDEBUG_LOG, 0, "cannot find xpath %s",
+			xpath.c_str());
+		xmlXPathFreeContext(xpctp);
+		throw MeteoException("path not found", xpath);
+	}
+
+	// we can only do something with a node set
+	switch (start->type) {
+	case XPATH_NODESET:
+		if (xmlXPathNodeSetIsEmpty(start->nodesetval)) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"node set empty, returning empty vector");
+		} else {
+			result = xmlXPathNodeSetItem(start->nodesetval, 0);
+		}
+		break;
+	default:
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"don't know what to do with type %d", start->type);
+		break;
+	}
+
+	// cleanup
+	xmlXPathFreeObject(start);
+	xmlXPathFreeContext(xpctp);
+
+	if (NULL == result)
+		throw MeteoException("node not found", xpath);
+	return result;
+}
+
+const std::vector<xmlNodePtr>	Configuration::getNodeVector(const std::string& xpath) const {
+	std::vector<xmlNodePtr>	result;
+
+	// set up an XPath context for searching
+	xmlXPathContextPtr	xpctp = xmlXPathNewContext(l->cf);
+	if (NULL == xpctp) {
+		mdebug(LOG_ERR, MDEBUG_LOG, 0, "xmlXPathNewContext failed");
+		throw MeteoException("cannt create XPathContextPtr", "");
+	}
+
+	// evaluate the xpath
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "request for %s", xpath.c_str());
+	xmlXPathObjectPtr	start = xmlXPathEval((xmlChar *)xpath.c_str(),
+					xpctp);
+
+	// handle case where we have not found enything
+	if (NULL == start) {
+		mdebug(LOG_INFO, MDEBUG_LOG, 0, "cannot find xpath %s",
+			xpath.c_str());
+		xmlXPathFreeContext(xpctp);
+		return result;
+	}
+
+	// we can only do something with a node set
+	xmlNodeSetPtr	ns;
+	switch (start->type) {
+	case XPATH_NODESET:
+		ns = start->nodesetval;
+		if (xmlXPathNodeSetIsEmpty(ns)) {
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+				"node set empty, returning empty vector");
+		} else {
+			for (int i = 0; i < xmlXPathNodeSetGetLength(ns); i++)
+				result.push_back(xmlXPathNodeSetItem(ns, i));
+		}
+		break;
+	default:
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+			"don't know what to do with type %d", start->type);
+		break;
+	}
+
+	// cleanup
+	xmlXPathFreeObject(start);
+	xmlXPathFreeContext(xpctp);
+
 	return result;
 }
 

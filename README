@@ -1,9 +1,3 @@
-                _                    ___  _____ ___  
- _ __ ___   ___| |_ ___  ___        / _ \|___  / _ \ 
-| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | |  / / | | |
-| | | | | |  __/ ||  __/ (_) |_____| |_| | / /| |_| |
-|_| |_| |_|\___|\__\___|\___/       \___(_)_/(_)___/ 
-                                                     
 
 What's this?
 ------------
@@ -45,35 +39,48 @@ Prerequisites
 Meteo compiles and works with gcc 2.95.3 and gcc 3.x, I've not tested
 any other compilers. But since the code is usually quite straight forward,
 and does not use any real GNUisms, it may also work with other compilers.
-Compilation takes about 2 minutes on a dual 400MHz Pentium II.
 
 Meteo requires quite a few packages that still do not come with all the
 modern operating systems it is known to run on. Linux users have a
 distinct advantage here, the usually don't have to do anything to get
 these packages:
 
-GD2	To compile this package, you will need a complete installation of
+GD	To compile this package, you will need a complete installation of
 	Tom Boutell's GD2 library, which you can get from www.boutell.com.
 	Note that the meteo programs expect to be able to create PNG images,
 	so zlib and libpng must also be installed. Some installations with
 	GD already installed may also need the freetype libraries, as GD
 	may be built with freetype support.
 
+	If you absolutely cannot work with GD2, you can trick the configure
+	script into thinking it has found GD2 by providing a replacement
+	for gdlib-config. It should return reasonable values for the options
+	--version, --libs, --ldflags and --cflags. The version is not
+	checked by the configure script.
+
+	(SuSE 8.2: add gdlib-devel)
+
 MySQL	The meteo programs write the data retrieved from the weather 
 	station into a MySQL database. To build the programs, you therefore
 	need the MySQL client libraries. Visit www.mysql.com for details
 	on how to get MySQL for your plattform.
+
+	(SuSE 8.2: add mysql-devel)
 
 gettext	The meteo package expects the GNU gettext to be present on
 	the system. As only the optional meteo browser is affected by
 	gettext, the configure script does not check for the presence of
 	gettext.
 
+	(SuSE 8.2: add gettext)
+
 libxml2	libxml2 is the XML parser of the Gnome project. It's main advantage
 	is that it is quite portable, written in C, full featured and
 	well documented. Since 0.5.0, libxml2 is required, as the
 	configuration file now is in XML format. Check http://www.libxml.org
 	for current version.
+
+	(SuSE 8.2: add libxml2-devel)
 
 If you plan to use the weather underground interface scripts contributed
 by Walter Poxon, you will need additional packages: perl and some perl
@@ -129,8 +136,8 @@ meteoavg	compute averages over longer intervals than one minute.
 		consuming, moving them outside the meteopoll program
 		again improves reliablity.
 
-To produce the graphs, the separate programm meteograph is called, usually
-from a cron job. 
+To produce the graphs, the separate programm meteodraw is called, usually
+from a cron job, or from within the meteobrowser PHP script.
 
 Installation
 ------------
@@ -146,7 +153,6 @@ MySQL tables.
 Special installation instructions for the meteo browser (meteobrowser.php)
 can be found in the file README.browser.
 
-
 Thanks
 ------
 
@@ -157,4 +163,4 @@ Thanks to all those who have helped.
 
 
 --
-$Id: README,v 1.29 2003/06/12 00:45:15 afm Exp $
+$Id: README,v 1.32 2003/07/26 23:51:18 afm Exp $

@@ -2,7 +2,7 @@
 <head>
 <link href="meteo.css" type="text/css" rel="stylesheet">
 <title>Meteo Software Package</title>
-<!-- $Id: meteo.html.in,v 1.9 2003/06/10 04:19:12 afm Exp $ -->
+<!-- $Id: meteo.html.in,v 1.10 2003/07/19 15:36:13 afm Exp $ -->
 </head>
 <body bgcolor="#ffffff">
 <h1>Meteo</h1>
@@ -64,7 +64,8 @@ Most of that information is now also included in the browser pages.
 There are essentially two interfaces to the database:
 <ol>
 <li>
-The <b>meteograph</b>(1) programm can be used to generate graphs for every
+The <b>meteodraw</b>(1) program (<b>meteograph</b>(1) in previous releases)
+can be used to generate graphs for every
 point in time, and to store them in some directory accessible via 
 a web server. The <b>meteooverview</b>(1) script can generate some pages
 referencing the graphs. This is essentially a static interface and is
@@ -92,10 +93,13 @@ The current release (version @VERSION@) was published on @CONFIGDATE@.
 See the <a href="NEWS">NEWS</a> file for the most important changes
 in this release.
 For a complete list of changes, go to the <a href="ChangeLog">Change Log</a>.
-Note that 0.4.0 brought incompatible modifications in database format
-(but included a programm to semi-automatically migrating old version
-databases to the new format) and 0.5.0 brings incompatible changes in
-configuration file format (now XML based).
+</p>
+<p>Here are some highlights of the recent release history:
+Release 0.7.0 comes with a rewrite of the backend, and deals much
+better with missing data (NULLs in the database instead of special
+values, that loose their special meaning when averagin).
+Release 0.8.0 introduces a new graphing backend which is much
+more flexible than in previous releases.
 </p>
 <p>
 Walter Poxon has contributed an
@@ -132,14 +136,17 @@ Follow the steps below for a successful configuration:
 <ol>
 <li>
 Most configuration happens inside the 
-<b>meteo.conf</b>(5) configuration file. A sample file is include
+<b>meteo.xml</b>(5) configuration file. A sample file is include
 with the distribution.
 </li>
 <li>
 A minimal installation will run one instance of <b>meteopoll</b>(1)
 to collect data from the weather station and write it to the database.
+It will also use
+<b>meteoavg</b>(1) to compute averages and store them in the
+averages table.
 Furthermore, it will run a cron job using
-<b>meteograph</b>(1) to update the graphs for the web page, a sample
+<b>meteodraw</b>(1) to update the graphs for the web page, a sample
 cron job script is included in the distribution.
 </li>
 <li>
@@ -148,11 +155,6 @@ of weather station and database through a message queue, which involves
 running the <b>meteopoll</b>(1) program with the <b>-b msgqueue</b> option,
 and in addition running an instance of the dequeuer process
 <b>meteodequeue</b>(1).
-</li>
-<li>
-After some time, most installations will begin to use the
-<b>meteoavg</b>(1) program to compute averages for the long term
-graphs and store them in a separate table.
 </li>
 <li>
 To top off the installation, configure the meteo browser to allow
@@ -214,7 +216,7 @@ temperature</a> where the main development machine lives.
 &copy; 2001 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch">Beratung und Entwicklung</a>
 <br />
-<i>Last modified: $Date: 2003/06/10 04:19:12 $</i>
+<i>Last modified: $Date: 2003/07/19 15:36:13 $</i>
 </p>
 </body>
 </html>

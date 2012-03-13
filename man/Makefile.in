@@ -146,15 +146,15 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.3 2003/06/08 10:42:07 afm Exp $
+# $Id: Makefile.am,v 1.5 2003/07/19 14:57:34 afm Exp $
 #
-man_MANS = meteo.1 meteoavg.1 meteopoll.1 meteodequeue.1 meteograph.1	\
-	meteo.xml.5
+man_MANS = meteo.1 meteoavg.1 meteopoll.1 meteodequeue.1 meteodraw.1	\
+	meteo.xml.5 meteolabel.1
 
 
 EXTRA_DIST = \
-	meteo.1.in meteoavg.1 meteopoll.1 meteodequeue.1 meteograph.1	\
-	meteo.xml.5 
+	meteo.1.in meteoavg.1 meteopoll.1 meteodequeue.1 meteodraw.1	\
+	meteo.xml.5  meteolabel.1
 
 subdir = man
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

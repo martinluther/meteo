@@ -33,6 +33,13 @@ Contributors: in no particular order, email addresses withheld to protect
 				found while preparing a debian package
 	Chance C. Geurin	noted a problem with signed data, I only
 				hope the new version does this right!
+	Tiago Giovanaz da Silva & Cesar Brod
+				contributed a portuguese translation of the
+				browser (locale pt_BR, file pt_BR.po)
+	Josep Sort		pointed out a bug affecting Weather Monitor II,
+				introduced when meteo started to read the
+				rain calibration number from the station. 
+				It caused rain data to be wildly incorrect.
 
 --
-$Id: AUTHORS,v 1.5 2003/06/08 23:36:24 afm Exp $
+$Id: AUTHORS,v 1.7 2003/07/09 22:34:17 afm Exp $

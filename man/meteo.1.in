@@ -25,15 +25,15 @@ the configuration file is explained in
 .SH ARCHITECTURE
 The minimum installation for the meteo tools uses the two programs 
 .BR meteopoll (1),
+.BR meteoavg (1),
 and
-.BR meteograph (1).
+.BR meteodraw (1).
 .BR meteopoll (1)
 connects to the weather station either using a serial interface
 or a tcp connection to a terminal server or a serial device server
 like the Lantronix UDS-10. It speaks the protocol of the 
 weather station to collect samples from the station at a reasonable
-rate, usually in one second increments for the Weather Monitor II
-or 5 second increments for the Vantage Pro stations.
+rate, usually in one second increments.
 These samples are then averaged (or summed, e.g. for the rain measurements),
 and SQL update queries prepared to be sent to a MySQL database.
 
@@ -67,20 +67,15 @@ table is filled by the
 program.
 
 The data can be visualized by the 
-.BR meteograph (1)
+.BR meteodraw (1)
 program. Given an interval and a configuration file, it computes
 all graphs for that interval that end at the current point in time.
-If the 
-.I averages
-table is maintained,
-.BR meteograph (1)
-is fast enough so that it can be called from a CGI program.
-Otherwise, it should be run from a cron job to keep up to date graphs
+It should be run from a cron job to keep up to date graphs
 available. A sample cron job script is
 .BR meteojob (1),
 as included in the distribution.
 
-.SH UNIFORM RESOURCE LOCATORS
+.SH "UNIFORM RESOURCE LOCATORS"
 The meteo packages uses new kinds of URLs to specify meteo stations
 and log destinations. Please see the
 .BR meteo.xml (5)
@@ -92,6 +87,8 @@ use a URL of the form
 Note that in most cases, 
 .I logfile
 must be absolute.
+One special case is the URL file:///-, which represents standard error.
+
 If messages should be sent to a 
 .BR syslog (3)
 facility 
@@ -99,13 +96,36 @@ facility
 use an url of the form
 .RI syslog: f .
 
-.SH "PERFORMANCE IMPROVEMENTS"
+.SH "TIME LABELS"
+The browser uses so called time labels to specify the resolution and
+the point in time for which a graph should be produced. Time labels
+try to be human readable. They always start with a single character
+indicating the resolution. The possible formats are:
+
+.TS
+tab(&);
+l r l.
+label&interval&strftime format string
+
+hYYYYmmddHH&60&h%Y%m%d%H
+dYYYYmmdd&300&d%Y%m%d
+wYYYYww&1800&w%Y%V
+mYYYYmm&7200&m%Y%m
+yYYYY&86400&y%Y
+.TE
+
+Note that the ISO week number is used, for more information about the
+strftime format strings used see
+.BR strftime (3).
+
+
+.SH "PERFORMANCE ISSUES"
 There are two areas where performance can become a problem.
 In both cases, the database is the bottleneck.
 Especially producing graphs spanning a whole year (which means computing
 averages over more than half a million 1min intervals) can be
 very time consuming.
-As most averages are computed over and over again without any change,
+As most averages would be computed over and over again without any change,
 storing them in a special table, the
 .I averages
 table, is beneficial even for very small data sets. On the development
@@ -123,12 +143,9 @@ To maintain the
 table, the
 .BR meteoavg (1)
 program should be run in daemon mode. 
-.BR meteograph (1)
-accepts the option
-.B \-q
-to indicate that the
-.I averages
-table should be used.
+In Version 0.8.0, the possibility to draw graphs directly from the
+stationdata table has been removed except for the 60 second resolution
+graphs.
 
 During the computation of averages, the stationdata table may be locked,
 preventing the
@@ -151,7 +168,7 @@ configured in the configuration file).
 .BR meteo.xml (5),
 .BR meteopoll (1),
 .BR meteoavg (1),
-.BR meteograph (1),
+.BR meteodraw (1),
 .BR meteodequeue (1),
 .BR meteojob (1)
 

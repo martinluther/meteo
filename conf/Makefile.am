@@ -3,9 +3,9 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.3 2002/11/24 23:31:02 afm Exp $
+# $Id: Makefile.am,v 1.4 2003/07/19 14:57:34 afm Exp $
 #
-EXTRA_DIST = meteo.xml
+EXTRA_DIST = meteo.xml meteo-60.xml
 
 pkgdata_DATA = meteo.xml
 

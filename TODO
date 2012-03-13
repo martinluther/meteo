@@ -1,8 +1,8 @@
 TODO
 ----
 
-* rewrite the graphing programs in C++, in particular to allow more
-  flexibility with units
+* convert the Tdata implementation to using functors instead of function
+  pointers (is this possible?)
 
 * modify tables so that the group number can also be indexed
 
@@ -14,8 +14,9 @@ TODO
 
 Bugs
 
-* week numbers in graphs are wrong (pointed out by Michael Niedermann)
-* there is a problem with temperature graphs for WMII
+* make sure meteodraw does not crash with a segmentation fault when asked
+  to draw a curve for data that does not exist (name not specified anywhere
+  in the XML file)
 
 --
-$Id: TODO,v 1.21 2003/06/09 07:33:21 afm Exp $
+$Id: TODO,v 1.29 2003/07/26 22:39:43 afm Exp $

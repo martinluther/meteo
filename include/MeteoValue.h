@@ -11,7 +11,6 @@
 #include <Timeval.h>
 #include <string>
 
-
 namespace meteo {
 
 class Converter;

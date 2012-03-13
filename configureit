@@ -1,7 +1,7 @@
 #
 # sample configure call
 #
-# $Id: configureit,v 1.14 2003/06/12 20:29:33 afm Exp $
+# $Id: configureit,v 1.15 2003/06/27 00:11:01 afm Exp $
 #
 
 CFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
@@ -17,7 +17,7 @@ case `uname` in
 		;;
 	SunOS|Darwin)
 		# make sure mysql_config is on the PATH
-		PATH=/usr/local/mysql/bin:$PATH
+		PATH=/usr/local/bin:/usr/local/mysql/bin:$PATH
 		export PATH
 		./configure						\
 			--with-html-dir=/usr/local/apache2/htdocs/meteo	\

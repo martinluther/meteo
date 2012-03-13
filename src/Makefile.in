@@ -88,7 +88,7 @@ MAKEINFO = @MAKEINFO@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.11 2003/06/08 22:32:10 afm Exp $
+# $Id: Makefile.am,v 1.22 2003/07/24 22:34:24 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 MSGFMT = @MSGFMT@
@@ -152,24 +152,26 @@ AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
 
 LDADD = ../lib/libmeteo.la
 
-bin_PROGRAMS = meteopoll 					\
-	meteoupdate meteograph meteoavg				\
-	meteodequeue meteowatch
+bin_PROGRAMS = meteopoll 	 				\
+	meteoavg meteolast					\
+	meteodequeue meteowatch meteodraw meteolabel meteodbdump
 
 
-meteoupdate_SOURCES = meteoupdate.cc
-meteograph_SOURCES = meteograph.cc
 meteoavg_SOURCES = meteoavg.cc
 meteodequeue_SOURCES = meteodequeue.cc
 meteowatch_SOURCES = meteowatch.cc
 meteopoll_SOURCES = meteopoll.cc
+meteodraw_SOURCES = meteodraw.cc
+meteolabel_SOURCES = meteolabel.cc
+meteolast_SOURCES = meteolast.cc
+meteodbdump_SOURCES = meteodbdump.cc
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
-bin_PROGRAMS = meteopoll$(EXEEXT) meteoupdate$(EXEEXT) \
-	meteograph$(EXEEXT) meteoavg$(EXEEXT) meteodequeue$(EXEEXT) \
-	meteowatch$(EXEEXT)
+bin_PROGRAMS = meteopoll$(EXEEXT) meteoavg$(EXEEXT) meteolast$(EXEEXT) \
+	meteodequeue$(EXEEXT) meteowatch$(EXEEXT) meteodraw$(EXEEXT) \
+	meteolabel$(EXEEXT) meteodbdump$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_meteoavg_OBJECTS = meteoavg.$(OBJEXT)
@@ -177,26 +179,36 @@ meteoavg_OBJECTS = $(am_meteoavg_OBJECTS)
 meteoavg_LDADD = $(LDADD)
 meteoavg_DEPENDENCIES = ../lib/libmeteo.la
 meteoavg_LDFLAGS =
+am_meteodbdump_OBJECTS = meteodbdump.$(OBJEXT)
+meteodbdump_OBJECTS = $(am_meteodbdump_OBJECTS)
+meteodbdump_LDADD = $(LDADD)
+meteodbdump_DEPENDENCIES = ../lib/libmeteo.la
+meteodbdump_LDFLAGS =
 am_meteodequeue_OBJECTS = meteodequeue.$(OBJEXT)
 meteodequeue_OBJECTS = $(am_meteodequeue_OBJECTS)
 meteodequeue_LDADD = $(LDADD)
 meteodequeue_DEPENDENCIES = ../lib/libmeteo.la
 meteodequeue_LDFLAGS =
-am_meteograph_OBJECTS = meteograph.$(OBJEXT)
-meteograph_OBJECTS = $(am_meteograph_OBJECTS)
-meteograph_LDADD = $(LDADD)
-meteograph_DEPENDENCIES = ../lib/libmeteo.la
-meteograph_LDFLAGS =
+am_meteodraw_OBJECTS = meteodraw.$(OBJEXT)
+meteodraw_OBJECTS = $(am_meteodraw_OBJECTS)
+meteodraw_LDADD = $(LDADD)
+meteodraw_DEPENDENCIES = ../lib/libmeteo.la
+meteodraw_LDFLAGS =
+am_meteolabel_OBJECTS = meteolabel.$(OBJEXT)
+meteolabel_OBJECTS = $(am_meteolabel_OBJECTS)
+meteolabel_LDADD = $(LDADD)
+meteolabel_DEPENDENCIES = ../lib/libmeteo.la
+meteolabel_LDFLAGS =
+am_meteolast_OBJECTS = meteolast.$(OBJEXT)
+meteolast_OBJECTS = $(am_meteolast_OBJECTS)
+meteolast_LDADD = $(LDADD)
+meteolast_DEPENDENCIES = ../lib/libmeteo.la
+meteolast_LDFLAGS =
 am_meteopoll_OBJECTS = meteopoll.$(OBJEXT)
 meteopoll_OBJECTS = $(am_meteopoll_OBJECTS)
 meteopoll_LDADD = $(LDADD)
 meteopoll_DEPENDENCIES = ../lib/libmeteo.la
 meteopoll_LDFLAGS =
-am_meteoupdate_OBJECTS = meteoupdate.$(OBJEXT)
-meteoupdate_OBJECTS = $(am_meteoupdate_OBJECTS)
-meteoupdate_LDADD = $(LDADD)
-meteoupdate_DEPENDENCIES = ../lib/libmeteo.la
-meteoupdate_LDFLAGS =
 am_meteowatch_OBJECTS = meteowatch.$(OBJEXT)
 meteowatch_OBJECTS = $(am_meteowatch_OBJECTS)
 meteowatch_LDADD = $(LDADD)
@@ -207,9 +219,10 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/meteoavg.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteodbdump.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteodequeue.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/meteograph.Po ./$(DEPDIR)/meteopoll.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/meteoupdate.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteodraw.Po ./$(DEPDIR)/meteolabel.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteolast.Po ./$(DEPDIR)/meteopoll.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteowatch.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -219,11 +232,12 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(meteoavg_SOURCES) $(meteodequeue_SOURCES) \
-	$(meteograph_SOURCES) $(meteopoll_SOURCES) \
-	$(meteoupdate_SOURCES) $(meteowatch_SOURCES)
+DIST_SOURCES = $(meteoavg_SOURCES) $(meteodbdump_SOURCES) \
+	$(meteodequeue_SOURCES) $(meteodraw_SOURCES) \
+	$(meteolabel_SOURCES) $(meteolast_SOURCES) $(meteopoll_SOURCES) \
+	$(meteowatch_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(meteoavg_SOURCES) $(meteodequeue_SOURCES) $(meteograph_SOURCES) $(meteopoll_SOURCES) $(meteoupdate_SOURCES) $(meteowatch_SOURCES)
+SOURCES = $(meteoavg_SOURCES) $(meteodbdump_SOURCES) $(meteodequeue_SOURCES) $(meteodraw_SOURCES) $(meteolabel_SOURCES) $(meteolast_SOURCES) $(meteopoll_SOURCES) $(meteowatch_SOURCES)
 
 all: all-am
 
@@ -266,18 +280,24 @@ clean-binPROGRAMS:
 meteoavg$(EXEEXT): $(meteoavg_OBJECTS) $(meteoavg_DEPENDENCIES) 
 	@rm -f meteoavg$(EXEEXT)
 	$(CXXLINK) $(meteoavg_LDFLAGS) $(meteoavg_OBJECTS) $(meteoavg_LDADD) $(LIBS)
+meteodbdump$(EXEEXT): $(meteodbdump_OBJECTS) $(meteodbdump_DEPENDENCIES) 
+	@rm -f meteodbdump$(EXEEXT)
+	$(CXXLINK) $(meteodbdump_LDFLAGS) $(meteodbdump_OBJECTS) $(meteodbdump_LDADD) $(LIBS)
 meteodequeue$(EXEEXT): $(meteodequeue_OBJECTS) $(meteodequeue_DEPENDENCIES) 
 	@rm -f meteodequeue$(EXEEXT)
 	$(CXXLINK) $(meteodequeue_LDFLAGS) $(meteodequeue_OBJECTS) $(meteodequeue_LDADD) $(LIBS)
-meteograph$(EXEEXT): $(meteograph_OBJECTS) $(meteograph_DEPENDENCIES) 
-	@rm -f meteograph$(EXEEXT)
-	$(CXXLINK) $(meteograph_LDFLAGS) $(meteograph_OBJECTS) $(meteograph_LDADD) $(LIBS)
+meteodraw$(EXEEXT): $(meteodraw_OBJECTS) $(meteodraw_DEPENDENCIES) 
+	@rm -f meteodraw$(EXEEXT)
+	$(CXXLINK) $(meteodraw_LDFLAGS) $(meteodraw_OBJECTS) $(meteodraw_LDADD) $(LIBS)
+meteolabel$(EXEEXT): $(meteolabel_OBJECTS) $(meteolabel_DEPENDENCIES) 
+	@rm -f meteolabel$(EXEEXT)
+	$(CXXLINK) $(meteolabel_LDFLAGS) $(meteolabel_OBJECTS) $(meteolabel_LDADD) $(LIBS)
+meteolast$(EXEEXT): $(meteolast_OBJECTS) $(meteolast_DEPENDENCIES) 
+	@rm -f meteolast$(EXEEXT)
+	$(CXXLINK) $(meteolast_LDFLAGS) $(meteolast_OBJECTS) $(meteolast_LDADD) $(LIBS)
 meteopoll$(EXEEXT): $(meteopoll_OBJECTS) $(meteopoll_DEPENDENCIES) 
 	@rm -f meteopoll$(EXEEXT)
 	$(CXXLINK) $(meteopoll_LDFLAGS) $(meteopoll_OBJECTS) $(meteopoll_LDADD) $(LIBS)
-meteoupdate$(EXEEXT): $(meteoupdate_OBJECTS) $(meteoupdate_DEPENDENCIES) 
-	@rm -f meteoupdate$(EXEEXT)
-	$(CXXLINK) $(meteoupdate_LDFLAGS) $(meteoupdate_OBJECTS) $(meteoupdate_LDADD) $(LIBS)
 meteowatch$(EXEEXT): $(meteowatch_OBJECTS) $(meteowatch_DEPENDENCIES) 
 	@rm -f meteowatch$(EXEEXT)
 	$(CXXLINK) $(meteowatch_LDFLAGS) $(meteowatch_OBJECTS) $(meteowatch_LDADD) $(LIBS)
@@ -289,10 +309,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteoavg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodbdump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodequeue.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteograph.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodraw.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteolabel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteolast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteopoll.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteoupdate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteowatch.Po@am__quote@
 
 distclean-depend:
@@ -518,6 +540,26 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 test:	meteopoll
 	./meteopoll -s Frauenfeld -l file://`pwd`/logfile -b msgqueue -d -d -d -f /usr/local/etc/meteo.xml
+
+#
+# draw standard graph
+#
+testdraw:	meteodraw
+	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin -l file:///- -d -d \
+		-f `pwd`/../conf/meteo.xml -I -p ../src/ \
+		-u "/browser/meteobrowser.php?lang=de" -m -I \
+		-L d20030718 -L m200307 -L w200327 -L y2003 \
+		-g temperature -g temperature_inside -g pressure \
+		-g radiation -g rain -g wind -g humidity -g humidity_inside 
+#
+# drawing high resolution graphs uses a different configuration file
+#
+testdraw60:
+	DYLD_BIND_AT_LAUNCH=1 ./meteodraw -s Gurin -l file:///- -d -d \
+		-f `pwd`/../conf/meteo-60.xml -I -p ../src/ \
+		-u "/browser/meteobrowser.php?lang=de" \
+		-L d20030719 -g temperature -g temperature_inside -g pressure \
+		-g radiation -g rain -g wind -g humidity -g humidity_inside -m
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

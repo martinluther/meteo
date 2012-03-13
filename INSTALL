@@ -3,7 +3,9 @@ Basic Installation
 
    The first part of this file contains are generic installation
 instructions.  For plattform specific guidance and other specialties
-see the end of the file.
+see the end of the file. Please also consult the SETUP file for a
+quick guide to the documentation of the package. In particular, you
+should check the README for the prerequisite packages to install.
 
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
@@ -218,6 +220,10 @@ config scripts for mysql and gdlib think they are.
 Special issues
 ==============
 
+   There will be lots of warnings about deprecated headers when compiling
+with gcc 3. The source code uses the old header file names to make sure
+compiling with gcc 2.95.3 will work.
+
    The binary programs of this package are all installed in bindir,
 and the manual pages in mandir. The sample configuration file
 meteo.conf.5 and the HTML pages are not installed anywhere, and must
@@ -247,9 +253,11 @@ Solaris:
     correctly execute the config.guess script (needed for libtool). Set
     the CONFIG_SHELL environment variable to something more reasonable
     like the Korn shell (/usr/bin/ksh) or, even better, the Bash
-    /usr/local/bin/bash (or wherever you have installed it).
+    /usr/local/bin/bash (or wherever you have installed it). This may
+    no longer be a problem with Solaris 8 and/or the current version of
+    autoconf and the configure script created by it, but I haven't tried.
 
-	There will be lots of warnings during the compile about alignment
+	There may be lots of warnings during the compile about alignment
     of data types, these can be ignored. They are not caused by any
     meteo code, but come from the string class implementation that comes
     with gcc.
@@ -257,8 +265,11 @@ Solaris:
 Linux:
 	Some Linux distributions have the gd library compiled with freetype
     support. Consequently, the meteo programs must be linked against the
-    freetype library, usually by adding -lfreetype to the LDFLAGS environment
-    variable during configure and/or compile.
+    freetype library, which means that the development packages for freetype
+    must be installed as well. Note that gd2 is not very old yet, and only
+    recent Linux distributions already include it. Installing it in addition
+    to gd, e.g. under /usr/local, usually does not do any harm and simplifies
+    gd based development.
 
 Mac OS X:
 	There seems to be a problem with libtool on this platform, somehow
@@ -274,6 +285,21 @@ Mac OS X:
 
 	export PATH=/usr/local/bin:/usr/local/sbin:${PATH}
 
+    If you have xml2-config, mysql_config and gdlib-config in other strange
+    locations, make sure they are on your PATH.
+
+        Due to a bug in the dynamic linker, late binding sometimes does
+    not work when the STL is used in C++ programs. This affects the
+    meteodraw program, which just hangs in the construtor that creates
+    the Graphics object.  One workaround is to include -bind_at_load
+    in the linker command line.  This is not done automatically by the
+    configure script. Alternatively, on can invoke the program with the
+    environment variable DYLD_BIND_AT_LAUNCH set to 1.
+
+	When using the meteobrowser on Mac OS X, you will have to modify
+    the meteobrowser.php script to set the DYLD_BIND_AT_LAUNCH environment
+    variable to 1.
+    
 
 Frequently asked questions
 ==========================
@@ -318,4 +344,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.14 2003/06/12 20:29:33 afm Exp $
+$Id: INSTALL,v 1.18 2003/07/26 23:51:18 afm Exp $

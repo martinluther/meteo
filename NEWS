@@ -1,8 +1,6 @@
-0.7.1	some minor bug fixes
-
-0.7.0	comes with a complete rewrite of the station interface code,
-	which in particular handles undefined values much more gracefully
-	and can now work with english units
+0.8.0	This release comes with a complete rewrite of the graphing engine.
+	Graphs can now be specified completely in XML, there are only very
+	few items left that cannot be specified in the XML file.
 
 --
-$Id: NEWS,v 1.14 2003/06/09 07:38:17 afm Exp $
+$Id: NEWS,v 1.15 2003/07/09 08:13:50 afm Exp $

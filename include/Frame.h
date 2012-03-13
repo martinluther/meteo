@@ -7,20 +7,11 @@
 #ifndef _Frame_h 
 #define _Frame_h
 
+#include <Configuration.h>
 #include <string>
-#include <map.h>
 #include <time.h>
 
 namespace meteo {
-
-class Dimension {
-	int	width, height;
-public:
-	Dimension(int w, int h) { width = w; height = h; }
-	~Dimension(void) { }
-	int	getWidth(void) const { return width; }
-	int	getHeight(void) const { return height; }
-};
 
 // Points use the coordinate system of the inner frame (so the dont remember
 // the lower left point where the inner frame is attached).
@@ -34,100 +25,125 @@ public:
 	~Point(void) { }
 };
 
-class Scale {
-	double	a, b;
+class Dimension {
+	int	width, height;
 public:
-	Scale(void) { a = 1.; b = 0.; }	// if nothing is specified, use id map
-	Scale(double aa, double bb) { a = aa; b = bb; }
-	~Scale(void) { }
-	double	operator()(double x) const { return a * x + b; }
+	Dimension(int w, int h) { width = w; height = h; }
+	Dimension(const Configuration& conf, const std::string& xpath);
+	~Dimension(void) { }
+	int	getWidth(void) const { return width; }
+	int	getHeight(void) const { return height; }
+	bool	containsPoint(const Point& p) {
+		return ((p.getX() >= 0) && (p.getX() < width)
+			&& (p.getY() >= 0) && (p.getY() < height));
+	}
+};
+
+class Rectangle {
+	Point	lowerleft;
+	Point	upperright;
+public:
+	Rectangle(void) : lowerleft(0, 0), upperright(0, 0) { }
+	Rectangle(const Point& ll, const Point& ur)
+		: lowerleft(ll), upperright(ur) {
+	}
+	Rectangle(const Configuration& conf, const std::string& xpath);
+	~Rectangle(void) { }
+	int	getWidth(void) const {
+		return upperright.getX() - lowerleft.getX();
+	}
+	int	getHeight(void) const {
+		return upperright.getY() - lowerleft.getY();
+	}
+	const Point&	getLowerLeft(void) const { return lowerleft; }
+	const Point&	getUpperRight(void) const { return upperright; }
+	int	getLow(void) const { return lowerleft.getY(); }
+	int	getHigh(void) const { return upperright.getY(); }
+	int	getLeft(void) const { return lowerleft.getX(); }
+	int	getRight(void) const { return upperright.getX(); }
+	bool	containsPoint(const Point& p) {
+		return ((lowerleft.getX() <= p.getX()) &&
+			(p.getX() < upperright.getX()) &&
+			(lowerleft.getY() <= p.getY()) &&
+			(p.getY() < upperright.getY()));
+	}
 };
 
 class Color {
 	int	red, green, blue;
 public:
+	Color(void) { red = 255; green = 255; blue = 255; } // default white
 	Color(const std::string& hexcolorspec);
-	Color(int r, int g, int b) { red = r; g = green; b = blue; }
+	Color(int r, int g, int b) { red = r; green = g; blue = b; }
 	int	getRed(void) const { return red; }
 	int	getGreen(void) const { return green; }
 	int	getBlue(void) const { return blue; }
-	~Color(void) { }
-};
-
-class Spacing {
-	std::string&	format;
-	double		first, last, step;
-public:
-	Spacing(std::string& f, double fi, double la, double st) : format(f) {
-		first = fi; last = la; step = st;
+	int	getValue(void) const {
+		return (red << 16) + (green << 8) + blue;
 	}
-	~Spacing(void) { }
+	std::string	getHex(void) const;
+	~Color(void) { }
+	bool	operator<(const Color& c) const {
+		return (getValue() < c.getValue());
+	}
 };
 
-typedef	map<time_t, double>	tdata;	// undefined values are represented
-					// by missing time_t
+typedef enum labelalign_e {
+	top, center, bottom
+} 	labelalign_t;
+
+class Label {
+	std::string	text;
+	labelalign_t	align;
+public:
+	Label(const std::string& t, labelalign_t a) : text(t), align(a) { }
+	Label(const Configuration& conf, const std::string& xpath);
+	~Label(void) { }
+	const std::string&	getText(void) const { return text; }
+	const labelalign_t	getAlign(void) const { return align; }
+};
 
 class	frame_internals;
 
+typedef enum linestyle_e {
+	solid = 0, dotted = 1, dashed = 2
+} linestyle;
+
 class Frame {
-	Dimension	outer, inner;
-	Point		lowerleft;
-	int		interval;
-	time_t		rightend;
-	Scale		leftscale, rightscale;
+	Dimension	outer;
 	frame_internals	*fi;
+	Color		foreground, background;
+	// construct the internal GD stuff
+	void	setupInternals(void);
 public:
 	// construction an destruction
-	Frame(const Dimension& o, const Dimension& i, const Point& l, int iv)
-		: outer(o), inner(i), lowerleft(l) { interval = iv; }
-	~Frame(void) { }
+	Frame(const Dimension& o);
+	Frame(const Frame& f);
+	~Frame(void);
+	Frame&	operator=(const Frame& other);
 
-	// create labels left and right
-	void	leftLabel(const std::string& label);
-	void	rightLabel(const std::string& label);
-
-	// create scales
-	Scale	getScale(double minvalue, double maxvalue) const;
-	Scale	getScaleStep(double minvalue, double step) const;
-	void	setLeftScale(const Scale& s) { leftscale = s; }
-	void	setRightScale(const Scale& s) { rightscale = s; }
-
-	// time axis computations
-	int	getIndexFromTime(time_t) const;
-	time_t	getTimeFromIndex(int i) const;
-	void	setRightEnd(time_t r) { rightend = r; }
-	void	setLeftEnd(time_t l) {
-		rightend = l + interval * inner.getWidth();
-	}
-	time_t	getLeftEnd(void) const;
-	time_t	getRightEnd(void) const;
-	int	getInterval(void) const { return interval; }
-	void	setInterval(int i) { interval = i; }
-
-	// create points based on time and values
-	Point	getPoint(bool useleftscale, time_t t, double value) const;
-	Point	getBottomPoint(time_t t) const;
-	Point	getTopPoint(time_t t) const;
+	// foreground and background colors
+	const Color&	getForeground(void) const { return foreground; }
+	const Color&	getBackground(void) const { return background; }
+	void	setForeground(const Color& c);
+	void	setForeground(const std::string& c);
+	void	setBackground(const Color& c);
+	void	setBackground(const std::string& c);
+	Color	getColorFromHexString(const std::string& c) const;
 
 	// drawing functions (this functions perform some limited form
 	// of clipping)
-	void	drawRectangle(const Point& lowerleft, const Point& upperright,
-		const Color& color);
-	void	drawRange(const Point& lower, const Point& upper,
-		const Color& color);
-	void	drawHistogram(const Point&, const Color& color);
-	void	drawLine(const Point& p1, const Point& p2, const Color& color);
-	void	drawVLine(bool useleftscale, const tdata& data,
-		const Color& color);
-	void	drawHistogram(bool useleftscale, const map<time_t, double>& data,
-		const Color& color);
-	void	drawRange(bool useleftscale, const tdata& upperdata,
-		const tdata& lowerdata, const Color& color);
-	void	drawNodata(const tdata& data, const Color& color);
+	void	drawRectangle(const Rectangle& rectangle, const Color& color);
+	void	drawLine(const Point& p1, const Point& p2, const Color& color,
+			linestyle style);
+	void	drawText(const std::string& text, const Point& start,
+			const Color& color, bool horizontal = true);
+	void	drawLetter(const char c, const Point& center,
+			const Color& color);
 
-	// grid related methods
-	void	drawHGrid(bool useleftscale, const Spacing& spc);
-	void	drawVGrid(void);
+	// specialised drawing functions
+	void	drawLabel(const std::string& text, bool left, labelalign_t align);
+	void	drawLabel(const Label& label, bool left);
 
 	// output of image to a file
 	void	toFile(const std::string& filename);

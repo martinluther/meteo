@@ -1,0 +1,82 @@
+.TH METEOLABEL "1" "July 2003" "Meteo station tools" Othello
+.SH NAME
+meteolabel \- compute labels to identify graphs to meteodraw
+.SH SYNOPSIS
+meteoavg [
+.B \-s
+] [
+.B \-c
+] [
+.B \-L
+]
+.I label
+[
+.I operator ...
+]
+.SH DESCRIPTION
+The 
+.BR meteolabel (1)
+programm computes labels that specify the interval and end time for
+a graph.
+This program is mainly used inside the meteobrowser PHP script.
+
+Without operator arguments, the 
+.BR meteolabel (1)
+parses the
+.I label
+and diplays it in a format specified by the options. By default, it
+will simply format it as a normalized label.
+
+The operator arguments allow to navigate between different levels
+of resolution and in time. The following operators are known:
+.TP
+up
+move up one level from the current label. E.g. the day label d20030709
+becomes
+.TP
+upup
+move up two levels. Note that moving up from d20021231 one level gives
+week 0 in 2003, so that moving up again gives january 2003, or the 
+label m200301. Applying the upup operator to d20021231 gives december
+2003, i.e. the label m200212.
+.TP
+upupup
+move up three levels.
+.TP
+down
+move down one level from the current label. E.g. the year label y2003
+becomes the month label m200307.
+.TP
+downdown
+move down two levels, see the description of upup for an explantion
+why this is different from moving down twice.
+.TP
+downdowndown
+move down three levels.
+.TP
+previous
+move forward in time, e.g. the week label w200314 becomes w200315.
+.TP
+next
+move backward in time, e.g. the month label m200301 becomes m200212
+
+
+.SH OPTIONS
+.TP
+.B \-c
+display the central time of the current label in 
+.BR ctime (3)
+format.
+.TP
+.B \-s
+display the central time of the current label as Unix time in seconds
+since midnight of 1st januar 1970.
+.TP
+.B \-L
+suppress the default display of the label.
+
+.SH "SEE ALSO"
+.BR meteo (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

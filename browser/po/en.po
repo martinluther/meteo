@@ -1,20 +1,20 @@
-msgid "weather overview of"
-msgstr "weather overview of"
+msgid "weather overview of %B %e, %Y"
+msgstr "weather overview of %B %e, %Y"
 
-msgid "year %s"
-msgstr "year %s"
+msgid "weather overview of week %V, %Y, "
+msgstr "weather overview of week %V, %Y, "
 
-msgid "%A, %d %B %Y"
-msgstr "%A, %B %e, %Y"
+msgid "from %s to %s"
+msgstr "from %s to %s"
 
-msgid "%B %e, %Y"
-msgstr "%B %e, %Y"
+msgid "%x"
+msgstr "%x"
 
-msgid "%B %Y"
-msgstr "%B %Y"
+msgid "weather overview of %B %Y"
+msgstr "weather overview of %B %Y"
 
-msgid "week from %s to %s"
-msgstr "week from %s to %s"
+msgid "weather overview of %Y"
+msgstr "weather overview of the year %Y"
 
 msgid ""
 "To see more details, click into the region you like inside "

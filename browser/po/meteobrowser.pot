@@ -1,19 +1,19 @@
-msgid "weather overview of"
+msgid "weather overview of %B %e, %Y"
 msgstr ""
 
-msgid "week from %s to %s"
+msgid "weather overview of week %V, %Y, "
 msgstr ""
 
-msgid "%A, %d %B %Y"
+msgid "from %s to %s"
 msgstr ""
 
-msgid "%B %e, %Y"
+msgid "%x"
 msgstr ""
 
-msgid "%B %Y"
+msgid "weather overview of %B %Y"
 msgstr ""
 
-msgid "year %s"
+msgid "weather overview of %Y"
 msgstr ""
 
 msgid ""

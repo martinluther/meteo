@@ -10,7 +10,7 @@ Hardware
 --------
 
 Presently, only the Vantage Pro and Weather Monitor II stations are
-supported. It would be fairly simple to add other stations, as they
+supported. It would be fairly simple to add Davis other stations, as they
 all use the same LOOP command (see doc/vtechref.txt) to retrieve
 sensor images, which all have a similar structure (offsets are different,
 see doc/Techref.txt and doc/vtechref.txt).
@@ -43,7 +43,9 @@ Configure
 
 The configuration is contained in a single configuration XML file
 called meteo.xml, usually in /usr/local/etc/meteo.xml, but varying
-according to your configuration options.
+according to your configuration options. There is also a sample
+meteo-60.xml, which shows how 60 second interval graphs can be
+produced.
 
 The configuration file is described in the manual page meteo.xml(5).
 There is also a sample configuration file included in the conf
@@ -76,4 +78,4 @@ should first alter your tables so that it fits. See the MySQL manual
 for details.
 
 --
-$Id: SETUP,v 1.1 2003/06/08 13:54:16 afm Exp $
+$Id: SETUP,v 1.2 2003/07/19 14:57:34 afm Exp $

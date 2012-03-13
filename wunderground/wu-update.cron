@@ -1,4 +1,4 @@
-# $Id: wu-update.cron,v 1.1 2003/06/02 19:59:25 wdp Exp $
+# $Id: wu-update.cron,v 1.1 2003/07/26 22:52:58 afm Exp $
 #
 # Example crontab entry for uploading data to wunderground every 5 mins
 #

@@ -19,13 +19,13 @@ double	Vector::getArg(void) const {
 double	Vector::getAzi(void) const {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "compute azi of vector (%.1f, %.1f)",
 		x, y);
-	double	a = 180. * getArg() / 3.1415926535;
-	a = 90 - a;
+	if ((x == 0) && (y ==0))
+		return 0.;
+	double	a = 180. * ::atan2(x, y) / 3.1415926535;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "raw azi %.1f", a);
-	if (a < 0.)
-		return a + 360.;
-	if (a > 360.)
-		return a - 360.;
+
+	while (a < 0)
+		a += 360.;
 	return a;
 }
 

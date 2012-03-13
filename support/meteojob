@@ -5,7 +5,7 @@
 # Note: this script assumes the average table has correctly been filled
 #       e.g. using the meteoavg program
 #
-# $Id: meteojob,v 1.3 2002/11/25 00:17:45 afm Exp $
+# $Id: meteojob,v 1.4 2003/06/13 00:55:29 afm Exp $
 #
 station=Altendorf
 s=`/usr/local/bin/date +%s`
@@ -15,7 +15,7 @@ for interval in 300 1800 7200 86400
 do
 	if [ `expr $s % $interval` -eq 0 ]
 	then
-		/usr/local/bin/meteograph -s Altendorf -a "$@" ${interval}
+		/usr/local/bin/meteograph -s ${station} -a "$@" ${interval}
 	fi
 done
 

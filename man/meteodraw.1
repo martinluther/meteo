@@ -1,0 +1,238 @@
+.TH METEOGRAPH "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteodraw \- draw graphs of meteo data
+.SH SYNOPSIS
+meteodraw [
+.B \-tdVmI
+] [
+.B \-c dir
+] [
+.BI \-l logurl
+] [
+.BI \-e endtime
+] [
+.BI \-f conffile
+] [
+.BI \-g graphname
+] [
+.BI \-G graphname
+] [
+.BI \-p prefix
+] [
+.BI \-u url
+] [
+.BI \-L label
+] 
+.BI \-s stationname
+.IR interval ...
+.SH DESCRIPTION
+The 
+.BR meteodraw (1)
+superseeds the
+meteograph program present in previous versions of the
+.BR meteo (1)
+package.
+It computes graphs of meteo data for a weather station for various
+sampling
+.IR interval s.
+Allowed values for the
+.I interval
+are 60, 300, 1800, 7200 and 86400, resulting in graphs spanning a few
+hours, a day,
+a week, a month and a full year, respectively.
+By default, the graph ends at the current point in time, but this
+behaviour can be modified by specifying an end timestamp with
+the 
+.B \-e
+option in the format
+.IR YYYYMMDDhhmmss .
+
+By default, all graphs are produced, i.e. for temperature, inside
+temperature, humidity, inside humidity,
+barometric pressure, wind, rain and radiation.
+The
+.B \-g
+and
+.B \-G
+options allow to modify the list of graphs to be produced.
+The graphs are stored in files in the current working directory
+unless a different directory is specified with the 
+.B \-c
+option. The file names are of the
+form
+
+.ce
+.IR station - graphname - suffix .png
+
+The
+.I station
+name is specified in the configuration file.
+The suffix is one of
+.IR hour ,
+.IR day ,
+.IR week ,
+.I month
+or
+.IR year ,
+for sampling intervals 60, 300, 1800, 7200 and 86400 respectively.
+The possible  graph names are summarized in the following  table
+If no
+.IR interval s
+and no
+.IR label s
+are specified, only the 300, 1800, 7200 and 86400 second interval
+graphs are produced. This is because in most cases, 60 second graphs
+will require quite different configuration files, as no maximum
+and minimum values are available.
+
+.TS
+tab(&);
+l l.
+temperature&outside temperature
+temperature_inside&inside temperature
+humidity&humidity
+humidity_inside&inside humidity
+barometer&barometric pressure
+wind&wind speed and direction
+rain&rain total
+radiation&solar and uv radiation
+.TE
+
+The parameters defining these graphs are set in the
+.BR meteo.xml (5)
+file. In the meteograph program, graph dimensions were hardwired,
+and intervals of 60 seconds were impossible. Now it is possible
+to specify almost any graph format, and even to use dynamically
+adapting scales in the configuration file.
+
+The data for the graphs is read from the averages table except for
+the 60 second interval graphs, where it is read from the stationdata
+table. While it was possible in previous versions to not use the
+.BR meteoavg (1)
+program and the averages table, this is now required.
+
+.SH OPTIONS
+.TP
+.BI \-c imagedir
+write image files to 
+.IR imagedir .
+Note that 
+.BR meteodraw (1)
+performs a
+.BR chdir (2)
+before opening the configuration file (as specified with the
+.B \-f 
+option below), so if a relative path for the configuration file
+is used, it should be relativ to the image directory.
+One possible application of this feature is to have a graph directory
+for each weather station, and to put the meteo.xml
+file in the same directory as the graphs. 
+.BR meteodraw (1) can then be called with
+
+.nf
+.ti +3
+meteodraw -c graphdir-a -s stationa -f meteo.xml 7200
+.ti +3
+meteodraw -c graphdir-b -s stationb -f meteo.xml 7200
+.fi
+
+to reproduce all two hour graphs for stations
+.I a
+and
+.IR b .
+.TP
+.B \-d
+increase the debug level by one. Debug messages are written to standard
+error.
+.TP
+.BI \-e endtime
+compute graphs ending at
+.IR endtime .
+.TP
+.BI \-f conffile
+Use 
+.I conffile
+to read the configuration, see 
+.BR meteo.xml (5)
+for the configuration syntax. This argument is mandatory.
+.TP
+.BI \-g graphname
+add a graph named
+.I graphname
+to the list of graphs to be produced.
+The graphs produced are the
+set difference of the set of graphs requested by the -g option
+and the set of graphs suppressed by the -G option.
+.TP
+.BI \-G graphname
+suppress the graph named
+.IR graphname ,
+but otherwise produce all graphs.
+The graphs produced are the
+set difference of the set of graphs requested by the -g option
+and the set of graphs suppressed by the -G option.
+.TP
+.BI \-l logurl
+send log messages to the destination described by the 
+.IR logurl .
+See the
+.BR meteo (1)
+manual page for the format of log urls.
+.TP
+.BI \-s stationname
+Name of the station for which to compute the graphs.
+.TP
+.B \-t
+include the timestamp in the file name of the generated image files.
+.TP
+.BI \-L label
+derive the data and resolution from the 
+.IR label ,
+and compute the requested graphs accordingly. See the
+.BR meteo (1)
+manual page for information about label formats.
+
+.TP
+.BI \-p prefix
+add the string
+.I prefix
+to all filenames of graphs produced.
+
+.TP
+.BI \-u url
+use the url to construct the browser page urls in the image maps generated
+by the -m option
+
+.TP
+.B \-m
+generate an image map and image link for this graph. This is used in the
+browser, where it image maps are produced and included in the HTML page
+generated by the PHP script. This was previously done in the PHP script,
+duplicating a lot of code that was already present in the C code. It also
+meant that image dimensions were fixed twice, in the browser PHP script
+and in the C code. Since all
+
+.SH BUGS
+Dewpoint computations depend on the temperature unit. But since the
+dewpoint routine does not know for which station it was called, it just
+takes the first temperature unit specification it finds, and uses that.
+This means that if you have one station that uses Fahrenheit, and one
+that uses the default of Celsius, and you specify only the Fahrenheit
+unit, the dewpoint comutation will assume Fahrenheit instead of Celsius.
+Therefore, you should always use one temperature unit only per configuration
+file. It is recommended to use the computing features of
+.BR meteodraw (1)
+described in
+BR meteo.xml (5)
+to convert to other units where necessary.
+
+.SH "SEE ALSO"
+.BR meteo (1)
+.BR meteo.xml (5),
+.BR meteopoll (1),
+.BR meteoavg (1),
+.BR meteodequeue (1),
+.BR meteojob (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

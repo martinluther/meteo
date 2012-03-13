@@ -43,7 +43,7 @@ A user name for a user that is granted select access to the
 and the
 .I averages
 tables. The
-.BR meteograph (1)
+.BR meteodraw (1)
 program uses this identity to access the database.
 .TP
 .BI <password> readonly-password </password>
@@ -93,13 +93,12 @@ Here is the configuration of the station in Bosco/Gurin as a sample
 .fi
 
 
-
 Further sections describe the graphs to be produced, and are only
 used by the
-.BR meteograph (1)
+.BR meteodraw (1)
 program. The names of these sections are the graph names defined
 in the manual page of
-.BR meteograph (1).
+.BR meteodraw (1).
 The contens of these sections are explained below.
 Strings have to be enclosed in quotation marks.
 
@@ -127,23 +126,22 @@ baud rate to use. Older Davis stations (Weather Monitor II) use
 As weather station protocols vary substantially for the various types
 of stations, and there don't seem to be reliably methods to find out
 the type of station, the station type must be specified. Possible
-values are (for historical reasons)
-.I Davis
+values are
+.I WMII
 and
-.IR Vantage .
+.IR VantagePro .
 
 The following
 .I station
-tag sample is used with the Vantage Pro station in Bosco/Gurin:
+tag sample is used with the Vantage Pro station in Bosco/Gurin (which
+uses UDS-10 device server):
 
 .nf
 .in +4
 <station>
 .in +4
 <url>tcp://192.168.7.3:10001</url>
-<speed>19200</speed>
 <type>Vantage</type>
-.I [ channel definitions omitted ]
 .in -4
 </station>
 .in -4
@@ -162,7 +160,7 @@ l l.
 tag&values
 
 <temperature>&degrees Celsius, degC, C,
-&degrees Fahrenheit F, deg F, F, K
+&degrees Fahrenheit F, degF, F, K
 <humidity>&%
 <pressure>&hPa, inHg, mmHg
 <wind>&m/s, mph, kmh
@@ -171,169 +169,326 @@ tag&values
 <uv>&index
 .TE
 
-
-.SH "CHANNEL CONFIGURATION"
-The channel tags define the colors for the various curves and histograms,
-and the vertical scales and ranges.
-Some graphs combine more than one data channel with different units in the
-same graphs.
-These graphs have two different scales, and are labeled differently on the
-left and on the right.
-To specify different data for the left and the right subgraph, the tags
-named
-.I left
-and 
-.I right
-are used. The <left> and <right> tags are not allowed in channel
-definitions that do not use two different scales (temperature, humidity,
-pressure, rain), but are required in all others (wind, radiation).
-
-Some data, most notably rain, which is cumulative, need to use different
-scales for the different time resolutions.
-It is therefore possible to enclose the data in a tag named 
+To get degrees Fahrenheit in the database, add the following tags to the
+contents of the station tag:
 
 .nf
-.in +4
-<interval width="{ 300 | 1800 | 7200 | 86400 }">
-.in +4
-[ interval specific data ]
-.in -4
-</interval>
-.in -4
+    <unit>
+      <temperature>degF</temperature>
+    </unit>
 .fi
 
-to define differing parameters for these sampling intervals.
-These 
-.I interval
-sections must be contained within a 
-.I left
-or
-.I right
-tag, if present.
+The unit tag is also used for dewpoint computations. However, since the
+dewpoint class does not know for which station it has been called, it simply
+takes the first unit definition it can find, and uses that. If different
+unit specifications for temperature are used, the first found will be
+used in the 
+.BR meteodraw (1)
+program.
 
-.SH INHERITANCE
-a lot of the data defining a graph is common to most graphs (background
-color is common to all graphs, curve colors are common all graphs of the
-same data etc.). It would be tedious if everything had to be replicated inside
-all the relevant tags, so the configuration file reader implements
-the following kind of inheritance: if the tag requested is not an
-immediate child of the node in which it should appear, the parent
-node is searched as well. This is repeated until we end up at the top
-level element. So data common to all graphs and stations can be defined
-inside the  top level <meteo> tag.
+.SH "GRAPH CONFIGURATION"
+The graphs produced by
+.BR meteodraw (1)
+are wildly configurable (perhaps not as flexible as with gnuplot, but better
+adapted to the requirements of weather web sites, hopefully).
+The options can roughly be devided into the following topics:
+they describe the dimensions and colours, the axes and scales, the data
+and how the data is to be displayed. There are different tags for these
+tasks, which are individually described in the sections below.
 
-.SH "COLOR SPECIFICATION"
-Colors are specified by
-.B <color>
-tags, which must contain three elements named <red>, <green> and <blue>,
-each containing an integer between 0 and 255. To distinguish the various
-colors, the <color> tag must contain a name attribute. So a valid
-color specification for red would be:
+Each graph description is contained in one <graph> tag. This tag has the
+following for attributes:
 
-.nf
-.in +4
-<color name="temperature">
-.in +4
-<red>255</red>
-<green>0</green>
-<blue>0</blue>
-.in -4
-</color>
-.in -4
-.fi
+.TS
+tab(&);
+l l l.
+attribute&default&description
+height&144&height of the produced PNG image
+width&500&width of the produced PNG image
+bgcolor&white&background color
+fgcolor&black&foreground color (grid, axes, text)
+.TE
 
-The following colors are recognized:
+All other information is defined in enclosed tags.
+
+.SH "THE GRAPHWINDOW"
+The graph itself does not occupy the complete area of the image, the
+<graphwindow> tag is used to specify the part of the image that
+can be used for the graph. It has the following attributes:
+
+.TS
+tab(&);
+l r l.
+attribute&default&description
+
+llx&55&x coordinate of lower left corner
+lly&19&y coorindate of lower left corner
+urx&455&x coorindate of upper right corner
+ury&139&y coorindate of upper right corner
+.TE
+
+.SH "LABELS"
+On the left and on the right of the graph there is usually a label describing
+the parameter plotted along the vertical axes.
+The content of the <leftlabel> and <rightlabel> tags specifies the
+labels on the left and the right respectively. There is a single
+attribute, align, with possible values
+.IR top ,
+.I bottom
+and
+.IR center ,
+with obvious meaning.
+
+.SH "AXES AND SCALES"
+While the scales along the time axes are completely fixed by the interval
+and point in time, the vertical axes need to be specified by the
+configuration file, or the configuration file needs to specify how to
+derive suitable scales from the data. Note that graphs that change scale
+from day to day are difficult to use in visual comparisons, so it
+is often more useful to have graphs with a constant scale.
+
+The
+.BR meteodraw (1)
+program understands the <leftaxis> and <rightaxis> tags to specify
+scales. There are two groups of attributes that apply to these tags.
+The first group specifies the scale, i.e. the way data is ``distributed''
+along the vertical axis. The second group of attributes describes how
+the vertical axes is labeled, and how grid lines are drawn.
+
+In contrast to all other options, axis and scales may depend on the
+time resolution. The optional interval attribute allows to include
+several axis definitions in on configuration file, the one that matches
+the interval length of the graph will be taken. If no interval matches
+the current graph, then the first axis specification is used regardless
+of its interval attribute. Thus if you want a default definition to
+be taken unless the interval does not match, you must put before all the
+other axis definitions for the same graph.
+
+There are four possible types of scales, specified by the value of the
+.B type attribute:
+
+.TP
+.BI type=" static"
+The scale is fixed, data falling outside of the range is not displayed.
+
+.TP
+.BI type=" dynamic"
+The scale is adjusted dynamically so that all data is displayed.
+
+.TP
+.BI type=" toprange"
+This scale has a static range, but the maximum is adapted so that the
+maximum value is always visible. If the data does not show a lot of
+variation, and does not use the full range, the maximum and minimum
+values are used to display a constant window to the data, that is moved
+only if data leaves this range.
+
+.TP
+.BI type=" bottomrange"
+As with previous type but for the minimum.
+
+.P
+The following attributes can be used to modify the scale
 
 .TS
 tab(&);
 l l.
-fgcolor&graph foreground
-bgcolor&graph background
-nodata&background if no data is available
-temperature&outside temperature
-temperature_range&outside temperature range
-temperature_dew&dew point temperature outside
-temperature_inside&dito inside
-temperature_inside_range&dito inside
-temperature_insdie_dew&dito inside
-humidity&outside humidity
-humidity_range&outside humidity range
-humidity_inside&dito inside
-humidity_inside_range&dito inside
-pressure&atmospheric pressure
-pressure_range&atmospheric pressure range
-wind&wind azimut
-speed&average wind speed
-gust&gust speed
-solar&solar radiation
-uv&UV index
-north&background color for wind azi to north
-south&background color for wind azi to south
-east&background color for wind azi to east
-west&background color for wind azi to west
+attribute&description
+
+min&minimum value for fixed range, or default for dynamic
+max&maximum value for fixed scale, or default for dynamic
+minname&data set to use to find minimum
+maxname&data set to use to find maximum
 .TE
 
-.SH "COMMON GRAPH PARAMETERS"
-The following parameters are common to all graphs. Note that <min>, <max>
-and <scale> tags are used to draw the graph, while the <start>, <end>
-and <step> tags specify the grid and the tick marks along the vertical
-axes.
+The following options are provided to modify how the axes are labeled and
+grid lines are drawn.
 
-.TP
-.BI <label> labelstring </label>
-A string to be displayed on the side of the graph, usually to describe
-the kind of data displayed and the unit.
-.TP
-.BI <format> formatstring </format>
-C printf format string for the labeling of the tick marks on the
-vertical axis of the graph. Usualy something like "%.1f".
-.TP
-.BI <min> value </min>
-Minimum value on the vertical axis.
-.TP
-.BI <max> value </max>
-Maximum value on the vertical axis.
-.TP
-.BI <scale> value </scale>
-Defines how much a pixel is in the values of the vertical axis.
-If the <max> tag has been specified, the scale value is computed from
-it, so the <scale> tag is not used at all. Note that due to the way
-inheritance works, a <scale> tag will be masked by a <max> tag the appears
-anywhere above the position of the <scale> tag.
-.TP
-.BI <step> value </step>
-Distance between the tick marks.
-.TP
-.BI <start> value </start>
-First tick mark value.
-.TP
-.BI <end> value </end>
-Last tick mark value.
+.TS
+tab(&);
+l l l.
+attribute&values&description
 
-.SH "EXAMPLE"
+ticks&yes/no&whether or not to draw ticks/labels
+gridlines&yes/no&whether or not to draw grid lines
+first&double&first tick/label
+last&double&last tick/label
+step&double&step between ticks/labels
+origin&double&
+maxtickcount&integer&max number of vertical ticks
+format&format string&how to format tick labels
+.TE
 
-Here is a sample <channel> tag for the wind graph:
+The
+.I static 
+type uses only the attributes first, last and step. The
+dynamic
+formats use origin and step to determine the values where ticks
+and/or gridlines should be drawn. The maxtickcount attribute
+is used only by the
+.I dynamic
+format, which uses the following algorithm to derive the the step size
+between ticks: if the specified step size produces too many ticks,
+try 2*step and 5*step as step size. If that still produces too many
+ticks, retry the algorithm with 10*step. There is therefore no minimum
+number of ticks, to produce enough ticks, use a small step size to
+start with.
 
-.nf
-.in +4
-<channel name="wind">
-.in +4
-[left tag ommited]
-<right>
-.in +4
-<label>            Azimut (deg)</label>
-format>%.0f</format>
-<min-604</min>
-<max>360</max>
-<start>0</start>
-<end>360</end>
-<step>180</step>
-.in -4
-</right>
-.in -4
-</channel>
-.in -4
-.fi
+.SH "CHANNELS"
+While 
+.BR meteodraw (1)
+knows how to address time, station and resolution, it does not know
+what data to retrieve for a certain graph. All the data, the computations
+with it, and how it is displayed, is specified inside the <channels>
+tag. It contains a <query> tag, which specifies what data to
+retrieve, and <channel> tags to display the data retrieved.
+
+.SH "QUERY"
+The <query>
+tag not only retrieves data, but also performs arithmetic operations on
+it, this is described separately in the COMPUTATIONS section below.
+The <query> tag contains <select> tags and <data> tags. <select> tags
+specify select clauses for the database, and give the data retrieved
+this way a name. <data> tags process the data retrieved.
+
+The content of a <select> element is the SQL select clause used to
+retrieve a value. In most cases, this will be column name in the
+stationdata or averages table. It is possible, however, to specify
+an SQL expression, to perform arithmetic or logic operations on the
+data. Internally to 
+.BR meteodraw (1),
+the result is a set of time/value pairs for each point in time where
+a value exists.
+
+The <select> element always has a name attribute. The name is used to
+refer to the data either when performing computations (in <data> elements)
+or when graphing the data (in <channel> elements).
+
+.SH "COMPUTATIONS"
+<data> tags allow to perform operations on the data retrieved and named 
+with the <select> elements.
+One should look at the data sets retrieved by <select> elements as maps
+from the time domain to the real numbers. Arithmetic operations are
+pointwise, i.e. the result is defined on the intersection of the
+domains of the arguments. The following operations are available as
+separate tags:
+
+.TS
+tab(&);
+l l.
+element&description
+
+constant&numeric constant
+value&refers to <select> statment or previous <data>
+function&compute monadic function
+function2&compute binary function
+sum&compute sum of all contained
+mult&compute product of all contained data
+diff&compute difference of two data sets
+quot&compute quotient of two data sets
+.TE
+
+The <constant> element creates a map that is defined everywhere and
+has always the same value. The precise function to apply is specified
+with a name attribute. The following monic functions are available:
+
+.TS
+tab(&);
+l l.
+name&description
+
+sqr&see sqr(3)
+sqrt&see sqrt(3)
+sin&see sin(3)
+cos&see cos(3)
+tan&see tan(3)
+ceil&cut off data at maximum value
+floor&cut off data at minimum value
+.TE
+
+The last two functions take an additional attribute limit. The ceil
+function produces a map which replaces all values that exceed limit
+by limit. Similarly for floor.
+
+The following binary functions are available:
+
+.TS
+tab(&);
+l l.
+name&description
+
+atan2(y,x)&see atan(2)
+azi(x,y)&azimut angle in degreees
+hypot(x,y)&see hypto(3)
+dewpoint(h,t)&compute dewpoint corresponding to humidity h (@T = t)
+.TE
+
+Note that for the most obvious applications, namely wind graphs, these
+functions are not necessary, as the data is already in a suitable
+format in the database tables.
+
+.SH "THE <CHANNEL> TAG"
+The <channel> tag finally draws the computed data in the color specified
+in by the color attribute that all these tags use.
+The mandatory type attribute defines what should be drawn and in what style.
+Additional attributes are necessary to specify the date to graph, with the
+exception of the
+.I range
+type (see below), this is done with the name attribute.
+The following
+types are defined
+
+.TS
+tab(&);
+l l.
+type&description
+
+curve&draw a curve from a single map
+range&draw the range between two maps
+histogram&draw a histogram based on a map
+lowdata&hide all data where the value is below some limit
+nodata&hide everything outside the domain
+windbackground&show wind direction colors
+.TE
+
+The
+.I range
+type needs two map names to fill the range between them with a color.
+The attributes nameupper and namelower set the name of the map to
+use for upper and lower bounds.
+
+The two types
+.I nodata
+and
+.I lowdata
+require a name attribute of a map defined previously,
+and draw vertical stripes of the color specified in the color attribute
+for each point in time for which either the value of the named map is
+below the limit attribute
+value for the lowdata element, or which simply is not in the domain of
+the named map.
+
+The 
+.I windbackground
+draws the background for wind (this is a bit hackish, but I had no
+better idea). The element requires the for attributes
+.IR northcolor ,
+.iR southcolor ,
+.I westcolor
+and 
+.I eastcolor
+with the colors for the winds the blow from the corresponding direction
+as values. Furthermore it is possible to specify the
+.I letters
+attribute that contains the wind direction letters to use (in that
+sequence) for winds from south, west, north and east. No letters are
+drawn if this attribute is not present. The value usually used for
+this attribute ist "SWNE".
+
+.SH EXAMPLES
+The meteo.xml and meteo-60.xml included in the distribution show how these
+elements are used to produce the standard graphs as they can bee seen
+on the home page of the meteo package, http://meteo.othello.ch/.
 
 .SH BUGS
 There is no tool to verify the correctness of the configuration file.
@@ -347,7 +502,7 @@ using
 .BR meteo (1),
 .BR meteopoll (1),
 .BR meteoavg (1),
-.BR meteograph (1),
+.BR meteodraw (1),
 .BR meteodequeue (1),
 .BR meteojob (1)
 

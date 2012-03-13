@@ -1,20 +1,20 @@
-msgid "weather overview of"
-msgstr "Wetter&uuml;bersicht f&uuml;r"
+msgid "weather overview of %B %e, %Y"
+msgstr "Wetter&uuml;bersicht vom %e. %B %Y"
 
-msgid "year %s"
-msgstr "das Jahr %s"
+msgid "weather overview of week %V, %Y, "
+msgstr "Wetter&uuml;bersicht der Woche %V, %Y, "
 
-msgid "%A, %d %B %Y"
-msgstr "%A, %e. %B %Y"
+msgid "from %s to %s"
+msgstr "vom %s bis zum %s"
 
-msgid "%B %e, %Y"
-msgstr "%e. %B %Y"
+msgid "%x"
+msgstr "%x"
 
-msgid "%B %Y"
-msgstr "%B %Y"
+msgid "weather overview of %B %Y"
+msgstr "Wetter&uuml;bersicht vom %B %Y"
 
-msgid "week from %s to %s"
-msgstr "die Woche vom %s bis zum %s"
+msgid "weather overview of %Y"
+msgstr "Wetter&uuml;bersicht des Jahres %Y"
 
 msgid ""
 "To see more details, click into the region you like inside "

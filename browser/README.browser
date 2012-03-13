@@ -33,6 +33,15 @@ to the directory containing the configuration files. Also configure
 the absolute path to the cache directory in $cachedir, and the full
 path to the meteograph binary in $meteograph.
 
+It is also advisable to stop search engines from indexing the browser
+pages, by excluding the browser directory in the robots.txt file.
+It seems that some search engines don't correctly work with robots.txt
+files, so the PHP script takes care to only create a finite namespace.
+Make sure the stationstart variable is correctly initialized, then the
+browser pages will only contain links to pages that reference images
+that actually contain some data.
+
+
 Maintenance
 -----------
 
@@ -53,4 +62,4 @@ Reiser fs, but even with a standard UFS, performance will usually suffer
 much more from network latency than file system latency.
 
 --
-$Id: README.browser,v 1.1 2002/01/18 23:34:22 afm Exp $
+$Id: README.browser,v 1.2 2003/07/26 22:39:43 afm Exp $

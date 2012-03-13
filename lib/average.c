@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: average.c,v 1.7 2003/06/12 23:29:46 afm Exp $
+ * $Id: average.c,v 1.9 2003/07/19 12:44:33 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>

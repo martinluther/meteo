@@ -1,0 +1,15 @@
+Translating the meteobrowser
+----------------------------
+
+If you want to translate the meteobrowser interface, start from the
+meteobrowser.pot file, and copy it to a file named after your locale
+with the extension of .po. Then provide translations in all the
+msgstr lines.
+
+You will also need to modify the Makefile.am so that your .mo file will
+be generated and installed. Note that the Apache server caches .mo files,
+and will crash if you replace it, i.e. by installing a new version. It is
+necessary to stop and start the server.
+
+--
+$Id: README,v 1.1 2003/07/26 07:42:44 afm Exp $
