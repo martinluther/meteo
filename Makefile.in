@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -15,7 +15,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.21 2001/12/29 21:16:42 afm Exp $
+# $Id: Makefile.am,v 1.25 2002/01/07 01:08:44 afm Exp $
 #
 
 
@@ -74,22 +74,27 @@ target_triplet = @target@
 AS = @AS@
 CC = @CC@
 DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
 LEX = @LEX@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+STRIP = @STRIP@
 VERSION = @VERSION@
 YACC = @YACC@
 
 lib_LTLIBRARIES = libmeteo.la
-EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y meteo.conf
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1		meteo.conf.5
 
-noinst_DATA = meteo.html meteodata.html
+noinst_DATA = meteo.html meteodata.html rc.meteo
+EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 		meteo.conf $(man_MANS) $(noinst_DATA)
+
 
 pkgdata_DATA = meteo.conf
 
@@ -98,12 +103,12 @@ VERSION_FILE = meteo_vers.c
 
 BUILT_SOURCES = scanner.c parser.c parser.h
 
-noinst_HEADERS = com.h crc.h davis.h meteo.h meteodata.h sercom.h 		tcpcom.h conversions.h dloop.h graph.h dewpoint.h msgque.h		dbupdate.h meteosocket.h meteograph.h mconf.h parser.h			average.h database.h timestamp.h dograph.h daemon.h
+noinst_HEADERS = com.h crc.h davis.h meteo.h meteodata.h sercom.h 		tcpcom.h conversions.h dloop.h graph.h dewpoint.h msgque.h		dbupdate.h meteosocket.h meteograph.h mconf.h parser.h			average.h database.h timestamp.h dograph.h daemon.h watchdog.h
 
 
 libmeteo_la_LDFLAGS = -version-info `./shtool version -d libtool $(VERSION_FILE)`
 
-libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 			meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c		msgque.c dbupdate.c meteosocket.c mconf.c				scanner.c parser.c average.c database.c timestamp.c dograph.c		daemon.c								$(VERSION_FILE)
+libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 			meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c		msgque.c dbupdate.c meteosocket.c mconf.c				scanner.c parser.c average.c database.c timestamp.c dograph.c		daemon.c watchdog.c							$(VERSION_FILE)
 
 
 bin_PROGRAMS = meteotest meteoupdate meteoloop meteograph meteoavg		meteodequeue
@@ -140,28 +145,33 @@ libmeteo_la_LIBADD =
 libmeteo_la_OBJECTS =  crc.lo com.lo sercom.lo tcpcom.lo davis.lo \
 meteodata.lo meteo.lo conversions.lo dloop.lo graph.lo dewpoint.lo \
 msgque.lo dbupdate.lo meteosocket.lo mconf.lo scanner.lo parser.lo \
-average.lo database.lo timestamp.lo dograph.lo daemon.lo meteo_vers.lo
+average.lo database.lo timestamp.lo dograph.lo daemon.lo watchdog.lo \
+meteo_vers.lo
+bin_PROGRAMS =  meteotest$(EXEEXT) meteoupdate$(EXEEXT) \
+meteoloop$(EXEEXT) meteograph$(EXEEXT) meteoavg$(EXEEXT) \
+meteodequeue$(EXEEXT)
+noinst_PROGRAMS =  meteocheck$(EXEEXT)
 PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 
-meteotest_OBJECTS =  meteotest.o
+meteotest_OBJECTS =  meteotest.$(OBJEXT)
 meteotest_DEPENDENCIES =  libmeteo.la
 meteotest_LDFLAGS = 
-meteoupdate_OBJECTS =  meteoupdate.o
+meteoupdate_OBJECTS =  meteoupdate.$(OBJEXT)
 meteoupdate_DEPENDENCIES =  libmeteo.la
 meteoupdate_LDFLAGS = 
-meteoloop_OBJECTS =  meteoloop.o
+meteoloop_OBJECTS =  meteoloop.$(OBJEXT)
 meteoloop_DEPENDENCIES =  libmeteo.la
 meteoloop_LDFLAGS = 
-meteograph_OBJECTS =  meteograph.o
+meteograph_OBJECTS =  meteograph.$(OBJEXT)
 meteograph_DEPENDENCIES =  libmeteo.la
 meteograph_LDFLAGS = 
-meteoavg_OBJECTS =  meteoavg.o
+meteoavg_OBJECTS =  meteoavg.$(OBJEXT)
 meteoavg_DEPENDENCIES =  libmeteo.la
 meteoavg_LDFLAGS = 
-meteodequeue_OBJECTS =  meteodequeue.o
+meteodequeue_OBJECTS =  meteodequeue.$(OBJEXT)
 meteodequeue_DEPENDENCIES =  libmeteo.la
 meteodequeue_LDFLAGS = 
-meteocheck_OBJECTS =  meteocheck.o
+meteocheck_OBJECTS =  meteocheck.$(OBJEXT)
 meteocheck_DEPENDENCIES =  libmeteo.la
 meteocheck_LDFLAGS = 
 CFLAGS = @CFLAGS@
@@ -193,7 +203,7 @@ OBJECTS = $(libmeteo_la_OBJECTS) $(meteotest_OBJECTS) $(meteoupdate_OBJECTS) $(m
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .lo .o .s
+.SUFFIXES: .S .c .lo .o .obj .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps Makefile
 
@@ -265,6 +275,11 @@ uninstall-libLTLIBRARIES:
 .c.o:
 	$(COMPILE) -c $<
 
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
 .s.o:
 	$(COMPILE) -c $<
 
@@ -273,6 +288,7 @@ uninstall-libLTLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
 
 clean-compile:
 
@@ -337,32 +353,32 @@ distclean-noinstPROGRAMS:
 
 maintainer-clean-noinstPROGRAMS:
 
-meteotest: $(meteotest_OBJECTS) $(meteotest_DEPENDENCIES)
-	@rm -f meteotest
+meteotest$(EXEEXT): $(meteotest_OBJECTS) $(meteotest_DEPENDENCIES)
+	@rm -f meteotest$(EXEEXT)
 	$(LINK) $(meteotest_LDFLAGS) $(meteotest_OBJECTS) $(meteotest_LDADD) $(LIBS)
 
-meteoupdate: $(meteoupdate_OBJECTS) $(meteoupdate_DEPENDENCIES)
-	@rm -f meteoupdate
+meteoupdate$(EXEEXT): $(meteoupdate_OBJECTS) $(meteoupdate_DEPENDENCIES)
+	@rm -f meteoupdate$(EXEEXT)
 	$(LINK) $(meteoupdate_LDFLAGS) $(meteoupdate_OBJECTS) $(meteoupdate_LDADD) $(LIBS)
 
-meteoloop: $(meteoloop_OBJECTS) $(meteoloop_DEPENDENCIES)
-	@rm -f meteoloop
+meteoloop$(EXEEXT): $(meteoloop_OBJECTS) $(meteoloop_DEPENDENCIES)
+	@rm -f meteoloop$(EXEEXT)
 	$(LINK) $(meteoloop_LDFLAGS) $(meteoloop_OBJECTS) $(meteoloop_LDADD) $(LIBS)
 
-meteograph: $(meteograph_OBJECTS) $(meteograph_DEPENDENCIES)
-	@rm -f meteograph
+meteograph$(EXEEXT): $(meteograph_OBJECTS) $(meteograph_DEPENDENCIES)
+	@rm -f meteograph$(EXEEXT)
 	$(LINK) $(meteograph_LDFLAGS) $(meteograph_OBJECTS) $(meteograph_LDADD) $(LIBS)
 
-meteoavg: $(meteoavg_OBJECTS) $(meteoavg_DEPENDENCIES)
-	@rm -f meteoavg
+meteoavg$(EXEEXT): $(meteoavg_OBJECTS) $(meteoavg_DEPENDENCIES)
+	@rm -f meteoavg$(EXEEXT)
 	$(LINK) $(meteoavg_LDFLAGS) $(meteoavg_OBJECTS) $(meteoavg_LDADD) $(LIBS)
 
-meteodequeue: $(meteodequeue_OBJECTS) $(meteodequeue_DEPENDENCIES)
-	@rm -f meteodequeue
+meteodequeue$(EXEEXT): $(meteodequeue_OBJECTS) $(meteodequeue_DEPENDENCIES)
+	@rm -f meteodequeue$(EXEEXT)
 	$(LINK) $(meteodequeue_LDFLAGS) $(meteodequeue_OBJECTS) $(meteodequeue_LDADD) $(LIBS)
 
-meteocheck: $(meteocheck_OBJECTS) $(meteocheck_DEPENDENCIES)
-	@rm -f meteocheck
+meteocheck$(EXEEXT): $(meteocheck_OBJECTS) $(meteocheck_DEPENDENCIES)
+	@rm -f meteocheck$(EXEEXT)
 	$(LINK) $(meteocheck_LDFLAGS) $(meteocheck_OBJECTS) $(meteocheck_LDADD) $(LIBS)
 
 install-man1:
@@ -526,7 +542,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -535,7 +551,6 @@ distdir: $(DISTFILES)
 	done
 average.lo average.o : average.c average.h meteo.h mconf.h meteograph.h
 com.lo com.o : com.c crc.h com.h meteo.h mconf.h meteograph.h
-conftest.o: conftest.c meteo.h mconf.h meteograph.h
 conversions.lo conversions.o : conversions.c conversions.h
 crc.lo crc.o : crc.c crc.h meteo.h mconf.h meteograph.h
 daemon.lo daemon.o : daemon.c daemon.h meteo.h mconf.h meteograph.h
@@ -552,7 +567,6 @@ dloop.lo dloop.o : dloop.c config.h dloop.h meteodata.h com.h crc.h \
 dograph.lo dograph.o : dograph.c meteo.h mconf.h meteograph.h graph.h \
 	dewpoint.h timestamp.h dograph.h database.h
 graph.lo graph.o : graph.c graph.h meteo.h mconf.h meteograph.h
-graphparm.lo graphparm.o : graphparm.c graphparm.h
 mconf.lo mconf.o : mconf.c config.h meteo.h mconf.h meteograph.h
 meteo.lo meteo.o : meteo.c meteo.h mconf.h meteograph.h
 meteo_vers.lo meteo_vers.o : meteo_vers.c meteo_vers.c
@@ -567,7 +581,7 @@ meteograph.o: meteograph.c meteo.h mconf.h meteograph.h graph.h \
 	dewpoint.h database.h dograph.h timestamp.h
 meteoloop.o: meteoloop.c meteo.h mconf.h meteograph.h meteodata.h com.h \
 	crc.h conversions.h davis.h sercom.h tcpcom.h dloop.h \
-	dbupdate.h database.h msgque.h daemon.h
+	dbupdate.h database.h msgque.h daemon.h watchdog.h
 meteosocket.lo meteosocket.o : meteosocket.c meteosocket.h meteodata.h \
 	com.h crc.h conversions.h
 meteotest.o: meteotest.c sercom.h com.h crc.h tcpcom.h meteodata.h \
@@ -582,6 +596,8 @@ sercom.lo sercom.o : sercom.c sercom.h com.h crc.h meteo.h mconf.h \
 tcpcom.lo tcpcom.o : tcpcom.c config.h tcpcom.h com.h crc.h meteo.h \
 	mconf.h meteograph.h
 timestamp.lo timestamp.o : timestamp.c timestamp.h
+watchdog.lo watchdog.o : watchdog.c watchdog.h meteo.h mconf.h \
+	meteograph.h
 
 info-am:
 info: info-am
@@ -704,9 +720,7 @@ test2:	meteoupdate
 	./meteoupdate -d -u meteoupdate -p m57cwrt -h timon 		\
 		-w file:///dev/cua/1 -s Altendorf
 test3:	meteoloop meteo.conf
-	./meteoloop -F -d -d -n 10 -f `pwd`/meteo.conf
-#	./meteoloop -d -n 10 -w file:///dev/cua/1 -p m57cwrt -h timon 	\
-#		-s Altendorf -b meteo -u meteoupdate
+	./meteoloop -F -d -d -n 10 -w 10 -f `pwd`/meteo.conf
 test4:	meteograph meteo.conf
 	./meteograph -d -d -d -c images -f `pwd`/meteo.conf 300
 

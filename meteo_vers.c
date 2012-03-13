@@ -8,7 +8,7 @@
 #ifndef _METEO_VERS_C_
 #define _METEO_VERS_C_
 
-#define METEO_VERSION 0x001206
+#define METEO_VERSION 0x001207
 
 typedef struct {
     const int   v_hex;
@@ -32,14 +32,14 @@ extern meteo_version_t meteo_version;
 #undef  _METEO_VERS_C_AS_HEADER_
 
 meteo_version_t meteo_version = {
-    0x001206,
-    "0.1.6",
-    "0.1.6 (29-Dec-2001)",
-    "This is Meteo, Version 0.1.6 (29-Dec-2001)",
-    "Meteo 0.1.6 (29-Dec-2001)",
-    "Meteo/0.1.6",
-    "@(#)Meteo 0.1.6 (29-Dec-2001)",
-    "$Id: shtool,v 1.1 2001/03/18 15:07:34 afm Exp Meteo 0.1.6 (29-Dec-2001) $"
+    0x001207,
+    "0.1.7",
+    "0.1.7 (05-Jan-2002)",
+    "This is Meteo, Version 0.1.7 (05-Jan-2002)",
+    "Meteo 0.1.7 (05-Jan-2002)",
+    "Meteo/0.1.7",
+    "@(#)Meteo 0.1.7 (05-Jan-2002)",
+    "$Id: shtool,v 1.1 2001/03/18 15:07:34 afm Exp Meteo 0.1.7 (05-Jan-2002) $"
 };
 
 #endif /* _METEO_VERS_C_AS_HEADER_ */

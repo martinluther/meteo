@@ -1,0 +1,61 @@
+.TH METEODEQUEUE "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteodequeue \- get update queries from a message queue and send them to a MySQL database
+.SH SYNOPSIS
+meteodequeue [
+.B \-d
+] [
+.B \-F
+] [
+.BI \-p pidfile
+]
+.BI \-f conffile
+.SH DESCRIPTION
+The 
+.BR meteodequeue (1)
+programm pulls update queries from a message queue as specified in
+the configuration file (see 
+.BR meteo.conf (5)
+for details) and sends them to the MySQL database.
+This helps to improve reliabilty by reducing contention on the 
+.I stationdata
+table.
+.SH OPTIONS
+.TP
+.B \-d
+increase the debug level by one. Debug messages are written to standard
+error.
+.TP
+.BI \-f conffile
+Use 
+.I conffile
+to read the configuration, see 
+.BR meteo.conf (5)
+for the configuration syntax. This argument is mandatory.
+.TP
+.B \-F
+stay in foreground even when running in daemon mode. Useful during
+debugging.
+.TP
+.BI \-p pidfile
+When running in daemon mode, write the process id of the 
+.BR meteoavg (1)
+process to this file. Defaults to
+.IR /var/run/meteodequeue.pid .
+
+.SH "SEE ALSO"
+.BR meteo (1)
+.BR meteo.conf (5),
+.BR meteoloop (1),
+.BR meteograph (1),
+.BR meteoavg (1),
+.BR meteocheck (1),
+.BR meteojob (1)
+
+.SH FILES
+.BR meteodequeue (1)
+writes its process id by default to the file
+.BR /var/run/meteodequeue.pid .
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

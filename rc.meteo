@@ -1,0 +1,43 @@
+#! /bin/sh
+#
+# meteo start/stop script -- use this script as a starting point for your
+#                            own start/stop script
+#
+# (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
+#
+# $Id: rc.meteo,v 1.2 2002/01/07 01:08:44 afm Exp $
+#
+case .$1 in
+	.start)
+		# start the meteoloop process
+		/usr/local/bin/meteoloop -q -f /usr/local/etc/meteo.conf \
+			>/dev/null 2>&1
+
+		# start the averaging process
+		/usr/local/bin/meteoavg -f /usr/local/etc/meteo.conf \
+			>/dev/null 2>&1
+
+		# start the dequeuer
+		/usr/local/bin/meteodequeue -f /usr/local/etc/meteo.conf \
+			>/dev/null 2>&1
+		;;
+	.stop)
+		# stop the dequeuer
+		if [ -r /var/run/meteodequeue.pid ]
+		then
+			kill `cat /var/run/meteodequeue.pid`
+		fi
+		# stop the averager
+		if [ -r /var/run/meteoavg-Altendorf.pid ]
+		then
+			kill `cat /var/run/meteoavg-Altendorf.pid`
+		fi
+		# stop the loop process
+		if [ -r /var/run/meteoloop-Altendorf.pid ]
+		then
+			kill `cat /var/run/meteoloop-Altendorf.pid`
+		fi
+		;;
+esac
+
+exit 0

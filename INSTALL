@@ -193,8 +193,18 @@ be moved by hand to where you prefer. I usually place the configuration
 file in /usr/local/etc, and the HTML pages in DocumentRoot/meteo for
 the virtual server through which the graphs should be accessed.
 
+   A sample start/stop script to place in /etc/init.d (or wherever your
+system likes to keep those) is also supplied as rc.meteo.
+
 Plattform specfic guidance
 ==========================
+
+Solaris:
+	The Solaris Bourne shell is limited in that it is unable to
+    correctly execute the config.guess script (needed for libtool). Set
+    the CONFIG_SHELL environment variable to something more reasonable
+    like the Korn shell (/usr/bin/ksh) or, even better, the Bash
+    /usr/local/bin/bash (or wherever you have installed it).
 
 Linux:
 	Some Linux distributions have the gd library compiled with freetype

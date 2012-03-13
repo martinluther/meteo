@@ -1,3 +1,13 @@
+Release 0.1.7:
+	* fixed a bug in meteoavg.c, which did not daemonize by default,
+	  and did not honor the -p option
+	* some nasty Bourne shell bug on Solaris overly complicates
+	  configuration on that platform
+	* mailinglist has been set up
+	* added watchdog functionality, but not tested thouroughly
+	* fixed a bug in get_acknowledge that resulted in incorrect
+	  behavior if the station did not reply
+
 Release 0.1.6:
 	* added documentation: meteo.html and meteodata.html
 	* added the capability to become a daemon to the meteoavg, meteoloop
@@ -70,4 +80,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.13 2001/12/29 20:39:54 afm Exp $
+$Id: ChangeLog,v 1.16 2002/01/07 01:08:44 afm Exp $

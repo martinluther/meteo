@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: com.c,v 1.7 2001/12/26 22:10:45 afm Exp $
+ * $Id: com.c,v 1.8 2002/01/06 23:02:07 afm Exp $
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,7 +75,7 @@ int	get_acknowledge_timed(meteocom_t *m, struct timeval *tvp) {
 	do {
 		c = get_char_timed(m, tvp);
 		if (c < 0) {
-			timepassed = 0;
+			timepassed = 1;
 		} else {
 			if (c == ACK)
 				ackfound = 1;
@@ -98,6 +98,9 @@ int	get_acknowledge(meteocom_t *m) {
 
 int	get_buffer(meteocom_t *m, unsigned char *b, int n) {
 	int	i, c;
+	if (debug)
+		fprintf(stderr, "%s:%d: looking for buffer of %d bytes\n",
+			__FILE__, __LINE__, n);
 	crc_start(&m->crc);
 	for (i = 0; i < n; i++) {
 		c = get_char(m);

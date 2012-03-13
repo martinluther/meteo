@@ -3,13 +3,14 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.21 2001/12/29 21:16:42 afm Exp $
+# $Id: Makefile.am,v 1.25 2002/01/07 01:08:44 afm Exp $
 #
 lib_LTLIBRARIES = libmeteo.la
-EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y meteo.conf
 man_MANS = meteo.1 meteoavg.1 meteoloop.1 meteodequeue.1 meteograph.1	\
 	meteo.conf.5
-noinst_DATA = meteo.html meteodata.html
+noinst_DATA = meteo.html meteodata.html rc.meteo
+EXTRA_DIST = shtool TODO meteojob meteooverview scanner.l parser.y 	\
+	meteo.conf $(man_MANS) $(noinst_DATA)
 
 pkgdata_DATA = meteo.conf
 
@@ -30,7 +31,7 @@ parser.h:	parser.c
 noinst_HEADERS = com.h crc.h davis.h meteo.h meteodata.h sercom.h 	\
 	tcpcom.h conversions.h dloop.h graph.h dewpoint.h msgque.h	\
 	dbupdate.h meteosocket.h meteograph.h mconf.h parser.h		\
-	average.h database.h timestamp.h dograph.h daemon.h
+	average.h database.h timestamp.h dograph.h daemon.h watchdog.h
 
 libmeteo_la_LDFLAGS = -version-info `./shtool version -d libtool $(VERSION_FILE)`
 
@@ -38,7 +39,7 @@ libmeteo_la_SOURCES = crc.c com.c sercom.c tcpcom.c davis.c 		\
 	meteodata.c meteo.c conversions.c dloop.c graph.c dewpoint.c	\
 	msgque.c dbupdate.c meteosocket.c mconf.c			\
 	scanner.c parser.c average.c database.c timestamp.c dograph.c	\
-	daemon.c							\
+	daemon.c watchdog.c						\
 	$(VERSION_FILE)
 
 meteo_vers.c:	configure.in
@@ -73,8 +74,6 @@ test2:	meteoupdate
 	./meteoupdate -d -u meteoupdate -p m57cwrt -h timon 		\
 		-w file:///dev/cua/1 -s Altendorf
 test3:	meteoloop meteo.conf
-	./meteoloop -F -d -d -n 10 -f `pwd`/meteo.conf
-#	./meteoloop -d -n 10 -w file:///dev/cua/1 -p m57cwrt -h timon 	\
-#		-s Altendorf -b meteo -u meteoupdate
+	./meteoloop -F -d -d -n 10 -w 10 -f `pwd`/meteo.conf
 test4:	meteograph meteo.conf
 	./meteograph -d -d -d -c images -f `pwd`/meteo.conf 300

@@ -5,7 +5,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller
  *
- * $Id: meteoloop.c,v 1.9 2001/12/29 20:39:55 afm Exp $
+ * $Id: meteoloop.c,v 1.11 2002/01/06 23:02:07 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,11 +24,13 @@
 #include <database.h>
 #include <msgque.h>
 #include <daemon.h>
+#include <watchdog.h>
 
 extern int	optind;
 extern char	*optarg;
 
 int	minutes;
+int	watchinterval;
 
 /*
  * the updateloop function is quite davis specific. It keeps reading meteo
@@ -66,17 +68,36 @@ static int	updateloop(dest_t *ddp, loop_t *l, meteodata_t *md, int n,
 		if (get_acknowledge(l->m->m) < 0) {
 			fprintf(stderr, "%s:%d: no ack received\n",
 				__FILE__, __LINE__);
-			exit(EXIT_FAILURE);
+			if (watchinterval > 0)
+				wd_fire("no ack from station");
+			else
+				exit(EXIT_FAILURE);
 		}
 	}
 
+	/* arm the watchdog timer, if set. We do this here so we can	*/
+	/* detect a sequence of failed reads. We will reset the watch	*/
+	/* on every successfull read					*/
+	if (watchinterval > 0)
+		wd_arm(watchinterval);
+
 	/* read n reply packets						*/
 	for (i = 0; i < n; i++) {
+
+		/* read a new record from the station			*/
 		if (debug)
 			fprintf(stderr, "%s:%d: reading record %d through "
 				"function %p\n", __FILE__, __LINE__, i,
 				l->read);
-		l->read(l, md);
+		if (l->read(l, md) == 0) {
+			if (watchinterval > 0)
+				wd_arm(watchinterval);
+		} else {
+			fprintf(stderr, "%s:%d: retrieving an image failed\n",
+				__FILE__, __LINE__);
+			return -1;
+		}
+			
 		if (debug) {
 			meteodata_display(stdout, md);
 		}
@@ -89,6 +110,8 @@ static int	updateloop(dest_t *ddp, loop_t *l, meteodata_t *md, int n,
 			minutes = now / 60;
 		}
 	}
+	/* on an orderly return, disarm the watchdog timer		*/
+	wd_disarm();
 	return 0;
 }
 
@@ -101,17 +124,17 @@ int	main(int argc, char *argv[]) {
 	meteodata_t	*md;
 	meteoaccess_t	*d;
 	const char	*url = NULL,
-			*station = "Altendorf";
-	char		*conffilename = NULL,
+			*station = "Altendorf",
 			*queuename = NULL;
-	int		r, c, n = 1, speed = 2400, usequeue = 0, msgqueue = -1,
+	char		*conffilename = NULL;
+	int		r, c, n = 1, speed = 2400, usequeue = 0,
 			foreground = 0;
 	loop_t		*l;
 	dest_t		*ddp;
 	char		*pidfilename = "/var/run/meteoloop-%s.pid";
 
 	/* parse command line arguments					*/
-	while (EOF != (c = getopt(argc, argv, "dn:Ff:p:q")))
+	while (EOF != (c = getopt(argc, argv, "dn:Ff:p:qw:")))
 		switch (c) {
 		case 'd':
 			debug++;
@@ -139,7 +162,20 @@ int	main(int argc, char *argv[]) {
 		case 'p':
 			pidfilename = optarg;
 			break;
+		case 'w':
+			watchinterval = atoi(optarg);
+			if (watchinterval < 0)
+				watchinterval = 0;
+			break;
 		}
+
+	/* prepare the watchdog timer					*/
+	if (watchinterval > 0) {
+		if (debug)
+			fprintf(stderr, "%s:%d: set up the watchdog timer\n",
+				__FILE__, __LINE__);
+		wd_setup(argc, argv);
+	}
 
 	/* it is an error not to specify a configuration file		*/
 	if (NULL == conffilename) {
@@ -189,12 +225,16 @@ int	main(int argc, char *argv[]) {
 			__FILE__, __LINE__, strerror(errno), errno);
 		exit(EXIT_FAILURE);
 	}
+
+	/* create a weather station structure from the connection 	*/
 	d = davis_new(m);
 	if (d == NULL) {
 		fprintf(stderr, "%s:%d: cannot create davis interface\n",
 			__FILE__, __LINE__);
 		exit(EXIT_FAILURE);
 	}
+
+	/* create a loop structure for this weather station		*/
 	l = dloop_new(d);
 	if (l == NULL) {
 		fprintf(stderr, "%s:%d: cannot create loop handlier\n",
@@ -238,8 +278,12 @@ int	main(int argc, char *argv[]) {
 		if (r != 0) {
 			fprintf(stderr, "%s:%d: failed with %d remaining "
 				"updates\n", __FILE__, __LINE__, r);
-			exit(EXIT_FAILURE);
+			if (watchinterval > 0)
+				wd_fire("updateloop function failed");
+			else
+				exit(EXIT_FAILURE);
 		}
+		wd_disarm();
 	}
 
 	/* close the connection to the database				*/

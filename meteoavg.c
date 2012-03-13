@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.c,v 1.3 2001/12/29 20:39:55 afm Exp $
+ * $Id: meteoavg.c,v 1.4 2002/01/07 01:08:44 afm Exp $
  */
 #include <meteo.h>
 #include <database.h>
@@ -77,10 +77,10 @@ int	main(int argc, char *argv[]) {
 			daemonmode = 0, all = 0, haveavg, foreground = 0;
 	time_t		fromt, tot, t;
 	MYSQL		*mysql;
-	char		*pidfilename = NULL;
+	char		*pidfilename = "/var/run/meteoavg-%s.pid";
 
 	/* parse the command line					*/
-	while (EOF != (c = getopt(argc, argv, "adf:Fi:r:n")))
+	while (EOF != (c = getopt(argc, argv, "adf:Fi:r:np:")))
 		switch (c) {
 		case 'd':
 			debug++;
@@ -202,11 +202,23 @@ int	main(int argc, char *argv[]) {
 	/* connect to the database					*/
 	if (daemonmode) {
 		/* become a daemon					*/
-		if (!foreground)
-			if (pidfilename)
-				daemonize("/var/run/meteoavg-%s.pid", station);
-			else
-				daemonize(pidfilename, station);
+		if (0 == foreground)
+			switch (daemonize(pidfilename, station)) {
+			case -1:
+				fprintf(stderr, "%s:%d: cannot daemonize\n",
+					__FILE__, __LINE__);
+				exit(EXIT_FAILURE);
+				break;
+			case 0:
+				/* parent code				*/
+				exit(EXIT_FAILURE);
+				break;
+			default:
+				if (debug)
+					fprintf(stderr, "%s:%d: new pid = %d\n",
+						__FILE__, __LINE__, getpid());
+				break;
+			}
 
 		/* start daemon mode for averages			*/
 		avg_daemon(mysql, station);

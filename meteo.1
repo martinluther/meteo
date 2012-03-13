@@ -1,0 +1,138 @@
+.TH METEO "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteo \- introduction to meteo station tools
+.SH DESCRIPTION
+The meteo package contains programs that allow to retrieve data
+from a Davis Instruments Weather Monitor II or a Vantage Pro
+station, store the data in a MySQL database and extract suitable
+averages to create graphs to be embedded in Web pages.
+Other Davis Instruments stations may work as well, but have not
+been tested due to the lack of access to such hardware.
+
+The documentation to the meteo package consists of several distinct
+programs which have their own manual pages. This page serves to
+explain the overall architecture and common prerequisites for the
+individual programs.
+
+All programs use a common configuration file which must be specified
+using a command line switch (there is no default), the syntax of
+the configuration file is explained in 
+.BR meteo.conf (5).
+
+.SH ARCHITECTURE
+The minimum installation for the meteo tools uses the two programs 
+.BR meteoloop (1),
+and
+.BR meteograph (1).
+.BR meteoloop (1)
+connects to the weather station either using a serial interface
+or a tcp connection to a terminal server or a serial device server
+like the Lantronix UDS-10. It speaks the protocol of the 
+weather station to collect samples from the station at a reasonable
+rate, usually in one second increments for the Weather Monitor II
+or 5 second increments for the Vantage Pro stations.
+These samples are then averaged (or summed, e.g. for the rain measurements),
+and SQL update queries prepared to be sent to a MySQL database.
+
+The database schema uses two tables, 
+.I stationdata
+and
+.IR averages .
+The 
+.I stationdata
+contains the averaged data points for every minute, which for all
+postprocessing purposes are considered to be raw data.
+It also contains some fields about the 5min, 30min, 2h or 1day
+interval the data point belongs to, to simplify the computation
+of averages for the
+.I averages
+table or to produce graphs.
+Of course, this is a partial denormalization.
+
+The 
+.I averages
+table contains averages (or sums, or integrals) over intervals of
+5 minutes, 30 minutes, 2 hours and a full day.
+The idea is to speed up selection of such averages to produce graphs
+that span a day (400 intervals of length 5 min), a week (400 intervals
+of length 30 min), a month (400 intervals of length 2h) or a
+year (400 intervals of length 1 day).
+The
+.I averages
+table is filled by the
+.BR meteoavg (1)
+program.
+
+The data can be visualized by the 
+.BR meteograph (1)
+program. Given an interval and a configuration file, it computes
+all graphs for that interval that end at the current point in time.
+If the 
+.I averages
+table is maintained,
+.BR meteograph (1)
+is fast enough so that it can be called from a CGI program.
+Otherwise, it should be run from a cron job to keep up to date graphs
+available. A sample cron job script is
+.BR meteojob (1),
+as included in the distribution.
+
+.SH "PERFORMANCE IMPROVEMENTS"
+There are two areas where performance can become a problem.
+In both cases, the database is the bottleneck.
+Especially producing graphs spanning a whole year (which means computing
+averages over more than half a million 1min intervals) can be
+very time consuming.
+As most averages are computed over and over again without any change,
+storing them in a special table, the
+.I averages
+table, is beneficial even for very small data sets. On the development
+system (a 266MHz Pentium MMX Notebook running Linux 2.4.10), producing
+the 1 day graphs from the
+.I averages
+table takes about 1 second, while
+it takes more than two seconds when recomputing the averages.
+The difference becomes even more notable for graphs spanning larger
+time spans:
+producing these graphs from the averages table does not take any more time,
+while computing the averages for a 1 year graph can take minutes.
+To maintain the 
+.I averages
+table, the
+.BR meteoavg (1)
+program should be run in daemon mode. 
+.BR meteograph (1)
+accepts the option
+.B \-q
+to indicate that the
+.I averages
+table should be used.
+
+During the computation of averages, the stationdata table may be locked,
+preventing the
+.BR meteoloop (1)
+program from updating the database. As it will block in the database
+call, some data from the weather station may be lost.
+To help decouple the weather station from the database, the
+.BR meteodequeue (1)
+program has been added. It reads queries sent to a message queue,
+and forwards them to the database.
+The
+.BR meteoloop (1)
+program accepts the 
+.B \-q 
+option which directs it to send its SQL queries not to the database
+but the a message queue (the details of the message queue are
+configured in the configuration file).
+
+.SH "SEE ALSO"
+.BR meteo.conf (5),
+.BR meteoloop (1),
+.BR meteoavg (1),
+.BR meteograph (1),
+.BR meteodequeue (1),
+.BR meteocheck (1),
+.BR meteojob (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

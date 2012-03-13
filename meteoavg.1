@@ -1,0 +1,112 @@
+.TH METEOAVG "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteoavg \- compute averages of meteo data
+.SH SYNOPSIS
+meteoavg [
+.B \-d
+] [
+.B \-a
+] [
+.B \-F
+] [
+.BI \-i interval
+] [
+.BI \-p pidfile
+] [
+.BI \-r repeats
+] [
+.B \-n
+]
+.BI \-f conffile
+[ 
+.I from
+[
+.I to
+] ]
+.SH DESCRIPTION
+The 
+.BR meteoavg (1)
+programm computes averages of meteo data. 
+It can either be used to compute averages for a given time and sampling
+interval, or as a daemon that computes new averages whenever it
+can reasonably expect to find new data in the
+.I stationdata
+table, i.e. usually 30 seconds after the unix timestamp is divisible 
+by the sampling
+.IR interval .
+If neither of the timestamps
+.I from
+or 
+.I to
+are specified, daemon mode is automatically selected.
+If only one timestamp is specified, the 
+.B \-r
+option must be used to specify the number of intervals for which
+to compute averages.
+The timestamps must be specified as strings of length 14 in the format
+.IR YYYYMMDDhhmmss .
+.SH OPTIONS
+.TP
+.B \-d
+increase the debug level by one. Debug messages are written to standard
+error.
+.TP
+.B \-a
+force recomputation of all averages in a given range. If this option
+is not set, 
+.BR meteoavg (1)
+checks whether the average to be computed already exists in the 
+.I averages
+table, and does not recompute it. Use this option if for some reason
+you suspect some of the averages in the
+.I averages
+table to be incorrect.
+.TP
+.BI \-f conffile
+Use 
+.I conffile
+to read the configuration, see 
+.BR meteo.conf (5)
+for the configuration syntax. This argument is mandatory.
+.TP
+.B \-F
+stay in foreground even when running in daemon mode. Useful during
+debugging.
+.TP
+.BI \-i interval
+Compute averages over samples in intervals of length
+.IR interval .
+Must be one of 300, 1800, 7200 or 86400.
+.TP
+.BI \-p pidfile
+When running in daemon mode, write the process id of the 
+.BR meteoavg (1)
+process to this file. Defaults to
+.IR /var/run/meteoavg-<station>.pid .
+.TP
+.BI \-r repeats
+Only useful if exactly one timestamp has been specified. Indicates the
+number of intervals for which averages should be computed.
+.TP
+.B \-n 
+Do everything you are supposed to, but don't write anything into
+the 
+.I averages
+table.
+
+.SH FILES
+.BR meteoavg (1)
+writes its process id by default to the file
+.RI /var/run/meteoavg- station .pid.
+
+.SH "SEE ALSO"
+.BR meteo (1)
+.BR meteo.conf (5),
+.BR meteoloop (1),
+.BR meteograph (1),
+.BR meteodequeue (1),
+.BR meteocheck (1),
+.BR meteojob (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>
