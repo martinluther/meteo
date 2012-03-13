@@ -8,7 +8,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: BasicRecorder.h,v 1.7 2004/02/26 14:00:19 afm Exp $
+ * $Id: BasicRecorder.h,v 1.8 2006/05/07 19:47:22 afm Exp $
  */
 #ifndef _BasicRecorder_h
 #define _BasicRecorder_h
@@ -16,7 +16,6 @@
 #include <Timeval.h>
 #include <MeteoTypes.h>
 #include <Converter.h>
-
 
 namespace meteo {
 

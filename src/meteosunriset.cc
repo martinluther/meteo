@@ -3,7 +3,7 @@
 //                     station
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-// $Id: meteosunriset.cc,v 1.2 2004/05/08 22:07:17 afm Exp $
+// $Id: meteosunriset.cc,v 1.3 2006/05/07 19:47:22 afm Exp $
 //
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -15,6 +15,8 @@
 #include <StationInfo.h>
 #include <Timelabel.h>
 #include <Sun.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 // main function for sunriset program
 void	meteosunriset(int argc, char *argv[]) {

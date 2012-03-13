@@ -173,9 +173,9 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.4 2003/10/30 23:22:01 afm Exp $
+# $Id: Makefile.am,v 1.5 2006/05/07 19:47:22 afm Exp $
 #
-BROWSERFILES = meteobrowser.php						\
+BROWSERFILES = meteobrowser.php current.php				\
 	up.png upup.png upupup.png week.png month.png year.png 		\
 	next.png previous.png
 

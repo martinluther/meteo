@@ -6,7 +6,7 @@
 			HTML files
 
 	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-	$Id: meteo.xsl,v 1.1 2004/02/24 23:33:21 afm Exp $
+	$Id: meteo.xsl,v 1.2 2006/05/07 19:47:22 afm Exp $
   -->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -20,6 +20,7 @@
     <xsl:when test="$name = 'news'">News</xsl:when>
     <xsl:when test="$name = 'install'">Install</xsl:when>
     <xsl:when test="$name = 'config'">Configure</xsl:when>
+    <xsl:when test="$name = 'support'">Support</xsl:when>
     <xsl:when test="$name = 'util'">Utilities</xsl:when>
     <xsl:when test="$name = 'prereq'">Prerequisites</xsl:when>
     <xsl:when test="$name = 'ack'">Acknowledgments</xsl:when>
@@ -72,6 +73,10 @@
 
     <xsl:call-template name="menuitem">
       <xsl:with-param name="name">config</xsl:with-param>
+    </xsl:call-template>
+
+    <xsl:call-template name="menuitem">
+      <xsl:with-param name="name">support</xsl:with-param>
     </xsl:call-template>
 
     <xsl:call-template name="menuitem">

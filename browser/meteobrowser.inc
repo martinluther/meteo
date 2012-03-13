@@ -4,7 +4,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.inc,v 1.11 2004/03/19 22:13:15 afm Exp $
+//   $Id: meteobrowser.inc,v 1.12 2006/05/07 19:47:22 afm Exp $
 //
 
 // include the following only if your PHP installation lacks gettext support
@@ -13,45 +13,45 @@
 
 // the start time contains the time of the first data point a station can
 // offer, used to prevent navigation into the emty past
-$stationstart[Altendorf] = 985898700;
-$stationstart[Gurin] = 1009452900;
-$stationstart[Lajeado] = 1009452900;
+$stationstart['Altendorf'] = 985898700;
+$stationstart['Gurin'] = 1009452900;
+$stationstart['Lajeado'] = 1009452900;
 
 // the graphlist contains a colon separated list of graphs to be drawn 
 // for each station that can be browsed through the current instance of
 // the script, see the sample file for instructions. Note that the name
 // must appear in exactly the same for in the XML configuration file as
 // the name attribute of a graph element
-$graphlist[Altendorf] = "Altendorf.temperature:Altendorf.pressure:Altendorf.wind:Altendorf.rain";
-$graphlist[Gurin] = "Gurin.temperature:Gurin.pressure:Gurin.wind:Gurin.radiation:Gurin.rain";
-$graphlist[Lajeado] = "Lajeado.temperature:Lajeado.pressure:Lajeado.wind:Lajeado.radiation:Lajeado.rain";
+$graphlist['Altendorf'] = "Altendorf.temperature:Altendorf.pressure:Altendorf.wind:Altendorf.rain";
+$graphlist['Gurin'] = "Gurin.temperature:Gurin.pressure:Gurin.wind:Gurin.radiation:Gurin.rain";
+$graphlist['Lajeado'] = "Lajeado.temperature:Lajeado.pressure:Lajeado.wind:Lajeado.radiation:Lajeado.rain";
 
 // graphs may share explanations, so the following array maps graph names to
 // explanation names (the latter are just the old, pre 0.9.0 graph names)
 $explanationname = array();
-$explanationname["Altendorf.temperature"] = "temperature";
-$explanationname["Altendorf.temperature_inside"] = "temperature_inside";
-$explanationname["Altendorf.humidity"] = "humidity";
-$explanationname["Altendorf.humidity_inside"] = "humidity_inside";
-$explanationname["Altendorf.pressure"] = "pressure";
-$explanationname["Altendorf.rain"] = "rain";
-$explanationname["Altendorf.wind"] = "wind";
-$explanationname["Gurin.temperature"] = "temperature";
-$explanationname["Gurin.temperature_inside"] = "temperature_inside";
-$explanationname["Gurin.humidity"] = "humidity";
-$explanationname["Gurin.humidity_inside"] = "humidity_inside";
-$explanationname["Gurin.pressure"] = "pressure";
-$explanationname["Gurin.rain"] = "rain";
-$explanationname["Gurin.wind"] = "wind";
-$explanationname["Gurin.radiation"] = "radiation";
-$explanationname["Lajeado.temperature"] = "temperature";
-$explanationname["Lajeado.temperature_inside"] = "temperature_inside";
-$explanationname["Lajeado.humidity"] = "humidity";
-$explanationname["Lajeado.humidity_inside"] = "humidity_inside";
-$explanationname["Lajeado.pressure"] = "pressure";
-$explanationname["Lajeado.rain"] = "rain";
-$explanationname["Lajeado.wind"] = "wind";
-$explanationname["Lajeado.radiation"] = "radiation";
+$explanationname['Altendorf.temperature'] = "temperature";
+$explanationname['Altendorf.temperature_inside'] = "temperature_inside";
+$explanationname['Altendorf.humidity'] = "humidity";
+$explanationname['Altendorf.humidity_inside'] = "humidity_inside";
+$explanationname['Altendorf.pressure'] = "pressure";
+$explanationname['Altendorf.rain'] = "rain";
+$explanationname['Altendorf.wind'] = "wind";
+$explanationname['Gurin.temperature'] = "temperature";
+$explanationname['Gurin.temperature_inside'] = "temperature_inside";
+$explanationname['Gurin.humidity'] = "humidity";
+$explanationname['Gurin.humidity_inside'] = "humidity_inside";
+$explanationname['Gurin.pressure'] = "pressure";
+$explanationname['Gurin.rain'] = "rain";
+$explanationname['Gurin.wind'] = "wind";
+$explanationname['Gurin.radiation'] = "radiation";
+$explanationname['Lajeado.temperature'] = "temperature";
+$explanationname['Lajeado.temperature_inside'] = "temperature_inside";
+$explanationname['Lajeado.humidity'] = "humidity";
+$explanationname['Lajeado.humidity_inside'] = "humidity_inside";
+$explanationname['Lajeado.pressure'] = "pressure";
+$explanationname['Lajeado.rain'] = "rain";
+$explanationname['Lajeado.wind'] = "wind";
+$explanationname['Lajeado.radiation'] = "radiation";
 
 // the conflist array contains configuration file names in case different
 // stations need different configuration files (this may happen if scales
@@ -65,6 +65,7 @@ $conflist[Gurin] = "/usr/local/etc/meteo-Gurin.xml";
 // in the script anyway, doing it manually isn't really more complicated.
 $meteodraw = "/usr/local/bin/meteodraw -x";
 $meteolabel = "/usr/local/bin/meteolabel";
+$meteomap = "/usr/local/bin/meteomap";
 
 // the URL path used as a bases for URLs embedded in the generated page
 $pageurl = "/browser/meteobrowser.php";

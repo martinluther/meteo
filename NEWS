@@ -1,3 +1,12 @@
+0.9.15	new interface which allows to read current readings from the console
+	to display on the web page. The new -m option to meteopoll makes
+	sure current data is written to a file (the argument to the option)
+	in XML format. Since updates to this file are very frequent, one
+	should read the file atomically, one should use the meteomap program
+	to read the data.
+	fix of a nasty bug in the week label code, causing navigation failure
+	at week resolution in some cases
+
 0.9.14	gallery files included as samples
 	can now compute sunrise and sunset (through meteosunriset and Sun.cc)
 
@@ -42,4 +51,4 @@
 	contributions: Jeff Wabik (new derived value computations).
 
 --
-$Id: NEWS,v 1.29 2004/05/08 20:09:31 afm Exp $
+$Id: NEWS,v 1.31 2006/05/07 19:50:14 afm Exp $

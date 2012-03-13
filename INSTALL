@@ -375,5 +375,18 @@ Frequently asked questions
    for details read section 14.6 of `Advanced Programming in the Unix
    Environment' by W. Richard Stevens). See ipcrm(8).
 
+4. How about current values from the station
+
+   meteo 0.9.15 includes an experimental interface which allows to read
+   the current data from the station. The term experimental means that
+   some more work may be required to set up the interface:
+    - the script current.php is only a template, you will need to adapt
+      this script to get a reasonable looking page
+    - the paths in current.php are hard wired, so you may need to
+      adapt them to your environment
+    - by default, no map file is created. Add the -m option to meteopoll
+      to tell it to create a map file
+    - add the correct name of the map file to current.php
+
 --
-$Id: INSTALL,v 1.24 2003/11/03 01:20:32 afm Exp $
+$Id: INSTALL,v 1.25 2006/05/07 19:47:22 afm Exp $

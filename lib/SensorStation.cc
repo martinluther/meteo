@@ -4,7 +4,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: SensorStation.cc,v 1.5 2004/02/25 23:48:05 afm Exp $
+ * $Id: SensorStation.cc,v 1.7 2006/05/07 21:48:14 afm Exp $
  */
 #include <SensorStation.h>
 #include <SensorStationInfo.h>
@@ -17,7 +17,7 @@ namespace meteo {
 SensorStation::SensorStation(const std::string& n, Station *parent) : name(n) {
 	// remember the parent station, which we need for access to the readers
 	parentstation = parent;
-	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creatin SensorStation %s.%s",
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "creating SensorStation %s.%s",
 		parent->getName().c_str(), name.c_str());
 
 	// find SensorStation id in database
@@ -53,7 +53,7 @@ void	SensorStation::reset(void) {
 	r.reset();
 }
 
-void	SensorStation::update(const std::string& packet) {
+void	SensorStation::update(const std::string& packet, Mapfile *m) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "updating SensorStation %s",
 		name.c_str());
 	// go through the DataRecorder, and update every Recorder using the
@@ -67,13 +67,32 @@ void	SensorStation::update(const std::string& packet) {
 		
 		// use the reader to get a value
 		try {
-			i->second.update(parentstation->readValue(readername,
-				packet));
+			Value	value = parentstation->readValue(readername,
+				packet);
+			i->second.update(value);
+
+			if (NULL != m) {
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+					"mapfile update for %s",
+					readername.c_str());
+				// update the mapfile
+				m->add(readername, i->second.getValue(),
+					i->second.getUnit());
+
+				// handle the special case of wind, which also
+				// has a direction
+				if (value.getClass() == "Wind") {
+					m->add(readername + "dir", ((Wind *)value
+						.getBasicValue())->getAzideg(),
+						std::string("deg"));
+				}
+			}
 		} catch (MeteoException& me) {
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 				"exception during update: %s, %s",
 				me.getReason().c_str(), me.getAddinfo().c_str());
 		}
+
 	}
 	// at this point we have updated all sensors in this particular 
 	// SensorStation

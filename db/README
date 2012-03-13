@@ -20,8 +20,8 @@ not null.
 Database setup
 --------------
 
-The script meteo.sql creates the necessary tables. Connect as a
-privileged user (normally root) to the MySQL server and create a
+The script meteo.sql creates the necessary tables and indices. Connect
+as a privileged user (normally root) to the MySQL server and create a
 database:
 
 	mysql> create database meteo;
@@ -233,4 +233,4 @@ Note that for the VantagePro and WMII, the necessary methods are already
 implemented, so only the last step needs to be added.
 
 --
-$Id: README,v 1.8 2004/05/08 20:09:31 afm Exp $
+$Id: README,v 1.9 2006/05/07 19:47:22 afm Exp $

@@ -5,7 +5,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Value.h,v 1.3 2004/02/25 23:52:35 afm Exp $
+ * $Id: Value.h,v 1.4 2006/05/07 19:47:22 afm Exp $
  */
 #ifndef _Value_h
 #define _Value_h
@@ -44,6 +44,9 @@ public:
 	// accessor methods
 	const std::string	getClass(void) const;
 	const std::string	getUnit(void) const { return bv->getUnit(); }
+
+	// access to the basic value
+	BasicValue	*getBasicValue(void) { return bv; }
 
 	// retrieve the value (forgetting about the unit)
 	double	getValue(void) const;

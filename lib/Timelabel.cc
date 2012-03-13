@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung 
  *
- * $Id: Timelabel.cc,v 1.7 2004/03/01 09:44:08 afm Exp $
+ * $Id: Timelabel.cc,v 1.8 2006/05/07 19:47:22 afm Exp $
  */
 #include <Timelabel.h>
 #include <mdebug.h>
@@ -77,8 +77,34 @@ time_t	Timelabel::normalize(time_t t) const {
 	return normalize(wt);
 }
 
+// time for a given week number
+static time_t	week2time(int year /* since 1900 */, int week) {
+	struct tm	tms;
+	tms.tm_isdst = 0;
+	tms.tm_mon = 0;
+	tms.tm_mday = 1;
+	tms.tm_hour = 12; tms.tm_min = 0; tms.tm_sec = 0;
+	tms.tm_year = year;
+
+	// convert to time_t and back, mainly to get the week day of jan 1st
+	time_t	t = mktime(&tms);
+	struct tm	*tmp = localtime(&t);
+	t += 86400 * (10 - tmp->tm_wday);
+	tmp = localtime(&t); // first wednesday after or at jan 1st, or maybe
+			// one week later, step (#) below will fix that
+	
+	char	b[3];
+	strftime(b, sizeof(b), "%V", tmp);
+	int	week0 = atoi(b);	// find week of t
+	t += (week - week0) * 86400 * 7; // (#) fix week offset
+	return t;
+}
+
+// parse a labelstring and convert it to a Timelabel object
 void	Timelabel::parse(const std::string& labelstring) {
 	struct tm	tms;
+	struct tm	*tmp;
+	time_t		t;
 	int		tm_week;
 	tms.tm_isdst = 0;
 
@@ -103,7 +129,9 @@ void	Timelabel::parse(const std::string& labelstring) {
 	switch (level.getLevel()) {
 	case week:
 		tm_week = atoi(labelstring.substr(5).c_str());
-		tms.tm_mday = 7 * (tm_week - 1);
+		t = week2time(tms.tm_year, tm_week);
+		tmp = localtime(&t);
+		memcpy(&tms, tmp, sizeof(tms));
 		break;
 	case hour:
 		tms.tm_hour = atoi(labelstring.substr(9, 2).c_str());
@@ -119,14 +147,6 @@ void	Timelabel::parse(const std::string& labelstring) {
 	// turn this broken down time structure into a time value
 	midtime = mktime(&tms);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "candidate midtime: %d", midtime);
-
-	// for the week, convert back to broken down time to 
-	if (level.getLevel() == week) {
-		struct tm	*tmp = localtime(&midtime);
-		char	b[3];
-		strftime(b, sizeof(b), "%V", tmp);
-		midtime -= (7 * (atoi(b) - tm_week) + tmp->tm_wday - 3);
-	}
 
 	// normalize according to the rules of the normalize function
 	midtime = normalize(midtime);
@@ -198,6 +218,7 @@ Timelabel	Timelabel::downdowndown(void) const {
 std::string	Timelabel::getString(void) const {
 	char	buffer[64];
 	struct tm	*tp = localtime(&midtime);
+	int	w, y;
 
 	switch(level.getLevel()) {
 	case hour:
@@ -207,7 +228,16 @@ std::string	Timelabel::getString(void) const {
 		strftime(buffer, sizeof(buffer), "d%Y%m%d", tp);
 		break;
 	case week:
-		strftime(buffer, sizeof(buffer), "w%Y%V", tp);
+		y = tp->tm_year;
+		strftime(buffer, sizeof(buffer), "%V", tp);
+		w = atoi(buffer);
+		if ((tp->tm_mon < 6) && (w > 26)) {
+			y = tp->tm_year - 1;
+		}
+		if ((tp->tm_mon > 6) && (w < 26)) {
+			y = tp->tm_year + 1;
+		}
+		snprintf(buffer, sizeof(buffer), "w%04d%02d", y + 1900, w);
 		break;
 	case month:
 		strftime(buffer, sizeof(buffer), "m%Y%m", tp);

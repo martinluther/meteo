@@ -1,3 +1,22 @@
+Release 0.9.15:
+	* extended the default channel timeout from 5 to 6 seconds, as
+	  Clay Jackson discovered
+	* moved from HTTP_GET_VARS to _GET as HTTP_GET_VARS are no longer
+	  available by default in PHP 5
+	* fixed an instance in meteobrowser.php where meteolabel was called
+	  not using the meteolabel variable
+	* bumpted version number
+	* fixed two typos in meteojob
+	* add option -m mapfile to meteopoll
+	* extend the station classes to maintain a map file containing
+	  current data as sent by the weather station
+	* add meteomap programm to read the map file
+	* add manual page for meteomap
+	* add stdlib.h and unistd.h to meteosunriset.cc so that it compiles
+	  on more platforms
+	* point out that we mean meters in the altitude in meteo.sql
+	* fixed meteobrowser.php to escapeshellcmd all arguments of shell_exec
+
 Release 0.9.14:
 	* add meteo.guenthers.net.xml, and many other stations to the gallery
 	* add sunriset.c by Paul Schlyter
@@ -669,4 +688,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.132 2004/05/08 22:40:33 afm Exp $
+$Id: ChangeLog,v 1.133 2006/05/07 19:47:22 afm Exp $

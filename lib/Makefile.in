@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.41 2004/05/08 21:08:55 afm Exp $
+# $Id: Makefile.am,v 1.42 2006/05/07 19:47:22 afm Exp $
 #
 
 SOURCES = $(libmeteo_la_SOURCES)
@@ -96,8 +96,8 @@ am_libmeteo_la_OBJECTS = MeteoException.lo Vector.lo BasicValue.lo \
 	Frame.lo Scale.lo Axis.lo GraphPoint.lo MapArea.lo ImageMap.lo \
 	SunData.lo Sun.lo GraphWindow.lo Graphics.lo Datarecord.lo \
 	Averager.lo MsgCommon.lo MsgQueuer.lo MsgDequeuer.lo \
-	Timestamp.lo crc.lo Daemon.lo ChunkDumper.lo Lock.lo \
-	printver.lo mdebug.lo
+	Timestamp.lo Mapfile.lo crc.lo Daemon.lo ChunkDumper.lo \
+	Lock.lo printver.lo mdebug.lo
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -147,7 +147,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/LevelConverter.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LevelRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/LevelValue.Plo ./$(DEPDIR)/Lock.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/MapArea.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/MapArea.Plo ./$(DEPDIR)/Mapfile.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/MeteoException.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/MinmaxRecorder.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/MoistureConverter.Plo \
@@ -408,6 +408,7 @@ libmeteo_la_SOURCES = \
 	Averager.cc							\
 	MsgCommon.cc MsgQueuer.cc MsgDequeuer.cc			\
 	Timestamp.cc							\
+	Mapfile.cc							\
 	crc.c 								\
 	Daemon.cc							\
 	ChunkDumper.cc							\
@@ -540,6 +541,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LevelValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Lock.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapArea.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mapfile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeteoException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MinmaxRecorder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MoistureConverter.Plo@am__quote@

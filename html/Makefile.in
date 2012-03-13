@@ -165,10 +165,10 @@ target_vendor = @target_vendor@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.17 2004/05/08 22:39:43 afm Exp $
+# $Id: Makefile.am,v 1.18 2006/05/07 19:47:22 afm Exp $
 #
 HTML = ack.html gallery.html prereq.html install.html util.html 	\
-	news.html about.html config.html gallery.html
+	news.html about.html config.html gallery.html support.html
 
 HTMLFILES = meteodata.html meteo-install.html meteo.css $(HTML)
 IMAGES = meteo.jpg
@@ -177,6 +177,7 @@ TEXTFILES = ../README ../ChangeLog ../NEWS ../AUTHORS ../INSTALL \
 
 EXTRA_DIST = meteodata.html meteo-install.html meteo.css gallery.xml	\
 	about.xml ack.xml config.xml news.xml.in prereq.xml util.xml 	\
+	support.xml							\
 	$(IMAGES) meteo.xsl $(HTML) gallery_template.xml 		\
 	gallery.xml.in gallery.xsl buildgallery.sh
 

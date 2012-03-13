@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.cc,v 1.14 2004/04/03 19:15:35 afm Exp $
+ * $Id: meteoavg.cc,v 1.15 2006/05/07 21:15:25 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -69,8 +69,6 @@ static void	avg_daemon(const std::string& station) {
 
 		// compute the timekey that corresponds to this time
 		time_t	timekey = next + offset; 
-		mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-			"averages for time %d, timekey %d", next, timekey);
 
 		// compute all necessary averages. We have to add offset 
 		// to the first argument because the Averager will again

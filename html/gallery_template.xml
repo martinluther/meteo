@@ -5,7 +5,7 @@
 			in the gallery
 
   (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-  $Id: gallery_template.xml,v 1.2 2004/05/08 20:09:32 afm Exp $
+  $Id: gallery_template.xml,v 1.3 2006/05/07 19:47:22 afm Exp $
 
   -->
 
@@ -29,7 +29,7 @@
     <!-- latitude of your station, positive for northern hemisphere,
 	 negative for southern hemisphere -->
     <latitude></latitude>
-    <!-- altitude above see level for your station, in m -->
+    <!-- altitude above see level for your station, in meters -->
     <altitude></altitude>
   </location>
   <!-- contact information if you want to enable people to contact you.

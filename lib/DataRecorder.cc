@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: DataRecorder.cc,v 1.8 2004/02/25 23:48:05 afm Exp $
+ * $Id: DataRecorder.cc,v 1.9 2006/05/07 19:47:22 afm Exp $
  */
 #include <DataRecorder.h>
 #include <RecorderFactory.h>
@@ -32,7 +32,8 @@ void	DataRecorder::addRecorder(const std::string& sensorname) {
 
 // the update method just gets the right recorder and hands over the new
 // value to it
-void	DataRecorder::update(const std::string& sensorname, const Value& v) {
+void	DataRecorder::update(const std::string& sensorname, const Value& v,
+	Mapfile& m) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "updating %s from %s",
 		sensorname.c_str(), v.getClass().c_str());
 	// make sure a recorder exists for this sensor

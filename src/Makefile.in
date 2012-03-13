@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(meteoavg_SOURCES) $(meteodbdump_SOURCES) $(meteodequeue_SOURCES) $(meteodraw_SOURCES) $(meteolabel_SOURCES) $(meteolast_SOURCES) $(meteopoll_SOURCES) $(meteosensors_SOURCES) $(meteosunriset_SOURCES)
+SOURCES = $(meteoavg_SOURCES) $(meteodbdump_SOURCES) $(meteodequeue_SOURCES) $(meteodraw_SOURCES) $(meteolabel_SOURCES) $(meteolast_SOURCES) $(meteomap_SOURCES) $(meteopoll_SOURCES) $(meteosensors_SOURCES) $(meteosunriset_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -40,7 +40,7 @@ host_triplet = @host@
 bin_PROGRAMS = meteopoll$(EXEEXT) meteoavg$(EXEEXT) meteolast$(EXEEXT) \
 	meteodequeue$(EXEEXT) meteodraw$(EXEEXT) meteolabel$(EXEEXT) \
 	meteodbdump$(EXEEXT) meteosensors$(EXEEXT) \
-	meteosunriset$(EXEEXT)
+	meteosunriset$(EXEEXT) meteomap$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -77,6 +77,10 @@ am_meteolast_OBJECTS = meteolast.$(OBJEXT)
 meteolast_OBJECTS = $(am_meteolast_OBJECTS)
 meteolast_LDADD = $(LDADD)
 meteolast_DEPENDENCIES = ../lib/libmeteo.la
+am_meteomap_OBJECTS = meteomap.$(OBJEXT)
+meteomap_OBJECTS = $(am_meteomap_OBJECTS)
+meteomap_LDADD = $(LDADD)
+meteomap_DEPENDENCIES = ../lib/libmeteo.la
 am_meteopoll_OBJECTS = meteopoll.$(OBJEXT)
 meteopoll_OBJECTS = $(am_meteopoll_OBJECTS)
 meteopoll_LDADD = $(LDADD)
@@ -96,7 +100,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/meteodbdump.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteodequeue.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteodraw.Po ./$(DEPDIR)/meteolabel.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/meteolast.Po ./$(DEPDIR)/meteopoll.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteolast.Po ./$(DEPDIR)/meteomap.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/meteopoll.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteosensors.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/meteosunriset.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -109,12 +114,12 @@ CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(meteoavg_SOURCES) $(meteodbdump_SOURCES) \
 	$(meteodequeue_SOURCES) $(meteodraw_SOURCES) \
-	$(meteolabel_SOURCES) $(meteolast_SOURCES) \
+	$(meteolabel_SOURCES) $(meteolast_SOURCES) $(meteomap_SOURCES) \
 	$(meteopoll_SOURCES) $(meteosensors_SOURCES) \
 	$(meteosunriset_SOURCES)
 DIST_SOURCES = $(meteoavg_SOURCES) $(meteodbdump_SOURCES) \
 	$(meteodequeue_SOURCES) $(meteodraw_SOURCES) \
-	$(meteolabel_SOURCES) $(meteolast_SOURCES) \
+	$(meteolabel_SOURCES) $(meteolast_SOURCES) $(meteomap_SOURCES) \
 	$(meteopoll_SOURCES) $(meteosensors_SOURCES) \
 	$(meteosunriset_SOURCES)
 ETAGS = etags
@@ -176,7 +181,7 @@ MAKEINFO = @MAKEINFO@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.52 2004/05/08 20:09:32 afm Exp $
+# $Id: Makefile.am,v 1.53 2006/05/07 19:47:22 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 MSGFMT = @MSGFMT@
@@ -251,6 +256,7 @@ meteolast_SOURCES = meteolast.cc
 meteodbdump_SOURCES = meteodbdump.cc
 meteosensors_SOURCES = meteosensors.cc
 meteosunriset_SOURCES = meteosunriset.cc
+meteomap_SOURCES = meteomap.cc
 all: all-am
 
 .SUFFIXES:
@@ -330,6 +336,9 @@ meteolabel$(EXEEXT): $(meteolabel_OBJECTS) $(meteolabel_DEPENDENCIES)
 meteolast$(EXEEXT): $(meteolast_OBJECTS) $(meteolast_DEPENDENCIES) 
 	@rm -f meteolast$(EXEEXT)
 	$(CXXLINK) $(meteolast_LDFLAGS) $(meteolast_OBJECTS) $(meteolast_LDADD) $(LIBS)
+meteomap$(EXEEXT): $(meteomap_OBJECTS) $(meteomap_DEPENDENCIES) 
+	@rm -f meteomap$(EXEEXT)
+	$(CXXLINK) $(meteomap_LDFLAGS) $(meteomap_OBJECTS) $(meteomap_LDADD) $(LIBS)
 meteopoll$(EXEEXT): $(meteopoll_OBJECTS) $(meteopoll_DEPENDENCIES) 
 	@rm -f meteopoll$(EXEEXT)
 	$(CXXLINK) $(meteopoll_LDFLAGS) $(meteopoll_OBJECTS) $(meteopoll_LDADD) $(LIBS)
@@ -352,6 +361,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteodraw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteolabel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteolast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteomap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteopoll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteosensors.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meteosunriset.Po@am__quote@
@@ -558,6 +568,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 test:	meteopoll
 	cp /dev/null /var/tmp/meteopoll.log
 	./meteopoll -F -s Altendorf -l file:///var/tmp/meteopoll.log \
+		-m /var/tmp/meteo.xml \
 		-p `pwd`/meteopoll- -b msgqueue \
 		-d -d -d -f `pwd`/../conf/meteo.xml
 

@@ -164,7 +164,8 @@ will have three processes permanently running:
 
 meteopoll	collect data from the station and write a record to
 		the message queue used to decouple database operations
-		from weather station communication.
+		from weather station communication. Can also maintain
+		a file containing current values for real time display.
 
 meteodequeue	pulls update messages of the message queue and sends
 		them to the database. By handling database updates outside
@@ -225,4 +226,4 @@ extensive changes make for very large patches, that are difficult to read.
 If there is no other way, please contact me first, so that we can team up.
 
 --
-$Id: README.tmpl,v 1.18 2004/05/08 22:07:17 afm Exp $
+$Id: README.tmpl,v 1.19 2006/05/07 19:51:18 afm Exp $

@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Station.cc,v 1.34 2004/02/27 16:03:50 afm Exp $
+ * $Id: Station.cc,v 1.35 2006/05/07 19:47:22 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -28,6 +28,9 @@ namespace meteo {
 
 // construction/Destruction of Station
 Station::Station(const std::string& n) : name(n) {
+	// we start without a map file
+	mapfile = NULL;
+
 	// set channel to well defined state, or the destructor may erroneously
 	// try to destroy a nonexisting channel, leading to a segmentation
 	// fault
@@ -69,6 +72,12 @@ Station::~Station(void) {
 			channel);
 		delete channel;
 		channel = NULL;
+	}
+	if (NULL != mapfile) {
+		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "destroying mapfile %d",
+			mapfile);
+		delete mapfile;
+		mapfile = NULL;
 	}
 }
 
@@ -212,13 +221,23 @@ bool	Station::valid(const std::string& packet,
 // update method
 void	Station::update(const std::string& packet) {
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "starting record update");
+
+	// clearing the map
+	if (NULL != mapfile)
+		mapfile->clear();
+
 	// go through the sensormap
 	sensormap_t::iterator	i;
 	for (i = sensors.begin(); i != sensors.end(); i++) {
 		mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "updating sensor %s",
 			i->first.c_str());
 		// update the current SensorStation from the packet
-		i->second.update(packet);
+		i->second.update(packet, mapfile);
+	}
+
+	// publishing the new data
+	if (NULL != mapfile) {
+		mapfile->publish();
 	}
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "all data values updated");
 }

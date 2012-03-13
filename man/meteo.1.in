@@ -75,6 +75,12 @@ available. A sample cron job script is
 .BR meteojob (1),
 as included in the distribution.
 
+The
+.BR meteopoll (1)
+program can also maintain a map file, which contains the current data
+in XML format. Since its contents may change at any time, an atomic read
+shoulc be used to read and display this data.
+
 .SH "UNIFORM RESOURCE LOCATORS"
 The meteo packages uses new kinds of URLs to specify meteo stations
 and log destinations. Please see the

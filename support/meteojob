@@ -5,7 +5,7 @@
 # Note: this script assumes the average table has correctly been filled
 #       e.g. using the meteoavg program
 #
-# $Id: meteojob,v 1.7 2003/10/24 16:15:17 afm Exp $
+# $Id: meteojob,v 1.8 2006/05/07 19:47:22 afm Exp $
 #
 station=Altendorf
 
@@ -21,12 +21,12 @@ do
 	then
 		# the -g arguments in the meteodraw command must be
 		# graph names defined in the meteo.xml configuration file
-		/usr/local/bin/meteodraw -s ${station}
+		/usr/local/bin/meteodraw -s ${station} \
 			-g ${station}.temperature \
 			-g ${station}.temperature_inside \
 			-g ${station}.pressure \
 			-g ${station}.rain \
-			-g ${station}.wind 
+			-g ${station}.wind \
 			-f /usr/local/etc/meteo.xml		\
 			-c /usr/local/apache/htdocs/meteo.othello.ch/meteo \
 			"$@" ${interval}

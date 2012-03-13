@@ -3,16 +3,16 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.23 2004/05/08 20:09:32 afm Exp $
+-- $Id: meteo.sql,v 1.24 2006/05/07 19:47:22 afm Exp $
 --
 create table if not exists station (
 	name		varchar(60) not null,
 	id		tinyint not null,
 	timezone	varchar(12),	-- time zone
 	offset		int not null,
-	longitude	double not null,
-	latitude	double not null,
-	altitude	double not null,
+	longitude	double not null,	-- degrees, + east, - west
+	latitude	double not null,	-- degress, + north, - south
+	altitude	double not null,	-- altitude sea level, meters!
 	primary key(id)
 );
 -- Altendorf:	a WeatherMonitor II
@@ -100,6 +100,13 @@ insert into mfield(name, id, unit, class)
 insert into mfield(name, id, unit, class)
 	values('rainrate',		52, 'mm/h', 'RainRate');
 
+-- Normally every data value needs a value class that knows how to perform
+-- conversions. However, wind is somewhat special as it is a vector, not
+-- a simple scalar. This problem is solved by the Wind class, which is attached
+-- to the wind field (id 60). As a side effect, this class also maintains
+-- the winddir, windx and windy fields (the latter to are only use to speed up
+-- accumulations). Therefore it is not an error that winddir, windx and windy
+-- don't have a class associated with it.
 insert into mfield(name, id, unit, class)
 	values('wind',		60, 'm/s', 'Wind');
 insert into mfield(name, id, unit)

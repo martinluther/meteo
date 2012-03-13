@@ -7,7 +7,7 @@
 <body>
 <div id="titel"></div>
 <div id="menu">
-<a href="about.html"><div class="menuitem">About</div></a><a href="news.html"><div class="menuitem">News</div></a><a href="gallery.html"><div class="menuitem">Gallery</div></a><a href="install.html"><div class="menuitem">Install</div></a><a href="config.html"><div class="menuitemselected">Configure</div></a><a href="util.html"><div class="menuitem">Utilities</div></a><a href="prereq.html"><div class="menuitem">Prerequisites</div></a><a href="ack.html"><div class="menuitem">Acknowledgments</div></a>
+<a href="about.html"><div class="menuitem">About</div></a><a href="news.html"><div class="menuitem">News</div></a><a href="gallery.html"><div class="menuitem">Gallery</div></a><a href="install.html"><div class="menuitem">Install</div></a><a href="config.html"><div class="menuitemselected">Configure</div></a><a href="support.html"><div class="menuitem">Support</div></a><a href="util.html"><div class="menuitem">Utilities</div></a><a href="prereq.html"><div class="menuitem">Prerequisites</div></a><a href="ack.html"><div class="menuitem">Acknowledgments</div></a>
 </div>
 <div id="content">
 <h1>Configuring the software</h1>
@@ -47,6 +47,8 @@ make <strong>meteopoll</strong>(1) loose some data. To prevent this,
 <strong>meteopoll</strong>(1) usually writes the updates to a message queue,
 and  lets the <strong>meteodequeue</strong>(1) program add them to the
 database.
+<strong>meteopoll</strong>(1) also maintains the map file, which can be
+used to make near real time information from the weather station available.
 </dd>
 <dt>meteodequeue</dt>
 <dd>This program opens the messages queue and reads updates which it
@@ -74,6 +76,11 @@ A sample cron job script is included in the distribution.
 To top off the installation, configure the meteo browser to allow
 graphical browsing of the meteo database.
 See the <a href="http://meteo.othello.ch/README.browser">README.browser</a> for details.
+</p>
+<p>
+There also is a PHP script to display the current station data in textual
+form (no fancy graphics). It uses the <strong>meteomap</strong> program
+to atomically read the meteo map file maintained by <strong>meteopoll</strong>.
 </p>
 </div>
 <div id="footer">

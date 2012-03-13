@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.52 2004/05/08 20:09:32 afm Exp $
+# $Id: Makefile.am,v 1.53 2006/05/07 19:47:22 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
@@ -12,7 +12,7 @@ LDADD = ../lib/libmeteo.la
 
 bin_PROGRAMS = meteopoll meteoavg meteolast				\
 	meteodequeue meteodraw meteolabel meteodbdump meteosensors	\
-	meteosunriset
+	meteosunriset meteomap
  
 meteoavg_SOURCES = meteoavg.cc
 meteodequeue_SOURCES = meteodequeue.cc
@@ -23,10 +23,12 @@ meteolast_SOURCES = meteolast.cc
 meteodbdump_SOURCES = meteodbdump.cc
 meteosensors_SOURCES = meteosensors.cc
 meteosunriset_SOURCES = meteosunriset.cc
+meteomap_SOURCES = meteomap.cc
 
 test:	meteopoll
 	cp /dev/null /var/tmp/meteopoll.log
 	./meteopoll -F -s Altendorf -l file:///var/tmp/meteopoll.log \
+		-m /var/tmp/meteo.xml \
 		-p `pwd`/meteopoll- -b msgqueue \
 		-d -d -d -f `pwd`/../conf/meteo.xml
 

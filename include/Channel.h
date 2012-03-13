@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Channel.h,v 1.7 2004/02/25 23:52:34 afm Exp $
+ * $Id: Channel.h,v 1.8 2006/05/07 19:47:22 afm Exp $
  */
 #ifndef _Channel_h
 #define _Channel_h
@@ -13,12 +13,15 @@
 
 namespace meteo {
 
+#define	DEFAULT_TIMEOUT	6	// 5 seconds seems to be too short for some
+				// stations to work reliably
+
 class Channel {
 protected:
-	int	f;
+	int	f; // file descriptor for connection
 	Timeval	t;
 public:
-	Channel(int delay = 5) : t(delay) { f = -1; }
+	Channel(int delay = DEFAULT_TIMEOUT) : t(delay) { f = -1; }
 	virtual	~Channel(void);
 
 	// send operations

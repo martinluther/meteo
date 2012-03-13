@@ -3,7 +3,7 @@
 //          latitude and elevation above (or below, if negative) the horizon
 //
 // (c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
-// $Id$
+// $Id: Sun.h,v 1.1 2006/05/07 20:34:33 afm Exp $
 //
 #ifndef _Sun_h
 #define _Sun_h

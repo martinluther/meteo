@@ -1,0 +1,29 @@
+.TH METEOSUNRISET "1" "May 2004" "Meteo station tools" Othello
+.SH NAME
+meteomap \- display the contents of the map file
+.SH SYNOPSIS
+meteomap
+.I mapfile
+.SH DESCRIPTION
+Since most such programs do not read their input in an atomic operation,
+the data in the map file maintained by meteopoll with the
+.B -m
+option may change between invocations of
+.BR
+read (2).
+.BR meteomap (1)
+reads the data in an atomic operation and writes it to standard output,
+the stylesheet processor can then read the data through a pipe.
+
+It is possible to use other programs, like
+.BR dd (1)
+provided they are used with a block size of at least the length
+of the map file. Currently, an 8k map file is allocated independently
+of the station type.
+
+.SH "SEE ALSO"
+.BR meteo (1),
+.BR meteopoll (1)
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

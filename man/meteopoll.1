@@ -14,6 +14,8 @@ meteopoll [
 .BI \-p pidfile
 ] [
 .BI \-f conffile
+] [
+.BI \-m mapfile
 ]
 .BI \-s stationname
 .SH DESCRIPTION
@@ -77,6 +79,10 @@ Use
 to read the configuration, see 
 .BR meteo.xml (5)
 for the configuration syntax.
+.TP
+.BI \-m mapfile
+map all data read from the station in XML form to the
+.IR mapfile .
 .TP
 .B \-F
 stay in foreground. Useful during debugging.

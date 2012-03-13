@@ -5,13 +5,14 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Recorder.h,v 1.4 2004/02/25 23:52:34 afm Exp $
+ * $Id: Recorder.h,v 1.6 2006/05/07 21:48:14 afm Exp $
  */
 #ifndef _Recorder_h
 #define _Recorder_h
 
 #include <BasicRecorder.h>
 #include <string>
+#include <Mapfile.h>
 
 namespace meteo {
 
@@ -56,6 +57,10 @@ public:
 	void	update(const Value& other);
 	stringlist	updatequery(const time_t timekey,
 		const int sensorid) const;
+
+	// access data
+	double	getValue() const { return bv->getValue(); }
+	const std::string&	getUnit() const { return bv->getUnit(); }
 
 	// display methods: display the information in this value either as
 	//                  an XML string or as plain text

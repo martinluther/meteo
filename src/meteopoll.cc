@@ -5,7 +5,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteopoll.cc,v 1.26 2004/02/25 23:41:13 afm Exp $
+ * $Id: meteopoll.cc,v 1.28 2006/05/07 21:48:14 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -29,6 +29,7 @@
 #include <StationFactory.h>
 #include <Configuration.h>
 #include <MeteoException.h>
+#include <Mapfile.h>
 #include <Datasink.h>
 #include <Daemon.h>
 #include <mdebug.h>
@@ -72,7 +73,8 @@ void	kill_child(int cause) {
 	return;
 }
 
-static void	loop(const std::string& station) {
+static void	loop(const std::string& station,
+			const std::string& mapfilename) {
 	// limit memory to 16MB so this process cannot monopolize the system
 #define	memmax	0x1 << 25
 	struct rlimit	l;
@@ -92,6 +94,13 @@ static void	loop(const std::string& station) {
 		station.c_str());
 	meteo::Station	*s = meteo::StationFactory().newStation(station);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "station %s ready", station.c_str());
+
+	// add the mapfile if mapfilename is set
+	if (!mapfilename.empty()) {
+		meteo::Mapfile	*mapfile = new meteo::Mapfile(mapfilename, true);
+		mapfile->setStationname(station);
+		s->addMapfile(mapfile);	// takes ownership
+	}
 
 	// create a data sink
 	meteo::Datasink	*ds = meteo::DatasinkFactory().newDatasink(station);
@@ -154,19 +163,20 @@ static void	usage(void) {
 "   -s stationname    let this process connect to station named stationname\n"
 "   -b prefs          add backend preference prefs (one of msgqueue, mysql\n"
 "                     file, debug)\n"
-"   -p pidfile        write the process pid to this file\n");
+"   -p pidfile        write the process pid to this file\n"
+"   -m mapfile        keep current sensor information in mapfile\n");
 }
 
 static int	meteopoll(int argc, char *argv[]) {
 	std::string	conffile(METEOCONFFILE);
 	std::string	logurl("file:///-");	// logging to stderr
-	std::string	station;
+	std::string	station, mapfilename;
 	meteo::stringlist	preferences;
 	std::string	pidfileprefix;
 
 	// parse command line
 	int	c;
-	while (EOF != (c = getopt(argc, argv, "dl:f:s:b:p:VFh?")))
+	while (EOF != (c = getopt(argc, argv, "dl:f:m:s:b:p:VFh?")))
 		switch (c) {
 		case 'd':
 			debug++;
@@ -197,6 +207,9 @@ static int	meteopoll(int argc, char *argv[]) {
 		case '?':
 			usage();
 			exit(EXIT_SUCCESS);
+		case 'm':
+			mapfilename = std::string(optarg);
+			break;
 		default:
 			mdebug(LOG_ERR, MDEBUG_LOG, 0,
 				"option %c not implemented", c);
@@ -273,7 +286,7 @@ static int	meteopoll(int argc, char *argv[]) {
 			try {
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"starting loop(%s)", station.c_str());
-				loop(station);
+				loop(station, mapfilename);
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 					"return from loop");
 			} catch (meteo::MeteoException& e) {

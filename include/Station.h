@@ -3,7 +3,7 @@
  *
  * (c) 2003 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Station.h,v 1.18 2004/02/25 23:52:35 afm Exp $
+ * $Id: Station.h,v 1.19 2006/05/07 19:47:22 afm Exp $
  */
 #ifndef _Station_h
 #define _Station_h
@@ -19,6 +19,7 @@
 #include <PacketReader.h>
 #include <SensorStation.h>
 #include <ReaderInfo.h>
+#include <Mapfile.h>
 
 namespace meteo {
 
@@ -32,6 +33,7 @@ class Station {
 	int		offset;
 	int		packets;
 	sensormap_t	sensors;
+	Mapfile		*mapfile;
 protected:
 	// the readers map contains all the readers, and allows the station
 	// to read data symbolically. Since real stations may redefine the
@@ -45,8 +47,6 @@ protected:
 	void	calibrateReader(const std::string& readername,
 			const Calibrator& cal);
 
-	// the Datarecord accumulates the data known to the station
-	DataRecorder	r;
 public:
 	// construction, also retrieves the stationid
 	Station(const std::string& n);
@@ -56,6 +56,11 @@ public:
 	const std::string&	getName(void) const { return name; }
 	int	getId(void) const { return stationid; }
 	const int	getOffset(void) { return offset; }
+
+	// add a mapfile (takes ownership of the mapfile)
+	void	addMapfile(Mapfile *_mapfile) {
+		mapfile = _mapfile;
+	}
 
 	// read values from packets
 	Value	readValue(const std::string& readername,

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+	support.xml	support options for meteo
+
+	(c) 2004 Dr. Andreas Mueller, Beratung und Entwicklung
+	$Id: news.xml.in,v 1.7 2004/05/08 20:09:32 afm Exp $
+-->
+
+<page name="support">
+<h1>Support</h1>
+<p>
+If you need help setting up meteo, consider asking the mailing list.
+You must be subscribed to the mailing list if you want to post, send
+a message with the single word <code>subscribe</code> in the body to
+<a href="mailto:meteo-request@lists.othello.ch">meteo-request@lists.othello.ch</a>.
+</p>
+<p>
+You may also send mail to the author, but your problem may actually take
+longer to be resolved, as I cannot always respond in a timely manner.
+</p>
+</page>
