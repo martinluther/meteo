@@ -210,7 +210,7 @@ be moved by hand to where you prefer. I usually place the configuration
 file in /usr/local/etc, and the HTML pages in DocumentRoot/meteo for
 the virtual server through which the graphs should be accessed.
 
-If you want to use the meteobrowser.php script, you should name
+   If you want to use the meteobrowser.php script, you should name
 your configuration files meteo-<stationname>.conf, as this is what
 the script assumes (the directory containing the script is configurable).
 The installation of the meteo browser (the PHP script meteobrowser.php)
@@ -220,6 +220,8 @@ inside the webserver hierarchy.
    A sample start/stop script to place in /etc/init.d (or wherever your
 system likes to keep those) is also supplied as rc.meteo.
 
+   There is an sql script in the db directory that helps to set up the
+database tables, please read db/README for more information.
 
 
 Plattform specfic guidance
@@ -239,4 +241,4 @@ Linux:
     variable during configure and/or compile.
 
 --
-$Id: INSTALL,v 1.8 2002/01/18 23:34:21 afm Exp $
+$Id: INSTALL,v 1.9 2002/03/08 23:50:43 afm Exp $

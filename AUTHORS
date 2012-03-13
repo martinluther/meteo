@@ -1,8 +1,16 @@
-Andreas Mueller <afm@othello.ch>
-Bubental 53
-CH-8852 Altendorf
+Main author and current maintainer:
 
-Switzerland
+	Andreas Mueller <afm@othello.ch>
+	Bubental 53
+	CH-8852 Altendorf
+
+	Switzerland
+
+Contributors:
+
+	Bruce Hewitson		pointed out a bug in meteodata.c
+
+
 
 --
-$Id: AUTHORS,v 1.2 2001/03/18 13:40:45 afm Exp $
+$Id: AUTHORS,v 1.3 2002/03/14 15:06:15 afm Exp $

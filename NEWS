@@ -1,3 +1,6 @@
+0.3.3 is a bug fix release, with only minor, but for some users essential,
+changes.
+
 This release adds some polish to the meteobrowser by allowing it to
 completely localized (however, while it works on Linux, it gettext
 seems not to work on Solaris 8.
@@ -9,4 +12,4 @@ should now be a thing of the past
 
 
 --
-$Id: NEWS,v 1.9 2002/01/30 10:54:29 afm Exp $
+$Id: NEWS,v 1.10 2002/03/14 15:06:15 afm Exp $

@@ -4,7 +4,7 @@ AC_REVISION([1.0])dnl
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(include/meteo.h)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(meteo, 0.3.2)
+AM_INIT_AUTOMAKE(meteo, 0.3.3)
 AM_CONFIG_HEADER(include/config.h)
 
 dnl add support for libtool

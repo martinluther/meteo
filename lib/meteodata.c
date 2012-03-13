@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodata.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: meteodata.c,v 1.3 2002/03/14 15:06:15 afm Exp $
  */
 #include <meteodata.h>
 #include <stdlib.h>
@@ -220,7 +220,7 @@ void	meteodata_start(meteodata_t *a) {
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 				"(rain_t *)malloc(%d) = %p",
-				__FILE__, __LINE__, sizeof(rain_t), a->rain);
+				sizeof(rain_t), a->rain);
 	}
 	a->rain->rain = 0.;
 	a->rain->raintotal = -1.;
@@ -230,7 +230,7 @@ void	meteodata_start(meteodata_t *a) {
 		a->solar = (meteovalue_t *)malloc(sizeof(meteovalue_t));
 		if (debug)
 			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
-				"%s:%d: (meteovalue_t *)malloc(%d) = %p",
+				"(meteovalue_t *)malloc(%d) = %p",
 				sizeof(meteovalue_t), a->solar);
 	}
 	a->solar->value = 0.;

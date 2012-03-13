@@ -1,0 +1,39 @@
+Database installation
+---------------------
+
+The meteo package expects to store the data in a mysql database. This
+allows to keep high resolution data an averages readily available for
+meteograph to easily produce graphs for any time during the measurement
+interval.
+
+The script meteo.sql creates the necessary tables. Connect as a privileged
+user to the MySQL server and create a database:
+
+	mysql> create database meteo;
+
+Then run the meteo.sql script against this database:
+
+	$ mysql -u user -p meteo < meteo.sql
+	Enter password: ...
+
+After the database is created, you must grant the meteo users access to
+the tables. You will usually want to have two users: one for meteodequeue
+only to update the tables, the other for meteograph to read off data and
+draw graphs. The commands for the read only user will look like
+
+	mysql> grant select on stationdata to meteo@localhost 
+		identified by 'public';
+	mysql> grant select on averages to meteo@localhost;
+	mysql> flush privileges;
+
+and for the read/write user:
+
+	mysql> grant select, insert on stationdata to mtp@localhost 
+		identified by 'private';
+	mysql> grant select, insert on averages to mtp@localhost;
+	mysql> flush privilges;
+
+Enter username and password also in your meteo.conf file.
+
+--
+$Id: README,v 1.1 2002/03/08 23:50:43 afm Exp $
