@@ -17,13 +17,18 @@ case `uname` in
 			--with-html-dir=/srv/www/htdocs/meteo		\
 			--with-browser-dir=/srv/www/htdocs/browser
 		;;
-	SunOS|Darwin)
+	SunOS)
 		# make sure mysql_config is on the PATH
 		PATH=/usr/local/bin:/usr/local/mysql/bin:$PATH
 		export PATH
-#		./configure						\
-#			--with-html-dir=/usr/local/apache2/htdocs/meteo	\
-#			--with-browser-dir=/usr/local/apache2/htdocs/browser
+		./configure						\
+			--with-html-dir=/usr/local/apache2/htdocs/meteo	\
+			--with-browser-dir=/usr/local/apache2/htdocs/browser
+		;;
+	Darwin)
+		# make sure mysql_config is on the PATH
+		PATH=/usr/local/bin:/usr/local/mysql/bin:$PATH
+		export PATH
 		./configure						\
 			--with-html-dir=/Library/WebServer/Documents/meteo \
 			--with-browser-dir=/Library/WebServer/Documents/browser

@@ -35,7 +35,7 @@ Energy::Energy(const std::string& stationname) : OldDavisStation(stationname, 30
 
 	// retrieve the pressure calibration number from the station
 	ShortPacketReader	pressurereader(1, true, true);
-	double	pressure_cal = pressurereader(readBytes(1, 0x18, 2));
+	double	pressure_cal = pressurereader(readBytes(1, 0x18, 2))/1000.;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %f", pressure_cal);
 
 	// retrieve temperature calibration numbers
@@ -58,15 +58,16 @@ Energy::Energy(const std::string& stationname) : OldDavisStation(stationname, 30
 		speed_cal);
 
 	// add calibrators
-	calibrateReader("temperature", Calibrator(0., temperature_cal));
-	calibrateReader("temperature_inside",
+	calibrateReader("inside.temperature", Calibrator(0., temperature_cal));
+	calibrateReader("outside.temperature",
 		Calibrator(0., temperature_inside_cal));
-	calibrateReader("rain", Calibrator(100./rain_cal, 0.));
-	calibrateReader("wind", Calibrator(1600./speed_cal, 0.));
+	calibrateReader("outside.rain", Calibrator(100./rain_cal, 0.));
+	calibrateReader("outside.wind", Calibrator(1600./speed_cal, 0.));
+	calibrateReader("inside.barometer", Calibrator(1., -pressure_cal));
 	Calibrator	humcal(1., humidity_cal);
 	humcal.setTopclip(100.);
 	humcal.setBottomclip(0.);
-	calibrateReader("humidity", humcal);
+	calibrateReader("outside.humidity", humcal);
 }
 
 Energy::~Energy(void) { }

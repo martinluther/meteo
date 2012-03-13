@@ -58,6 +58,8 @@ Contributors: in no particular order, email addresses withheld to protect
 				0.9.0 on a GrowWeather
 	Carmen Mueller		(http://carmen.othello.ch) contributed the
 				new meteo web site design
+	Carsten Guenther	found a bug in ReaderInfo.cc, where all the
+				extra humidity readers had the same name
 
 --
-$Id: AUTHORS,v 1.10 2003/11/01 18:00:30 afm Exp $
+$Id: AUTHORS,v 1.11 2003/11/10 06:01:12 afm Exp $

@@ -273,6 +273,17 @@ Solaris:
     described below has also been reported to occur with some versions
     of Solaris 2.6.
 
+	Sometimes the message queue size on Solaris is not large enough
+    (there are only about 3 to for messages that fit into the available
+    space), so you may want to increase that size. Unfortunately, these
+    are not dynamically tunable parameters even in Solaris 9, so you must
+    add the following lines to /etc/system
+
+	set msgsys:msginfo_msgmnb=524288
+	set msgsys:msginfo_msgtql=500
+
+    This allows 500 messages in the system takeing up a total of 512kB.
+
 Linux:
 	Some Linux distributions have the gd library compiled with freetype
     support. Consequently, the meteo programs must be linked against the
@@ -281,6 +292,9 @@ Linux:
     recent Linux distributions already include it. Installing it in addition
     to gd, e.g. under /usr/local, usually does not do any harm and simplifies
     gd based development.
+
+	In Linux, the message queue size is dynamically adjustable, just
+    write the desired size to /proc/sys/kernel/msg{max,mnb,mni}.
 
 Mac OS X:
 	There seems to be a problem with libtool on this platform, somehow
@@ -362,4 +376,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.23 2003/11/02 12:59:45 afm Exp $
+$Id: INSTALL,v 1.24 2003/11/03 01:20:32 afm Exp $

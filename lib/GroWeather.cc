@@ -36,9 +36,9 @@ GroWeather::GroWeather(const std::string& stationname) : OldDavisStation(station
 
 	// retrieve the pressure calibration number from the station
 	ShortPacketReader	pressurereader(1, true, true);
-	double pressure_cal = pressurereader(readBytes(1, 0x20, 2));
+	double pressure_cal = pressurereader(readBytes(1, 0x20, 2))/1000.;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %f", pressure_cal);
-	Calibrator	pressurecal(1., pressure_cal);
+	Calibrator	pressurecal(1., -pressure_cal);
 
 	// retrieve temperature calibration numbers
 	NibblePacketReader	temperaturereader(1, true, 3);

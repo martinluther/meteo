@@ -9,7 +9,7 @@
 #include <iostream>
 #include <unistd.h>
 
-int	main(int argc, char *argv[]) {
+static int	meteolabel(int argc, char *argv[]) {
 	int	c;
 	bool	outtime = false, outctime = false, outlabel = true,
 		outtitle = false;
@@ -92,3 +92,14 @@ int	main(int argc, char *argv[]) {
 	exit(EXIT_SUCCESS);
 }
 
+
+int	main(int argc, char *argv[]) {
+	try {
+		meteolabel(argc, argv);
+	} catch (meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteolabel: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
+	exit(EXIT_SUCCESS);
+}

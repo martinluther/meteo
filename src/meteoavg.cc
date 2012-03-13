@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteoavg.cc,v 1.9 2003/10/25 00:52:32 afm Exp $
+ * $Id: meteoavg.cc,v 1.10 2003/11/11 08:13:54 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -27,6 +27,7 @@
 #include <printver.h>
 #include <string>
 #include <mdebug.h>
+#include <MeteoException.h>
 
 extern int	optind;
 extern char	*optarg;
@@ -111,7 +112,7 @@ printf(
 );
 }
 
-int	main(int argc, char *argv[]) {
+static int	meteoavg(int argc, char *argv[]) {
 	std::string	conffilename(METEOCONFFILE);
 	std::string	station;
 	int		c, naverages = -1, interval = 0;
@@ -272,5 +273,20 @@ int	main(int argc, char *argv[]) {
 			avg.add(t, interval, all);
 	}
 
+	exit(EXIT_SUCCESS);
+}
+
+// main(argc, argv)	wrapper to catch MeteoExceptions thrown inside the
+//			real main function. We need the other main function
+//			as scope for the Daemon class, since the scope
+//			determines how long the PID file will be around
+int	main(int argc, char *argv[]) {
+	try {
+		meteoavg(argc, argv);
+	} catch (meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteoavg: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

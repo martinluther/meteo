@@ -25,7 +25,7 @@
 #include <mdebug.h>
 #include <fstream>
 
-int	main(int argc, char *argv[]) {
+static int	meteodbdump(int argc, char *argv[]) {
 	meteo::stringlist	stations;
 	std::string	basename("./");
 	std::string	logurl("file:///-");
@@ -94,5 +94,16 @@ int	main(int argc, char *argv[]) {
 	cd.dumpStations(stations);
 
 	// that's it
+	exit(EXIT_SUCCESS);
+}
+
+int	main(int argc, char *argv[]) {
+	try {
+		meteodbdump(argc, argv);
+	} catch (meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteodbdump: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

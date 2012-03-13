@@ -3,50 +3,50 @@ Using the Vantage Pro with a Lantronix UDS-10 Device Server
 
 Connecting a weather station directly to a computer leads to some
 risks. A cabled weather station connects to the console through a
-rather  long  cable,  so there are plenty of occasions to pick up
+rather long cable, so there are plenty of occasions  to  pick  up
 very high voltages during thunderstorms. Even if not directly hit
-by lightning, voltages much higher than the line driver built in­
-to the console of a Vantage Pro can handle can be coupled in  via
-ground,  or  via  induction. The problem for the computer is that
-usually these high voltages also appear at the serial  interface,
-possible destroying the interface chips.
+by lightning, voltages much higher than  the  line  driver  built
+into  the  console  of a Vantage Pro can handle can be coupled in
+via ground, or via induction. The problem  for  the  computer  is
+that  usually  these  high  voltages  also  appear  at the serial
+interface, possible destroying the interface chips.
 
-The station a Rossboda has a particularly bad history in this re­
-spect.  It began as a webcam only site, with the  webcam  mounted
-in  the interior of the building. The webcam was not the problem,
-but the computer managing the images an build  MPEG  videos  from
+The station a Rossboda has a particularly  bad  history  in  this
+respect.  It began as a webcam only site, with the webcam mounted
+in the interior of the building. The webcam was not the  problem,
+but  the  computer  managing the images an build MPEG videos from
 the images was connected via a modem to the phone line. The phone
-line enters the building at a different place from the power,  so
-that  in  case  of ligthning strikes somewhere near the building,
-there were quite high voltages between the  two.  About  four  or
-five  modems  have been killed by lightning, until the phone line
-was replaced by ISDN. ISDN has the exact same  problem,  but  now
-it's  no longer the computer that is hit (lighting also destroyed
-three motherboards, a particularly impressive incident  made  the
-serial  line  driver  chips explode, one could see the blank chip
-because the plastic case exploded), but rather the line  termina­
-tion  unit owned by the telephone company. This unit has been re­
-placed at least three times during the last year.
+line  enters the building at a different place from the power, so
+that in case of ligthning strikes somewhere  near  the  building,
+there  were  quite  high  voltages between the two. About four or
+five modems have been killed by lightning, until the  phone  line
+was  replaced  by  ISDN. ISDN has the exact same problem, but now
+it's no longer the computer that is hit (lighting also  destroyed
+three  motherboards,  a particularly impressive incident made the
+serial line driver chips explode, one could see  the  blank  chip
+because   the   plastic  case  exploded),  but  rather  the  line
+termination unit owned by the telephone company.  This  unit  has
+been replaced at least three times during the last year.
 
 After I installed the Vantage Pro, everything went quite well for
 a  while,  winter and spring did not bring any severe storms. But
 during summer, the station was hit so badly that the console  was
 destroyed,  and  its electronics had to be replaced. The computer
 was not affected by this, because the  station  is  not  directly
-connected to the computer.  instead, I use a Lantronix UDS-10 de­
-vice server connected to the console via  its  serial  port.  The
-connection to the computer is via ethernet.  So there are two ad­
-ditional devices between the station and the computer  that  will
+connected  to  the  computer.   instead, I use a Lantronix UDS-10
+device server connected to the console via its serial  port.  The
+connection  to  the  computer  is via ethernet.  So there are two
+additional devices between the station and the computer that will
 be  destroyed  before  the  computer  gets hit: the device server
 (with its own power supply and ground) and a small  ethernet  hub
 (costs only 40$).
 
-Of  course,  I  don't  really want to pay for more repairs of the
-console, so I added a surge  protector  circuit  from  Meteolabor
-(www.meteolabor.ch).   They build very fine devices and have vast
-experience with lightning and NEMP protection (they also do mili­
-tary  projects  for NEMP protection).  If this setup survives the
-storm season in autumn, we can say "problem solved!".
+Of course, I don't really want to pay for  more  repairs  of  the
+console,  so  I  added  a surge protector circuit from Meteolabor
+(www.meteolabor.ch).  They build very fine devices and have  vast
+experience  with  lightning  and  NEMP  protection  (they also do
+military projects for NEMP protection).  If this  setup  survives
+the storm season in autumn, we can say "problem solved!".
 
 Connecting the Lantronix UDS-10 to a Vantage Pro
 ------------------------------------------------
@@ -54,17 +54,17 @@ Connecting the Lantronix UDS-10 to a Vantage Pro
 The Vantage Pro comes with a connector  suitable  for  the  9-pin
 COM1/2  serial  ports  on  a PC. The UDS-10 has a 25pin old style
 connector. Both are really overkill, as the Vantage Pro only uses
-ground  and  TxD  and  RxD.   To  connect  the Vantage Pro to the
-UDS-10, you must use a null-modem connector, i.e. the RxD and TxD
+ground  and  TxD and RxD.  To connect the Vantage Pro to the UDS-
+10, you must use a null-modem connector, i.e.  the  RxD  and  TxD
 lines  must  be  crossed  (the UDS-10 behaves like a PC as far as
 wiring is concerned, you could directly connect a modem).
 
 Configuring the Lantronix UDS-10
 --------------------------------
 
-You don't need any special softare installed on your system,  ev­
-erything you need are a few standard utilities installed with any
-reasonable Unix system.
+You don't need any special  softare  installed  on  your  system,
+everything  you  need are a few standard utilities installed with
+any reasonable Unix system.
 
 Please read the UDS-10's documentation to learn how to set the IP
 address  and  netmask  parameters.  As soon as you have a working
@@ -83,12 +83,12 @@ me:
     Connect Mode: C0  Disconn Mode: 00
     Flush   Mode: 00
 
-Note that the UDS-10 has some clever modes to reduce network  us­
-age by grouping several characters in a single packet. While this
-is great for terminal applications, it really  isn't  that  great
-for  a  weather  station, where the time when the data arrives at
-the computer also plays some role (e.g. for computations of  rain
-rate or wind speed), this is why the flush modes are 00.
+Note that the UDS-10 has some  clever  modes  to  reduce  network
+usage  by  grouping  several characters in a single packet. While
+this is great for terminal applications,  it  really  isn't  that
+great for a weather station, where the time when the data arrives
+at the computer also plays some role (e.g.  for  computations  of
+rain rate or wind speed), this is why the flush modes are 00.
 
 --
 $Id: uds10.in,v 1.1 2003/06/03 23:00:44 afm Exp $

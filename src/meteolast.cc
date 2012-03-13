@@ -21,12 +21,13 @@
 #include <Configuration.h>
 #include <Query.h>
 #include <QueryProcessor.h>
+#include <MeteoException.h>
 #include <iostream>
 
 void	usage(const char *progname) {
 }
 
-int	main(int argc, char *argv[]) {
+static int	meteolast(int argc, char *argv[]) {
 	std::string	conffilename(METEOCONFFILE);
 	std::string	stationname("undefined");
 	std::string	logurl("file:///-");
@@ -120,5 +121,16 @@ int	main(int argc, char *argv[]) {
 		}
 	}
 
+	exit(EXIT_SUCCESS);
+}
+
+int	main(int argc, char *argv[]) {
+	try {
+		meteolast(argc, argv);
+	} catch (meteo::MeteoException &me) {
+		fprintf(stderr, "MeteoException in meteolast: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

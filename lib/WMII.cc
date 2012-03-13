@@ -37,9 +37,9 @@ WMII::WMII(const std::string& stationname) : OldDavisStation(stationname, 18) {
 	// retrieve the pressure calibration number from the station
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "reading pressure calibration number");
 	ShortPacketReader	pressurereader(1, true, true);
-	double	pressure_cal = pressurereader(readBytes(1, 0x2c, 2));
+	double	pressure_cal = pressurereader(readBytes(1, 0x2c, 2))/1000.;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %f", pressure_cal);
-	Calibrator	pressurecal(1., pressure_cal);
+	Calibrator	pressurecal(1., -pressure_cal);
 
 	// retrieve temperature calibration numbers
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "reading temp calibration number");

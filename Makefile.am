@@ -14,3 +14,6 @@ EXTRA_DIST = shtool README.tmpl SETUP configureit BUGS
 README: 	README.tmpl
 	(figlet meteo-$(VERSION); cat README.tmpl) > README
 
+update-tools:
+	libtoolize -c -f
+	shtoolize -q all

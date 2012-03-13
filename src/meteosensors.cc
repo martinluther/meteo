@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <StationFactory.h>
+#include <MeteoException.h>
 
 void	knowntypes(FILE *out) {
 	meteo::stringlist	nt = meteo::ReaderInfo::knownTypes();
@@ -25,7 +26,7 @@ void	usage(char *name) {
 	exit(EXIT_FAILURE);
 }
 
-int	main(int argc, char *argv[]) {
+static int	meteosensors(int argc, char *argv[]) {
 	// this thing has only one argument, so if it is missing, we display
 	// a usage message
 	if (argc != 2)
@@ -45,5 +46,16 @@ int	main(int argc, char *argv[]) {
 		printf("%s %s %s\n", srp->readername, srp->classname,
 			srp->readerunit);
 	} while ((++srp)->readername);
+	exit(EXIT_SUCCESS);
+}
+
+int	main(int argc, char *argv[]) {
+	try {
+		meteosensors(argc, argv);
+	} catch (meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteosensors: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

@@ -229,7 +229,7 @@ static void	drawinterval(const std::string& currentgraph, int interval) {
 // - set up logging
 // - open the Configuration
 // - check which intervals should be drawn
-int	main(int argc, char *argv[]) {
+static int	meteodraw(int argc, char *argv[]) {
 	int		c;
 	std::string	conffilename(METEOCONFFILE);
 	std::string	logurl("file:///-");
@@ -364,5 +364,16 @@ int	main(int argc, char *argv[]) {
 		}
 	}
 
+	exit(EXIT_SUCCESS);
+}
+
+int	main(int argc, char *argv[]) {
+	try {
+		meteodraw(argc, argv);
+	} catch (meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteodraw: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

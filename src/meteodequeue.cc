@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: meteodequeue.cc,v 1.6 2003/10/14 23:47:46 afm Exp $
+ * $Id: meteodequeue.cc,v 1.7 2003/11/11 08:13:54 afm Exp $
  */
 
 #ifdef HAVE_CONFIG_H
@@ -40,7 +40,7 @@ printf(
 );
 }
 
-int	main(int argc, char *argv[]) {
+static int	meteodequeue(int argc, char *argv[]) {
 	int		c, foreground = 0;
 	std::string	conffilename(METEOCONFFILE);
 	std::string	pidfilename("/var/run/meteodequeue.pid");
@@ -116,5 +116,17 @@ int	main(int argc, char *argv[]) {
 
 	// if we ever get to this point, we close the database and	
 	// exit cleanly							
+	exit(EXIT_SUCCESS);
+}
+
+// main(argc, argv)	Exception catching wrapper for the main function
+int	main(int argc, char *argv[]) {
+	try {
+		meteodequeue(argc, argv);
+	} catch(meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteodequeue: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

@@ -155,7 +155,7 @@ static void	usage(void) {
 "   -p pidfile        write the process pid to this file\n");
 }
 
-int	main(int argc, char *argv[]) {
+static int	meteopoll(int argc, char *argv[]) {
 	std::string	conffile(METEOCONFFILE);
 	std::string	logurl("file:///-");	// logging to stderr
 	std::string	station;
@@ -331,5 +331,21 @@ int	main(int argc, char *argv[]) {
 	} while (!giveup);
 
 	// child exited ok, so we do the same
+	exit(EXIT_SUCCESS);
+}
+
+// main(argc, argv)	the main function is only needed as a wrapper to
+//			catch an Exception and print a nice error message
+//			on standard error (nothing is logged in this case
+//			as it is unlikely that logging has been initialized
+//			already
+int	main(int argc, char *argv[]) {
+	try {
+		meteopoll(argc, argv);
+	} catch (meteo::MeteoException& me) {
+		fprintf(stderr, "MeteoException in meteopoll: %s/%s\n",
+			me.getReason().c_str(), me.getAddinfo().c_str());
+		exit(EXIT_FAILURE);
+	}
 	exit(EXIT_SUCCESS);
 }

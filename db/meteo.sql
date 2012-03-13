@@ -3,7 +3,7 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.15 2003/10/30 20:43:14 afm Exp $
+-- $Id: meteo.sql,v 1.16 2003/11/11 08:13:53 afm Exp $
 --
 create table if not exists station (
 	name		varchar(60) not null,
@@ -132,6 +132,8 @@ create table if not exists sdata (
 	value		float not null,
 	primary key (timekey, sensorid, fieldid)
 );
+-- the following index i necessary to make the meteodbdump program perform
+create index sdatax1 on sdata(sensorid, timekey);
 
 create table if not exists avg (
 	timekey		integer not null,

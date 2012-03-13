@@ -39,7 +39,7 @@ Health::Health(const std::string& stationname) : OldDavisStation(stationname, 28
 
 	// retrieve the pressure calibration number from the station
 	ShortPacketReader	pressurereader(1, true, true);
-	double	pressure_cal = pressurereader(readBytes(1, 0x2c, 2));
+	double	pressure_cal = pressurereader(readBytes(1, 0x2c, 2))/1000.;
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %f", pressure_cal);
 
 	// retrieve temperature calibration numbers
@@ -58,7 +58,7 @@ Health::Health(const std::string& stationname) : OldDavisStation(stationname, 28
 	calibrateReader("outside.temperature", Calibrator(1., temperature_cal));
 	calibrateReader("outside.rain", Calibrator(100./rain_cal, 0.));
 	calibrateReader("outside.wind", Calibrator(1600./speed_cal, 0.));
-	calibrateReader("inside.barometer", Calibrator(1., pressure_cal));
+	calibrateReader("inside.barometer", Calibrator(1., -pressure_cal));
 	Calibrator	humcal(1., humidity_cal);
 	humcal.setTopclip(100.);
 	humcal.setBottomclip(100.);
