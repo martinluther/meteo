@@ -8,18 +8,23 @@
 <body bgcolor="ffffff" leftmargin="0" rightmargin="0" topmargin="0">
 <img src="normband.jpg" width="841" height="150" border="0">
 <p><h1>Requirements</h1>
-<p>Generally speaking, <b>meteo</b> is quite lean,
+<p>Generally speaking, <b>meteo</b> is quite lean, at least for current
+hardware. The reference installation is on a dual 60MHz processor
+SPARCstation 20 with 200MB of RAM, this can hardly be called current,
+Sun has canceled support for this platform for several years now.
+</p>
 <p>
 <strong>Disk space:</strong>
 To build meteo on a Linux system, you need at least 150MB of disk space,
 the installed libraries with debug symbols take about 45MB (they become
 considerably smaller if you strip them), the installed programms use
-about 5.5MB.
+about 5.5MB. On Solaris, the shared library is smaller, but the
+archive library is larger. The binaries are linked against the
+shared libraries by default.
 </p>
 <p>
 <strong>CPU:</strong> While compiling the software can take some
-time (it takes about an hour on the dual processor SPARCstation 20
-that hosts the meteo website http://meteo.othello.ch/),
+time (it takes about an hour on the reference machine),
 running meteo hardly produces any noticeable load on current hardware.
 On the meteo website server, meteo's activities account for hardly more
 than about 10% of the CPU load. The most important portion of CPU load comes

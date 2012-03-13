@@ -249,6 +249,13 @@ Plattform specfic guidance
 ==========================
 
 Solaris:
+	On Solaris, gcc 3 must be configured to use the GNU linker and
+    assembler. If configured with the Sun linker/assembler, the resulting
+    meteopoll binary will crash as soon as an invalid humidity value is
+    read from the station. Note that the gcc from sunfreeware.com uses
+    the Sun tools, so you will have to build a new compiler configured
+    with --with-gnu-ld and --with-gnu-as.
+
 	The Solaris Bourne shell is limited in that it is unable to
     correctly execute the config.guess script (needed for libtool). Set
     the CONFIG_SHELL environment variable to something more reasonable
@@ -355,4 +362,4 @@ Frequently asked questions
    Environment' by W. Richard Stevens). See ipcrm(8).
 
 --
-$Id: INSTALL,v 1.22 2003/10/31 21:15:51 afm Exp $
+$Id: INSTALL,v 1.23 2003/11/02 12:59:45 afm Exp $

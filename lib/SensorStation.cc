@@ -68,7 +68,7 @@ void	SensorStation::update(const std::string& packet) {
 			i->second.update(parentstation->readValue(readername,
 				packet));
 		} catch (MeteoException& me) {
-			mdebug(LOG_INFO, MDEBUG_LOG, 0,
+			mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
 				"exception during update: %s, %s",
 				me.getReason().c_str(), me.getAddinfo().c_str());
 		}

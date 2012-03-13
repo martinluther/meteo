@@ -1,13 +1,7 @@
 TODO
 ----
 
-* There seems to be a bug somewhere in gcc 3.3, as/ld on Solaris 9 or
-  even in Solaris nine that causes meteopoll to crash when an illegal
-  humidity value is read from the station. The same code works on Linux
-  and Mac OS X, so it's not an issue with endianness. I'll try to 
-  with a new gcc compiled to use the GNU as and ld, as I have seen
-  many cases in the past where switch from Solaris utilities to GNU
-  utilities solved such problems.
+* meteodbdump starts dump too early
 
 * fix the wrong alignment (vertical) of the ImageMap
 
@@ -26,4 +20,4 @@ Bugs
   in the XML file)
 
 --
-$Id: TODO,v 1.41 2003/10/31 21:15:51 afm Exp $
+$Id: TODO,v 1.42 2003/11/02 13:29:37 afm Exp $

@@ -9,11 +9,14 @@ meteodbdump [
 ] [
 .B \-d
 ] [
+.B \-r
+] [
 .BI \-f conffile
 ] [
 .BI \-l logurl
 ]
 .BI \-s station
+.I table ...
 .SH DESCRIPTION
 The 
 .BR meteodbdump (1)
@@ -29,6 +32,8 @@ time intervals.
 Also the meteo tables tend to be so large that
 .BR mysqldump (1)
 will run out of memory before anything is dumped.
+Furthermore, a dump into SQL statements is just too space consuming,
+so there is an option to request a more compact load file format.
 
 .BR meteodbdump (1)
 connects to the database using the read only connection specified in
@@ -62,6 +67,12 @@ table are not dumped. Since stations and fields are completely described
 only with this information, tools like
 .BR mysql_dump (1)
 should be used to backup those tables.
+
+Without any additional arguments,
+.BR meteodbdump (1)
+dumps all three tables, i.e. avg, header and sdata.
+The names of the tables to be dumped can be specified as additional
+arguments, in which case only the specified tables are dumped.
 
 .SH OPTIONS
 .TP
@@ -105,6 +116,11 @@ use more memory, and usually hurt concurrency noticably.
 .B \-d
 increase the debug level by one. Debug messages are written to standard
 error.
+
+.TP
+.B \-r
+request raw format, i.e. tabulater separated fields, one line per row.
+This reduces the output size by about a factor 3.
 
 .TP
 .BI \-f conffile

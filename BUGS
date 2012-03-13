@@ -11,6 +11,12 @@ BUGS
   problem: it will not work if built using Sun tools, due to bugs in 
   those tools).
 
+  Update: using gcc 3.3.2 configured to use the GNU tools does not exhibit
+  the problem. Although it is not quite clear now whether the compiler
+  or linker/assembler are to blame, the fact that everything works with
+  older versions of gcc on other platforms don't have the problem strongly
+  indicates that it really is a problem with Suns linker or assembler.
+
 - There are some problems with Mac OS X, the distribution tarball generated
   on my SuSE Linux 8.2 development system compiles but does not link on
   Mac OS X Jaguar. A distribution tarball generated on Mac OS X however
@@ -20,4 +26,4 @@ BUGS
   don't work.
 
 --
-$Id: BUGS,v 1.1 2003/10/31 21:15:51 afm Exp $
+$Id: BUGS,v 1.2 2003/11/02 12:59:45 afm Exp $

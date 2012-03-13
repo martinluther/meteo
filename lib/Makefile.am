@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.35 2003/10/25 13:17:48 afm Exp $
+# $Id: Makefile.am,v 1.36 2003/11/02 21:52:47 afm Exp $
 #
 
 lib_LTLIBRARIES = libmeteo.la
@@ -67,6 +67,7 @@ libmeteo_la_SOURCES =							\
 	Timestamp.cc							\
 	crc.c 								\
 	Daemon.cc							\
+	ChunkDumper.cc							\
 	printver.c							\
 	mdebug.c  
 

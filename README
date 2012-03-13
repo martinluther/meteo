@@ -1,9 +1,9 @@
-                _                    ___   ___   ___  
- _ __ ___   ___| |_ ___  ___        / _ \ / _ \ / _ \ 
-| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | | (_) | | | |
-| | | | | |  __/ ||  __/ (_) |_____| |_| |\__, | |_| |
-|_| |_| |_|\___|\__\___|\___/       \___(_) /_(_)___/ 
-                                                      
+                _                    ___   ___   _ 
+ _ __ ___   ___| |_ ___  ___        / _ \ / _ \ / |
+| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | | (_) || |
+| | | | | |  __/ ||  __/ (_) |_____| |_| |\__, || |
+|_| |_| |_|\___|\__\___|\___/       \___(_) /_(_)_|
+                                                   
 What's this?
 ------------
 
@@ -48,7 +48,9 @@ Prerequisites
 Meteo compiles and works with gcc 2.95.3 and gcc 3.x, but I've only tested
 some gcc 3.x versions, and no non-GNU compilers. Since the code is usually
 quite straight forward, and does not use any real GNUisms, it may also work
-with other compilers.
+with other compilers. On Solaris, gcc must be compiled to use GNU ld and
+GNU as, otherwise the meteopoll binary will crash when invalid data is
+read from the station, this is a Sun assembler or linker bug.
 
 Meteo requires quite a few packages that still do not come with all the
 modern operating systems it is known to run on. Linux users have a
@@ -63,7 +65,7 @@ GD	To compile this package, you will need a complete installation of
 	may be built with freetype support.
 
 	Starting with 0.8.2 it is no longer possible to use gd1, as the
-	alpha support only present in gd2 is no used.
+	alpha support only present in gd2 is now used.
 
 	(SuSE 8.2: add gdlib-devel)
 
@@ -91,7 +93,8 @@ libxml2	libxml2 is the XML parser of the Gnome project. It's main advantage
 
 If you plan to use the weather underground interface scripts contributed
 by Walter Poxon, you will need additional packages: perl and some perl
-modules related to database access.
+modules related to database access. Read Walter Poxons howto in 
+meteo-install.html for details.
 
 
 Weather Station URLs
@@ -153,8 +156,9 @@ Installation
 
 Read the INSTALL for installation instructions. Please also check the end
 of that file for plattform specific instructions. meteo has been tested on
-Solaris 2.8 and on Linux 2.4, which are the plattforms of the two sample
-installations. It may work on other Unix platforms.
+Solaris 2.9 and on Linux 2.4, which are the plattforms of the two sample
+installations. It also works on Mac OS X (large parts of the development
+are actually done on a Powerbook) and there are users using it on FreeBSD.
 
 There is a README in the db directory that explains how to set up the
 MySQL tables.
@@ -190,4 +194,4 @@ extensive changes make for very large patches, that are difficult to read.
 If there is no other way, please contact me first, so that we can team up.
 
 --
-$Id: README.tmpl,v 1.12 2003/10/31 21:15:51 afm Exp $
+$Id: README.tmpl,v 1.13 2003/11/02 12:59:45 afm Exp $

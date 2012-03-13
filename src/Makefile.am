@@ -3,7 +3,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.41 2003/10/30 20:43:15 afm Exp $
+# $Id: Makefile.am,v 1.42 2003/11/02 21:41:02 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
 AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
@@ -91,3 +91,11 @@ testdequeue:	meteodequeue
 testlast:	meteolast
 	DYLD_BIND_AT_LAUNCH=1 ./meteolast -x -d -w 1000000000 \
 		-f `pwd`/../conf/meteo.xml Lajeado
+
+#
+# test the dump programm
+#
+testdump:	meteodbdump
+	DYLD_BIND_AT_LAUNCH=1 ./meteodbdump -r -s Lajeado \
+		-l file:///- -d -b testdump- -f `pwd`/../conf/meteo.xml avg
+	

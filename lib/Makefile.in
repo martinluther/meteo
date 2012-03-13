@@ -19,7 +19,7 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.35 2003/10/25 13:17:48 afm Exp $
+# $Id: Makefile.am,v 1.36 2003/11/02 21:52:47 afm Exp $
 #
 
 srcdir = @srcdir@
@@ -209,6 +209,7 @@ libmeteo_la_SOURCES = \
 	Timestamp.cc							\
 	crc.c 								\
 	Daemon.cc							\
+	ChunkDumper.cc							\
 	printver.c							\
 	mdebug.c  
 
@@ -258,7 +259,7 @@ am_libmeteo_la_OBJECTS = MeteoException.lo Vector.lo BasicValue.lo \
 	Scale.lo Axis.lo GraphPoint.lo MapArea.lo ImageMap.lo \
 	GraphWindow.lo Graphics.lo Datarecord.lo Averager.lo \
 	MsgCommon.lo MsgQueuer.lo MsgDequeuer.lo Timestamp.lo crc.lo \
-	Daemon.lo printver.lo mdebug.lo
+	Daemon.lo ChunkDumper.lo printver.lo mdebug.lo
 libmeteo_la_OBJECTS = $(am_libmeteo_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/include
@@ -274,7 +275,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/BytePacketReader.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Calibrator.Plo ./$(DEPDIR)/Channel.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ChannelFactory.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/Color.Plo ./$(DEPDIR)/Configuration.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ChunkDumper.Plo ./$(DEPDIR)/Color.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/Configuration.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Converter.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/ConverterFactory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/Daemon.Plo ./$(DEPDIR)/DataRecorder.Plo \
@@ -449,6 +451,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Calibrator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChannelFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChunkDumper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Color.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Converter.Plo@am__quote@

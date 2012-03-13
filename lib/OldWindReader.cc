@@ -26,7 +26,8 @@ Value	OldWindReader::v(const std::string& packet) const {
 		azideg, speed);
 
 	ValueFactory	vf;
-	return vf.getValue(Vector(speed, azideg, true), "mph");	
+	return vf.getValue(Vector(speed, (short unsigned int)azideg, true),
+		"mph");	
 }
 
 bool	OldWindReader::valid(const std::string& packet) const {

@@ -1,3 +1,11 @@
+Release 0.9.1:
+	* pid extension was missing a period
+	* fix a cast in OldWindReader.cc
+	* info about Solaris bug
+	* meteodbdump truncated station names, which is no longer necessary
+	* added ability to write raw files to meteo, a binary ability would
+	  also be nice (find a format that is machine independent...)
+	* migrated the ChunkDumper class to the library
 
 Release 0.9.0:
 	This is the `Lajeado'-release of meteo. The university Univates
@@ -520,4 +528,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.98 2003/11/01 18:00:30 afm Exp $
+$Id: ChangeLog,v 1.102 2003/11/02 21:52:47 afm Exp $

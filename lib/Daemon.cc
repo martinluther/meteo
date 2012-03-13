@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: Daemon.cc,v 1.1 2003/10/18 07:33:04 afm Exp $
+ * $Id: Daemon.cc,v 1.2 2003/11/02 12:59:45 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -82,7 +82,7 @@ Daemon::Daemon(const std::string& pidfileprefix, const std::string& station,
 	if (station.empty())
 		pidfilename = pidfileprefix;
 	else
-		pidfilename = pidfileprefix + station + "pid";
+		pidfilename = pidfileprefix + station + ".pid";
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "pid file is %s", pidfilename.c_str());
 
 	// write our pid to the file
