@@ -1,3 +1,6 @@
+Release 0.8.5:
+	* incorrect pressure calibration reading (pointed out by Josep Sort)
+
 Release 0.8.4: Fixes contributed by Mark Trettin
 	* pressure calibration number was not used on Weather Monitor station
 	* meaning of wind direction letters was not clear, clarified through
@@ -335,4 +338,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.71 2003/08/03 21:24:38 afm Exp $
+$Id: ChangeLog,v 1.72 2003/08/18 20:26:11 afm Exp $

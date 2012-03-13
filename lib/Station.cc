@@ -247,7 +247,7 @@ WMII::WMII(const std::string& stationname) : Station(stationname) {
 	}
 
 	// read two bytes from the channel and store as a signed int
-	pressurecal = (int)getSignedShort(reply, 1);
+	pressurecal = (short)getSignedShort(reply, 1);
 	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "got pressurecal %d", pressurecal);
 
 	delete ch;
