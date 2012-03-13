@@ -2,7 +2,7 @@
 <head>
 <link href="meteo.css" type="text/css" rel="stylesheet">
 <title>Meteo Software Package</title>
-<!-- $Id: meteo.html.in,v 1.5 2002/11/24 22:31:06 afm Exp $ -->
+<!-- $Id: meteo.html.in,v 1.8 2003/06/09 00:59:25 afm Exp $ -->
 </head>
 <body bgcolor="#ffffff">
 <h1>Meteo</h1>
@@ -97,6 +97,11 @@ Note that 0.4.0 brought incompatible modifications in database format
 databases to the new format) and 0.5.0 brings incompatible changes in
 configuration file format (now XML based).
 </p>
+<p>
+Walter Poxon has contributed an
+<a href="meteo-install.html">Installation Howto</a> (thanks Walter!),
+which goes into some more detail.
+</p>
 <h2>Getting and installing the software</h2>
 <p>
 The meteo package is free software distributed under the GNU general
@@ -127,7 +132,7 @@ Most configuration happens inside the
 with the distribution.
 </li>
 <li>
-A minimal installation will run one instance of <b>meteoloop</b>(1)
+A minimal installation will run one instance of <b>meteopoll</b>(1)
 to collect data from the weather station and write it to the database.
 Furthermore, it will run a cron job using
 <b>meteograph</b>(1) to update the graphs for the web page, a sample
@@ -136,7 +141,7 @@ cron job script is included in the distribution.
 <li>
 More sophisticated installations will make use of the decoupling
 of weather station and database through a message queue, which involves
-running the <b>meteoloop</b>(1) program with the <b>-q</b> option,
+running the <b>meteopoll</b>(1) program with the <b>-b msgqueue</b> option,
 and in addition running an instance of the dequeuer process
 <b>meteodequeue</b>(1).
 </li>
@@ -187,12 +192,17 @@ Instruments</a>, has been very helpful in
 adapting the software for the Vantage Pro.
 </p>
 <p>
+Over time, many people have contributed by submitting bug reports
+(the bugs themselves were all my fault, of course). I tried to
+keep track of them in the AUTHORS file, please send me mail if I
+forgot someone.
+</p>
+<p>
 This software was mainly developed by
 <a href="mailto:andreas.mueller@othello.ch">Andreas M&uuml;ller</a>,
 contributions by others are detailed in the <a href="README">README</a>.
-You can also see the <a href="http://meteo.othello.ch/temp.html">room
-temperature of the office</a> where most of
-the development work takes place.
+You can also see the <a href="http://meteo.othello.ch/temp.html">server room
+temperature</a> where the main development machine lives.
 </p>
 
 <hr noshade size="1" />
@@ -200,7 +210,7 @@ the development work takes place.
 &copy; 2001 <a href="mailto:afm@othello.ch">Dr. Andreas M&uuml;ller</a>,
 <a href="http://www.othello.ch">Beratung und Entwicklung</a>
 <br />
-<i>Last modified: $Date: 2002/11/24 22:31:06 $</i>
+<i>Last modified: $Date: 2003/06/09 00:59:25 $</i>
 </p>
 </body>
 </html>

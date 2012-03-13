@@ -4,13 +4,17 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: xmlconf.h,v 1.1 2002/11/24 19:48:01 afm Exp $
+ * $Id: xmlconf.h,v 1.2 2003/06/06 15:11:05 afm Exp $
  */
 #ifndef _XMLCONF_H
 #define _XMLCONF_H
 
 #include <libxml/tree.h>
 #include <colors.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct meteoconf_s {
 	xmlDocPtr	xml;
@@ -47,5 +51,9 @@ extern const char	*xmlconf_get_string(const meteoconf_t *mc,
 extern ncolor_t	xmlconf_get_color(const meteoconf_t *mc,
 	const char *initialpath, const char *element, const char *name,
 	int interval, ncolor_t defaultvalue);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _XMLCONF_H */

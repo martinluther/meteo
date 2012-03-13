@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mdebug.c,v 1.3 2002/01/29 20:55:29 afm Exp $
+ * $Id: mdebug.c,v 1.5 2003/06/09 00:27:37 afm Exp $
  */
 #include <mdebug.h>
 #include <stdio.h>
@@ -57,10 +57,14 @@ int	mdebug_setup(const char *ident, const char *logurl) {
 
 	/* handle case of file log urls					*/
 	if (0 == strncmp("file://", logurl, 7)) {
+		logident = strdup(ident);
+		if (strcmp("/-", logurl + 7) == 0) {
+			logfile = stderr;
+			return 0;
+		}
 		logfile = fopen(logurl + 7, "a");
 		if (logfile == NULL)
 			logfile = stderr;
-		logident = strdup(ident);
 		return 0;
 	} 
 
@@ -128,6 +132,8 @@ void	mdebug(int loglevel, const char *file, int line, int flags,
 	const char *format, ...) {
 	va_list	ap;
 	va_start(ap, format);
+	if ((debug == 0) && (loglevel >= LOG_DEBUG))
+		return;
 	vmdebug(loglevel, file, line, flags, format, ap);
 	va_end(ap);
 }

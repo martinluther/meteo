@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Meteo Installation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1>Installing Meteo</h1>
+<p>
+Thanks to Walter Poxon and colleagues who provided these instructions.
+</p>
+<h2>Davis trivia for the day</h2>
+<p>The Davis Vantage Pro unit spits out wind direction in 1/100ths of a degree
+azimuth! ;)</p>
+<p>Jeff writes: The other day when I was twiddling with the rain collector it
+proudly announced, &quot;It's raining cats and dogs!!&quot;</p>
+
+<h2>Installing meteo</h2>
+<h3>Stuff you need on your system before compiling meteo:</h3>
+<p>Meteo installs fairly easily if you have the right pre-requisite
+packages installed on your system.</p>
+<p><br>
+  Here's a list of what I had to install (in roughly the order I needed to
+  install them) in order for meteo to install/build properly:</p>
+<blockquote>
+  <p><br>
+    <font face="American Typewriter"><tt>drwxr-xr-x	wdp user 1536 Feb 17 17:25
+    mysql-3.23.54a<br>
+    drwxr-xr-x	wdp user 5120 Feb 17 15:04 perl-5.8.0<br>
+    -rw-r--r-- 1 wdp user 24729600 Apr 1 12:27 httpd-2.0.44.tar<br>
+    -rw-r--r-- 1 wdp user 17141760 Jan 21 14:09 libxml2-2.5.1.tar<br>
+    -rw-r--r-- 1 wdp user 2160640 Jan 21 14:25 gd-2.0.11.tar<br>
+    -rw-r--r-- 1 wdp user 962560 Feb 17 06:56 DBI-1.32.tar<br>
+    -rw-r--r-- 1 wdp user 409600 Feb 17 15:20 DBD-mysql-2.1025.tar<br>
+    -rw-r--r-- 1 wdp user 768000 Feb 23 21:59 libwww-perl-5.69.tar<br>
+    -rw-r--r-- 1 wdp user 286720 Feb 23 22:05 HTML-Parser-3.27.tar<br>
+    -rw-r--r-- 1 wdp user 368640 Feb 23 22:09 URI-1.23.tar<br>
+    -rw-r--r-- 1 wdp user 2048000 Mar 30 20:47 pm.tar<br>
+    -rw-r--r-- 1 wdp user 24104960 Mar 30 21:10 php.tar</tt></font></p>
+  <p>&nbsp;</p>
+</blockquote>
+<p>Install mysql, perl, and the latest apache first.</p>
+<p><br>
+  These are all independent of one another, but will be tied together by the
+  subsequent pieces. All the version numbers above should be treated as
+  minimums.
+  If something newer is out there, I'd use it. Note that there are also
+  some version constraints between some of the packages above, e.g.
+  some libxslt version usually requires a minimum libxml2 version.</p>
+<p><br>
+  PHP in particular requires minimum versions &gt;= those above of all the above
+pieces.</p>
+<p><br>
+Then install the DBI, DBD, libwww-perl, the pm/php stuff, and everything else.
+Note that the perl stuff is needed only for the weatherunderground portion.</p>
+<p><br>
+  It goes without saying to do a &quot;make test&quot; on each of these pieces
+  (if available) to make sure all the individual pieces work.<br>
+  The last piece (which will use all of them) is meteo. Meteo will build properly
+  with just the above installed. It will not run or look right, however, unless
+  you follow the docs in the db directory of the meteo distribution
+  on setting up additional users (first as unix users and then again separately
+  in the database user admin stuff) for the two functions of meteo. Meteo uses
+  a separate
+  unix user
+  + database user for data collection (read+write perms to the database tables)
+and the graphing stuff (read-only perms) to the database.</p>
+<h2>Configuring meteo:</h2>
+<h3>Info on configuring meteo:</h3>
+<p>You need to set up the users and tables in your mysql database.</p>
+<p><br>
+  Make sure the mysql daemon is running, then check out the README in the db
+    directory.</p>
+<p><br>
+  You'll need to first set up two unix accounts (named mtp and meteo - see
+      below). Do these first, then create the necessary database users and tables
+      in mysql
+  according to the README in the db directory.</p>
+<p><br>
+  If you want to see a working example, log in to www.poxon.net<br>
+  Files you'll want to snarf:<br>
+  /usr/local/etc/meteo.xml (the main config file for the whole thing)</p>
+<p><br>
+  <h3>Set up mtp user account</h3>
+<p>Meteo can run as any user, so you may choose to run it as root, or as
+some other user already defined on your system. It is, however, good system
+administration practice to use a dedicated user. The mtp user 
+used for reading data from the station and writing it to the database
+needs access to the station (a serial interface like <tt>/dev/ttyS0</tt>,
+give this device to mtp, or via TCP to a device server), and needs
+insert and upate rights in the database.
+</p>
+<p>
+Another user meteo can be set up who will generate the images, this user
+only needs read access to the database (select).
+</p>
+<ol>
+<li> Create a user named mtp
+<li>
+Create this crontab for user mtp (runs davis_collect_data every 2 mins)
+<pre>
+*/2 * * * * /usr/home/mtp/davis_collect_data</p>
+</pre>
+
+Here's what the davis_collect_data script looks like:</p>
+<pre>
+    #!/bin/sh
+    ps -ax | grep -v grep | grep meteopoll &gt; /dev/null 2&gt;&amp;1
+    if [ $? -eq 1 ] ; then
+    /usr/local/bin/meteopoll -f /usr/local/etc/meteo.xml \
+        -d -F -sOakwood &gt; /dev/null 2&gt;&amp;1 &amp;
+    else
+    # echo &quot;meteopoll already running&quot;
+    fi
+</pre>
+<li>Set up meteo user:
+  this is for running the meteograph program which
+  reads
+info from the database and generates the graphs for you)
+<li>
+Create this crontab for user meteo:</p>
+<pre>
+    WWW=/usr/local/apache/www.poxon.net/htdocs/weather<br>
+    WEATHER_GRAPH=&quot;/usr/local/bin/meteograph -f /usr/local/etc/meteo.xml -s
+    Oakwood&quot;
+    */2 * * * * /usr/home/meteo/davis_average_data
+    # every 5 mins, graph daily graphs for weather
+    */5 * * * * $WEATHER_GRAPH -c $WWW 300
+    # at 5 mins after the hour, do weekly graphs
+    5 * * * * $WEATHER_GRAPH -c $WWW -a 1800
+    # at 15 mins after the hour, do monthly graphs
+    15 * * * * $WEATHER_GRAPH -c $WWW -a 7200
+    # at 25 mins after the hour, do yearly graphs
+    25 * * * * $WEATHER_GRAPH -c $WWW -a 86400
+</pre>
+Note the -a options to the graph program, it ensures that the precomputed
+averages in the meteoaverage table are used, which is essential
+for performance. While during the first few weeks you can easily live
+without the -a option, after about half a year you will start to wonder
+why your database server behaves so sluggish.
+</ol>
+
+<h2>Stuff for uploading data to Weather Underground</h2>
+
+<p>see wunderground directory.</p>
+
+<h2>TODO</h2.
+
+<ul>
+<li>re-work scripts for keeping meteopoll and meteoavg running (since they're
+  supposed to run forever anyway). Instead of cron job which runs every 2 mins,
+  switch to using a loop in /etc/rc.local to only re-invoke them if they exit
+  (using a subshell).
+</li>
+</body>
+</html>
+

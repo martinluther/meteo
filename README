@@ -1,3 +1,9 @@
+                _                    ___  _____ ___  
+ _ __ ___   ___| |_ ___  ___        / _ \|___  / _ \ 
+| '_ ` _ \ / _ \ __/ _ \/ _ \ _____| | | |  / / | | |
+| | | | | |  __/ ||  __/ (_) |_____| |_| | / /| |_| |
+|_| |_| |_|\___|\__\___|\___/       \___(_)_/(_)___/ 
+                                                     
 
 What's this?
 ------------
@@ -16,6 +22,21 @@ containing nothing but the line
 	subscribe meteo
 
 to majordomo@lists.othello.ch.
+
+Please also read other documentation available with the package:
+
+SETUP   a quick guide to setting up a Davis weather station with a
+        Unix system
+
+INSTALL provides some help for compiling and installing the package, also
+        contains some FAQ regarding build and install.
+
+html/meteo-install.html
+        contributed document, guides through the installation
+
+doc/uds10
+	how to connect a Vantage Pro station via a Lantronix UDS10
+	device server
 
 
 Prerequisites
@@ -44,6 +65,11 @@ libxml2	libxml2 is the XML parser of the Gnome project. It's main advantage
 	configuration file now is in XML format. Check http://www.libxml.org
 	for current version.
 
+If you plan to use the weather underground interface scripts contributed
+by Walter Poxon, you will need additional packages: perl and some perl
+modules related to database access.
+
+
 Weather Station URLs
 --------------------
 
@@ -66,6 +92,9 @@ two methods to connect to a weather station:
 
 	tcp://hostname:port
 
+There are also special URLs for logging, see the meteo(1) manual page
+for these.
+
 
 Architecture
 ------------
@@ -75,7 +104,7 @@ weather station, to compute averages over intervals of 5min, 30min, 2h
 and a day, and to draw graphs suitable for a web page. A full installation
 will have three processes permanently running:
 
-meteoloop	collect data from the station and write a record to
+meteopoll	collect data from the station and write a record to
 		the message queue used to decouple database operations
 		from weather station communication.
 
@@ -87,7 +116,7 @@ meteodequeue	pulls update messages of the message queue and sends
 
 meteoavg	compute averages over longer intervals than one minute.
 		As these averaging operations can be quite time
-		consuming, moving them outside the meteoloop program
+		consuming, moving them outside the meteopoll program
 		again improves reliablity.
 
 To produce the graphs, the separate programm meteograph is called, usually
@@ -109,4 +138,4 @@ can be found in the file README.browser.
 
 
 --
-$Id: README,v 1.20 2002/06/22 15:57:40 afm Exp $
+$Id: README,v 1.26 2003/06/08 13:54:16 afm Exp $

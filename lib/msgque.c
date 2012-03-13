@@ -3,14 +3,20 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: msgque.c,v 1.4 2003/05/29 20:42:09 afm Exp $
+ * $Id: msgque.c,v 1.6 2003/06/01 23:09:28 afm Exp $
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 #include <stdlib.h>
 #include <stdio.h>
 #include <msgque.h>
-#ifdef HAVE_SYS_MSG_h
+#ifdef HAVE_SYS_MSG_H
 #include <sys/msg.h>
-#endif
+#endif /* HAVE_SYS_MSG_H */
+#ifdef HAVE_SYS_IPC_H
+#include <sys/ipc.h>
+#endif /* HAVE_SYS_IPC_H */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>

@@ -1,0 +1,33 @@
+Sending meteo data to Wunderground
+----------------------------------
+
+These scripts were provided by Walter D Poxon
+
+What's here and how to use it:
+
+do-wu-update.log - a small (statically-sized) log file which shows the
+	most recent data uploaded to weather underground (in a pretty
+	raw format, but it's readable if you squint ;)
+
+do-wu-update.sh - this is the "main" file in this directory.  Run this
+	program whenever you want to upload data to weather underground.
+	I have mine set to upload once every 5 minutes using the
+	wu-update.cron file below)
+
+	runs meteo-wu-fmt.pl and sticks the output in meteo.out
+	runs wu-upload.pl which takes the data in meteo.out and
+		uploads it to weather underground
+
+meteo-wu-fmt.pl - reads fresh weather data from the mysql database,
+	does some trivial calculations/conversions, and spits the
+	data out in a format suitable for the upload script (wu-upload.pl)
+
+meteo.out - temp file for holding latest weather data prior to upload
+
+wu-update.cron - same crontab entry for invoking do-wu-update.sh
+	to upload weather info to wunderground every 5 mins.
+
+wu-upload.pl
+
+--
+$Id: README,v 1.1 2003/06/08 10:42:07 afm Exp $

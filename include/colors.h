@@ -3,10 +3,14 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: colors.h,v 1.1 2003/05/29 19:03:45 afm Exp $
+ * $Id: colors.h,v 1.2 2003/06/06 15:11:05 afm Exp $
  */
 #ifndef _COLORS_H
 #define _COLORS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct ncolor_s {
 	int	c[3];
@@ -41,5 +45,9 @@ typedef	struct defaultcolors_s {
 } defaultcolors_t;
 
 extern defaultcolors_t defaultcolors;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _COLORS_H */

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.h,v 1.4 2003/05/04 16:31:58 afm Exp $
+ * $Id: dograph.h,v 1.5 2003/06/06 15:11:05 afm Exp $
  */
 #ifndef _DOGRAPH_H
 #define _DOGRAPH_H
@@ -22,6 +22,10 @@
 #include <time.h>
 #include <database.h>
 #include <timestamp.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define	DOGRAPH_TEMPERATURE		1
 #define	DOGRAPH_TEMPERATURE_INSIDE	1 << 1
@@ -57,5 +61,9 @@ extern void	rain_graphs(dograph_t *dgp, int interval);
 extern void	wind_graphs(dograph_t *dgp, int interval);
 extern void	radiation_graphs(dograph_t *dgp, int interval);
 extern void	all_graphs(dograph_t *dgp, int interval);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _DOGRAPH_H */

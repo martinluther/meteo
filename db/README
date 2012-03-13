@@ -7,7 +7,7 @@ meteograph to easily produce graphs for any time during the measurement
 interval.
 
 The script meteo.sql creates the necessary tables. Connect as a privileged
-user to the MySQL server and create a database:
+user (normally root) to the MySQL server and create a database:
 
 	mysql> create database meteo;
 
@@ -33,7 +33,18 @@ and for the read/write user:
 	mysql> grant select, insert on averages to mtp@localhost;
 	mysql> flush privilges;
 
-Enter username and password also in your meteo.conf file.
+Enter username and password also in your meteo.xml file.
+
+Note that you do not need a Unix user as far as the database is concerned.
+It is, however, good system administration practice to let meteo run as
+a normal user, not as root. In this case, it might be a good idea to
+have two Unix users: one that reads the station and updates the database,
+and one that just retrieves data from the database and draws graphs.
+
+This would also improve security: if someone is able to turn some of
+the graph files in your web server directory into a symbolic link to
+/etc/passwd, a meteograph process running as root would zap your
+/etc/passwd. Running as a non-privileged user prevents this.
 
 --
-$Id: README,v 1.1 2002/03/08 23:50:43 afm Exp $
+$Id: README,v 1.2 2003/06/08 11:40:42 afm Exp $

@@ -1,0 +1,79 @@
+Meteo Setup Quick Guide
+=======================
+
+This quick guide is intended as a short introduction into what you have
+to do to set up a Davis weather station with a Unix system. It does not
+provide any details, but lots of pointers to other documentation.
+
+
+Hardware
+--------
+
+Presently, only the Vantage Pro and Weather Monitor II stations are
+supported. It would be fairly simple to add other stations, as they
+all use the same LOOP command (see doc/vtechref.txt) to retrieve
+sensor images, which all have a similar structure (offsets are different,
+see doc/Techref.txt and doc/vtechref.txt).
+
+Make sure you have a working connection between the station and
+your computer. If you connect directly to a serial port, the cables
+and connectors provided by Davis will work. If you are using a
+device server like the Lantronix UDS-10, you'll need a null modem
+connector. See doc/uds10 for details on using a Lantronix UDS-10.
+
+To test the connection to a Vantage Pro, you can use the TEST command
+(see doc/vtechref.txt), send the string TEST followed by a \r, the
+station should echo TEST.
+
+
+Install
+-------
+
+To build the software, some prerequisite packages are required, consult
+the README for details. Install these first.
+
+The package configuration only has two nonstandard options which are
+both described in the second half of the INSTALL file, both are related
+to the meteo browser. INSTALL also gives some platform specific
+guidance (near the end), and FAQ.
+
+
+Configure
+---------
+
+The configuration is contained in a single configuration XML file
+called meteo.xml, usually in /usr/local/etc/meteo.xml, but varying
+according to your configuration options.
+
+The configuration file is described in the manual page meteo.xml(5).
+There is also a sample configuration file included in the conf
+directory.
+
+
+Run
+---
+
+The README explains the process structure of meteo. Note that only
+the programs that collect data from the station (meteopoll), store the data
+in the database (meteodequeuer) and compute long term averages (meteoavg)
+are constantly running. To produce graphs to display in your webserver,
+you need to add a cron top, meteojob can serve as a first approximation
+for your station.
+
+If you plan to use the meteobrowser, you'll find more info in
+browser/README.browser.
+
+
+Upgrade
+-------
+
+If you are upgrading from a very old version, you should convert the
+database timestamps to the new GMT format (the old format used local
+time, causing headaches when time switch to daylight saving time). The
+migration is described in support/How_to_migrate. If your database
+structure does not match the current format (see db/meteo.sql), you
+should first alter your tables so that it fits. See the MySQL manual
+for details.
+
+--
+$Id: SETUP,v 1.1 2003/06/08 13:54:16 afm Exp $

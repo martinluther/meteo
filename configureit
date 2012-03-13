@@ -1,0 +1,38 @@
+#
+# sample configure call
+#
+# $Id: configureit,v 1.11 2003/06/08 22:50:00 afm Exp $
+#
+
+CFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes -Wmissing-declarations -Wnested-externs"
+CXXFLAGS="-g -Wall -Wshadow  -Wpointer-arith -Wcast-align -Winline -Wmissing-prototypes"
+
+case `uname` in
+	Linux)
+		# linker flags for linux
+		LDFLAGS="-L/usr/lib/mysql -R/usr/lib/mysql -lmysqlclient"
+		;;
+	SunOS)
+		# linker flags for solaris
+		LDFLAGS="-L/usr/local/lib/mysql -R/usr/local/lib/mysql -lmysqlclient"
+		;;
+	Darwin)
+		# linker flags for Mac OS X
+		LDFLAGS="-L/usr/local/mysql/lib/mysql -R/usr/local/mysql/lib/mysql -lmysqlclient"
+
+esac
+export LDFLAGS CXXFLAGS CFLAGS
+
+case `uname` in
+	Linux)
+		./configure						\
+			--with-html-dir=/srv/www/htdocs/meteo		\
+			--with-browser-dir=/srv/www/htdocs/browser
+		;;
+	SunOS|Darwin)
+		./configure						\
+			--with-html-dir=/usr/local/apache2/htdocs/meteo	\
+			--with-browser-dir=/usr/local/apache2/htdocs/browser
+		;;
+esac
+

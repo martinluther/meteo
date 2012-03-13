@@ -71,13 +71,13 @@ int	crc_cmp(crc_t *crc1, crc_t *crc2) { return *crc2 - *crc1; }
 
 int	crc_check(crc_t *crc, unsigned char *buffer, int len) {
 	int	i, rc;
-	crc_t	*crc2;
+	crc_t	crc2;
 
-	crc2 = crc_new();
-	crc_start(crc2);
-	for (i = 0; i < len; i++) crc_addbyte(crc2, buffer[i]);
-	rc = crc_cmp(crc, crc2);
-	crc_free(crc2);
+	crc_start(&crc2);
+	for (i = 0; i < len; i++) crc_addbyte(&crc2, buffer[i]);
+	mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "crc is %04x, compare to %04x",
+		crc2, *crc);
+	rc = crc_cmp(crc, &crc2);
 	return rc;
 }
 

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.h,v 1.3 2002/11/24 19:48:01 afm Exp $
+ * $Id: graph.h,v 1.4 2003/06/06 15:11:05 afm Exp $
  */
 #ifndef _GRAPH_H
 #define _GRAPH_H
@@ -13,6 +13,10 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct entry	{
 	time_t	when;
@@ -81,5 +85,9 @@ extern void	graph_label(graph_t *, const char *label, int onright);
 extern void	graph_add_time(graph_t *);
 extern void	graph_rectangle(graph_t *, int miny, int maxy, int col);
 extern int	graph_yval(graph_t *, int channel, double y);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _GRAPH_H */

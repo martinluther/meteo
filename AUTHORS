@@ -6,11 +6,33 @@ Main author and current maintainer:
 
 	Switzerland
 
-Contributors:
+Contributors: in no particular order, email addresses withheld to protect
+	      them from spam
 
 	Bruce Hewitson		pointed out a bug in meteodata.c
-
-
+	Walter Poxon		contributed wunderground directory
+				pointed out a bug in the wake up code
+	Michal Szymanski	pointed out the problem with localtime
+				and daylight saving time
+				also requested that undefined values be
+				handled more gracefully
+	Michael Niedermann	requested an option for dynamic graphs
+				(I'm still working on a rewrite of the graph
+				programs)
+				Pointed out an open problem with week numbering
+				in the graphs (will be fixed during the
+				rewrite)
+	Wolfgang Ruthner	pointed out a header problem with BSD,
+				this problem has (hopefully) gone with
+				the rewrite of the station interface code
+	Stefan Feuz		noted a problem with the wakeup code
+				and debugging, and some documentation
+				problems
+	Tom Easterday 		helped with debugging on Mac OS X
+	Giacomo A. Catenazzi	submitted two bug reports for bugs he
+				found while preparing a debian package
+	Chance C. Geurin	noted a problem with signed data, I only
+				hope the new version does this right!
 
 --
-$Id: AUTHORS,v 1.3 2002/03/14 15:06:15 afm Exp $
+$Id: AUTHORS,v 1.5 2003/06/08 23:36:24 afm Exp $

@@ -3,7 +3,7 @@
 --
 -- (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 --
--- $Id: meteo.sql,v 1.2 2002/11/18 02:36:42 afm Exp $
+-- $Id: meteo.sql,v 1.3 2003/05/30 22:51:13 afm Exp $
 --
 create table meteo.stationdata (
 	-- the time stamp is the key

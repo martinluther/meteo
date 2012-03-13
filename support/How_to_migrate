@@ -36,7 +36,7 @@ Details
 3. rename tables, create new tables
 
    Using the mysql program with an identity that has all the rights to
-   create tables and grant rights to users, to the following
+   create tables and grant rights to users, do the following
 
    a) rename stationdata and averages table
 
@@ -113,4 +113,4 @@ Details
    This is left as an exercise to the reader.
 
 --
-$Id: How_to_migrate,v 1.2 2002/11/24 19:48:02 afm Exp $
+$Id: How_to_migrate,v 1.3 2003/06/01 23:09:28 afm Exp $

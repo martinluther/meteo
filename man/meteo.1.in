@@ -20,14 +20,14 @@ or can be specified with the
 .B -f
 command line switch, the syntax of
 the configuration file is explained in 
-.BR meteo.conf (5).
+.BR meteo.xml (5).
 
 .SH ARCHITECTURE
 The minimum installation for the meteo tools uses the two programs 
-.BR meteoloop (1),
+.BR meteopoll (1),
 and
 .BR meteograph (1).
-.BR meteoloop (1)
+.BR meteopoll (1)
 connects to the weather station either using a serial interface
 or a tcp connection to a terminal server or a serial device server
 like the Lantronix UDS-10. It speaks the protocol of the 
@@ -83,7 +83,7 @@ as included in the distribution.
 .SH UNIFORM RESOURCE LOCATORS
 The meteo packages uses new kinds of URLs to specify meteo stations
 and log destinations. Please see the
-.BR meteo.conf (5)
+.BR meteo.xml (5)
 man page for meteo station URLs. Log URLS have one of two forms. If
 the log should be written to a file 
 .IR logfile ,
@@ -132,7 +132,7 @@ table should be used.
 
 During the computation of averages, the stationdata table may be locked,
 preventing the
-.BR meteoloop (1)
+.BR meteopoll (1)
 program from updating the database. As it will block in the database
 call, some data from the weather station may be lost.
 To help decouple the weather station from the database, the
@@ -140,7 +140,7 @@ To help decouple the weather station from the database, the
 program has been added. It reads queries sent to a message queue,
 and forwards them to the database.
 The
-.BR meteoloop (1)
+.BR meteopoll (1)
 program accepts the 
 .B \-q 
 option which directs it to send its SQL queries not to the database
@@ -148,8 +148,8 @@ but the a message queue (the details of the message queue are
 configured in the configuration file).
 
 .SH "SEE ALSO"
-.BR meteo.conf (5),
-.BR meteoloop (1),
+.BR meteo.xml (5),
+.BR meteopoll (1),
 .BR meteoavg (1),
 .BR meteograph (1),
 .BR meteodequeue (1),

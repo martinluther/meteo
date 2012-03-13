@@ -1,0 +1,39 @@
+$Id: INSTALL,v 1.1 2003/06/08 10:42:07 afm Exp $
+
+edit do-wu-update.sh
+	Change the WEATHER_DIR variable to point to the directory
+	where you have these files installed.
+
+	A good location for these files is $HOME/weather
+
+	Note: whatever user owns/runs these files needs to have
+	a mysql user account and read access to the meteo tables in mysql
+
+
+edit meteo-wu-fmt.pl - 
+
+	set $db_user to the mysql username to use for reading
+	the meteo tables
+
+	set $db_passwd to the password for this user
+
+
+edit wu-upload.pl
+
+	set $ID to the ID weather underground assigned you for
+	your weather station.
+
+	If you don't yet have an ID, go to wunderground.com and get one.
+
+	set $PASSWORD to the password you set for your weather station
+	on the wunderground web site.
+
+	set $WDATFILE to the pathname of the file which holds the
+	meteo data to upload (the data written by meteo-wu-fmt.pl)
+
+	Example: if you installed all this stuff in /home/foo/weather
+	Then you would set
+
+		my $WDATFILE="/home/foo/weather/meteo.out";
+
+

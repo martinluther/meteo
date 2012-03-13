@@ -55,7 +55,7 @@ The name of a user granted select, update and insert on the
 and
 .I averages
 tables.  The 
-.BR meteoloop (1)
+.BR meteopoll (1)
 and 
 .BR meteoavg (1)
 programs use this identity to update the database.
@@ -148,6 +148,29 @@ tag sample is used with the Vantage Pro station in Bosco/Gurin:
 </station>
 .in -4
 .fi
+
+Starting with version 0.7.0, different units have become less of a problem.
+The original meteo always stored metric units in the database, now
+you can specify in the configuration file in what units you want meteo
+to store the data. All unit specifications are within the
+.RI /meteo/station[@name=' stationname ']/unit
+XPath. The following table shows possible tags and the values:
+
+.TS
+tab(&);
+l l.
+tag&values
+
+<temperature>&degrees Celsius, degC, C,
+&degrees Fahrenheit F, deg F, F, K
+<humidity>&%
+<pressure>&hPa, inHg, mmHg
+<wind>&m/s, mph, kmh
+<rain>&mm, in
+<solar>&W/m2
+<uv>&index
+.TE
+
 
 .SH "CHANNEL CONFIGURATION"
 The channel tags define the colors for the various curves and histograms,
@@ -322,7 +345,7 @@ using
 
 .SH "SEE ALSO"
 .BR meteo (1),
-.BR meteoloop (1),
+.BR meteopoll (1),
 .BR meteoavg (1),
 .BR meteograph (1),
 .BR meteodequeue (1),

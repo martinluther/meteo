@@ -1,0 +1,129 @@
+.TH METEOLOOP "1" "December 2001" "Meteo station tools" Othello
+.SH NAME
+meteopoll \- retrieve meteo data from a station
+.SH SYNOPSIS
+meteopoll [
+.B \-d
+] [
+.B \-V
+] [
+.B \-F
+] [
+.BI \-l logurl
+] [
+.BI \-p pidfile
+] [
+.BI \-f conffile
+]
+.BI \-s stationname
+.SH DESCRIPTION
+The 
+.BR meteopoll (1)
+programm connects to the weather station specified with the 
+.B -s
+option and the configuration file
+.I conffile
+and starts reading data from it. It computes averages and extreme values
+for all the parameters it finds over a period of one minute, and constructs
+an SQL update query to write the information into the database.
+Depending on the database backend preferences set with the
+.B \-b
+option, the query is either sent directly to the database (as specified
+in the configuration file), or to a message queue (unix domain socket
+for systems that don't have System V IPC), where it will later be picked
+up by the
+.BR meteodequeue (1)
+program, or appended to the file specified in the
+.I <updatefile>
+tag in the configuration file.
+.SH OPTIONS
+.TP
+.B \-d
+increase the debug level by one. Debug messages are written to standard
+error.
+.TP
+.BI \-b dest
+set preference for database backend communication. The 
+.B \-b
+option may appear multiple times. When meteopoll connects to the database
+backend, it tries the different methods in the order of the corresponding
+.B \-b
+options. It is usually best to use a message queue as the backend,
+and not to the database directly. Since the
+.I stationdata
+table may be locked during a long running query, 
+.BR meteopoll (1)
+may loose data from the weather station. The use of the message queue
+in conjunction with the
+.BR meteodequeue (1)
+program thus improves reliabilty and performance by decreasing contention
+on the 
+.I stationdata
+table.
+Possible values for this option are
+.B msgqueue
+for System V message queues (or Unix domain sockets on systems without
+System V IPC),
+.B mysql
+to write directly to the MySQL database,
+.B file
+to write queries to a file that can be later fed into the database and 
+.B debug
+to simple send the queries to the debug log.
+.TP
+.BI \-f conffile
+Use 
+.I conffile
+to read the configuration, see 
+.BR meteo.xml (5)
+for the configuration syntax.
+.TP
+.B \-F
+stay in foreground. Useful during debugging.
+.TP
+.BI \-l logurl
+send log messages to the destination described by the 
+.IR logurl .
+Log URLs are of the form 
+.I file:///path/to/logfile
+for logging to a file, or
+.I syslog:facility
+to send log records to syslog facility
+.IR facility .
+See 
+.BR meteo (1)
+for details.
+.TP
+.BI \-p pidfile
+When running in daemon mode, write the process id of the 
+.BR meteopoll (1)
+process to this file. Defaults to
+.IR /var/run/meteopoll-<station>.pid .
+.TP
+.BI \-s stationname
+Name of the station from which to read data. This argument is mandatory.
+.TP
+.B \-V
+print version information and exit.
+
+.SH FILES
+.BR meteopoll (1)
+writes its process id by default to a file 
+.BI /var/run/meteopoll- station .pid
+
+.SH NOTES
+.BR metepoll (1)
+replaces the program
+.BR meteoloop (1)
+in earlier versions of the meteo packet.
+
+.SH "SEE ALSO"
+.BR meteo (1)
+.BR meteo.xml (5),
+.BR meteograph (1),
+.BR meteodequeue (1),
+.BR meteojob (1),
+.BR meteoavg (1).
+
+.SH AUTHOR
+Dr. Andreas Mueller <afm@othello.ch>

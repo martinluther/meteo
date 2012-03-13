@@ -1,25 +1,21 @@
 TODO
 ----
 
--- CVS fixes:
-	src/meteolast.c
-	meteo/conf/meteo.xml
-	meteo.xml
-	man/meteo.xml.5
-
-* find cause of frequent crashes of meteoloop and make it more robust,
-  complete work on the watchdog
+* rewrite the graphing programs in C++, in particular to allow more
+  flexibility with units
 
 * modify tables so that the group number can also be indexed
 
 * create indexes to speed up search
 
-* perform correct device locking when using a serial device, should be done
-  in sercom.c
-
 * generalize the davis code for other weather stations
 
-* include conversion functions to scientific units: K, mb, m/s etc
+* update AUTHORS file, some contributors were not listed
+
+Bugs
+
+* week numbers in graphs are wrong (pointed out by Michael Niedermann)
+* there is a problem with temperature graphs for WMII
 
 --
-$Id: TODO,v 1.16 2003/05/29 20:42:09 afm Exp $
+$Id: TODO,v 1.20 2003/06/09 00:59:57 afm Exp $

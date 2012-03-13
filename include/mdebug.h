@@ -3,7 +3,7 @@
  *
  * (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mdebug.h,v 1.1 2002/01/27 21:01:42 afm Exp $
+ * $Id: mdebug.h,v 1.2 2003/06/06 15:11:05 afm Exp $
  */
 #ifndef _MDEBUG_H
 #define _MDEBUG_H
@@ -11,6 +11,10 @@
 #include <syslog.h>
 #include <stdarg.h>
 #include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define	MDEBUG_NOFILELINE	1
 #define	MDEBUG_ERRNO		2
@@ -23,5 +27,9 @@ extern void	vmdebug(int loglevel, const char *filename, int line, int flags,
 			const char *format, va_list ap);
 extern void	mdebug(int loglevel, const char *filename, int line, int flags,
 			const char *format, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _MDEBUG_H */

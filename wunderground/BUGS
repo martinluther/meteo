@@ -1,0 +1,9 @@
+$Id: BUGS,v 1.1 2003/06/08 10:42:07 afm Exp $
+
+username/password for accessing meteo tables in mysql are hard-coded
+in the meteo-wu-fmt.pl script
+
+username/password for uploading to wunderground are hard-coded
+in the wu-upload.pl script
+
+

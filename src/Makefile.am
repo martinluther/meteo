@@ -3,24 +3,24 @@
 #
 # (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
 #
-# $Id: Makefile.am,v 1.5 2002/11/24 23:16:48 afm Exp $
+# $Id: Makefile.am,v 1.11 2003/06/08 22:32:10 afm Exp $
 #
 METEOCONFFILE = \"@METEOCONFFILE@\"
-CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE)
+AM_CPPFLAGS = -DMETEOCONFFILE=$(METEOCONFFILE) @LIBXML_CFLAGS@
 
 LDADD = ../lib/libmeteo.la
 
-bin_PROGRAMS = meteoupdate meteoloop meteograph meteoavg		\
-	meteodequeue meteowatch meteolast
+bin_PROGRAMS = meteopoll 					\
+	meteoupdate meteograph meteoavg				\
+	meteodequeue meteowatch
 
-meteoupdate_SOURCES = meteoupdate.c
-meteoloop_SOURCES = meteoloop.c
-meteograph_SOURCES = meteograph.c
-meteoavg_SOURCES = meteoavg.c
-meteodequeue_SOURCES = meteodequeue.c
-meteowatch_SOURCES = meteowatch.c
-meteolast_SOURCES = meteolast.c
+meteoupdate_SOURCES = meteoupdate.cc
+meteograph_SOURCES = meteograph.cc
+meteoavg_SOURCES = meteoavg.cc
+meteodequeue_SOURCES = meteodequeue.cc
+meteowatch_SOURCES = meteowatch.cc
+meteopoll_SOURCES = meteopoll.cc
 
-test:	meteoloop
-	./meteoloop -m -l file://`pwd`/logfile -d -F -w 2 -f `pwd`/../conf/meteo.conf
+test:	meteopoll
+	./meteopoll -s Frauenfeld -l file://`pwd`/logfile -b msgqueue -d -d -d -f /usr/local/etc/meteo.xml
 

@@ -83,7 +83,9 @@ Must be one of 300, 1800, 7200 or 86400.
 .TP
 .BI \-i logurl
 send log messages to the destination described by the
-.IR logurl .
+.IR logurl . See
+.BR meteo (1)
+for a description of possible forms of log URLs.
 .TP
 .BI \-p pidfile
 When running in daemon mode, write the process id of the 
@@ -112,7 +114,7 @@ writes its process id by default to the file
 .SH "SEE ALSO"
 .BR meteo (1)
 .BR meteo.xml (5),
-.BR meteoloop (1),
+.BR meteopoll (1),
 .BR meteograph (1),
 .BR meteodequeue (1),
 .BR meteojob (1)
