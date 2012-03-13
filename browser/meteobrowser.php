@@ -5,7 +5,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.php,v 1.4 2002/01/30 09:49:01 afm Exp $
+//   $Id: meteobrowser.php,v 1.6 2002/01/30 19:20:11 afm Exp $
 //
 //   This scripts generates overview pages for meteorological data containing
 //   client side image maps (so that a lynx browser can also profit from these
@@ -32,7 +32,7 @@ include("meteobrowser.inc");
 
 // handle localization
 if ($lang == "") {
-	$lang == $default_language;
+	$lang = $language_default;
 }
 if ($lang == "de") { $lang = "de_DE"; }
 if ($lang == "en") { $lang = "en_US"; }
@@ -43,6 +43,9 @@ textdomain("meteobrowser");
 
 // handle time stamp in various formats
 function getctime($filename) {
+	if (!file_exists($filename)) {
+		return -1;
+	}
 	$rc = stat($filename);
 	if ($rc == FALSE) {
 		return -1;

@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.h,v 1.1 2002/01/18 23:34:26 afm Exp $
+ * $Id: graph.h,v 1.2 2002/03/03 22:09:38 afm Exp $
  */
 #ifndef _GRAPH_H
 #define _GRAPH_H
@@ -65,5 +65,7 @@ extern void	graph_add_ticks(graph_t *, int channel, double valint,
 extern int	graph_write_png(graph_t *, char *);
 extern void	graph_label(graph_t *, const char *label, int onright);
 extern void	graph_add_time(graph_t *);
+extern void	graph_rectangle(graph_t *, int miny, int maxy, int col);
+extern int	graph_yval(graph_t *, int channel, double y);
 
 #endif /* _GRAPH_H */

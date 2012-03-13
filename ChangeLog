@@ -1,3 +1,20 @@
+Release 0.3.2:
+	* make sure the dewpoint function never returns a nan, as this may
+	  stall drawing a temperature graph
+	* added background colors to the wind graph so that the general
+	  direction of the wind is more easily discernible.
+	* added clipping to the graph.c functions
+	* gave the meteograph programm the capability to display scales
+	  depending on the interval not only for rain, but also for all
+	  other channels.
+	* add functions to retrieve configuration variables based on the
+	  four components of the property
+	* PHP 4.1.1 emits a warning when stat'ing a file that does not exist
+	  (I really disagree with the PHP developers: in Unix one really
+	  uses stat to find out whether a file exists...
+	* fixed a bug in metebrowser.php that prevented the language variable
+	  to be correctly set to the default if it wasn't set previously.
+
 Release 0.3.1:
 	* fixed signal handling to protect the master from being kill by signals
 	  sent to the child's process group (i.e. for terminal signals which
@@ -153,4 +170,4 @@ Release 0.1.0:
 	* liboolized/automakeized/autoconfized/shtoolized the package
 
 --
-$Id: ChangeLog,v 1.30 2002/01/30 09:49:01 afm Exp $
+$Id: ChangeLog,v 1.33 2002/03/03 22:09:34 afm Exp $

@@ -34,12 +34,12 @@ extern meteo_version_t meteo_version;
 meteo_version_t meteo_version = {
     0x003201,
     "0.3.1",
-    "0.3.1 (27-Jan-2002)",
-    "This is Meteo, Version 0.3.1 (27-Jan-2002)",
-    "Meteo 0.3.1 (27-Jan-2002)",
+    "0.3.1 (24-Feb-2002)",
+    "This is Meteo, Version 0.3.1 (24-Feb-2002)",
+    "Meteo 0.3.1 (24-Feb-2002)",
     "Meteo/0.3.1",
-    "@(#)Meteo 0.3.1 (27-Jan-2002)",
-    "$Id: shtool,v 1.1 2001/03/18 15:07:34 afm Exp Meteo 0.3.1 (27-Jan-2002) $"
+    "@(#)Meteo 0.3.1 (24-Feb-2002)",
+    "$Id: shtool,v 1.1 2001/03/18 15:07:34 afm Exp Meteo 0.3.1 (24-Feb-2002) $"
 };
 
 #endif /* _METEO_VERS_C_AS_HEADER_ */

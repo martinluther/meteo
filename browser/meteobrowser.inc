@@ -4,7 +4,7 @@
 //
 //   (c) 2002 Dr. Andreas Mueller, Beratung und Entwicklung
 //
-//   $Id: meteobrowser.inc,v 1.2 2002/01/27 21:01:42 afm Exp $
+//   $Id: meteobrowser.inc,v 1.3 2002/01/30 12:41:16 afm Exp $
 //
 
 // include the following only if your PHP installation lacks gettext support
@@ -49,4 +49,5 @@ $midtime_default = time();	// not a particularly good value, but the
 $station_default = "Altendorf";	// could use the environment variables to
 				// find out which station to display so that
 				// the script could be used with virtual hosts
+$language_default = "en_US";	// default language
 ?>

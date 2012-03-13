@@ -4,7 +4,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mconf.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: mconf.c,v 1.3 2002/03/03 22:09:38 afm Exp $
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -456,3 +456,23 @@ const int	*mc_get_color(const mc_node_t *mc, const char *key,
 	return m->data.color;
 	
 }
+
+/*
+ * specify the full path of the property
+ */
+#define	M_MC_GET(type, parentfunc)					\
+const type	parentfunc##_f(const mc_node_t *m, const char *grname,	\
+		const char *lr, int interval, const char *what,		\
+		const type def) {					\
+		char	key[1024];					\
+		/* compute the key				*/	\
+		snprintf(key, sizeof(key), "%s.%s.%d.%s", grname, lr,	\
+			interval, what);				\
+		/* retrieve the data associated with this key	*/	\
+		return parentfunc(m, key, def);				\
+	}
+M_MC_GET(double, mc_get_double)
+M_MC_GET(int, mc_get_int)
+M_MC_GET(char *, mc_get_string)
+M_MC_GET(int *, mc_get_color)
+

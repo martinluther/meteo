@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: graph.c,v 1.2 2002/01/27 21:01:43 afm Exp $
+ * $Id: graph.c,v 1.3 2002/03/03 22:09:38 afm Exp $
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -252,31 +252,37 @@ static void	graph_channel(graph_t *g, int channel) {
 			if (debug > 1)
 				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point (%ld, %f)",
 					  when, value);
-			if ((value <= max) && (value >= offset)) {
-				if (flags & GRAPH_LINE) {
-					x2 = g->llx + t;
-					y2 = ycoord(g, cf, value);
-					x1 = px(x2);
-					y1 = py(y2);
-				}
-				if (flags & GRAPH_HISTOGRAMM) {
-					x1 = g->llx + t;
-					y1 = g->lly;
-					x2 = x1;
-					y2 = ycoord(g, cf, value);
-					if (flags & GRAPH_HIDE) y2--;
-				}
-				if (debug > 1)
-					mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing line "
-						"(%d,%d)-(%d,%d)",
-						 x1, y1, x2, y2);
-				gdImageLine(g->im, x1, y1, x2, y2, color);
-			} else {
+			if (value > max) {
 				if (debug)
-					mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "point (%ld, %f)"
-						" out of range", 
+					mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+						"point (%ld, %f): clipping top",
 						 when, value);
+				value = max;
 			}
+			if (value < offset) {
+				if (debug)
+					mdebug(LOG_DEBUG, MDEBUG_LOG, 0,
+						"point (%ld, %f): clipping bot",
+						 when, value);
+				value = offset;
+			}
+			if (flags & GRAPH_LINE) {
+				x2 = g->llx + t;
+				y2 = ycoord(g, cf, value);
+				x1 = px(x2);
+				y1 = py(y2);
+			}
+			if (flags & GRAPH_HISTOGRAMM) {
+				x1 = g->llx + t;
+				y1 = g->lly;
+				x2 = x1;
+				y2 = ycoord(g, cf, value);
+				if (flags & GRAPH_HIDE) y2--;
+			}
+			if (debug > 1)
+				mdebug(LOG_DEBUG, MDEBUG_LOG, 0, "drawing line "
+					"(%d,%d)-(%d,%d)", x1, y1, x2, y2);
+			gdImageLine(g->im, x1, y1, x2, y2, color);
 		}
 	}
 
@@ -545,4 +551,20 @@ void	graph_label(graph_t *g, const char *label, int onright) {
 	gdImageStringUp(g->im, gdFontSmall, x,
 		(strlen(label) * gdFontSmall->w)/2 + (g->height / 2),
 		(unsigned char *)label, g->fg);
+}
+
+/*
+ * graph_rectangle
+ */
+void	graph_rectangle(graph_t *g, int miny, int maxy, int col) {
+	gdImageFilledRectangle(g->im, g->llx, maxy, g->urx, miny, col);
+}
+
+/*
+ * graph_yval
+ *
+ * compute the y coordinate associated with a given double value
+ */
+int	graph_yval(graph_t *g, int channel, double y) {
+	return ycoord(g, &g->channelfmt[channel], y);
 }

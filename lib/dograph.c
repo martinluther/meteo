@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: dograph.c,v 1.3 2002/01/29 20:55:29 afm Exp $
+ * $Id: dograph.c,v 1.4 2002/03/03 22:09:38 afm Exp $
  */
 #include <meteo.h>
 #include <meteograph.h>
@@ -151,8 +151,8 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 		"max(barometer), min(barometer), avg(barometer)",
 		"barometer_max, barometer_min, barometer");
 	set_colors(g, DOGRAPH_BAROMETER, meteoconfig);
-	graph_label(g, mc_get_string(meteoconfig, "pressure.left.label",
-		"Pressure (hPa)"), 0);
+	graph_label(g, mc_get_string_f(meteoconfig, "pressure", "left",
+		interval, "label", "Pressure (hPa)"), 0);
 	rangecolor = graph_color_allocate(g,
 		mc_get_color(meteoconfig, "pressure.rangecolor",
 			pressure_default_rangecolor));
@@ -160,14 +160,20 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 		mc_get_color(meteoconfig, "pressure.color",
 			pressure_default_color));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
-		mc_get_double(meteoconfig, "pressure.left.min", 930.),
-		mc_get_double(meteoconfig, "pressure.left.scale", 0.5));
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"min", 930.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"scale", 0.5));
 	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
-		mc_get_double(meteoconfig, "pressure.left.min", 930.),
-		mc_get_double(meteoconfig, "pressure.left.scale", 0.5));
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"min", 930.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"scale", 0.5));
 	graph_add_channel(g, GRAPH_LINE, blue,
-		mc_get_double(meteoconfig, "pressure.left.min", 930.),
-		mc_get_double(meteoconfig, "pressure.left.scale", 0.5));
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"min", 930.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"scale", 0.5));
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -209,14 +215,21 @@ void	baro_graphs(dograph_t *dgp, int interval) {
 	/* display the grid						*/
 	graph_add_time(g);
 	graph_add_grid(g, 0,
-		mc_get_double(meteoconfig, "pressure.left.step", 10.),
-		mc_get_double(meteoconfig, "pressure.left.start", 930.),
-		mc_get_double(meteoconfig, "pressure.left.end", 980.));
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"step", 10.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"start", 930.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"end", 980.));
 	graph_add_ticks(g, 0,
-		mc_get_double(meteoconfig, "pressure.left.step", 10.),
-		mc_get_double(meteoconfig, "pressure.left.start", 930.),
-		mc_get_double(meteoconfig, "pressure.left.end", 980.),
-		mc_get_string(meteoconfig, "pressure.left.format", "%.0f"),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"step", 10.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"start", 930.),
+		mc_get_double_f(meteoconfig, "pressure", "left", interval,
+			"end", 980.),
+		mc_get_string_f(meteoconfig, "pressure", "left", interval,
+			"format", "%.0f"),
 		0);
 
 	/* compute the filename for the graph				*/
@@ -257,25 +270,32 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 		g = setup_graph(dgp, query, sizeof(query), interval,
 			&start,
 			"min(temperature_inside), "
-			"max(temperature_inside), avg(temperature_inside), "
+			"max(temperature_inside), "
+			"avg(temperature_inside), "
 			"avg(humidity_inside)",
-			"temperature_inside_min, temperature_inside_max, "
-			"temperature_inside, humidity_inside");
+			"temperature_inside_min, "
+			"temperature_inside_max, "
+			"temperature_inside, "
+			"humidity_inside");
 		set_colors(g, DOGRAPH_TEMPERATURE_INSIDE, meteoconfig);
 	} else {
 		g = setup_graph(dgp, query, sizeof(query), interval,
 			&start,
-			"min(temperature), max(temperature), avg(temperature), "
-			"avg(humidity)",
-			"temperature_min, temperature_max, temperature, "
+			"ifnull(min(temperature), -273.), "
+			"ifnull(max(temperature), 100.), "
+			"ifnull(avg(temperature), -273.), "
+			"ifnull(avg(humidity), 0.)",
+			"temperature_min, "
+			"temperature_max, "
+			"temperature, "
 			"humidity");
 		set_colors(g, DOGRAPH_TEMPERATURE, meteoconfig);
 	}
 	
 	/* adornments of the temperature graph				*/
-	graph_label(g, mc_get_string(meteoconfig,
-			(inside)	? "temperature_inside.left.label"
-					: "temperature.left.label",
+	graph_label(g, mc_get_string_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "label",
 			"Temperature (deg C)"), 0);
 	rangecolor = graph_color_allocate(g,
 		mc_get_color(meteoconfig,
@@ -293,33 +313,33 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 					: "temperature.dewcolor",
 			temp_default_dewcolor));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, rangecolor,
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.min"
-					: "temperature.left.min", -15.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.scale"
-					: "temperature.left.scale", .5));
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "min", -15.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "scale", .5));
 	graph_add_channel(g, GRAPH_HISTOGRAMM | GRAPH_HIDE, g->bg,
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.min"
-					: "temperature.left.min", -15.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.scale"
-					: "temperature.left.scale", .5));
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "min",-15.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "scale", .5));
 	graph_add_channel(g, GRAPH_LINE, dewcolor,
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.min"
-					: "temperature.left.min", -15.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.scale"
-					: "temperature.left.scale", .5));
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "min", -15.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "scale", .5));
 	graph_add_channel(g, GRAPH_LINE, color,
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.min"
-					: "temperature.left.min", -15.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.scale"
-					: "temperature.left.scale", .5));
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "min", -15.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "scale", .5));
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -347,7 +367,7 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 		data[i].data = &tempdata[i * 4];
 		data[i].data[0] = atof(row[2]);	/* max temperature	*/
 		data[i].data[1] = atof(row[1]);	/* min temeprature	*/
-		data[i].data[3] = atof(row[3]);
+		data[i].data[3] = atof(row[3]); /* average temperature	*/
 		/* compute the dew point based on temperature/humidity	*/
 		data[i].data[2] = atof(row[4]);
 		if (data[i].data[2] > 100.) data[i].data[2] = 100.;
@@ -365,28 +385,28 @@ static void	temp_graphs_both(dograph_t *dgp, int interval, int inside) {
 	/* display the grid						*/
 	graph_add_time(g);
 	graph_add_grid(g, 0,
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.step"
-					: "temperature.left.step", 10.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.start"
-					: "temperature.left.start", -10.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.end"
-					: "temperature.left.end", 30.));
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "step", 10.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "sart", -10.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "end", 30.));
 	graph_add_ticks(g, 0,
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.step"
-					: "temperature.left.step", 10.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.start"
-					: "temperature.left.start", -10.),
-		mc_get_double(meteoconfig,
-			(inside)	? "temperature_inside.left.end"
-					: "temperature.left.end", 30.),
-		mc_get_string(meteoconfig,
-			(inside)	? "temperature_inside.left.format"
-					: "temperature.left.format", "%.0f"),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "step", 10.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "start", -10.),
+		mc_get_double_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "end", 30.),
+		mc_get_string_f(meteoconfig,
+			(inside)	? "temperature_inside" : "temperature",
+			"left", interval, "format", "%.0f"),
 		0);
 
 	/* compute the filename for the graph				*/
@@ -422,8 +442,6 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	time_t		start;
 	graph_t		*g;
 	char		query[2048], filename[1024];
-	char		scalekey[64], unitkey[64], minkey[64], startkey[64],
-			endkey[64], formatkey[64];
 	int		i, color, nentries;
 	entry_t		*data;
 	double		*tempdata;
@@ -436,21 +454,16 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 		"sum(rain)", "rain");
 	set_colors(g, DOGRAPH_RAIN, meteoconfig);
 	graph_label(g,
-		mc_get_string(meteoconfig, "rain.left.label",
+		mc_get_string_f(meteoconfig, "rain", "left", interval, "label",
 			"Precipitation (mm)"), 0);
-
-	snprintf(scalekey, sizeof(scalekey), "rain.left.%d.scale", interval);
-	snprintf(unitkey, sizeof(unitkey), "rain.left.%d.step", interval);
-	snprintf(minkey, sizeof(minkey), "rain.left.%d.min", interval);
-	snprintf(startkey, sizeof(startkey), "rain.left.%d.start", interval);
-	snprintf(endkey, sizeof(endkey), "rain.left.%d.end", interval);
-	snprintf(formatkey, sizeof(formatkey), "rain.left.%d.format", interval);
 
 	color = graph_color_allocate(g,
 		mc_get_color(meteoconfig, "rain.color", rain_default_color));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, color, 
-		mc_get_double(meteoconfig, minkey, 0.),
-		mc_get_double(meteoconfig, scalekey, .01));
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"min", 0.),
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"scale", .01));
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -488,14 +501,21 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	/* display the grid						*/
 	graph_add_time(g);
 	graph_add_grid(g, 0,
-		mc_get_double(meteoconfig, unitkey, 1.),
-		mc_get_double(meteoconfig, startkey, 0.),
-		mc_get_double(meteoconfig, endkey, 30.));
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"step", 1.),
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"end", 30.));
 	graph_add_ticks(g, 0,
-		mc_get_double(meteoconfig, unitkey, 1.),
-		mc_get_double(meteoconfig, startkey, 0.),
-		mc_get_double(meteoconfig, endkey, 30.),
-		mc_get_string(meteoconfig, formatkey, "%.1f"),
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"step", 1.),
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "rain", "left", interval,
+			"end", 30.),
+		mc_get_string_f(meteoconfig, "rain", "left", interval,
+			"format", "%.1f"),
 		0);
 
 	/* compute the filename for the graph				*/
@@ -512,6 +532,56 @@ void	rain_graphs(dograph_t *dgp, int interval) {
 	mysql_free_result(res);
 	free(tempdata);
 	free(data);
+}
+
+/*
+ * wind_background(graph_t *g)
+ *
+ * color the background for the wind direciton graphs if the color
+ * attributes are configured.
+ */
+static void	wind_rectangle(graph_t *g, double miny, double maxy, int col) {
+	int	mini, maxi;
+	/* convert the max and min values to coordinate values		*/
+	mini = graph_yval(g, 2, miny);
+	maxi = graph_yval(g, 2, maxy);
+
+	/* draw a rectangle						*/
+	graph_rectangle(g, mini, maxi, col);
+}
+
+static void wind_background(graph_t *g, int interval) {
+	const int	*coln, *cols, *colw, *cole;
+	int	dc;
+	/* check for north color					*/
+	coln = mc_get_color_f(meteoconfig, "wind", "right", interval,
+			"northcolor", NULL);
+	if (coln != NULL) {
+		dc = gdImageColorAllocate(g->im, coln[0], coln[1], coln[2]);
+		wind_rectangle(g, 0., 45., dc);
+		wind_rectangle(g, 315., 360., dc);
+	}
+	/* check for the west color					*/
+	colw = mc_get_color_f(meteoconfig, "wind", "right", interval,
+			"westcolor", NULL);
+	if (colw != NULL) {
+		dc = gdImageColorAllocate(g->im, colw[0], colw[1], colw[2]);
+		wind_rectangle(g, 225., 315., dc);
+	}
+	/* check for the east color					*/
+	cole = mc_get_color_f(meteoconfig, "wind", "right", interval,
+			"eastcolor", NULL);
+	if (cole != NULL) {
+		dc = gdImageColorAllocate(g->im, cole[0], cole[1], cole[2]);
+		wind_rectangle(g, 45., 135., dc);
+	}
+	/* check for the south color					*/
+	cols = mc_get_color_f(meteoconfig, "wind", "right", interval,
+			"southcolor", NULL);
+	if (cols != NULL) {
+		dc = gdImageColorAllocate(g->im, cols[0], cols[1], cols[2]);
+		wind_rectangle(g, 135., 225., dc);
+	}
 }
 
 static color_t	wind_default_color = { 100, 100, 255 };
@@ -534,10 +604,10 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 		"max(windgust)",
 		"windgust, windspeed, winddir");
 	set_colors(g, DOGRAPH_WIND, meteoconfig);
-	graph_label(g, mc_get_string(meteoconfig, "wind.left.label",
-		"Speed (m/s)"), 0);
-	graph_label(g, mc_get_string(meteoconfig, "wind.right.label",
-		"Azimut (deg)"), 1);
+	graph_label(g, mc_get_string_f(meteoconfig, "wind", "left", interval,
+		"label", "Speed (m/s)"), 0);
+	graph_label(g, mc_get_string_f(meteoconfig, "wind", "right", interval,
+		"label", "Azimut (deg)"), 1);
 
 	dircolor = graph_color_allocate(g, mc_get_color(meteoconfig,
 		"wind.color", wind_default_color));
@@ -546,14 +616,20 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 	speedcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
 		"wind.speedcolor", wind_default_speedcolor));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, gustcolor,
-		mc_get_double(meteoconfig, "wind.left.min", 0.),
-		mc_get_double(meteoconfig, "wind.left.scale", .25));
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"min", 0.),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"scale", .25));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, speedcolor,
-		mc_get_double(meteoconfig, "wind.left.min", 0.),
-		mc_get_double(meteoconfig, "wind.left.scale", .25));
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"min", 0.),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"scale", .25));
 	graph_add_channel(g, GRAPH_LINE, dircolor,
-		mc_get_double(meteoconfig, "wind.right.min", -400.),
-		mc_get_double(meteoconfig, "wind.right.scale", 8.));
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"min", -400.),
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"scale", 8.));
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -595,32 +671,49 @@ void	wind_graphs(dograph_t *dgp, int interval) {
 				data[i].data[2]);
 	}
 
+	/* display the wind direction background colors			*/
+	wind_background(g, interval);
+
 	/* display the data retrieved from the database			*/
 	graph_add_data(g, start, interval, nentries, data);
 
 	/* display the grid						*/
 	graph_add_time(g);
 	graph_add_grid(g, 0,
-		mc_get_double(meteoconfig, "wind.left.step", 5.),
-		mc_get_double(meteoconfig, "wind.left.start", 0.),
-		mc_get_double(meteoconfig, "wind.left.end", 10.));
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"step", 5.),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"end", 10.));
 	graph_add_grid(g, 2,
-		mc_get_double(meteoconfig, "wind.right.step", 180.),
-		mc_get_double(meteoconfig, "wind.right.start", 0.),
-		mc_get_double(meteoconfig, "wind.right.end", 360.));
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"step", 180.),
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"end", 360.));
 	graph_add_ticks(g,
 		0,
-		mc_get_double(meteoconfig, "wind.left.step", 5.),
-		mc_get_double(meteoconfig, "wind.left.start", 0.),
-		mc_get_double(meteoconfig, "wind.left.end", 10.),
-		mc_get_string(meteoconfig, "wind.left.format", "%.0f"),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"step", 5.),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "wind", "left", interval,
+			"end", 10.),
+		mc_get_string_f(meteoconfig, "wind", "left", interval,
+			"format", "%.0f"),
 		0);
 	graph_add_ticks(g,
 		2,
-		mc_get_double(meteoconfig, "wind.right.step", 180.),
-		mc_get_double(meteoconfig, "wind.right.start", 0.),
-		mc_get_double(meteoconfig, "wind.right.end", 360.),
-		mc_get_string(meteoconfig, "wind.right.format", "%.0f"),
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"step", 180.),
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "wind", "right", interval,
+			"end", 360.),
+		mc_get_string_f(meteoconfig, "wind", "right", interval,
+			"format", "%.0f"),
 		1);
 
 	/* compute the filename for the graph				*/
@@ -655,21 +748,25 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 		"avg(solar), avg(uv)",
 		"solar, uv");
 	set_colors(g, DOGRAPH_RADIATION, meteoconfig);
-	graph_label(g, mc_get_string(meteoconfig, "radiation.left.label",
-		"Solar Radiation (W/m2)"), 0);
-	graph_label(g, mc_get_string(meteoconfig, "radiation.right.label",
-		"UV index"), 1);
+	graph_label(g, mc_get_string_f(meteoconfig, "radiation", "left",
+		interval, "label", "Solar Radiation (W/m2)"), 0);
+	graph_label(g, mc_get_string_f(meteoconfig, "radiation", "right",
+		interval, "label", "UV index"), 1);
 
 	solarcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
 		"radiation.solarcolor", radiation_default_solar_color));
 	uvcolor = graph_color_allocate(g, mc_get_color(meteoconfig,
 		"radiation.uvcolor", radiation_default_uv_color));
 	graph_add_channel(g, GRAPH_HISTOGRAMM, solarcolor,
-		mc_get_double(meteoconfig, "radiation.left.min", 0.),
-		mc_get_double(meteoconfig, "radiation.left.scale", 5));
+		mc_get_double_f(meteoconfig, "radiation", "left",
+			interval, "min", 0.),
+		mc_get_double_f(meteoconfig, "radiation", "left",
+			interval, "scale", 5));
 	graph_add_channel(g, GRAPH_LINE, uvcolor,
-		mc_get_double(meteoconfig, "radiation.right.min", 0.),
-		mc_get_double(meteoconfig, "radiation.right.scale", 0.05));
+		mc_get_double_f(meteoconfig, "radiation", "right",
+			interval, "min", 0.),
+		mc_get_double_f(meteoconfig, "radiation", "right",
+			interval, "scale", 0.05));
 
 	/* retrieve the data from the database				*/
 	if (debug)
@@ -709,28 +806,42 @@ void	radiation_graphs(dograph_t *dgp, int interval) {
 	/* display the grid						*/
 	graph_add_time(g);
 	graph_add_grid(g, 0,
-		mc_get_double(meteoconfig, "radiation.left.step", 100.),
-		mc_get_double(meteoconfig, "radiation.left.start", 0.),
-		mc_get_double(meteoconfig, "radiation.left.end", 600.));
+		mc_get_double_f(meteoconfig, "radiation", "left", interval,
+			"step", 100.),
+		mc_get_double_f(meteoconfig, "radiation", "left", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "radiation", "left", interval,
+			"end", 600.));
 	/* it's not necessary to write the grid lines twice...
 	graph_add_grid(g, 1,
-		mc_get_double(meteoconfig, "radiation.right.step", 1.),
-		mc_get_double(meteoconfig, "radiation.right.start", 0.),
-		mc_get_double(meteoconfig, "radiation.right.end", 6.));
+		mc_get_double_f(meteoconfig, "radiation", "right", interval,
+			"step", 1.),
+		mc_get_double_f(meteoconfig, "radiation", "right", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "radiation", "right", interval,
+			"end", 6.));
 	*/
 	graph_add_ticks(g,
 		0,
-		mc_get_double(meteoconfig, "radiation.left.step", 100.),
-		mc_get_double(meteoconfig, "radiation.left.start", 0.),
-		mc_get_double(meteoconfig, "radiation.left.end", 600.),
-		mc_get_string(meteoconfig, "radiation.left.format", "%.0f"),
+		mc_get_double_f(meteoconfig, "radiation", "left", interval,
+			"step", 100.),
+		mc_get_double_f(meteoconfig, "radiation", "left", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "radiation", "left", interval,
+			"end", 600.),
+		mc_get_string_f(meteoconfig, "radiation", "left", interval,
+			"format", "%.0f"),
 		0);
 	graph_add_ticks(g,
 		1,
-		mc_get_double(meteoconfig, "radiation.right.step", 1.),
-		mc_get_double(meteoconfig, "radiation.right.start", 0.),
-		mc_get_double(meteoconfig, "radiation.right.end", 6.),
-		mc_get_string(meteoconfig, "radiation.right.format", "%.1f"),
+		mc_get_double_f(meteoconfig, "radiation", "right", interval,
+			"step", 1.),
+		mc_get_double_f(meteoconfig, "radiation", "right", interval,
+			"start", 0.),
+		mc_get_double_f(meteoconfig, "radiation", "right", interval,
+			"end", 6.),
+		mc_get_string_f(meteoconfig, "radiation", "right", interval,
+			"format", "%.1f"),
 		1);
 
 	/* compute the filename for the graph				*/

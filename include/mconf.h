@@ -3,7 +3,7 @@
  *
  * (c) 2001 Dr. Andreas Mueller, Beratung und Entwicklung
  *
- * $Id: mconf.h,v 1.1 2002/01/18 23:34:26 afm Exp $
+ * $Id: mconf.h,v 1.2 2002/03/03 22:09:38 afm Exp $
  */
 #ifndef _MCONF_H
 #define _MCONF_H
@@ -64,13 +64,17 @@ extern void		mc_dump(FILE *, const mc_node_t *);
  * as in the java properties
  */
 extern const md_t	*mc_getvalue(const mc_node_t *, const char *);
-extern const double	mc_get_double(const mc_node_t *, const char *,
-				const double);
-extern const int	mc_get_int(const mc_node_t *, const char *,
-				const int);
-extern const char	*mc_get_string(const mc_node_t *, const char *,
-				const char *);
-extern const int	*mc_get_color(const mc_node_t *, const char *,
-				const int *);
 
+#define	M_MC_GET_PROTO(type, funcname)					\
+extern const type	funcname(const mc_node_t *, const char *key,	\
+				const type def);			\
+extern const type	funcname##_f(const mc_node_t *, 		\
+				const char *grname,			\
+				const char *lr, int interval, 		\
+				const char *what, const type def);
+M_MC_GET_PROTO(double, mc_get_double)
+M_MC_GET_PROTO(int, mc_get_int)
+M_MC_GET_PROTO(char *, mc_get_string)
+M_MC_GET_PROTO(int *, mc_get_color)
+	
 #endif /* _MCONF_H */
