@@ -19,6 +19,7 @@
 #include <MeteoException.h>
 #include <StationInfo.h>
 #include <string>
+#include <string.h>
 #include <vector>
 #include <errno.h>
 #include <strings.h>

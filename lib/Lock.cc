@@ -8,6 +8,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif /* HAVE_STRING_H */
 #include <Lock.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>

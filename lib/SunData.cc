@@ -8,6 +8,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #include <SunData.h>
 #include <StationInfo.h>
 #include <SensorStationInfo.h>

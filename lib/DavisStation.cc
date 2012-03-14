@@ -14,6 +14,9 @@
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif /* HAVE_STDIO_H */
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif /* HAVE_STRING_H */
 #include <DavisStation.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>

@@ -11,6 +11,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static int	meteolabel(int argc, char *argv[]) {
 	int	c;

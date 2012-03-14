@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <mysql.h>
 #include <string>
+#include <string.h>
 #include <vector>
 #include <map>
 #include <errno.h>
